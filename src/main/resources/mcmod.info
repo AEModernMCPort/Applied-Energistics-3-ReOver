@@ -1,7 +1,7 @@
 [
     {
-        "modid":"",
-        "name":"",
+        "modid":"appliedenergistics3",
+        "name":"Applied Energistics 3",
         "description":"",
         "version":"${version}",
         "mcversion":"${mcversion}",

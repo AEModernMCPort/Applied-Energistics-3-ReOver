@@ -1,24 +1,27 @@
 package appeng.core.client;
 
 import appeng.core.AppEngModProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraftforge.fml.client.CustomModLoadingErrorDisplayException;
 
 public class AppEngModClientProxy implements AppEngModProxy {
 
 	@Override
-	public void preInit(FMLPreInitializationEvent event){
-	}
+	public void moduleLoadingException(String exceptionText, String guiText){
+		throw new CustomModLoadingErrorDisplayException(exceptionText, null) {
 
-	@Override
-	public void init(FMLInitializationEvent event){
+			@Override
+			public void initGui(GuiErrorScreen errorScreen, FontRenderer fontRenderer){
 
-	}
+			}
 
-	@Override
-	public void postInit(FMLPostInitializationEvent event){
-
+			@Override
+			public void drawScreen(GuiErrorScreen errorScreen, FontRenderer fontRenderer, int mouseRelX, int mouseRelY, float tickTime){
+				errorScreen.drawDefaultBackground();
+				errorScreen.drawCenteredString(fontRenderer, guiText, errorScreen.width / 2, 75, 0xFFFFFF);
+			}
+		};
 	}
 
 }

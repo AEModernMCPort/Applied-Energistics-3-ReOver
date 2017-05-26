@@ -14,10 +14,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.*;
@@ -62,6 +62,9 @@ public final class AppEng {
 
 	@Mod.Instance(MODID)
 	private static AppEng INSTANCE;
+
+	@SidedProxy(modId = MODID, clientSide = "appeng.core.client.AppEngModClientProxy", serverSide = "appeng.core.server.AppEngModServerProxy")
+	private static AppEngModProxy proxy;
 
 	private ImmutableMap<String, ?> modules;
 	private ImmutableMap<Class<?>, ?> classModule;
@@ -173,7 +176,7 @@ public final class AppEng {
 				}
 			}
 			event.getModLog().error("again depending on \"" + e.getNode() + "\"");
-			CommonHelper.proxy.moduleLoadingException(String.format("Circular dependency at module %s", e.getNode()), "The module " + TextFormatting.BOLD + e.getNode() + TextFormatting.RESET + " has circular dependencies! See the log for a list!");
+			proxy.moduleLoadingException(String.format("Circular dependency at module %s", e.getNode()), "The module " + TextFormatting.BOLD + e.getNode() + TextFormatting.RESET + " has circular dependencies! See the log for a list!");
 		}
 		ImmutableMap.Builder<String, Object> modulesBuilder = ImmutableMap.builder();
 		ImmutableMap.Builder<Class<?>, Object> classModuleBuilder = ImmutableMap.builder();
@@ -244,7 +247,7 @@ public final class AppEng {
 				if(requiredSide == currentSide){
 					continue;
 				} else if(crash){
-					CommonHelper.proxy.moduleLoadingException(String.format("Module %s is %s side only!", name, requiredSide.toString()), "Module " + TextFormatting.BOLD + name + TextFormatting.RESET + " can only be used on " + TextFormatting.BOLD + requiredSide.toString() + TextFormatting.RESET + "!");
+					proxy.moduleLoadingException(String.format("Module %s is %s side only!", name, requiredSide.toString()), "Module " + TextFormatting.BOLD + name + TextFormatting.RESET + " can only be used on " + TextFormatting.BOLD + requiredSide.toString() + TextFormatting.RESET + "!");
 				}
 				return false;
 			} else if(depName != null && hard){
@@ -270,7 +273,7 @@ public final class AppEng {
 				}
 				if(!depFound){
 					if(crash){
-						CommonHelper.proxy.moduleLoadingException(String.format("Missing hard required dependency for module %s - %s", name, depName), "Module " + TextFormatting.BOLD + name + TextFormatting.RESET + " is missing required hard dependency " + TextFormatting.BOLD + depName + TextFormatting.RESET + ".");
+						proxy.moduleLoadingException(String.format("Missing hard required dependency for module %s - %s", name, depName), "Module " + TextFormatting.BOLD + name + TextFormatting.RESET + " is missing required hard dependency " + TextFormatting.BOLD + depName + TextFormatting.RESET + ".");
 					}
 					return false;
 				}

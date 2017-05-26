@@ -35,9 +35,6 @@ public class AppEngCore implements ICore {
 	@Module.Instance(NAME)
 	public static final AppEngCore INSTANCE = null;
 
-	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.client.AppEngCoreClientProxy", serverSide = "appeng.core.server.AppEngCoreServerProxy")
-	private static AppEngCoreProxy proxy;
-
 	private final Registration registration;
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;
@@ -98,8 +95,6 @@ public class AppEngCore implements ICore {
 		CreativeTab.init();
 
 		this.registration.preInitialize(event);
-
-		proxy.preInit(event);
 	}
 
 	private void startService(final String serviceName, final Thread thread){
@@ -115,8 +110,6 @@ public class AppEngCore implements ICore {
 		this.registration.initialize(event);
 
 		registry.init(event);
-
-		proxy.init(event);
 	}
 
 	@ModuleEventHandler
@@ -124,8 +117,6 @@ public class AppEngCore implements ICore {
 		this.registration.postInit(event);
 
 		registry.postInit(event);
-
-		proxy.postInit(event);
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, GuiBridge.GUI_Handler);
 		NetworkHandler.instance = new NetworkHandler("AE2");

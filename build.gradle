@@ -96,7 +96,7 @@ task generatePom {
             project {
                 name theName
 				description theDescription
-				url "https://github.com/Elix-x/${theName}"
+				url "https://github.com/AEModernMCPort/${theName}"
                 licenses {
 					license {
 						
@@ -110,9 +110,9 @@ task generatePom {
 					}
 				}
 				scm {
-					connection "scm:git:git://github.com/Elix-x/${theName}.git"
-					developerConnection "scm:git:ssh://github.com:Elix-x/${theName}.git"
-					url "https://github.com/Elix-x/${theName}/tree/master"
+					connection "scm:git:git://github.com/AEModernMCPort/${theName}.git"
+					developerConnection "scm:git:ssh://github.com:AEModernMCPort/${theName}.git"
+					url "https://github.com/AEModernMCPort/${theName}/tree/master"
 				}
             }
         }.writeTo(pomFile)

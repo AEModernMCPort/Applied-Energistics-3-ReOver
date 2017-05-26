@@ -5,20 +5,21 @@ import appeng.api.definitions.sub.ISubDefinition;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class Definition<T> implements IDefinition<T> {
 
 	private final ResourceLocation identifier;
 	private final Optional<T> t;
-	private Optional<ISubDefinition<?, T, ?>> subDefinition;
+	private Supplier<Optional<ISubDefinition<?, T, ?>>> subDefinition;
 
 	public Definition(ResourceLocation identifier, T t){
 		this.identifier = identifier;
 		this.t = Optional.ofNullable(t);
 	}
 
-	public <D extends Definition<T>> D setSubDefinition(ISubDefinition<?, T, ?> subDefinition){
-		this.subDefinition = Optional.ofNullable(subDefinition);
+	public <D extends Definition<T>> D setSubDefinition(Supplier<ISubDefinition<?, T, ?>> subDefinition){
+		this.subDefinition = () -> Optional.ofNullable(subDefinition.get());
 		return (D) this;
 	}
 
@@ -34,7 +35,7 @@ public class Definition<T> implements IDefinition<T> {
 
 	@Override
 	public <D, P extends T, S extends ISubDefinition<D, P, S>> Optional<S> maybeSubDefinition(){
-		return (Optional<S>) subDefinition;
+		return (Optional<S>) subDefinition.get();
 	}
 
 	@Override

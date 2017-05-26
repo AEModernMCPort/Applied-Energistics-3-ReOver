@@ -77,7 +77,7 @@ public class BlockDefinitionBuilder<B extends Block>
 
 		BlockDefinition definition = new BlockDefinition<B>(registryName, block);
 		if(!block.getBlockState().getProperties().isEmpty()){
-			definition.setSubDefinition(new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
+			definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
 		}
 
 		if(itemBlock != null){

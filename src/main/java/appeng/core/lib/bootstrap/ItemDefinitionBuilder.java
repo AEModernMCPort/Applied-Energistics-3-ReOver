@@ -58,7 +58,7 @@ public class ItemDefinitionBuilder<I extends Item>
 		ItemDefinition definition = new ItemDefinition(registryName, item);
 
 		if(item instanceof IStateItem){
-			preInit(def -> definition.setSubDefinition(new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition)));
+			preInit(def -> definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition)));
 		}
 
 		return definition;

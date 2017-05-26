@@ -1,10 +1,8 @@
 package appeng.core.lib.bootstrap;
 
-import appeng.core.lib.block.AEBaseTileBlock;
 import appeng.core.lib.bootstrap.components.BlockColorComponent;
 import appeng.core.lib.bootstrap.components.StateMapperComponent;
 import appeng.core.lib.bootstrap.components.TesrComponent;
-import appeng.core.lib.client.render.model.CachingRotatingBakedModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -67,9 +65,6 @@ class BlockRendering implements IBlockRendering {
 
 		if(modelCustomizer != null){
 			registry.modelOverrideComponent.addOverride(block.getRegistryName().getResourcePath(), modelCustomizer);
-		} else if(block instanceof AEBaseTileBlock){
-			// This is a default rotating model if the base-block uses an AE tile entity which exposes UP/FRONT as extended props
-			registry.modelOverrideComponent.addOverride(block.getRegistryName().getResourcePath(), (l, m) -> new CachingRotatingBakedModel(m));
 		}
 
 		if(blockColor != null){

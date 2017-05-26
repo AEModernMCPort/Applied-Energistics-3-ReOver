@@ -21,7 +21,6 @@ import appeng.api.module.ModuleIMCMessageEvent;
 import appeng.core.crafting.api.ICrafting;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
-import appeng.core.crafting.definitions.CraftingPartDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.part.PartRegistryEntry;
@@ -38,7 +37,7 @@ public class AppEngCrafting implements ICrafting
 
 	public final ItemCard.EnumCardType CRAFTING = ItemCard.EnumCardType.addCardType( "CRAFTING" );
 
-	private MEFeatureFactory registry;
+	private FeatureFactory registry;
 
 	private CraftingItemDefinitions itemDefinitions;
 	private CraftingBlockDefinitions blockDefinitions;
@@ -60,21 +59,16 @@ public class AppEngCrafting implements ICrafting
 		{
 			return (D) tileDefinitions;
 		}
-		if( clas == PartRegistryEntry.class )
-		{
-			return (D) partDefinitions;
-		}
 		return null;
 	}
 
 	@ModuleEventHandler
 	public void preInit( FMLPreInitializationEvent event )
 	{
-		registry = new MEFeatureFactory();
+		registry = new FeatureFactory();
 		this.blockDefinitions = new CraftingBlockDefinitions( registry );
 		this.itemDefinitions = new CraftingItemDefinitions( registry );
 		this.tileDefinitions = new CraftingTileDefinitions( registry );
-		this.partDefinitions = new CraftingPartDefinitions<>( registry );
 		registry.preInit( event );
 	}
 

@@ -44,7 +44,6 @@ import appeng.core.me.definitions.MEBlockDefinitions;
 import appeng.core.me.definitions.MEEntityDefinitions;
 import appeng.core.me.definitions.MEItemDefinitions;
 import appeng.core.me.definitions.MEMaterialDefinitions;
-import appeng.core.me.definitions.MEPartDefinitions;
 import appeng.core.me.definitions.METileDefinitions;
 import appeng.core.me.item.ItemCard;
 
@@ -67,13 +66,12 @@ public class AppEngME implements IME
 
 	private FMLControlledNamespacedRegistry<PartRegistryEntry> partRegistry;
 
-	private MEFeatureFactory registry;
+	private FeatureFactory registry;
 
 	private MEItemDefinitions itemDefinitions;
 	private MEBlockDefinitions blockDefinitions;
 	private METileDefinitions tileDefinitions;
 	private MEMaterialDefinitions materialDefinitions;
-	private MEPartDefinitions partDefinitions;
 	private MEEntityDefinitions entityDefinitions;
 
 	@Override
@@ -95,20 +93,11 @@ public class AppEngME implements IME
 		{
 			return (D) materialDefinitions;
 		}
-		if( clas == PartRegistryEntry.class )
-		{
-			return (D) partDefinitions;
-		}
 		if( clas == EntityEntry.class )
 		{
 			return (D) entityDefinitions;
 		}
 		return null;
-	}
-
-	public FMLControlledNamespacedRegistry<PartRegistryEntry> getPartRegistry()
-	{
-		return partRegistry;
 	}
 
 	private Map<Class<?>, ResourceLocation> getClass2PartMap( Map<ResourceLocation, ?> slaveset )
@@ -124,23 +113,11 @@ public class AppEngME implements IME
 	@ModuleEventHandler
 	public void preInit( FMLPreInitializationEvent event )
 	{
-		// @formatter:off
-		partRegistry = (FMLControlledNamespacedRegistry<PartRegistryEntry>) new RegistryBuilder().setName( new ResourceLocation( AppEng.MODID, "parts" ) ).setType( PartRegistryEntry.class )
-				.add( (CreateCallback<PartRegistryEntry>) ( ( Map<ResourceLocation, ?> slaveset, BiMap<ResourceLocation, ? extends IForgeRegistry<?>> registries ) -> ( (Map) slaveset ).put( CLASS2PARTMAP, new HashMap() ) ) )
-				.add( (AddCallback<PartRegistryEntry>) ( ( PartRegistryEntry part, int id, Map<ResourceLocation, ?> slaveset ) -> getClass2PartMap( slaveset ).put( part.getPartClass(), part.getRegistryName() ) ) )
-				.add( (ClearCallback<PartRegistryEntry>) ( ( IForgeRegistry<PartRegistryEntry> is, Map<ResourceLocation, ?> slaveset ) -> getClass2PartMap( slaveset ).clear() ) )
-				.add( (SubstitutionCallback<PartRegistryEntry>) ( ( Map<ResourceLocation, ?> slaveset, PartRegistryEntry original, PartRegistryEntry replacement, ResourceLocation name ) -> {
-					getClass2PartMap( slaveset ).remove( original.getClass() );
-					getClass2PartMap( slaveset ).put( replacement.getClass(), name );
-				} ) ).create();
-		// @formatter:on
-
-		registry = new MEFeatureFactory();
+		registry = new FeatureFactory();
 		this.materialDefinitions = new MEMaterialDefinitions( registry );
 		this.blockDefinitions = new MEBlockDefinitions( registry );
 		this.itemDefinitions = new MEItemDefinitions( registry );
 		this.tileDefinitions = new METileDefinitions( registry );
-		this.partDefinitions = new MEPartDefinitions( registry );
 		this.entityDefinitions = new MEEntityDefinitions( registry );
 		registry.preInit( event );
 

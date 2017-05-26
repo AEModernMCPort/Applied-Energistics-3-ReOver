@@ -9,8 +9,8 @@ import appeng.core.crafting.api.ICrafting;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
+import appeng.core.lib.bootstrap.FeatureFactory;
 import appeng.core.me.AppEngME;
-import appeng.core.me.item.ItemCard;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -22,14 +22,12 @@ public class AppEngCrafting implements ICrafting {
 	@Module.Instance(NAME)
 	public static final AppEngCrafting INSTANCE = null;
 
-	public final ItemCard.EnumCardType CRAFTING = ItemCard.EnumCardType.addCardType("CRAFTING");
 
 	private FeatureFactory registry;
 
 	private CraftingItemDefinitions itemDefinitions;
 	private CraftingBlockDefinitions blockDefinitions;
 	private CraftingTileDefinitions tileDefinitions;
-	private CraftingPartDefinitions partDefinitions;
 
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){

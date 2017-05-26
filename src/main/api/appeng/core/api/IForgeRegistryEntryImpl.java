@@ -38,7 +38,7 @@ public interface IForgeRegistryEntryImpl<T extends IForgeRegistryEntryImpl<T>> e
 	}
 
 	@Override
-	default Class<? super T> getRegistryType(){
+	default Class<T> getRegistryType(){
 		return Delegate.getRegistryType((T) this);
 	}
 
@@ -70,7 +70,7 @@ public interface IForgeRegistryEntryImpl<T extends IForgeRegistryEntryImpl<T>> e
 			return getDelegate(entry).getRegistryName();
 		}
 
-		private static <T extends IForgeRegistryEntryImpl<T>> Class<? super T> getRegistryType(T entry){
+		private static <T extends IForgeRegistryEntryImpl<T>> Class<T> getRegistryType(T entry){
 			return getDelegate(entry).getRegistryType();
 		}
 
@@ -124,8 +124,8 @@ public interface IForgeRegistryEntryImpl<T extends IForgeRegistryEntryImpl<T>> e
 			return registryName != null ? registryName : null;
 		}
 
-		public final Class<? super T> getRegistryType(){
-			return token.getRawType();
+		public final Class<T> getRegistryType(){
+			return (Class<T>) token.getRawType();
 		}
 
 	}

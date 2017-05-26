@@ -6,8 +6,6 @@ import appeng.core.AppEng;
 import appeng.core.api.material.Material;
 import appeng.core.lib.bootstrap.components.ModelOverrideComponent;
 import appeng.core.lib.definitions.BlockDefinition;
-import appeng.core.lib.features.AEFeature;
-import appeng.core.lib.util.Platform;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -30,8 +28,6 @@ import java.util.Map;
 
 public class FeatureFactory {
 
-	protected final AEFeature[] defaultFeatures;
-
 	private final List<IBootstrapComponent> bootstrapComponents;
 
 	@SideOnly(Side.CLIENT)
@@ -40,21 +36,19 @@ public class FeatureFactory {
 	private final Map<BlockDefinition<? extends Block>, IItemBlockCustomizer<ItemBlock>> defaultItemBlocks = Maps.newHashMap();
 
 	public FeatureFactory(){
-		this.defaultFeatures = new AEFeature[]{AEFeature.Core};
 		this.bootstrapComponents = new ArrayList<>();
 
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			modelOverrideComponent = new ModelOverrideComponent();
 			this.bootstrapComponents.add(modelOverrideComponent);
-		}
+		}*/
 	}
 
-	protected FeatureFactory(FeatureFactory parent, AEFeature... defaultFeatures){
-		this.defaultFeatures = defaultFeatures.clone();
+	protected FeatureFactory(FeatureFactory parent){
 		this.bootstrapComponents = parent.bootstrapComponents;
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			this.modelOverrideComponent = parent.modelOverrideComponent;
-		}
+		}*/
 	}
 
 	@Deprecated
@@ -63,7 +57,7 @@ public class FeatureFactory {
 	}
 
 	public <T extends TileEntity> TileDefinitionBuilder<T> tile(ResourceLocation id, Class<T> tile){
-		return new TileDefinitionBuilder<T>(this, id, tile, ((IDefinitionsProvider) AppEng.instance().getCurrent()).definitions(Block.class)).features(defaultFeatures);
+		return new TileDefinitionBuilder<T>(this, id, tile, ((IDefinitionsProvider) AppEng.instance().getCurrent()).definitions(Block.class));
 	}
 
 	@Deprecated
@@ -72,7 +66,7 @@ public class FeatureFactory {
 	}
 
 	public <B extends Block> BlockDefinitionBuilder<B> block(ResourceLocation id, B block){
-		return new BlockDefinitionBuilder<B>(this, id, block).features(defaultFeatures);
+		return new BlockDefinitionBuilder<B>(this, id, block);
 	}
 
 	@Deprecated
@@ -81,7 +75,7 @@ public class FeatureFactory {
 	}
 
 	public <I extends Item> ItemDefinitionBuilder<I> item(ResourceLocation id, I item){
-		return new ItemDefinitionBuilder<I>(this, id, item).features(defaultFeatures);
+		return new ItemDefinitionBuilder<I>(this, id, item);
 	}
 
 	@Deprecated
@@ -90,7 +84,7 @@ public class FeatureFactory {
 	}
 
 	public <M extends Material> MaterialDefinitionBuilder<M> material(ResourceLocation id, M material){
-		return new MaterialDefinitionBuilder<M>(this, id, material).features(defaultFeatures);
+		return new MaterialDefinitionBuilder<M>(this, id, material);
 	}
 
 	@Deprecated
@@ -99,7 +93,7 @@ public class FeatureFactory {
 	}
 
 	public <E extends EntityEntry> EntityDefinitionBuilder<E> entity(ResourceLocation id, E entity){
-		return new EntityDefinitionBuilder<E>(this, id, entity).features(defaultFeatures);
+		return new EntityDefinitionBuilder<E>(this, id, entity);
 	}
 
 	@Deprecated
@@ -108,7 +102,7 @@ public class FeatureFactory {
 	}
 
 	public <B extends Biome> BiomeDefinitionBuilder<B> biome(ResourceLocation id, B biome){
-		return new BiomeDefinitionBuilder<B>(this, id, biome).features(defaultFeatures);
+		return new BiomeDefinitionBuilder<B>(this, id, biome);
 	}
 
 	@Deprecated
@@ -117,7 +111,7 @@ public class FeatureFactory {
 	}
 
 	public <D extends DimensionType> DimensionTypeDefinitionBuilder<D> dimensionType(ResourceLocation id, int did){
-		return new DimensionTypeDefinitionBuilder<D>(this, id, did).features(defaultFeatures);
+		return new DimensionTypeDefinitionBuilder<D>(this, id, did);
 	}
 
 	@Deprecated
@@ -126,7 +120,7 @@ public class FeatureFactory {
 	}
 
 	public <D extends DimensionType> DimensionTypeDefinitionBuilder<D> dimensionType(ResourceLocation id, int did, String name, String suffix, Class<? extends WorldProvider> clazz, boolean shouldLoadSpawn){
-		return new DimensionTypeDefinitionBuilder<D>(this, id, did, name, suffix, clazz, shouldLoadSpawn).features(defaultFeatures);
+		return new DimensionTypeDefinitionBuilder<D>(this, id, did, name, suffix, clazz, shouldLoadSpawn);
 	}
 
 	<B extends Block> void addItemBlock(BlockDefinition<B> def, IItemBlockCustomizer itemBlock){
@@ -138,10 +132,6 @@ public class FeatureFactory {
 		this.defaultItemBlocks.forEach((def, item) -> result.put(def.identifier(), item.customize(item(def.identifier(), item.createItemBlock(def.maybe().get()))).build()));
 		this.defaultItemBlocks.clear();
 		return result;
-	}
-
-	public FeatureFactory features(AEFeature... features){
-		return new FeatureFactory(this, features);
 	}
 
 	<B extends IBootstrapComponent> void addBootstrapComponent(B component){

@@ -4,15 +4,12 @@ import appeng.api.definitions.IDefinition;
 import appeng.core.lib.bootstrap.components.InitComponent;
 import appeng.core.lib.bootstrap.components.PostInitComponent;
 import appeng.core.lib.bootstrap.components.PreInitComponent;
-import appeng.core.lib.features.AEFeature;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -25,8 +22,6 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 
 	private final I instance;
 
-	protected final EnumSet<AEFeature> features = EnumSet.noneOf(AEFeature.class);
-
 	private final List<Consumer<D>> buildCallbacks = new ArrayList<>();
 	private final List<Consumer<D>> preInitCallbacks = new ArrayList<>();
 	private final List<Consumer<D>> initCallbacks = new ArrayList<>();
@@ -36,19 +31,6 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 		this.factory = factory;
 		this.registryName = registryName;
 		this.instance = instance;
-	}
-
-	@Override
-	public B features(AEFeature... features){
-		this.features.clear();
-		addFeatures(features);
-		return (B) this;
-	}
-
-	@Override
-	public B addFeatures(AEFeature... features){
-		Collections.addAll(this.features, features);
-		return (B) this;
 	}
 
 	@Override
@@ -77,10 +59,6 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 
 	@Override
 	public final D build(){
-		if(!AEConfig.instance.areFeaturesEnabled(features)){
-			return def(null);
-		}
-
 		D definition = def(setRegistryName(instance));
 
 		preInitCallbacks.add(t -> register((t).maybe().get()));

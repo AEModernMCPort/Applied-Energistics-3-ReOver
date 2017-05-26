@@ -201,7 +201,7 @@ public final class AppEng {
 
 		populateInstances(annotations);
 
-		logger.info("Succesfully loaded %s modules", modules.size());
+		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");

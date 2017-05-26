@@ -2,8 +2,6 @@ package appeng.core;
 
 import appeng.api.module.Module;
 import appeng.api.module.ModuleIMCMessageEvent;
-import appeng.core.lib.crash.CrashInfo;
-import appeng.core.lib.crash.ModCrashEnhancement;
 import appeng.core.lib.module.Toposorter;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
@@ -38,11 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AEConfig.VERSION/*, dependencies = AppEng.MOD_DEPENDENCIES*/, acceptedMinecraftVersions = ForgeVersion.mcVersion, guiFactory = "appeng.core.client.gui.config.AEConfigGuiFactory")
+@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION/*, dependencies = AppEng.MOD_DEPENDENCIES*/, acceptedMinecraftVersions = ForgeVersion.mcVersion, guiFactory = "appeng.core.client.gui.config.AEConfigGuiFactory")
 public final class AppEng {
 
 	public static final String MODID = "appliedenergistics3";
 	public static final String NAME = "Applied Energistics 3";
+	public static final String VERSION = "${version}";
 
 	public static final String ASSETS = MODID + ":";
 

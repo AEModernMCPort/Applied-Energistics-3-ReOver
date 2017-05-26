@@ -214,9 +214,6 @@ public final class AppEng {
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		this.configDirectory = new File(event.getModConfigurationDirectory().getPath(), "AppliedEnergistics2");
-		AEConfig.instance = new AEConfig(new File(AppEng.instance().getConfigDirectory(), "AppliedEnergistics2.cfg"));
-
 		fireModulesEvent(event);
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
@@ -365,8 +362,6 @@ public final class AppEng {
 		logger.info("Post Initialization ( started )");
 
 		fireModulesEvent(event);
-
-		AEConfig.instance.save();
 
 		logger.info("Post Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}

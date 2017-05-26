@@ -14,9 +14,10 @@ buildscript {
 repositories {
 	maven { url "https://elix-x.github.io/maven2" }
 	maven { url "http://maven.amadornes.com/" }
-	maven { url = "http://maven.cil.li/" }
+	maven { url "http://maven.cil.li/" }
 	maven { url "http://dvs1.progwml6.com/files/maven" }
 	maven { url "https://minecraft.curseforge.com/api/maven" }
+	maven { url "https://dl.bintray.com/raoulvdberge/dev" }
 	mavenCentral()
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -34,6 +35,7 @@ dependencies {
 	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
 	deobfCompile "embers:embers:$embers_version"
+	compile "refinedstorage:refinedstorage:$rs_version"
 	compile "mezz.jei:jei_$minecraft_version:$jei_version"
 	deobfCompile "waila:Waila:$waila_version"
 }

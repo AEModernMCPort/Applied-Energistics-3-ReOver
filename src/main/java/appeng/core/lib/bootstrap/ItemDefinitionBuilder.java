@@ -3,7 +3,6 @@ package appeng.core.lib.bootstrap;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.item.IStateItem;
 import appeng.core.lib.definitions.ItemDefinition;
-import appeng.core.lib.util.Platform;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -17,13 +16,14 @@ public class ItemDefinitionBuilder<I extends Item>
 	@SideOnly(Side.CLIENT)
 	private ItemRendering itemRendering;
 
-	private CreativeTabs creativeTab = CreativeTab.instance;
+	//TODO 1.11.2-ReOver - :P
+	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
 	ItemDefinitionBuilder(FeatureFactory factory, ResourceLocation registryName, I item){
 		super(factory, registryName, item);
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			itemRendering = new ItemRendering();
-		}
+		}*/
 	}
 
 	@Override
@@ -34,9 +34,9 @@ public class ItemDefinitionBuilder<I extends Item>
 
 	@Override
 	public ItemDefinitionBuilder<I> rendering(ItemRenderingCustomizer callback){
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			customizeForClient(callback);
-		}
+		}*/
 
 		return this;
 	}
@@ -51,9 +51,9 @@ public class ItemDefinitionBuilder<I extends Item>
 		item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 		item.setCreativeTab(creativeTab);
 
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			itemRendering.apply(factory, item);
-		}
+		}*/
 
 		ItemDefinition definition = new ItemDefinition(registryName, item);
 

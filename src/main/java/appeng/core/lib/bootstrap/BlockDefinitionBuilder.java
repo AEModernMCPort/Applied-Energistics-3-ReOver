@@ -1,9 +1,7 @@
 package appeng.core.lib.bootstrap;
 
 import appeng.api.definitions.IBlockDefinition;
-import appeng.core.lib.block.AEBaseTileBlock;
 import appeng.core.lib.definitions.BlockDefinition;
-import appeng.core.lib.util.Platform;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,7 +14,8 @@ public class BlockDefinitionBuilder<B extends Block>
 		extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>>
 		implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
 
-	private CreativeTabs creativeTab = CreativeTab.instance;
+	//TODO 1.11.2-ReOver - :P
+	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
 	private IItemBlockCustomizer itemBlock = null;
 
@@ -29,16 +28,16 @@ public class BlockDefinitionBuilder<B extends Block>
 	BlockDefinitionBuilder(FeatureFactory factory, ResourceLocation id, B block){
 		super(factory, id, block);
 
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			blockRendering = new BlockRendering();
 			itemRendering = new ItemRendering();
-		}
+		}*/
 	}
 
 	public BlockDefinitionBuilder<B> rendering(BlockRenderingCustomizer callback){
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			customizeForClient(callback);
-		}
+		}*/
 
 		return this;
 	}
@@ -67,14 +66,14 @@ public class BlockDefinitionBuilder<B extends Block>
 		block.setCreativeTab(creativeTab);
 		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
-		if(Platform.isClient()){
+		/*if(Platform.isClient()){
 			if(block instanceof AEBaseTileBlock){
 				AEBaseTileBlock tileBlock = (AEBaseTileBlock) block;
 				blockRendering.apply(factory, block, tileBlock.getTileEntityClass());
 			} else {
 				blockRendering.apply(factory, block, null);
 			}
-		}
+		}*/
 
 		BlockDefinition definition = new BlockDefinition<B>(registryName, block);
 		if(!block.getBlockState().getProperties().isEmpty()){

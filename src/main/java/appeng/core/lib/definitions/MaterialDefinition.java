@@ -3,7 +3,7 @@ package appeng.core.lib.definitions;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.api.definitions.sub.IItemSubDefinition;
-import appeng.api.item.IStateItem;
+import appeng.api.item.IStateItemState;
 import appeng.core.AppEngCore;
 import appeng.core.api.items.IItemMaterial;
 import appeng.core.api.material.Material;
@@ -38,7 +38,7 @@ public class MaterialDefinition<M extends Material> extends Definition<M> implem
 	}
 
 	@Override
-	public <S extends IStateItem.State<I>, I extends Item & IItemMaterial<I>, D extends IItemSubDefinition<S, I>> Optional<D> maybeAsSubDefinition(){
+	public <S extends IStateItemState<I>, I extends Item & IItemMaterial<I>, D extends IItemSubDefinition<S, I>> Optional<D> maybeAsSubDefinition(){
 		return (Optional<D>) maybe().map(material -> MaterialDefinition.<I>itemMaterialDefinition().<S, I, IItemSubDefinition<S, I>>maybeSubDefinition().get().withProperty("material", null));
 	}
 

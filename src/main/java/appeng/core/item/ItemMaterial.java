@@ -1,7 +1,8 @@
 package appeng.core.item;
 
 import appeng.api.item.IStateItem;
-import appeng.api.item.IStateItem.State.Property;
+import appeng.api.item.IStateItemState;
+import appeng.api.item.IStateItemState.Property;
 import appeng.core.AppEngCore;
 import appeng.core.api.items.IItemMaterial;
 import appeng.core.api.material.Material;
@@ -31,7 +32,7 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	public static final FMLControlledNamespacedRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();
 
-	public static enum MaterialProperty implements IStateItem.State.Property<Material> {
+	public static enum MaterialProperty implements IStateItemState.Property<Material> {
 
 		INSTANCE;
 
@@ -62,17 +63,17 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	}
 
 	@Override
-	public State<ItemMaterial> getState(ItemStack itemstack){
-		return new State<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getObjectById(itemstack.getMetadata()));
+	public IStateItemState<ItemMaterial> getState(ItemStack itemstack){
+		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getObjectById(itemstack.getMetadata()));
 	}
 
 	@Override
-	public State<ItemMaterial> getDefaultState(){
-		return new State<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getObjectById(0));
+	public IStateItemState<ItemMaterial> getDefaultState(){
+		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getObjectById(0));
 	}
 
 	@Override
-	public ItemStack getItemStack(State<ItemMaterial> state, int amount){
+	public ItemStack getItemStack(IStateItemState<ItemMaterial> state, int amount){
 		return new ItemStack(this, amount, REGISTRY.getId(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
 	}
 
@@ -94,7 +95,7 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	 * @return {@linkplain ItemStack} corresponding to given material containing given amount of items.
 	 */
 	public ItemStack getItemStack(Material material, int amount){
-		return getItemStack(new State<ItemMaterial>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, material), amount);
+		return getItemStack(new IStateItemState<ItemMaterial>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, material), amount);
 	}
 
 	/*

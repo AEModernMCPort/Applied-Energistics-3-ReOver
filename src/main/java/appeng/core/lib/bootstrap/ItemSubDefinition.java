@@ -3,12 +3,12 @@ package appeng.core.lib.bootstrap;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.sub.IItemSubDefinition;
 import appeng.api.item.IStateItem;
-import appeng.api.item.IStateItem.State;
+import appeng.api.item.IStateItemState;
 import appeng.core.lib.definitions.Definition;
 import appeng.core.lib.definitions.ItemDefinition;
 import net.minecraft.item.Item;
 
-public class ItemSubDefinition<S extends IStateItem.State<I>, I extends Item & IStateItem<I>> extends Definition<S>
+public class ItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends Definition<S>
 		implements IItemSubDefinition<S, I> {
 
 	private final ItemDefinition<I> parent;
@@ -51,9 +51,9 @@ public class ItemSubDefinition<S extends IStateItem.State<I>, I extends Item & I
 
 	public static class PropertyWrapper<V> implements ISubDefinitionProperty<V> {
 
-		public final State.Property<V> property;
+		public final IStateItemState.Property<V> property;
 
-		public PropertyWrapper(State.Property<V> property){
+		public PropertyWrapper(IStateItemState.Property<V> property){
 			this.property = property;
 		}
 

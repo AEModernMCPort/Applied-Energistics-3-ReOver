@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.event.*;
  * The only module not built with gradle.
  */
 @Module(AppEngDebug.NAME)
-@Mod(modid = AppEngDebug.MODID, name = AppEngDebug.NAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
+@Mod(modid = AppEngDebug.MODID, name = AppEngDebug.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngDebug {
 
 	public static final String NAME = "debug";

@@ -13,6 +13,9 @@ buildscript {
 }
 repositories {
 	maven { url "https://elix-x.github.io/maven2" }
+	maven { url "http://maven.amadornes.com/" }
+	maven { url = "http://maven.cil.li/" }
+	maven { url "https://minecraft.curseforge.com/api/maven" }
 	mavenCentral()
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -24,6 +27,9 @@ targetCompatibility = java_version
 dependencies {
 	testCompile "junit:junit:4.12"
 	compile "code.elix_x.excore:EXCore:$excore_version-$minecraft_version"
+	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
+	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
+	deobfCompile "li.cil.oc:OpenComputers:$opencomputers_version"
 }
 
 def theName = name

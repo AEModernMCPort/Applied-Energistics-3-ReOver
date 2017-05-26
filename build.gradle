@@ -15,6 +15,7 @@ repositories {
 	maven { url "https://elix-x.github.io/maven2" }
 	maven { url "http://maven.amadornes.com/" }
 	maven { url = "http://maven.cil.li/" }
+	maven { url "http://dvs1.progwml6.com/files/maven" }
 	maven { url "https://minecraft.curseforge.com/api/maven" }
 	mavenCentral()
 }
@@ -32,6 +33,8 @@ dependencies {
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
 	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	deobfCompile "li.cil.oc:OpenComputers:$opencomputers_version"
+	compile "mezz.jei:jei_$minecraft_version:$jei_version"
+	deobfCompile "waila:Waila:$waila_version"
 }
 
 def theName = name

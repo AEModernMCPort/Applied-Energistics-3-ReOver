@@ -32,7 +32,8 @@ dependencies {
 	}
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
 	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
-	deobfCompile "li.cil.oc:OpenComputers:$opencomputers_version"
+	deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
+	deobfCompile "embers:embers:$embers_version"
 	compile "mezz.jei:jei_$minecraft_version:$jei_version"
 	deobfCompile "waila:Waila:$waila_version"
 }

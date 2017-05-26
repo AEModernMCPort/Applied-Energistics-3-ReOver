@@ -68,7 +68,7 @@ public final class AppEng {
 	private File configDirectory;
 
 	public AppEng(){
-		FMLCommonHandler.instance().registerCrashCallable(new ModCrashEnhancement(CrashInfo.MOD_VERSION));
+		
 	}
 
 	@Nonnull

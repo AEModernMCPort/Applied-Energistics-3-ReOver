@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES, acceptedMinecraftVersions = ForgeVersion.mcVersion, guiFactory = "appeng.core.client.gui.config.AEConfigGuiFactory")
+@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
 
 	public static final String MODID = "appliedenergistics3";

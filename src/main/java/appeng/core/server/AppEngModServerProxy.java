@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-public abstract class AppEngModServerProxy extends AppEngModProxy {
+public abstract class AppEngModServerProxy implements AppEngModProxy {
 
 	@Override
 	public void preInit(FMLPreInitializationEvent event){

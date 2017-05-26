@@ -1,14 +1,9 @@
-
 package appeng.core.crafting.api.definitions;
-
-
-import net.minecraft.block.Block;
 
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IDefinitions;
+import net.minecraft.block.Block;
 
-
-public interface ICraftingBlockDefinitions extends IDefinitions<Block, IBlockDefinition<Block>>
-{
+public interface ICraftingBlockDefinitions extends IDefinitions<Block, IBlockDefinition<Block>> {
 
 }

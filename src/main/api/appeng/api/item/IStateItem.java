@@ -1,84 +1,69 @@
-
 package appeng.api.item;
 
+import appeng.api.item.IStateItem.State.Property;
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
+public interface IStateItem<I extends Item & IStateItem<I>> {
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+	boolean isValid(Property property);
 
-import appeng.api.item.IStateItem.State.Property;
+	<V> Property<V> getProperty(String name);
 
+	State<I> getState(ItemStack itemstack);
 
-public interface IStateItem<I extends Item & IStateItem<I>>
-{
-
-	boolean isValid( Property property );
-
-	<V> Property<V> getProperty( String name );
-
-	State<I> getState( ItemStack itemstack );
-
-	ItemStack getItemStack( State<I> state, int amount );
+	ItemStack getItemStack(State<I> state, int amount);
 
 	State<I> getDefaultState();
 
-	public class State<I extends Item & IStateItem<I>>
-	{
+	public class State<I extends Item & IStateItem<I>> {
 
 		private final I item;
 		private final ImmutableMap<Property, ?> properties;
 
-		public State( I item, Map<Property, ?> properties )
-		{
+		public State(I item, Map<Property, ?> properties){
 			this.item = item;
-			this.properties = ImmutableMap.copyOf( properties );
+			this.properties = ImmutableMap.copyOf(properties);
 		}
 
-		public State( I item )
-		{
+		public State(I item){
 			this.item = item;
 			this.properties = ImmutableMap.of();
 		}
 
-		public I getItem()
-		{
+		public I getItem(){
 			return item;
 		}
 
-		public ItemStack toItemStack( int amount )
-		{
-			return item.getItemStack( this, amount );
+		public ItemStack toItemStack(int amount){
+			return item.getItemStack(this, amount);
 		}
 
-		public Map<Property, ?> getProperties()
-		{
+		public Map<Property, ?> getProperties(){
 			return properties;
 		}
 
-		public <V> V getValue( Property<V> property )
-		{
-			return (V) properties.get( property );
+		public <V> V getValue(Property<V> property){
+			return (V) properties.get(property);
 		}
 
-		public <V> State withProperty( Property<V> property, V value )
-		{
-			assert item.isValid( property ) && property.isValid( value );
+		public <V> State withProperty(Property<V> property, V value){
+			assert item.isValid(property) && property.isValid(value);
 			Map map = new HashMap<>();
-			map.putAll( properties );
-			map.put( property, value );
-			return (State) new State( item, map );
+			map.putAll(properties);
+			map.put(property, value);
+			return (State) new State(item, map);
 		}
 
-		public interface Property<V>
-		{
+		public interface Property<V> {
 
 			String getName();
 
-			boolean isValid( V value );
+			boolean isValid(V value);
 
 		}
 

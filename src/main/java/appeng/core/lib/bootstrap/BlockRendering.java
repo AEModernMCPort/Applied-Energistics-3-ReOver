@@ -1,9 +1,10 @@
-
 package appeng.core.lib.bootstrap;
 
-
-import java.util.function.BiFunction;
-
+import appeng.core.lib.block.AEBaseTileBlock;
+import appeng.core.lib.bootstrap.components.BlockColorComponent;
+import appeng.core.lib.bootstrap.components.StateMapperComponent;
+import appeng.core.lib.bootstrap.components.TesrComponent;
+import appeng.core.lib.client.render.model.CachingRotatingBakedModel;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -13,88 +14,70 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import appeng.core.lib.block.AEBaseTileBlock;
-import appeng.core.lib.bootstrap.components.BlockColorComponent;
-import appeng.core.lib.bootstrap.components.StateMapperComponent;
-import appeng.core.lib.bootstrap.components.TesrComponent;
-import appeng.core.lib.client.render.model.CachingRotatingBakedModel;
+import java.util.function.BiFunction;
 
+class BlockRendering implements IBlockRendering {
 
-class BlockRendering implements IBlockRendering
-{
-
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	private BiFunction<ModelResourceLocation, IBakedModel, IBakedModel> modelCustomizer;
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	private IBlockColor blockColor;
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	private TileEntitySpecialRenderer<?> tesr;
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	private IStateMapper stateMapper;
 
-	@SideOnly( Side.CLIENT )
-	public IBlockRendering modelCustomizer( BiFunction<ModelResourceLocation, IBakedModel, IBakedModel> customizer )
-	{
+	@SideOnly(Side.CLIENT)
+	public IBlockRendering modelCustomizer(BiFunction<ModelResourceLocation, IBakedModel, IBakedModel> customizer){
 		modelCustomizer = customizer;
 		return this;
 	}
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	@Override
-	public IBlockRendering blockColor( IBlockColor blockColor )
-	{
+	public IBlockRendering blockColor(IBlockColor blockColor){
 		this.blockColor = blockColor;
 		return this;
 	}
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	@Override
-	public IBlockRendering tesr( TileEntitySpecialRenderer<?> tesr )
-	{
+	public IBlockRendering tesr(TileEntitySpecialRenderer<?> tesr){
 		this.tesr = tesr;
 		return this;
 	}
 
-	@SideOnly( Side.CLIENT )
+	@SideOnly(Side.CLIENT)
 	@Override
-	public IBlockRendering stateMapper( IStateMapper mapper )
-	{
+	public IBlockRendering stateMapper(IStateMapper mapper){
 		this.stateMapper = mapper;
 		return this;
 	}
 
-	void apply( FeatureFactory registry, Block block, Class<?> tileEntityClass )
-	{
-		if( tesr != null )
-		{
-			if( tileEntityClass == null )
-			{
-				throw new IllegalStateException( "Tried to register a TESR for " + block + " even though no tile entity has been specified." );
+	void apply(FeatureFactory registry, Block block, Class<?> tileEntityClass){
+		if(tesr != null){
+			if(tileEntityClass == null){
+				throw new IllegalStateException("Tried to register a TESR for " + block + " even though no tile entity has been specified.");
 			}
-			registry.addBootstrapComponent( new TesrComponent( tileEntityClass, tesr ) );
+			registry.addBootstrapComponent(new TesrComponent(tileEntityClass, tesr));
 		}
 
-		if( modelCustomizer != null )
-		{
-			registry.modelOverrideComponent.addOverride( block.getRegistryName().getResourcePath(), modelCustomizer );
-		}
-		else if( block instanceof AEBaseTileBlock )
-		{
+		if(modelCustomizer != null){
+			registry.modelOverrideComponent.addOverride(block.getRegistryName().getResourcePath(), modelCustomizer);
+		} else if(block instanceof AEBaseTileBlock){
 			// This is a default rotating model if the base-block uses an AE tile entity which exposes UP/FRONT as extended props
-			registry.modelOverrideComponent.addOverride( block.getRegistryName().getResourcePath(), ( l, m ) -> new CachingRotatingBakedModel( m ) );
+			registry.modelOverrideComponent.addOverride(block.getRegistryName().getResourcePath(), (l, m) -> new CachingRotatingBakedModel(m));
 		}
 
-		if( blockColor != null )
-		{
-			registry.addBootstrapComponent( new BlockColorComponent( block, blockColor ) );
+		if(blockColor != null){
+			registry.addBootstrapComponent(new BlockColorComponent(block, blockColor));
 		}
 
-		if( stateMapper != null )
-		{
-			registry.addBootstrapComponent( new StateMapperComponent( block, stateMapper ) );
+		if(stateMapper != null){
+			registry.addBootstrapComponent(new StateMapperComponent(block, stateMapper));
 		}
 	}
 }

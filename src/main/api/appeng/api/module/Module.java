@@ -1,9 +1,7 @@
-
 package appeng.api.module;
 
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,22 +9,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.regex.Pattern;
 
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotate module class with this annotation and make sure it has no-args constructor to add it to AE.
- * 
- * @author Elix_x
  *
+ * @author Elix_x
  */
-@Retention( RUNTIME )
-@Target( TYPE )
-public @interface Module
-{
+@Retention(RUNTIME)
+@Target(TYPE)
+public @interface Module {
+
 	/**
-	 * 
 	 * @return Name of the module
 	 */
 	String value();
@@ -63,9 +58,8 @@ public @interface Module
 	 * <li>"hard" will make that dependency hard, aka your module will load if and only if it is there.
 	 * <li>"crash" will make the game crash if the dependency is not there instead of just not loading your module. Use with "hard".
 	 * </ul>
-	 * 
+	 *
 	 * @return module's dependencies
-	 * 
 	 * @author Elix_x
 	 */
 	String dependencies() default "";
@@ -75,13 +69,13 @@ public @interface Module
 	 * <br>
 	 * Field <b>must be static</b> unless it is located inside module class.
 	 * Works with private and/or final fields.
-	 * 
+	 *
 	 * @author Elix_x
 	 */
-	@Retention( RetentionPolicy.RUNTIME )
-	@Target( ElementType.FIELD )
-	public @interface Instance
-	{
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public @interface Instance {
+
 		/**
 		 * @return Name or class of module to inject it's instance.
 		 */
@@ -92,14 +86,12 @@ public @interface Module
 	/**
 	 * Marks the associated method as handling an FML lifecycle event redirected from AE.
 	 * For more details and list of events, see {@link EventHandler}.
-	 * 
-	 * @author Elix_x
 	 *
+	 * @author Elix_x
 	 */
-	@Retention( RetentionPolicy.RUNTIME )
-	@Target( ElementType.METHOD )
-	public @interface ModuleEventHandler
-	{
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
+	public @interface ModuleEventHandler {
 
 	}
 

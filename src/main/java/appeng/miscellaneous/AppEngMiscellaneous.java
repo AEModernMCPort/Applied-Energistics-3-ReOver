@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 
 @Module(IMiscellaneous.NAME)
-@Mod(modid = AppEngMiscellaneous.MODID, name = AppEngMiscellaneous.MODNAME, version = AEConfig.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
+@Mod(modid = AppEngMiscellaneous.MODID, name = AppEngMiscellaneous.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngMiscellaneous implements IMiscellaneous {
 
 	@Module.Instance(NAME)

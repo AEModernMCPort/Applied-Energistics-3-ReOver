@@ -5,7 +5,6 @@ import appeng.api.item.IStateItem.State.Property;
 import appeng.core.AppEngCore;
 import appeng.core.api.items.IItemMaterial;
 import appeng.core.api.material.Material;
-import appeng.core.lib.item.AEBaseItem;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -28,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class ItemMaterial extends AEBaseItem implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
+public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
 
 	public static final FMLControlledNamespacedRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();
 

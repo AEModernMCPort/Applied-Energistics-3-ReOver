@@ -27,6 +27,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -56,6 +58,8 @@ public final class AppEng {
 					+ net.minecraftforge.common.ForgeVersion.revisionVersion + '.' // revisionVersion
 					+ net.minecraftforge.common.ForgeVersion.buildVersion + ",)"; // buildVersion
 
+	public static final Logger logger = LogManager.getLogger(NAME);
+
 	@Mod.Instance(MODID)
 	private static AppEng INSTANCE;
 
@@ -68,7 +72,7 @@ public final class AppEng {
 	private File configDirectory;
 
 	public AppEng(){
-		
+
 	}
 
 	@Nonnull
@@ -205,17 +209,17 @@ public final class AppEng {
 
 		populateInstances(annotations);
 
-		AELog.info("Succesfully loaded %s modules", modules.size());
+		logger.info("Succesfully loaded %s modules", modules.size());
 
 		final Stopwatch watch = Stopwatch.createStarted();
-		AELog.info("Pre Initialization ( started )");
+		logger.info("Pre Initialization ( started )");
 
 		this.configDirectory = new File(event.getModConfigurationDirectory().getPath(), "AppliedEnergistics2");
 		AEConfig.instance = new AEConfig(new File(AppEng.instance().getConfigDirectory(), "AppliedEnergistics2.cfg"));
 
 		fireModulesEvent(event);
 
-		AELog.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
+		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
 
 	/**
@@ -348,23 +352,23 @@ public final class AppEng {
 	@EventHandler
 	private void init(final FMLInitializationEvent event){
 		final Stopwatch start = Stopwatch.createStarted();
-		AELog.info("Initialization ( started )");
+		logger.info("Initialization ( started )");
 
 		fireModulesEvent(event);
 
-		AELog.info("Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
+		logger.info("Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
 
 	@EventHandler
 	private void postInit(final FMLPostInitializationEvent event){
 		final Stopwatch start = Stopwatch.createStarted();
-		AELog.info("Post Initialization ( started )");
+		logger.info("Post Initialization ( started )");
 
 		fireModulesEvent(event);
 
 		AEConfig.instance.save();
 
-		AELog.info("Post Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
+		logger.info("Post Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
 
 	@EventHandler

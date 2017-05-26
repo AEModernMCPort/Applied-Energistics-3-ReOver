@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION/*, dependencies = AppEng.MOD_DEPENDENCIES*/, acceptedMinecraftVersions = ForgeVersion.mcVersion, guiFactory = "appeng.core.client.gui.config.AEConfigGuiFactory")
+@Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES, acceptedMinecraftVersions = ForgeVersion.mcVersion, guiFactory = "appeng.core.client.gui.config.AEConfigGuiFactory")
 public final class AppEng {
 
 	public static final String MODID = "appliedenergistics3";
@@ -45,17 +45,7 @@ public final class AppEng {
 
 	public static final String ASSETS = MODID + ":";
 
-	public static final String MOD_DEPENDENCIES =
-			// a few mods, AE should load after, probably.
-			// required-after:AppliedEnergistics2API|all;
-			// "after:gregtech_addon;after:Mekanism;after:IC2;after:ThermalExpansion;after:BuildCraft|Core;" +
-
-			// depend on version of forge used for build.
-			"after:appliedenergistics2-core;" + "required-after:Forge@[" // require forge.
-					+ net.minecraftforge.common.ForgeVersion.majorVersion + '.' // majorVersion
-					+ net.minecraftforge.common.ForgeVersion.minorVersion + '.' // minorVersion
-					+ net.minecraftforge.common.ForgeVersion.revisionVersion + '.' // revisionVersion
-					+ net.minecraftforge.common.ForgeVersion.buildVersion + ",)"; // buildVersion
+	public static final String DEPENDENCIES = "";
 
 	public static final Logger logger = LogManager.getLogger(NAME);
 

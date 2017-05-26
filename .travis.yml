@@ -1,0 +1,65 @@
+language: java
+jdk:
+  - oraclejdk8
+  
+env:
+  - GITWEBPAGES_USER="#REPLACE#"
+  - GITWEBPAGES_NAME="#REPLACE#"
+  - GITWEBPAGES_GROUP="#REPLACE#"
+  - CURSEFORGE_NAME="#REPLACE#"
+  - CURSEFORGE_PROJECTID="#REPLACE#"
+
+before_install:
+  - chmod +x install.sh
+  - chmod +x githubreleases.sh
+  - chmod +x gitwebpages.sh
+  - chmod +x curseforge.sh
+  - export GRADLE_HOME=$(./install.sh "https://downloads.gradle.org/distributions/" "gradle-3.2.1-bin.zip" "gradle-3.2.1")
+  - export PATH=$GRADLE_HOME/bin:$PATH
+  - export GROOVY_HOME=$(./install.sh "https://dl.bintray.com/groovy/maven/" "apache-groovy-binary-2.4.7.zip" "groovy-2.4.7")
+  - export PATH=$GROOVY_HOME/bin:$PATH
+  - gradle setupCIWorkspace
+  
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+
+# deploy:
+  # - provider: script
+    # script: /bin/bash ./githubreleases.sh "obfuscate"
+    # skip_cleanup: true
+    # on:
+      # tags: true
+  # - provider: releases
+    # api_key:
+      # secure: $GITACCESSTOKEN
+    # file_glob: true
+    # file: "build/libs/*.jar"
+    # skip_cleanup: true
+    # on:
+      # tags: true
+  # - provider: script
+    # script: /bin/bash ./githubreleases.sh "deobfuscate"
+    # skip_cleanup: true
+    # on:
+      # tags: true
+  # - provider: script
+    # script: ls build/libs/*
+    # skip_cleanup: true
+    # on:
+      # tags: true
+  # - provider: script
+    # script: /bin/bash ./gitwebpages.sh
+    # skip_cleanup: true
+    # on:
+      # tags: true
+  # - provider: script
+    # script: /bin/bash ./curseforge.sh
+    # skip_cleanup: true
+    # on:
+      # tags: true

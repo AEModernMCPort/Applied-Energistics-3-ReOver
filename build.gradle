@@ -1,0 +1,151 @@
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+repositories {
+	maven { url "https://elix-x.github.io/maven2" }
+	mavenCentral()
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
+
+sourceCompatibility = java_version
+targetCompatibility = java_version
+
+dependencies {
+	testCompile "junit:junit:4.12"
+	compile "code.elix_x.excore:EXCore:$excore_version-$minecraft_version"
+}
+
+def theName = name
+def theDescription = description
+
+archivesBaseName = name
+version = "${version_major}.${version_minor}.${version_patch}"
+if(version_channel != 'release') version += "-$version_channel$build"
+version += "-$minecraft_version"
+group = group
+jar {
+	classifier = "obf"
+	from {
+		zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXCore")})
+    } {
+		include "code/elix_x/excore/utils/**"
+    }
+	from {
+        zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXComms")})
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+}
+
+sourceSets {
+	main.java.srcDir("${project.projectDir}/src/main/api")
+}
+
+/*
+// for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.2"
+}
+*/
+minecraft {
+	mappings = mcp_version
+    version = "$minecraft_version-$forge_version"
+    runDir = "run"
+    
+	replace("@VERSION@", project.version)
+	
+    makeObfSourceJar = false
+}
+
+processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+task generatePom {
+    doLast {
+		def pomFile = "$buildDir/libs/$archivesBaseName-${version}.pom"
+        pom {
+            project {
+                name theName
+				description theDescription
+				url "https://github.com/Elix-x/${theName}"
+                licenses {
+					license {
+						
+					}
+                }
+				developers {
+					developer {
+						name 'Elix X'
+						email 'elix.x.ggl@gmail.com'
+						url 'https://github.com/Elix-x'
+					}
+				}
+				scm {
+					connection "scm:git:git://github.com/Elix-x/${theName}.git"
+					developerConnection "scm:git:ssh://github.com:Elix-x/${theName}.git"
+					url "https://github.com/Elix-x/${theName}/tree/master"
+				}
+            }
+        }.writeTo(pomFile)
+		ant.checksum file: pomFile
+		ant.checksum(file: pomFile, algorithm: 'sha')
+    }
+}
+
+task deobfJar(type: Jar, dependsOn: "jar"){
+	classifier = ""
+	from "build/classes/main", "build/resources/main"
+}
+
+task sourcesJar(type: Jar){
+	classifier = "sources"
+    from sourceSets.main.allJava
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: 'javadoc'){
+	classifier = "javadoc"
+	from "$buildDir/docs/javadoc"
+}
+
+tasks.withType(Jar){ task ->
+    task.doLast {
+		ant.checksum file: task.archivePath
+		ant.checksum(file: task.archivePath, algorithm: 'SHA')
+	}
+}
+
+task postBuild(dependsOn: ['deobfJar', 'sourcesJar', 'javadocJar', 'generatePom']){
+
+}
+
+assemble.finalizedBy postBuild

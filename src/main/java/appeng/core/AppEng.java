@@ -206,7 +206,7 @@ public final class AppEng {
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEPreInitlizationEventImpl());
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
@@ -343,7 +343,7 @@ public final class AppEng {
 		final Stopwatch start = Stopwatch.createStarted();
 		logger.info("Initialization ( started )");
 
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEInitializationEventImpl());
 
 		logger.info("Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
@@ -353,7 +353,7 @@ public final class AppEng {
 		final Stopwatch start = Stopwatch.createStarted();
 		logger.info("Post Initialization ( started )");
 
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEPostInitializationEventImpl());
 
 		logger.info("Post Initialization ( ended after " + start.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
@@ -365,7 +365,7 @@ public final class AppEng {
 		}
 	}
 
-	@EventHandler
+	/*@EventHandler
 	private void serverAboutToStart(final FMLServerAboutToStartEvent event){
 		fireModulesEvent(event);
 	}
@@ -383,5 +383,5 @@ public final class AppEng {
 	@EventHandler
 	private void serverStopped(final FMLServerStoppedEvent event){
 		fireModulesEvent(event);
-	}
+	}*/
 }

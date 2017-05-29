@@ -11,23 +11,23 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
  */
 public class AEStateEventImpl implements AEStateEvent {
 
-	public static class AEBootstrapEvent extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
+	public static class AEBootstrapEventImpl extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
 
 	}
 
-	public static class AEPreInitlizationEvent extends AEStateEventImpl implements AEStateEvent.AEPreInitlizationEvent {
+	public static class AEPreInitlizationEventImpl extends AEStateEventImpl implements AEStateEvent.AEPreInitlizationEvent {
 
 	}
 
-	public static class AEInitializationEvent extends AEStateEventImpl implements AEStateEvent.AEInitializationEvent {
+	public static class AEInitializationEventImpl extends AEStateEventImpl implements AEStateEvent.AEInitializationEvent {
 
 	}
 
-	public static class AEPostInitializationEvent extends AEStateEventImpl implements AEStateEvent.AEPostInitializationEvent {
+	public static class AEPostInitializationEventImpl extends AEStateEventImpl implements AEStateEvent.AEPostInitializationEvent {
 
 	}
 
-	public static class AELoadCompleteEvent extends AEStateEventImpl implements AEStateEvent.AELoadCompleteEvent {
+	public static class AELoadCompleteEventImpl extends AEStateEventImpl implements AEStateEvent.AELoadCompleteEvent {
 
 	}
 

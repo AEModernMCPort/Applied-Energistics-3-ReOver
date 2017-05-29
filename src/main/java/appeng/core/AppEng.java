@@ -1,7 +1,7 @@
 package appeng.core;
 
 import appeng.api.module.Module;
-import appeng.api.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.ModuleIMCMessageEvent;
 import appeng.core.lib.module.Toposorter;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;

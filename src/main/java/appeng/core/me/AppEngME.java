@@ -4,7 +4,7 @@ import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.api.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.ModuleIMCMessageEvent;
 import appeng.core.api.material.Material;
 import appeng.core.lib.bootstrap.FeatureFactory;
 import appeng.core.me.api.IME;

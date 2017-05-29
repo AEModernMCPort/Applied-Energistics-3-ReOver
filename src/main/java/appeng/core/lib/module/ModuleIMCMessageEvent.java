@@ -1,15 +1,16 @@
-package appeng.api.module;
+package appeng.core.lib.module;
 
+import appeng.api.module.AEStateEvent;
 import net.minecraftforge.fml.common.event.FMLEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 /**
- * Fired to the module when {@linkplain IMCMessage} is fired to AE, with {@linkplain IMCMessage#key} representing name of the module.
+ * Implementation of {@linkplain AEStateEvent.ModuleIMCMessageEvent}.
  *
  * @author Elix_x
  */
-public class ModuleIMCMessageEvent extends FMLEvent {
+public class ModuleIMCMessageEvent implements AEStateEvent.ModuleIMCMessageEvent {
 
 	private final IMCMessage message;
 

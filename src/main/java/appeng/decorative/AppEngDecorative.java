@@ -2,6 +2,7 @@ package appeng.decorative;
 
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.lib.module.AEStateEventImpl;
@@ -52,7 +53,7 @@ public class AppEngDecorative implements IDecorative {
 	}
 
 	@ModuleEventHandler
-	public void preInitAE(FMLPreInitializationEvent event){
+	public void preInitAE(AEStateEvent.AEPreInitlizationEvent event){
 		registry = new FeatureFactory();
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
@@ -66,7 +67,7 @@ public class AppEngDecorative implements IDecorative {
 	}
 
 	@ModuleEventHandler
-	public void initAE(final FMLInitializationEvent event){
+	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
 	}
 
@@ -76,7 +77,7 @@ public class AppEngDecorative implements IDecorative {
 	}
 
 	@ModuleEventHandler
-	public void postInitAE(final FMLPostInitializationEvent event){
+	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
 	}
 
@@ -86,7 +87,7 @@ public class AppEngDecorative implements IDecorative {
 	}
 
 	@ModuleEventHandler
-	public void handleIMCEventAE(AEStateEventImpl.ModuleIMCMessageEventImpl event){
+	public void handleIMCEventAE(AEStateEvent.ModuleIMCMessageEvent event){
 
 	}
 
@@ -95,40 +96,40 @@ public class AppEngDecorative implements IDecorative {
 
 	}
 
-	@ModuleEventHandler
+	/*@ModuleEventHandler
 	public void serverAboutToStartAE(FMLServerAboutToStartEvent event){
 
-	}
+	}*/
 
 	@EventHandler
 	public void serverAboutToStartForge(FMLServerAboutToStartEvent event){
 
 	}
 
-	@ModuleEventHandler
+	/*@ModuleEventHandler
 	public void serverStartingAE(FMLServerStartingEvent event){
 
-	}
+	}*/
 
 	@EventHandler
 	public void serverStartingForge(FMLServerStartingEvent event){
 
 	}
 
-	@ModuleEventHandler
+	/*@ModuleEventHandler
 	public void serverStoppingAE(FMLServerStoppingEvent event){
 
-	}
+	}*/
 
 	@EventHandler
 	public void serverStoppingForge(FMLServerStoppingEvent event){
 
 	}
 
-	@ModuleEventHandler
+	/*@ModuleEventHandler
 	public void serverStoppedAE(FMLServerStoppedEvent event){
 
-	}
+	}*/
 
 	@EventHandler
 	public void serverStoppedForge(FMLServerStoppedEvent event){

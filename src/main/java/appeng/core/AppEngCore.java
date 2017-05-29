@@ -2,6 +2,7 @@ package appeng.core;
 
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.api.ICore;
@@ -63,7 +64,7 @@ public class AppEngCore implements ICore {
 	}
 
 	@ModuleEventHandler
-	public void preInit(FMLPreInitializationEvent event){
+	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		registry = new FeatureFactory();
@@ -76,21 +77,21 @@ public class AppEngCore implements ICore {
 	}
 
 	@ModuleEventHandler
-	public void init(FMLInitializationEvent event){
+	public void init(AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
 	}
 
 	@ModuleEventHandler
-	public void postInit(FMLPostInitializationEvent event){
+	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
 	}
 
 	@ModuleEventHandler
-	public void handleIMCEvent(IMCEvent event){
+	public void handleIMCEvent(AEStateEvent.ModuleIMCMessageEvent event){
 
 	}
 
-	@ModuleEventHandler
+	/*@ModuleEventHandler
 	public void serverAboutToStart(FMLServerAboutToStartEvent event){
 
 	}
@@ -108,6 +109,6 @@ public class AppEngCore implements ICore {
 	@ModuleEventHandler
 	public void serverStopped(FMLServerStoppedEvent event){
 
-	}
+	}*/
 
 }

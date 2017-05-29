@@ -25,7 +25,7 @@ public class BlockDefinitionBuilder<B extends Block>
 	@SideOnly(Side.CLIENT)
 	private ItemRendering itemRendering;
 
-	BlockDefinitionBuilder(FeatureFactory factory, ResourceLocation id, B block){
+	public BlockDefinitionBuilder(FeatureFactory factory, ResourceLocation id, B block){
 		super(factory, id, block);
 
 		/*if(Platform.isClient()){

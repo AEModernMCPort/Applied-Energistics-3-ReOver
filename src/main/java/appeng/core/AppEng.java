@@ -2,6 +2,9 @@ package appeng.core;
 
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
+import appeng.core.lib.bootstrap.DefinitionFactory;
+import appeng.core.lib.bootstrap_olde.BlockDefinitionBuilder;
+import appeng.core.lib.definitions.BlockDefinition;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
@@ -11,6 +14,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.block.Block;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -205,15 +210,23 @@ public final class AppEng {
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
 		Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers = new HashMap<>();
-		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
+		AEStateEventImpl.AEBootstrapEventImpl ev;
+		fireModulesEvent(ev = new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
+		ev.registerDefinitionBuilderSupplier(Block.class, Block.class, (registryName, block) -> new BlockDefinitionBuilder<>(null, registryName, block));
+		logger.info(definitionBuilderSuppliers);
+
+		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
+		BlockDefinition blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), Block.class);
+		logger.info(blockBuilder);
+		throw new IllegalArgumentException();
 
 
-		final Stopwatch watch = Stopwatch.createStarted();
+		/*final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
 		fireModulesEvent(new AEStateEventImpl.AEPreInitlizationEventImpl());
 
-		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
+		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");*/
 	}
 
 	/**

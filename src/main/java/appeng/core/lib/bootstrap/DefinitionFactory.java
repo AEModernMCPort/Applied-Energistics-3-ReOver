@@ -15,7 +15,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 
 	private ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
 
-	public DefinitionFactory(Map<Pair<Class, Class>, BiFunction<ResourceLocation, ?, DefinitionBuilder>> definitionBuilderSuppliers){
+	public DefinitionFactory(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
 		this.definitionBuilderSuppliers = ImmutableMap.copyOf(definitionBuilderSuppliers);
 	}
 

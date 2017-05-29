@@ -20,11 +20,15 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	}
 
 	private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> getBuilderProvider(){
-		return definitionBuilderSuppliers.get(new ImmutablePair<>(new TypeToken<T>() {}.getRawType(), new TypeToken<I>(){}.getRawType()));
+		System.out.println("Def - " + new TypeToken<T>(getClass()) {}.getRawType());
+		System.out.println("In - " + new TypeToken<I>(getClass()) {}.getRawType());
+		return definitionBuilderSuppliers.get(new ImmutablePair<>(new TypeToken<T>(getClass()) {}.getRawType(), new TypeToken<I>(getClass()){}.getRawType()));
 	}
 
 	@Override
 	public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, I input){
+		System.out.println("Def - " + new TypeToken<T>(getClass()) {}.getRawType());
+		System.out.println("In - " + new TypeToken<I>(getClass()) {}.getRawType());
 		return this.<T, D, B, I>getBuilderProvider().apply(registryName, input);
 	}
 

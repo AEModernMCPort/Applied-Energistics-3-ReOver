@@ -212,7 +212,7 @@ public final class AppEng {
 		Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers = new HashMap<>();
 		AEStateEventImpl.AEBootstrapEventImpl ev;
 		fireModulesEvent(ev = new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
-		ev.registerDefinitionBuilderSupplier(Block.class, Block.class, (registryName, block) -> new BlockDefinitionBuilder<>(null, registryName, block));
+		ev.<Block, BlockDefinition, BlockDefinitionBuilder, Block>registerDefinitionBuilderSupplier(Block.class, Block.class, (registryName, block) -> new BlockDefinitionBuilder<>(null, registryName, block));
 		logger.info(definitionBuilderSuppliers);
 
 		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);

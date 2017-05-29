@@ -1,5 +1,6 @@
 package appeng.core;
 
+import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
@@ -89,13 +90,13 @@ public final class AppEng {
 		return configDirectory;
 	}
 
-	private void fireModulesEvent(final FMLEvent event){
+	private void fireModulesEvent(final AEStateEvent event){
 		for(String name : moduleOrder){
 			fireModuleEvent(name, event);
 		}
 	}
 
-	private <M> void fireModuleEvent(M module, final FMLEvent event){
+	private <M> void fireModuleEvent(M module, final AEStateEvent event){
 		if(module instanceof String){
 			module = getModule((String) module);
 		}

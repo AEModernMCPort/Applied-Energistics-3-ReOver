@@ -1,8 +1,17 @@
 package appeng.core.lib.module;
 
+import appeng.api.bootstrap.DefinitionBuilder;
+import appeng.api.definitions.IDefinition;
 import appeng.api.module.AEStateEvent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * Implementations of {@linkplain AEStateEvent}s.
@@ -12,6 +21,17 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEBootstrapEventImpl extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
+
+		private Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
+
+		public AEBootstrapEventImpl(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
+		}
+
+		@Override
+		public <T, D extends IDefinition<T>, B extends DefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, BiFunction<ResourceLocation, I, B> builderSupplier){
+			definitionBuilderSuppliers.put(new ImmutablePair<>(defType, inputType), builderSupplier);
+		}
 
 	}
 

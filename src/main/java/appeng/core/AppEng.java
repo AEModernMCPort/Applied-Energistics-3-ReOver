@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -202,6 +203,10 @@ public final class AppEng {
 		populateInstances(annotations);
 
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
+
+		Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers = new HashMap<>();
+		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
+
 
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");

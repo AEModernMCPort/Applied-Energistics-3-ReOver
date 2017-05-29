@@ -1,7 +1,7 @@
 package appeng.core;
 
 import appeng.api.module.Module;
-import appeng.core.lib.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
@@ -360,7 +360,7 @@ public final class AppEng {
 	@EventHandler
 	private void handleIMCEvent(final FMLInterModComms.IMCEvent event){
 		for(IMCMessage message : event.getMessages()){
-			fireModuleEvent(message.key, new ModuleIMCMessageEvent(message));
+			fireModuleEvent(message.key, new AEStateEventImpl.ModuleIMCMessageEventImpl(message));
 		}
 	}
 

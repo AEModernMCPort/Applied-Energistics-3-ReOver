@@ -4,7 +4,7 @@ import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.AppEng;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
@@ -86,7 +86,7 @@ public class AppEngDecorative implements IDecorative {
 	}
 
 	@ModuleEventHandler
-	public void handleIMCEventAE(ModuleIMCMessageEvent event){
+	public void handleIMCEventAE(AEStateEventImpl.ModuleIMCMessageEventImpl event){
 
 	}
 

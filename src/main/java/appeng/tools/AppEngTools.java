@@ -4,7 +4,7 @@ import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
 import appeng.core.lib.bootstrap.FeatureFactory;
@@ -79,7 +79,7 @@ public class AppEngTools implements ITools {
 	}
 
 	@ModuleEventHandler
-	public void handleIMCEventAE(ModuleIMCMessageEvent event){
+	public void handleIMCEventAE(AEStateEventImpl.ModuleIMCMessageEventImpl event){
 
 	}
 

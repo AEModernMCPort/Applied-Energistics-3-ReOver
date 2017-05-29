@@ -4,7 +4,7 @@ import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.ModuleIMCMessageEvent;
+import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.bootstrap.FeatureFactory;
 import appeng.core.worldgen.api.IWorldGen;
 import appeng.core.worldgen.definitions.WorldGenBlockDefinitions;
@@ -61,7 +61,7 @@ public class AppEngWorldGen implements IWorldGen {
 	}
 
 	@ModuleEventHandler
-	public void handleIMCEvent(ModuleIMCMessageEvent event){
+	public void handleIMCEvent(AEStateEventImpl.ModuleIMCMessageEventImpl event){
 
 	}
 

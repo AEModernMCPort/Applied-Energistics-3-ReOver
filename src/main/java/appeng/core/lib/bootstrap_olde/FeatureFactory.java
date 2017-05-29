@@ -2,6 +2,7 @@ package appeng.core.lib.bootstrap_olde;
 
 import appeng.api.definitions.IDefinitionsProvider;
 import appeng.api.definitions.IItemDefinition;
+import appeng.api.module.AEStateEvent;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
 import appeng.core.lib.bootstrap_olde.components.ModelOverrideComponent;
@@ -15,9 +16,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -138,16 +136,16 @@ public class FeatureFactory {
 		this.bootstrapComponents.add(component);
 	}
 
-	public void preInit(FMLPreInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.preInit(event.getSide()));
+	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+		this.bootstrapComponents.forEach(component -> component.preInit(null));
 	}
 
-	public void init(FMLInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.init(event.getSide()));
+	public void init(AEStateEvent.AEInitializationEvent event){
+		this.bootstrapComponents.forEach(component -> component.init(null));
 	}
 
-	public void postInit(FMLPostInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.postInit(event.getSide()));
+	public void postInit(AEStateEvent.AEPostInitializationEvent event){
+		this.bootstrapComponents.forEach(component -> component.postInit(null));
 	}
 
 }

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extends DefinitionBuilder>
+public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extends DefinitionBuilder<I, T, D, B>>
 		implements IDefinitionBuilder<T, D, B> {
 
 	protected final FeatureFactory factory;

@@ -84,8 +84,8 @@ public @interface Module {
 	}
 
 	/**
-	 * Marks the associated method as handling an FML lifecycle event redirected from AE.
-	 * For more details and list of events, see {@link EventHandler}.
+	 * Marks the associated method as handling an AE lifecycle event redirected from AE.
+	 * Works similarly to {@link EventHandler}. For full list of events, check out {@linkplain AEStateEvent}.
 	 *
 	 * @author Elix_x
 	 */

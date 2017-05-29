@@ -4,13 +4,12 @@ import appeng.api.bootstrap.DefinitionBuilder;
 import appeng.api.definitions.IDefinition;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
-import javafx.util.Pair;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory {
 
@@ -26,6 +25,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 
 	@Override
 	public <T, D extends IDefinition<T>, B extends DefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, I input){
-		return (B) getBuilderProvider().apply(registryName, input);
+		return this.<T, D, B, I>getBuilderProvider().apply(registryName, input);
 	}
+
 }

@@ -4,6 +4,11 @@ import appeng.api.module.AEStateEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
+/**
+ * Implementations of {@linkplain AEStateEvent}s.
+ *
+ * @author Elix_x
+ */
 public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEBootstrapEvent extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
@@ -25,7 +30,7 @@ public class AEStateEventImpl implements AEStateEvent {
 	public static class AELoadCompleteEvent extends AEStateEventImpl implements AEStateEvent.AELoadCompleteEvent {
 
 	}
-	
+
 	/**
 	 * Implementation of {@linkplain AEStateEvent.ModuleIMCMessageEvent}.
 	 *

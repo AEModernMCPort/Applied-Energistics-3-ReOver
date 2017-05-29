@@ -7,4 +7,24 @@ package appeng.api.module;
  */
 public interface AEStateEvent {
 
+	public interface AEBootstrapEvent {
+
+	}
+
+	public interface AEPreInitlizationEvent {
+
+	}
+
+	public interface AEInitializationEvent {
+
+	}
+
+	public interface AEPostInitializationEvent {
+
+	}
+
+	public interface AELoadCompleteEvent {
+
+	}
+
 }

@@ -4,7 +4,7 @@ import appeng.api.definitions.IDefinition;
 
 import java.util.function.Consumer;
 
-public interface DefinitionBuilder<T, D extends IDefinition<T>, B extends DefinitionBuilder<T, D, B>> {
+public interface IDefinitionBuilder<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>> {
 
 	B build(Consumer<D> callback);
 

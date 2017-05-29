@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
-import appeng.api.bootstrap.DefinitionBuilder;
+import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IItemDefinition;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
  * The item is only registered once build is called.
  */
 public interface IItemBuilder<I extends Item, II extends IItemBuilder<I, II>>
-		extends DefinitionBuilder<I, IItemDefinition<I>, II> {
+		extends IDefinitionBuilder<I, IItemDefinition<I>, II> {
 
 	II creativeTab(CreativeTabs tab);
 

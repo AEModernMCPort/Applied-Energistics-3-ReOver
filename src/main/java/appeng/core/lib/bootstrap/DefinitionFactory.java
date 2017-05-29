@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap;
 
-import appeng.api.bootstrap.DefinitionBuilder;
+import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
@@ -19,12 +19,12 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 		this.definitionBuilderSuppliers = ImmutableMap.copyOf(definitionBuilderSuppliers);
 	}
 
-	private <T, D extends IDefinition<T>, B extends DefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> getBuilderProvider(){
+	private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> getBuilderProvider(){
 		return definitionBuilderSuppliers.get(new ImmutablePair<>(new TypeToken<T>() {}.getRawType(), new TypeToken<I>(){}.getRawType()));
 	}
 
 	@Override
-	public <T, D extends IDefinition<T>, B extends DefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, I input){
+	public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, I input){
 		return this.<T, D, B, I>getBuilderProvider().apply(registryName, input);
 	}
 

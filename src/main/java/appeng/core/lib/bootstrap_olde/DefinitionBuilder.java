@@ -1,5 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
+import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
 import appeng.core.lib.bootstrap_olde.components.InitComponent;
 import appeng.core.lib.bootstrap_olde.components.PostInitComponent;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extends DefinitionBuilder>
-		implements appeng.api.bootstrap.DefinitionBuilder<T, D, B> {
+		implements IDefinitionBuilder<T, D, B> {
 
 	protected final FeatureFactory factory;
 

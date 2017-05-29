@@ -5,9 +5,8 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.api.material.Material;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.spatial.api.ISpatial;
 import appeng.core.spatial.definitions.*;
 import net.minecraft.block.Block;
@@ -15,7 +14,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.fml.common.event.*;
 
 @Module(ISpatial.NAME)
 public class AppEngSpatial implements ISpatial {

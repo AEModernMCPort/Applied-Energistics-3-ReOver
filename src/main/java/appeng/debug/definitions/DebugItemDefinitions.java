@@ -1,7 +1,7 @@
 package appeng.debug.definitions;
 
 import appeng.api.definitions.IItemDefinition;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.item.Item;
 

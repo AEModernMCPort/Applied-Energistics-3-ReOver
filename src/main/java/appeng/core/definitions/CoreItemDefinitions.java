@@ -4,7 +4,7 @@ import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreItemDefinitions;
 import appeng.core.item.ItemMaterial;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

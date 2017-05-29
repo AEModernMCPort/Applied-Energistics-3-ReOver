@@ -1,7 +1,7 @@
 package appeng.tools.definitions;
 
 import appeng.api.definitions.IItemDefinition;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.tools.api.definitions.IToolsItemDefinitions;
 import net.minecraft.item.Item;

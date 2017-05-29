@@ -5,8 +5,7 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.AEStateEventImpl;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.worldgen.api.IWorldGen;
 import appeng.core.worldgen.definitions.WorldGenBlockDefinitions;
 import appeng.core.worldgen.definitions.WorldGenItemDefinitions;
@@ -14,7 +13,6 @@ import appeng.core.worldgen.definitions.WorldGenTileDefinitions;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.event.*;
 
 @Module(IWorldGen.NAME)
 public class AppEngWorldGen implements IWorldGen {

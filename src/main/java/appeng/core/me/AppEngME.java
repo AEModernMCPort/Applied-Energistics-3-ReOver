@@ -5,15 +5,13 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
-import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.api.material.Material;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.me.api.IME;
 import appeng.core.me.definitions.*;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 
 @Module(IME.NAME)

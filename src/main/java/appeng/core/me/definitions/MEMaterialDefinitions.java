@@ -2,7 +2,7 @@ package appeng.core.me.definitions;
 
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.api.material.Material;
-import appeng.core.lib.bootstrap.FeatureFactory;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMEMaterialDefinitions;
 

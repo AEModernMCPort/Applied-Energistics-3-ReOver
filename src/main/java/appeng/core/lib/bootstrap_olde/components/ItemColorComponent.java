@@ -1,11 +1,12 @@
 package appeng.core.lib.bootstrap_olde.components;
 
+import appeng.api.bootstrap.BootstrapComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ItemColorComponent implements InitComponent {
+public class ItemColorComponent implements BootstrapComponent.Init {
 
 	private final Item item;
 

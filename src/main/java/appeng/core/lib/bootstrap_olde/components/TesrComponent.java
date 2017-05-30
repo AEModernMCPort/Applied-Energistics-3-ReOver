@@ -1,5 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
+import appeng.api.bootstrap.BootstrapComponent;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -10,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
  *
  * @param <T>
  */
-public class TesrComponent<T extends TileEntity> implements PreInitComponent {
+public class TesrComponent<T extends TileEntity> implements BootstrapComponent.PreInit {
 
 	private final Class<T> tileEntityClass;
 

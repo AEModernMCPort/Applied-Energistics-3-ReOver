@@ -1,10 +1,8 @@
 package appeng.core.lib.bootstrap_olde;
 
+import appeng.api.bootstrap.BootstrapComponent;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
-import appeng.core.lib.bootstrap_olde.components.InitComponent;
-import appeng.core.lib.bootstrap_olde.components.PostInitComponent;
-import appeng.core.lib.bootstrap_olde.components.PreInitComponent;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
@@ -63,9 +61,9 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 		D definition = def(setRegistryName(instance));
 
 		preInitCallbacks.add(t -> register((t).maybe().get()));
-		preInitCallbacks.forEach(consumer -> factory.<PreInitComponent>addBootstrapComponent(side -> consumer.accept(definition)));
-		initCallbacks.forEach(consumer -> factory.<InitComponent>addBootstrapComponent(side -> consumer.accept(definition)));
-		postInitCallbacks.forEach(consumer -> factory.<PostInitComponent>addBootstrapComponent(side -> consumer.accept(definition)));
+		preInitCallbacks.forEach(consumer -> factory.<BootstrapComponent.PreInit>addBootstrapComponent(side -> consumer.accept(definition)));
+		initCallbacks.forEach(consumer -> factory.<BootstrapComponent.Init>addBootstrapComponent(side -> consumer.accept(definition)));
+		postInitCallbacks.forEach(consumer -> factory.<BootstrapComponent.PostInit>addBootstrapComponent(side -> consumer.accept(definition)));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));
 

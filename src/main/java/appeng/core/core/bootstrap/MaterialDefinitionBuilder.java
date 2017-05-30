@@ -16,7 +16,7 @@ public class MaterialDefinitionBuilder<M extends Material>
 
 	private ModelResourceLocation model;
 
-	MaterialDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, M material){
+	public MaterialDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, M material){
 		super(factory, registryName, material);
 	}
 

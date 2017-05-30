@@ -23,7 +23,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 	//TODO 1.11.2-ReOver - :P
 	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
-	ItemDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I item){
+	public ItemDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I item){
 		super(factory, registryName, item);
 		/*if(Platform.isClient()){
 			itemRendering = new ItemRendering();

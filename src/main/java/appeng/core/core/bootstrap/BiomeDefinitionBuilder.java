@@ -13,7 +13,7 @@ public class BiomeDefinitionBuilder<B extends Biome>
 		extends DefinitionBuilder<B, B, IBiomeDefinition<B>, BiomeDefinitionBuilder<B>>
 		implements IBiomeBuilder<B, BiomeDefinitionBuilder<B>> {
 
-	BiomeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, B biome){
+	public BiomeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, B biome){
 		super(factory, registryName, biome);
 	}
 

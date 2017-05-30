@@ -13,7 +13,7 @@ public class EntityDefinitionBuilder<E extends EntityEntry>
 		extends DefinitionBuilder<E, E, IEntityDefinition<E>, EntityDefinitionBuilder<E>>
 		implements IEntityBuilder<E, EntityDefinitionBuilder<E>> {
 
-	EntityDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, E entity){
+	public EntityDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, E entity){
 		super(factory, registryName, entity);
 	}
 

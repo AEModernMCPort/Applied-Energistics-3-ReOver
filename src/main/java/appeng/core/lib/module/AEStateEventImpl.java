@@ -6,6 +6,7 @@ import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.lib.bootstrap.DefinitionFactory;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -43,6 +44,11 @@ public class AEStateEventImpl implements AEStateEvent {
 
 		public AEPreInitializationEventImpl(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
+		}
+
+		@Override
+		public InitializationComponentsHandlerImpl defaultICHandler(){
+			return new InitializationComponentsHandlerImpl();
 		}
 
 		@Override

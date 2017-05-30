@@ -25,6 +25,8 @@ public interface AEStateEvent {
 
 	public interface AEPreInitializationEvent {
 
+		InitializationComponentsHandler defaultICHandler();
+
 		DefinitionFactory factory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandler);
 
 	}

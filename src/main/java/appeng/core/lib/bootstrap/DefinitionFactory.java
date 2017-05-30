@@ -20,10 +20,10 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	private SidedICHProxy sidedInitHandlers;
 	private ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
 
-	public DefinitionFactory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandlers, ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+	public DefinitionFactory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandlers, Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
 		this.commonInitHandler = commonInitHandler;
 		this.sidedInitHandlers = sidedInitHandlers;
-		this.definitionBuilderSuppliers = definitionBuilderSuppliers;
+		this.definitionBuilderSuppliers = ImmutableMap.copyOf(definitionBuilderSuppliers);
 	}
 
 	@Override

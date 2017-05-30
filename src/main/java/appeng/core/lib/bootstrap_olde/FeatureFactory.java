@@ -138,15 +138,15 @@ public class FeatureFactory {
 	}
 
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.preInit(null));
+		this.bootstrapComponents.forEach(component -> component.preInit());
 	}
 
 	public void init(AEStateEvent.AEInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.init(null));
+		this.bootstrapComponents.forEach(component -> component.init());
 	}
 
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
-		this.bootstrapComponents.forEach(component -> component.postInit(null));
+		this.bootstrapComponents.forEach(component -> component.postInit());
 	}
 
 }

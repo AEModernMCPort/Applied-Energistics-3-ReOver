@@ -224,11 +224,10 @@ public final class AppEng {
 		logger.info(definitionBuilderSuppliers);
 
 		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
-		IBlockBuilder blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){});
-		logger.info(blockBuilder);
-		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockGravel()){});
-		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){});
-		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockBeacon()){});
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){}));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockGravel()){}));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){}));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockBeacon()){}));
 		throw new IllegalArgumentException();
 
 

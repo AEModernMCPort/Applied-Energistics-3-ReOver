@@ -8,6 +8,7 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
+import appeng.core.core.bootstrap.*;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.definitions.*;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
@@ -15,6 +16,8 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
@@ -65,6 +68,18 @@ public class AppEngCore implements ICore {
 
 	public FMLControlledNamespacedRegistry<Material> getMaterialRegistry(){
 		return materialRegistry;
+	}
+
+	@ModuleEventHandler
+	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
+		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
+		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
+		//TODO 1.11.2-ReOver - Find something better than Class for tiles & fix NPE
+		event.registerDefinitionBuilderSupplier(Class.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile, null));
+		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, (factory, registryName, biome) -> new BiomeDefinitionBuilder(factory, registryName, biome));
+		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, (factory, registryName, dimensionId) -> new DimensionTypeDefinitionBuilder(factory, registryName, dimensionId));
+
+		event.registerDefinitionBuilderSupplier(Material.class, Material.class, (factory, registryName, material) -> new MaterialDefinitionBuilder(factory, registryName, material));
 	}
 
 	@ModuleEventHandler

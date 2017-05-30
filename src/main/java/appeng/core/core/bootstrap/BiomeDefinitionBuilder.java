@@ -1,9 +1,9 @@
 package appeng.core.core.bootstrap;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBiomeDefinition;
 import appeng.core.api.bootstrap.IBiomeBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap.DefinitionFactory;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.BiomeDefinition;
 import net.minecraft.util.ResourceLocation;

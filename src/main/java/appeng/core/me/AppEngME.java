@@ -5,13 +5,16 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.core.AppEng;
 import appeng.core.api.material.Material;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.me.api.IME;
 import appeng.core.me.definitions.*;
+import appeng.core.me.proxy.MEProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 
 @Module(IME.NAME)
@@ -19,6 +22,9 @@ public class AppEngME implements IME {
 
 	@Module.Instance(NAME)
 	public static final AppEngME INSTANCE = null;
+
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.me.proxy.MEClientProxy", serverSide = "appeng.core.me.proxy.MEServerProxy")
+	public static MEProxy proxy;
 
 	private FeatureFactory registry;
 

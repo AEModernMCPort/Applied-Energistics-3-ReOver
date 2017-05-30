@@ -11,10 +11,12 @@ import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.tools.api.ITools;
 import appeng.tools.definitions.ToolsItemDefinitions;
 import appeng.tools.definitions.ToolsMaterialDefinitions;
+import appeng.tools.proxy.ToolsProxy;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 
@@ -22,12 +24,15 @@ import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 @Mod(modid = AppEngTools.MODID, name = AppEngTools.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngTools implements ITools {
 
-	@Module.Instance(NAME)
-	public static final AppEngTools INSTANCE = null;
-
 	public static final String MODID = AppEng.MODID + "|" + ITools.NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + ITools.NAME;
+
+	@Module.Instance(NAME)
+	public static final AppEngTools INSTANCE = null;
+
+	@SidedProxy(modId = MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")
+	public static ToolsProxy proxy;
 
 	private FeatureFactory registry;
 

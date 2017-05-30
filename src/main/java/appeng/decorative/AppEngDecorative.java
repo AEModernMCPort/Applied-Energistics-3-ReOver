@@ -11,12 +11,14 @@ import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.decorative.api.IDecorative;
+import appeng.decorative.proxy.DecorativeProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 
@@ -24,12 +26,15 @@ import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 @Mod(modid = AppEngDecorative.MODID, name = AppEngDecorative.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngDecorative implements IDecorative {
 
-	@Module.Instance(NAME)
-	public static final AppEngDecorative INSTANCE = null;
-
 	public static final String MODID = AppEng.MODID + "|" + IDecorative.NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + IDecorative.NAME;
+
+	@Module.Instance(NAME)
+	public static final AppEngDecorative INSTANCE = null;
+
+	@SidedProxy(modId = MODID, clientSide = "appeng.decorative.proxy.DecorativeClientProxy", serverSide = "appeng.decorative.proxy.DecorativeServerProxy")
+	public static DecorativeProxy proxy;
 
 	private FeatureFactory registry;
 

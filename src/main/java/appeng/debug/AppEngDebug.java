@@ -8,12 +8,14 @@ import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
 import appeng.debug.definitions.DebugTileDefinitions;
+import appeng.debug.proxy.DebugProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 
 /*
@@ -28,6 +30,9 @@ public class AppEngDebug {
 	public static final String MODID = AppEng.MODID + "|" + NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + NAME;
+
+	@SidedProxy(modId = MODID, clientSide = "appeng.debug.proxy.DebugClientProxy", serverSide = "appeng.debug.proxy.DebugServerProxy")
+	public static DebugProxy proxy;
 
 	private DebugItemDefinitions itemDefinitions;
 	private DebugBlockDefinitions blockDefinitions;

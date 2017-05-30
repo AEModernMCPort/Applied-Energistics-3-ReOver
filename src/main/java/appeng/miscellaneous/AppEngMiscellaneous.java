@@ -11,12 +11,15 @@ import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.miscellaneous.api.IMiscellaneous;
+import appeng.miscellaneous.proxy.MiscProxy;
+import appeng.miscellaneous.proxy.MiscServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 
@@ -24,12 +27,15 @@ import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
 @Mod(modid = AppEngMiscellaneous.MODID, name = AppEngMiscellaneous.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngMiscellaneous implements IMiscellaneous {
 
-	@Module.Instance(NAME)
-	public static final AppEngMiscellaneous INSTANCE = null;
-
 	public static final String MODID = AppEng.MODID + "|" + IMiscellaneous.NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + IMiscellaneous.NAME;
+
+	@Module.Instance(NAME)
+	public static final AppEngMiscellaneous INSTANCE = null;
+
+	@SidedProxy(modId = MODID, clientSide = "appeng.miscellaneous.proxy.MiscClientProxy", serverSide = "appeng.miscellaneous.proxy.MiscServerProxy")
+	public static MiscProxy proxy;
 
 	private FeatureFactory registry;
 

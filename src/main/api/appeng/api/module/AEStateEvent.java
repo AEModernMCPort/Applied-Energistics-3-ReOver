@@ -19,6 +19,17 @@ public interface AEStateEvent {
 
 	public interface AEBootstrapEvent {
 
+		/**
+		 * Registers definition builder supplier for new input/definition type pair.
+		 *
+		 * @param defType Definition type
+		 * @param inputType Input type
+		 * @param builderSupplier Builder supplier transforming input and regsitry name into definition builder
+		 * @param <T> Type held by definition
+		 * @param <D> Type of definition
+		 * @param <B> Definition Builder
+		 * @param <I> Definition builder input type
+		 */
 		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, BiFunction<ResourceLocation, I, B> builderSupplier);
 
 	}

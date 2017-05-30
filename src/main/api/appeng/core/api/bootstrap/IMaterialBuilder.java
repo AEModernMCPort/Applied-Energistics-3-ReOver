@@ -1,4 +1,4 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.api.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IMaterialDefinition;

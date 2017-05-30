@@ -1,6 +1,10 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.core.bootstrap;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IDimensionTypeDefinition;
+import appeng.core.api.bootstrap.IDimensionTypeBuilder;
+import appeng.core.lib.bootstrap.DefinitionBuilder;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.DimensionTypeDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
@@ -15,13 +19,13 @@ public class DimensionTypeDefinitionBuilder<D extends DimensionType>
 	private Class<? extends WorldProvider> clazz;
 	private boolean shouldLoadSpawn;
 
-	DimensionTypeDefinitionBuilder(FeatureFactory factory, ResourceLocation registryName, int id){
+	DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id){
 		super(factory, registryName, id);
 		this.name = registryName.toString();
 		this.suffix = registryName.getResourcePath();
 	}
 
-	public DimensionTypeDefinitionBuilder(FeatureFactory factory, ResourceLocation registryName, int id, String name, String suffix, Class<? extends WorldProvider> clazz, boolean shouldLoadSpawn){
+	public DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id, String name, String suffix, Class<? extends WorldProvider> clazz, boolean shouldLoadSpawn){
 		super(factory, registryName, id);
 		this.name = name;
 		this.suffix = suffix;

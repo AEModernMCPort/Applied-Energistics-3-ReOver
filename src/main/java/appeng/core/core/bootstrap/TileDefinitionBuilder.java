@@ -1,7 +1,11 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.core.bootstrap;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.ITileDefinition;
+import appeng.core.api.bootstrap.ITileBuilder;
+import appeng.core.lib.bootstrap.DefinitionBuilder;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.lib.definitions.TileDefinition;
 import net.minecraft.block.Block;
@@ -15,7 +19,7 @@ public class TileDefinitionBuilder<T extends TileEntity>
 
 	private Definitions<Block, IBlockDefinition<Block>> blockDefinitions;
 
-	public TileDefinitionBuilder(FeatureFactory factory, ResourceLocation registryName, Class<T> tile, Definitions<Block, IBlockDefinition<Block>> blockDefinitions){
+	public TileDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, Class<T> tile, Definitions<Block, IBlockDefinition<Block>> blockDefinitions){
 		super(factory, registryName, tile);
 		this.blockDefinitions = blockDefinitions;
 	}

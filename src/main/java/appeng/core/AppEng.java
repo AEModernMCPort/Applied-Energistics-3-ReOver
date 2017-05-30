@@ -218,25 +218,14 @@ public final class AppEng {
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
 		Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers = new HashMap<>();
-		AEStateEventImpl.AEBootstrapEventImpl ev;
-		fireModulesEvent(ev = new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
-		ev.<Block, BlockDefinition, BlockDefinitionBuilder, Block>registerDefinitionBuilderSupplier(Block.class, Block.class, (registryName, block) -> new BlockDefinitionBuilder<>(null, registryName, block));
-		logger.info(definitionBuilderSuppliers);
+		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
 
-		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockNetherBrick())));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockGravel())));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockNetherBrick())));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockBeacon())));
-		throw new IllegalArgumentException();
-
-
-		/*final Stopwatch watch = Stopwatch.createStarted();
+		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
 		fireModulesEvent(new AEStateEventImpl.AEPreInitlizationEventImpl());
 
-		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");*/
+		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
 
 	private InputHandler<Block, Block> ih(Block block){

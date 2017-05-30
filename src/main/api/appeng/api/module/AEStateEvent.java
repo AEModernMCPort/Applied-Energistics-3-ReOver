@@ -1,6 +1,9 @@
 package appeng.api.module;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
+import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -21,6 +24,8 @@ public interface AEStateEvent {
 	}
 
 	public interface AEPreInitializationEvent {
+
+		DefinitionFactory factory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandler);
 
 	}
 

@@ -1,8 +1,11 @@
 package appeng.core.lib.module;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
+import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import appeng.api.module.AEStateEvent;
+import appeng.core.lib.bootstrap.DefinitionFactory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -35,6 +38,17 @@ public class AEStateEventImpl implements AEStateEvent {
 	}
 
 	public static class AEPreInitializationEventImpl extends AEStateEventImpl implements AEPreInitializationEvent {
+
+		private Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
+
+		public AEPreInitializationEventImpl(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
+		}
+
+		@Override
+		public DefinitionFactory factory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandler){
+			return new DefinitionFactory(commonInitHandler, sidedInitHandler, definitionBuilderSuppliers);
+		}
 
 	}
 

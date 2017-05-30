@@ -24,7 +24,7 @@ public class StateMapperComponent implements InitializationComponent.Init {
 	}
 
 	@Override
-	public void init(Side side){
+	public void init(){
 		ModelLoader.setCustomStateMapper(block, stateMapper);
 		if(stateMapper instanceof IResourceManagerReloadListener){
 			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);

@@ -18,7 +18,7 @@ public class ItemColorComponent implements InitializationComponent.Init {
 	}
 
 	@Override
-	public void init(Side side){
+	public void init(){
 		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor, item);
 	}
 }

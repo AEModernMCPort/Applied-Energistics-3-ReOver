@@ -26,7 +26,7 @@ public class ModelOverrideComponent implements InitializationComponent.PreInit {
 	}
 
 	@Override
-	public void preInit(Side side){
+	public void preInit(){
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 

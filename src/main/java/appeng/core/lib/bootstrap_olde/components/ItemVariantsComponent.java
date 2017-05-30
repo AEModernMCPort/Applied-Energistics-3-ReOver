@@ -20,7 +20,7 @@ public class ItemVariantsComponent implements InitializationComponent {
 	}
 
 	@Override
-	public void preInit(Side side){
+	public void preInit(){
 		ResourceLocation[] resourceArr = resources.toArray(new ResourceLocation[0]);
 		ModelBakery.registerItemVariants(item, resourceArr);
 	}

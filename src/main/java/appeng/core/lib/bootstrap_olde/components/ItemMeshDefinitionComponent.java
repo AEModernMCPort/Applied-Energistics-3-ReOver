@@ -24,7 +24,7 @@ public class ItemMeshDefinitionComponent implements InitializationComponent.Init
 	}
 
 	@Override
-	public void init(Side side){
+	public void init(){
 		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(item, meshDefinition);
 	}
 }

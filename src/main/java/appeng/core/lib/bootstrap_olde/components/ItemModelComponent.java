@@ -26,7 +26,7 @@ public class ItemModelComponent implements InitializationComponent.Init {
 	}
 
 	@Override
-	public void init(Side side){
+	public void init(){
 		ItemModelMesher itemMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 
 		modelsByMeta.forEach((meta, model) -> {

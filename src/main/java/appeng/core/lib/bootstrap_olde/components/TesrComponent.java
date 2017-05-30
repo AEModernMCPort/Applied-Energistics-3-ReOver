@@ -23,7 +23,7 @@ public class TesrComponent<T extends TileEntity> implements InitializationCompon
 	}
 
 	@Override
-	public void preInit(Side side){
+	public void preInit(){
 		ClientRegistry.bindTileEntitySpecialRenderer(tileEntityClass, tesr);
 	}
 }

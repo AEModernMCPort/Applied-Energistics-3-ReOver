@@ -2,7 +2,7 @@ package appeng.api.bootstrap;
 
 import appeng.api.definitions.IDefinition;
 import com.google.common.reflect.TypeToken;
-import jline.internal.Nullable;
+import com.sun.istack.internal.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 

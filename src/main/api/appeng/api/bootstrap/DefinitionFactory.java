@@ -15,7 +15,7 @@ public interface DefinitionFactory {
 	 * @param side logical side of the handler, or <tt>null</tt> for common handler
 	 * @return initialization handler for given side
 	 */
-	InitializationComponentsHandler initilizationHandler(@Nullable Side side);
+	InitializationComponentsHandler initializationHandler(@Nullable Side side);
 
 	<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
 

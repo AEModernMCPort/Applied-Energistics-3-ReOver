@@ -26,7 +26,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	}
 
 	@Override
-	public InitializationComponentsHandler initilizationHandler(Side side){
+	public InitializationComponentsHandler initializationHandler(Side side){
 		return side == null ? commonInitHandler : sidedInitHandlers[side.ordinal()];
 	}
 

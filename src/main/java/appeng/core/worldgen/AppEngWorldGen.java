@@ -1,11 +1,13 @@
 package appeng.core.worldgen;
 
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.worldgen.api.IWorldGen;
 import appeng.core.worldgen.definitions.WorldGenBlockDefinitions;
 import appeng.core.worldgen.definitions.WorldGenItemDefinitions;
@@ -24,6 +26,8 @@ public class AppEngWorldGen implements IWorldGen {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.worldgen.proxy.WorldGenClientProxy", serverSide = "appeng.core.worldgen.proxy.WorldGenServerProxy")
 	public static WorldGenProxy proxy;
+
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private FeatureFactory registry;
 
@@ -52,16 +56,25 @@ public class AppEngWorldGen implements IWorldGen {
 		this.itemDefinitions = new WorldGenItemDefinitions(registry);
 		this.tileDefinitions = new WorldGenTileDefinitions(registry);
 		registry.preInit(event);
+
+		initHandler.preInit();
+		proxy.preInit(event);
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+
+		initHandler.init();
+		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+
+		initHandler.postInit();
+		proxy.postInit(event);
 	}
 
 	@ModuleEventHandler

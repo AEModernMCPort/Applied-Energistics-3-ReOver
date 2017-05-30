@@ -1,5 +1,6 @@
 package appeng.miscellaneous;
 
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -9,6 +10,7 @@ import appeng.core.AppEng;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.miscellaneous.api.IMiscellaneous;
 import appeng.miscellaneous.proxy.MiscProxy;
 import net.minecraft.block.Block;
@@ -34,6 +36,8 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.miscellaneous.proxy.MiscClientProxy", serverSide = "appeng.miscellaneous.proxy.MiscServerProxy")
 	public static MiscProxy proxy;
+
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private FeatureFactory registry;
 
@@ -62,6 +66,9 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
 		registry.preInit(event);
+
+		initHandler.preInit();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
@@ -72,6 +79,9 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+
+		initHandler.init();
+		proxy.init(event);
 	}
 
 	@EventHandler
@@ -82,6 +92,9 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 	@ModuleEventHandler
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+
+		initHandler.postInit();
+		proxy.postInit(event);
 	}
 
 	@EventHandler

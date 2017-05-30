@@ -1,5 +1,6 @@
 package appeng.decorative;
 
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -9,6 +10,7 @@ import appeng.core.AppEng;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.decorative.api.IDecorative;
 import appeng.decorative.proxy.DecorativeProxy;
 import net.minecraft.block.Block;
@@ -34,6 +36,8 @@ public class AppEngDecorative implements IDecorative {
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.decorative.proxy.DecorativeClientProxy", serverSide = "appeng.decorative.proxy.DecorativeServerProxy")
 	public static DecorativeProxy proxy;
+
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private FeatureFactory registry;
 
@@ -62,6 +66,9 @@ public class AppEngDecorative implements IDecorative {
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
 		registry.preInit(event);
+
+		initHandler.preInit();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
@@ -72,6 +79,9 @@ public class AppEngDecorative implements IDecorative {
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+
+		initHandler.init();
+		proxy.init(event);
 	}
 
 	@EventHandler
@@ -82,6 +92,9 @@ public class AppEngDecorative implements IDecorative {
 	@ModuleEventHandler
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+
+		initHandler.postInit();
+		proxy.postInit(event);
 	}
 
 	@EventHandler

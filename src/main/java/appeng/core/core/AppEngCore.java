@@ -1,5 +1,7 @@
 package appeng.core.core;
 
+import appeng.api.bootstrap.DefinitionFactory;
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -11,6 +13,7 @@ import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.definitions.*;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -30,6 +33,8 @@ public class AppEngCore implements ICore {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
+
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;
 
@@ -93,18 +98,23 @@ public class AppEngCore implements ICore {
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
 		registry.preInit(event);
 
+		initHandler.preInit();
 		proxy.preInit(event);
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+
+		initHandler.init();
 		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+
+		initHandler.postInit();
 		proxy.postInit(event);
 	}
 

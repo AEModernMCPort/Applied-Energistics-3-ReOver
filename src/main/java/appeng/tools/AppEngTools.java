@@ -1,5 +1,6 @@
 package appeng.tools;
 
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -7,6 +8,7 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.tools.api.ITools;
 import appeng.tools.definitions.ToolsItemDefinitions;
 import appeng.tools.definitions.ToolsMaterialDefinitions;
@@ -33,6 +35,8 @@ public class AppEngTools implements ITools {
 	@SidedProxy(modId = MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")
 	public static ToolsProxy proxy;
 
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
+
 	private FeatureFactory registry;
 
 	private ToolsItemDefinitions itemDefinitions;
@@ -55,6 +59,9 @@ public class AppEngTools implements ITools {
 		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);
 		registry.preInit(event);
+
+		initHandler.preInit();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
@@ -65,6 +72,9 @@ public class AppEngTools implements ITools {
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+
+		initHandler.init();
+		proxy.init(event);
 	}
 
 	@EventHandler
@@ -75,6 +85,9 @@ public class AppEngTools implements ITools {
 	@ModuleEventHandler
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+
+		initHandler.postInit();
+		proxy.postInit(event);
 	}
 
 	@EventHandler

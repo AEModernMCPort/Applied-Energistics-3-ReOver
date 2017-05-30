@@ -5,6 +5,6 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CraftingClientProxy extends CraftingProxy {
 
 	public CraftingClientProxy(){
-		super(Side.SERVER);
+		super(Side.CLIENT);
 	}
 }

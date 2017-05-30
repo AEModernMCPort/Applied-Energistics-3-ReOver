@@ -1,5 +1,6 @@
 package appeng.core.spatial.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
@@ -11,7 +12,7 @@ public class SpatialMaterialDefinitions extends Definitions<Material, IMaterialD
 	private static final String MATERIALSMODELSLOCATION = "material/";
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
-	public SpatialMaterialDefinitions(FeatureFactory registry){
+	public SpatialMaterialDefinitions(DefinitionFactory registry){
 		init();
 	}
 

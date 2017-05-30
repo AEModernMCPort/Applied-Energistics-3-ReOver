@@ -1,5 +1,6 @@
 package appeng.tools.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
@@ -11,7 +12,7 @@ public class ToolsMaterialDefinitions extends Definitions<Material, IMaterialDef
 	private static final String MATERIALSMODELSLOCATION = "material/";
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
-	public ToolsMaterialDefinitions(FeatureFactory registry){
+	public ToolsMaterialDefinitions(DefinitionFactory registry){
 		init();
 	}
 

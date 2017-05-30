@@ -1,5 +1,6 @@
 package appeng.core.me.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
@@ -11,7 +12,7 @@ public class MEMaterialDefinitions extends Definitions<Material, IMaterialDefini
 	private static final String MATERIALSMODELSLOCATION = "material/";
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
-	public MEMaterialDefinitions(FeatureFactory registry){
+	public MEMaterialDefinitions(DefinitionFactory registry){
 		init();
 	}
 

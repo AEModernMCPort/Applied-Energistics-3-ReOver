@@ -1,9 +1,13 @@
 package appeng.debug;
 
+import appeng.api.bootstrap.DefinitionFactory;
+import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
+import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
 import appeng.debug.definitions.DebugTileDefinitions;
@@ -33,6 +37,8 @@ public class AppEngDebug {
 	@SidedProxy(modId = MODID, clientSide = "appeng.debug.proxy.DebugClientProxy", serverSide = "appeng.debug.proxy.DebugServerProxy")
 	public static DebugProxy proxy;
 
+	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
+
 	private DebugItemDefinitions itemDefinitions;
 	private DebugBlockDefinitions blockDefinitions;
 	private DebugTileDefinitions tileDefinitions;
@@ -50,22 +56,27 @@ public class AppEngDebug {
 		return null;
 	}
 
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
-		FeatureFactory registry = new FeatureFactory();
+	@Module.ModuleEventHandler
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		DefinitionFactory registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new DebugItemDefinitions(registry);
 		this.blockDefinitions = new DebugBlockDefinitions(registry);
 		this.tileDefinitions = new DebugTileDefinitions(registry);
 	}
 
 	@EventHandler
-	public void init(final FMLInitializationEvent event){
+	public void preInit(FMLPreInitializationEvent event){
+		initHandler.preInit();
+	}
 
+	@EventHandler
+	public void init(final FMLInitializationEvent event){
+		initHandler.init();
 	}
 
 	@EventHandler
 	public void postInit(final FMLPostInitializationEvent event){
-
+		initHandler.postInit();
 	}
 
 	@EventHandler

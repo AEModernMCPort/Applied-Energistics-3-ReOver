@@ -12,15 +12,15 @@ public interface DefinitionFactory {
 
 	abstract class InputHandler<T, I> implements Supplier<I> {
 
-		private final Supplier<I> input;
+		private final I input;
 
-		public InputHandler(Supplier<I> input){
+		public InputHandler(I input){
 			this.input = input;
 		}
 
 		@Override
 		public final I get(){
-			return input.get();
+			return input;
 		}
 
 		public final Class<? super T> defType(){

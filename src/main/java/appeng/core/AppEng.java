@@ -1,5 +1,6 @@
 package appeng.core;
 
+import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.lib.bootstrap.DefinitionFactory;
@@ -16,7 +17,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockGrass;
+import net.minecraft.block.BlockBeacon;
+import net.minecraft.block.BlockGravel;
 import net.minecraft.block.BlockNetherBrick;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
@@ -26,8 +28,11 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -219,8 +224,11 @@ public final class AppEng {
 		logger.info(definitionBuilderSuppliers);
 
 		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
-		IBlockBuilder blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new appeng.api.bootstrap.DefinitionFactory.InputHandler<Block, Block>(BlockNetherBrick::new){});
+		IBlockBuilder blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){});
 		logger.info(blockBuilder);
+		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockGravel()){});
+		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){});
+		factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockBeacon()){});
 		throw new IllegalArgumentException();
 
 

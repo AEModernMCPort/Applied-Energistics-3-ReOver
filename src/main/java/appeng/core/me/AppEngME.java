@@ -7,7 +7,6 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.me.api.IME;
 import appeng.core.me.definitions.*;
 import appeng.core.me.proxy.MEProxy;

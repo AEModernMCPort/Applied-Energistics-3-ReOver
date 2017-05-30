@@ -6,7 +6,6 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.worldgen.api.IWorldGen;
 import appeng.core.worldgen.definitions.WorldGenBlockDefinitions;
 import appeng.core.worldgen.definitions.WorldGenItemDefinitions;

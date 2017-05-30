@@ -1,7 +1,6 @@
 package appeng.core.spatial.definitions;
 
 import appeng.api.definitions.IBlockDefinition;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialBlockDefinitions;
 import net.minecraft.block.Block;

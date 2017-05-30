@@ -1,7 +1,6 @@
 package appeng.decorative.definitions;
 
 import appeng.api.definitions.IBlockDefinition;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.decorative.api.definitions.IDecorativeBlockDefinitions;
 import net.minecraft.block.Block;

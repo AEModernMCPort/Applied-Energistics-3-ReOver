@@ -4,7 +4,6 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IEntityDefinition;
 import appeng.core.api.bootstrap.IEntityBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.EntityDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityEntry;

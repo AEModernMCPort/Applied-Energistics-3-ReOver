@@ -5,7 +5,6 @@ import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.ITileDefinition;
 import appeng.core.api.bootstrap.ITileBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.lib.definitions.TileDefinition;
 import net.minecraft.block.Block;

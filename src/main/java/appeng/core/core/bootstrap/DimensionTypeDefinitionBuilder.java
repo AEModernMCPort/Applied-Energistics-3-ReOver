@@ -4,7 +4,6 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IDimensionTypeDefinition;
 import appeng.core.api.bootstrap.IDimensionTypeBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.DimensionTypeDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;

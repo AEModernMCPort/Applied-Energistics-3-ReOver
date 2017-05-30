@@ -7,7 +7,6 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.tools.api.ITools;
 import appeng.tools.definitions.ToolsItemDefinitions;
 import appeng.tools.definitions.ToolsMaterialDefinitions;

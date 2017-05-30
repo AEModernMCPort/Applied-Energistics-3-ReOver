@@ -11,7 +11,6 @@ import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.crafting.proxy.CraftingProxy;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.me.AppEngME;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

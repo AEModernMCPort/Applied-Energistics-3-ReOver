@@ -2,7 +2,6 @@ package appeng.core.crafting.definitions;
 
 import appeng.api.definitions.IBlockDefinition;
 import appeng.core.crafting.api.definitions.ICraftingBlockDefinitions;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.block.Block;
 

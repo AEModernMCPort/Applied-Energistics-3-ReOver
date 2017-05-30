@@ -11,7 +11,6 @@ import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.definitions.*;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;

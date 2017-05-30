@@ -3,7 +3,6 @@ package appeng.core.lib.bootstrap;
 import appeng.api.bootstrap.*;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IDefinition;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;

@@ -4,7 +4,6 @@ import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
 import appeng.debug.definitions.DebugTileDefinitions;

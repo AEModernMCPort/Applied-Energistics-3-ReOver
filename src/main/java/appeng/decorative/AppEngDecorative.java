@@ -9,7 +9,6 @@ import appeng.core.AppEng;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.decorative.api.IDecorative;
 import appeng.decorative.proxy.DecorativeProxy;
 import net.minecraft.block.Block;

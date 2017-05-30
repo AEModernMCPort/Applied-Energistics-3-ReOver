@@ -1,7 +1,6 @@
 package appeng.core.me.definitions;
 
 import appeng.api.definitions.IEntityDefinition;
-import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMEEntityDefinitions;
 import net.minecraftforge.fml.common.registry.EntityEntry;

@@ -4,6 +4,7 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.lib.bootstrap.DefinitionFactory;
 import appeng.core.lib.bootstrap_olde.BlockDefinitionBuilder;
+import appeng.core.lib.bootstrap_olde.IBlockBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
@@ -15,6 +16,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockGrass;
+import net.minecraft.block.BlockNetherBrick;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
@@ -216,7 +219,7 @@ public final class AppEng {
 		logger.info(definitionBuilderSuppliers);
 
 		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
-		BlockDefinition blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), Block.class);
+		IBlockBuilder blockBuilder = factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new appeng.api.bootstrap.DefinitionFactory.InputHandler<Block, Block>(BlockNetherBrick::new){});
 		logger.info(blockBuilder);
 		throw new IllegalArgumentException();
 

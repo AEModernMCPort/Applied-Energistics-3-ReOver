@@ -19,7 +19,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 		this.definitionBuilderSuppliers = ImmutableMap.copyOf(definitionBuilderSuppliers);
 	}
 
-	private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> getBuilderProvider(){
+	/*private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> getBuilderProvider(){
 		System.out.println("Def - " + new TypeToken<T>(getClass()) {}.getRawType());
 		System.out.println("In - " + new TypeToken<I>(getClass()) {}.getRawType());
 		return definitionBuilderSuppliers.get(new ImmutablePair<>(new TypeToken<T>(getClass()) {}.getRawType(), new TypeToken<I>(getClass()){}.getRawType()));
@@ -30,6 +30,16 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 		System.out.println("Def - " + new TypeToken<T>(getClass()) {}.getRawType());
 		System.out.println("In - " + new TypeToken<I>(getClass()) {}.getRawType());
 		return this.<T, D, B, I>getBuilderProvider().apply(registryName, input);
+	}*/
+
+	private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> get(Pair<Class, Class> key){
+		return definitionBuilderSuppliers.get(key);
 	}
 
+	@Override
+	public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input){
+		System.out.println("Def - " + input.defType());
+		System.out.println("In - " + input.inputType());
+		return this.<T, D, B, I>get(new ImmutablePair<>(input.defType(), input.inputType())).apply(registryName, input.get());
+	}
 }

@@ -6,6 +6,7 @@ import appeng.api.definitions.IItemDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
+import appeng.core.core.bootstrap.*;
 import appeng.core.lib.bootstrap_olde.components.ModelOverrideComponent;
 import appeng.core.lib.definitions.BlockDefinition;
 import com.google.common.collect.Maps;

@@ -4,7 +4,6 @@ import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Registers a TESR for a given tile entity class.

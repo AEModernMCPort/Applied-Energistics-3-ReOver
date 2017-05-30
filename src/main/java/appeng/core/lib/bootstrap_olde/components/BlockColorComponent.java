@@ -4,7 +4,6 @@ import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class BlockColorComponent implements InitializationComponent.Init {
 

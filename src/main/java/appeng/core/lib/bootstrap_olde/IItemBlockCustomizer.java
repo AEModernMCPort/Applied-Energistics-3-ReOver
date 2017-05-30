@@ -1,5 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
+import appeng.core.core.bootstrap.ItemDefinitionBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 

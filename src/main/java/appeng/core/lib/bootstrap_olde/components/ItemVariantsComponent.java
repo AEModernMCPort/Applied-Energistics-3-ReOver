@@ -4,7 +4,6 @@ import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Collection;
 

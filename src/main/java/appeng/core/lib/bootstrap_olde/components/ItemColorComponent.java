@@ -4,7 +4,6 @@ import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class ItemColorComponent implements InitializationComponent.Init {
 

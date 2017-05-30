@@ -5,6 +5,7 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
+import appeng.core.proxy.AppEngProxy;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
@@ -58,8 +59,8 @@ public final class AppEng {
 	@Mod.Instance(MODID)
 	private static AppEng INSTANCE;
 
-	@SidedProxy(modId = MODID, clientSide = "appeng.core.client.AppEngModClientProxy", serverSide = "appeng.core.server.AppEngModServerProxy")
-	private static AppEngModProxy proxy;
+	@SidedProxy(modId = MODID, clientSide = "appeng.core.proxy.AppEngModClientProxy", serverSide = "appeng.core.proxy.AppEngModServerProxy")
+	private static AppEngProxy proxy;
 
 	private ImmutableMap<String, ?> modules;
 	private ImmutableMap<Class<?>, ?> classModule;

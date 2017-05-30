@@ -1,6 +1,6 @@
-package appeng.core;
+package appeng.core.proxy;
 
-public interface AppEngModProxy {
+public interface AppEngProxy {
 
 	void moduleLoadingException(String exceptionText, String guiText);
 

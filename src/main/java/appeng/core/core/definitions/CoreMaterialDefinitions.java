@@ -1,4 +1,4 @@
-package appeng.core.definitions;
+package appeng.core.core.definitions;
 
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.AppEng;

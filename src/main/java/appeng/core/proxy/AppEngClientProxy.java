@@ -1,11 +1,10 @@
-package appeng.core.client;
+package appeng.core.proxy;
 
-import appeng.core.AppEngModProxy;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraftforge.fml.client.CustomModLoadingErrorDisplayException;
 
-public class AppEngModClientProxy implements AppEngModProxy {
+public class AppEngClientProxy implements AppEngProxy {
 
 	@Override
 	public void moduleLoadingException(String exceptionText, String guiText){

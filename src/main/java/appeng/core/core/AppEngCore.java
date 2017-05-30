@@ -9,7 +9,7 @@ import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
 import appeng.core.core.proxy.CoreProxy;
-import appeng.core.definitions.*;
+import appeng.core.core.definitions.*;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

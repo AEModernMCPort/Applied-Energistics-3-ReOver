@@ -1,4 +1,4 @@
-package appeng.core.definitions;
+package appeng.core.core.definitions;
 
 import appeng.api.definitions.ITileDefinition;
 import appeng.core.api.definitions.ICoreTileDefinitions;

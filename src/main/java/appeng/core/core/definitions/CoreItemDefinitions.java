@@ -1,4 +1,4 @@
-package appeng.core.definitions;
+package appeng.core.core.definitions;
 
 import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;

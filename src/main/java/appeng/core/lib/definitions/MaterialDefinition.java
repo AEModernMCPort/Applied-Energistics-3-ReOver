@@ -7,7 +7,7 @@ import appeng.api.item.IStateItemState;
 import appeng.core.core.AppEngCore;
 import appeng.core.api.items.IItemMaterial;
 import appeng.core.api.material.Material;
-import appeng.core.definitions.CoreItemDefinitions;
+import appeng.core.core.definitions.CoreItemDefinitions;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 

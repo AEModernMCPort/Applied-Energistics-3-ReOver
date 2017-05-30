@@ -1,8 +1,6 @@
-package appeng.core.server;
+package appeng.core.proxy;
 
-import appeng.core.AppEngModProxy;
-
-public abstract class AppEngModServerProxy implements AppEngModProxy {
+public abstract class AppEngServerProxy implements AppEngProxy {
 
 	@Override
 	public void moduleLoadingException(String exceptionText, String guiText){

@@ -1,5 +1,6 @@
 package appeng.decorative;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
@@ -39,7 +40,7 @@ public class AppEngDecorative implements IDecorative {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private CraftingItemDefinitions itemDefinitions;
 	private CraftingBlockDefinitions blockDefinitions;
@@ -61,11 +62,10 @@ public class AppEngDecorative implements IDecorative {
 
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -78,8 +78,6 @@ public class AppEngDecorative implements IDecorative {
 
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
@@ -91,8 +89,6 @@ public class AppEngDecorative implements IDecorative {
 
 	@ModuleEventHandler
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

@@ -1,5 +1,6 @@
 package appeng.core.spatial;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
@@ -30,7 +31,7 @@ public class AppEngSpatial implements ISpatial {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private SpatialItemDefinitions itemDefinitions;
 	private SpatialBlockDefinitions blockDefinitions;
@@ -64,14 +65,13 @@ public class AppEngSpatial implements ISpatial {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
 		this.blockDefinitions = new SpatialBlockDefinitions(registry);
 		this.itemDefinitions = new SpatialItemDefinitions(registry);
 		this.tileDefinitions = new SpatialTileDefinitions(registry);
 		this.biomeDefinitions = new SpatialBiomeDefinitions(registry);
 		this.dimensionTypeDefinitions = new SpatialDimensionTypeDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -79,16 +79,12 @@ public class AppEngSpatial implements ISpatial {
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

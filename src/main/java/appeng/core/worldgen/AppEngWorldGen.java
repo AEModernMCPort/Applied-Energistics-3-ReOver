@@ -1,5 +1,6 @@
 package appeng.core.worldgen;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
@@ -29,7 +30,7 @@ public class AppEngWorldGen implements IWorldGen {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private WorldGenItemDefinitions itemDefinitions;
 	private WorldGenBlockDefinitions blockDefinitions;
@@ -51,11 +52,10 @@ public class AppEngWorldGen implements IWorldGen {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.blockDefinitions = new WorldGenBlockDefinitions(registry);
 		this.itemDefinitions = new WorldGenItemDefinitions(registry);
 		this.tileDefinitions = new WorldGenTileDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -63,16 +63,12 @@ public class AppEngWorldGen implements IWorldGen {
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

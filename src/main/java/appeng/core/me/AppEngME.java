@@ -1,5 +1,6 @@
 package appeng.core.me;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
@@ -29,7 +30,7 @@ public class AppEngME implements IME {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private MEItemDefinitions itemDefinitions;
 	private MEBlockDefinitions blockDefinitions;
@@ -59,13 +60,12 @@ public class AppEngME implements IME {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.materialDefinitions = new MEMaterialDefinitions(registry);
 		this.blockDefinitions = new MEBlockDefinitions(registry);
 		this.itemDefinitions = new MEItemDefinitions(registry);
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -73,16 +73,12 @@ public class AppEngME implements IME {
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

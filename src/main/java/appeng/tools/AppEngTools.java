@@ -1,5 +1,6 @@
 package appeng.tools;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
@@ -37,7 +38,7 @@ public class AppEngTools implements ITools {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private ToolsItemDefinitions itemDefinitions;
 	private ToolsMaterialDefinitions materialDefinitions;
@@ -55,10 +56,9 @@ public class AppEngTools implements ITools {
 
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -71,8 +71,6 @@ public class AppEngTools implements ITools {
 
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
@@ -84,8 +82,6 @@ public class AppEngTools implements ITools {
 
 	@ModuleEventHandler
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

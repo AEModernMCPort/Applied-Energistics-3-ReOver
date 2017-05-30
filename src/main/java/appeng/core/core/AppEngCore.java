@@ -38,7 +38,7 @@ public class AppEngCore implements ICore {
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;
 
-	private FeatureFactory registry;
+	private DefinitionFactory registry;
 
 	private CoreItemDefinitions itemDefinitions;
 	private CoreBlockDefinitions blockDefinitions;
@@ -90,13 +90,12 @@ public class AppEngCore implements ICore {
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
-		registry = new FeatureFactory();
+		registry = event.factory(initHandler, proxy);
 		this.materialDefinitions = new CoreMaterialDefinitions(registry);
 		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.itemDefinitions = new CoreItemDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
-		registry.preInit(event);
 
 		initHandler.preInit();
 		proxy.preInit(event);
@@ -104,16 +103,12 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
-		registry.init(event);
-
 		initHandler.init();
 		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
-		registry.postInit(event);
-
 		initHandler.postInit();
 		proxy.postInit(event);
 	}

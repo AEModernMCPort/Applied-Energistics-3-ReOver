@@ -78,16 +78,20 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
 		registry.preInit(event);
+
+		proxy.preInit(event);
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+		proxy.postInit(event);
 	}
 
 	@ModuleEventHandler

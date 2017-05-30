@@ -53,16 +53,19 @@ public class AppEngCrafting implements ICrafting {
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
 		registry.preInit(event);
+		proxy.preInit(event);
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
 		registry.init(event);
+		proxy.init(event);
 	}
 
 	@ModuleEventHandler
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		registry.postInit(event);
+		proxy.postInit(event);
 	}
 
 	@ModuleEventHandler

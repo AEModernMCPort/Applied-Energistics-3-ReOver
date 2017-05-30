@@ -1,9 +1,6 @@
 package appeng.api.module;
 
-import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.bootstrap.InitializationComponentsHandler;
-import appeng.api.bootstrap.SidedICHProxy;
+import appeng.api.bootstrap.*;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -30,7 +27,7 @@ public interface AEStateEvent {
 		 * @param <B> Definition Builder
 		 * @param <I> Definition builder input type
 		 */
-		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, BiFunction<ResourceLocation, I, B> builderSupplier);
+		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
 
 	}
 

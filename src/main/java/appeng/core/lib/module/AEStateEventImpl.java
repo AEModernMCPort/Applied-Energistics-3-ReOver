@@ -1,5 +1,6 @@
 package appeng.core.lib.module;
 
+import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
@@ -25,14 +26,14 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEBootstrapEventImpl extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
 
-		private Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
+		private Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers;
 
-		public AEBootstrapEventImpl(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+		public AEBootstrapEventImpl(Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
 		}
 
 		@Override
-		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, BiFunction<ResourceLocation, I, B> builderSupplier){
+		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier){
 			definitionBuilderSuppliers.put(new ImmutablePair<>(defType, inputType), builderSupplier);
 		}
 
@@ -40,9 +41,9 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEPreInitializationEventImpl extends AEStateEventImpl implements AEPreInitializationEvent {
 
-		private Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
+		private Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers;
 
-		public AEPreInitializationEventImpl(Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+		public AEPreInitializationEventImpl(Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
 		}
 

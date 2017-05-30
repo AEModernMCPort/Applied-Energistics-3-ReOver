@@ -1,5 +1,6 @@
 package appeng.core;
 
+import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
@@ -41,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -210,7 +210,7 @@ public final class AppEng {
 
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
-		Map<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers = new HashMap<>();
+		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
 		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
 
 		final Stopwatch watch = Stopwatch.createStarted();

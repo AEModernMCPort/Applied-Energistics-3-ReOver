@@ -215,7 +215,7 @@ public final class AppEng {
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl());
+		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(definitionBuilderSuppliers));
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}

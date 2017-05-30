@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import appeng.api.definitions.IDefinitionsProvider;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.module.AEStateEvent;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class FeatureFactory {
 
-	private final List<BootstrapComponent> bootstrapComponents;
+	private final List<InitializationComponent> bootstrapComponents;
 
 	@SideOnly(Side.CLIENT)
 	ModelOverrideComponent modelOverrideComponent;
@@ -133,7 +133,7 @@ public class FeatureFactory {
 		return result;
 	}
 
-	<B extends BootstrapComponent> void addBootstrapComponent(B component){
+	<B extends InitializationComponent> void addBootstrapComponent(B component){
 		this.bootstrapComponents.add(component);
 	}
 

@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Collection;
 
-public class ItemVariantsComponent implements BootstrapComponent {
+public class ItemVariantsComponent implements InitializationComponent {
 
 	private final Item item;
 

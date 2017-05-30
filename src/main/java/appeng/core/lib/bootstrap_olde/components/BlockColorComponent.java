@@ -1,12 +1,12 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class BlockColorComponent implements BootstrapComponent.Init {
+public class BlockColorComponent implements InitializationComponent.Init {
 
 	private final Block block;
 

@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.Side;
 /**
  * Registers a custom state mapper for a given block.
  */
-public class StateMapperComponent implements BootstrapComponent.Init {
+public class StateMapperComponent implements InitializationComponent.Init {
 
 	private final Block block;
 

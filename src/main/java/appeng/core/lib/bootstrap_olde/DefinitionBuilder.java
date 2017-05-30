@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
@@ -61,9 +61,9 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 		D definition = def(setRegistryName(instance));
 
 		preInitCallbacks.add(t -> register((t).maybe().get()));
-		preInitCallbacks.forEach(consumer -> factory.<BootstrapComponent.PreInit>addBootstrapComponent(side -> consumer.accept(definition)));
-		initCallbacks.forEach(consumer -> factory.<BootstrapComponent.Init>addBootstrapComponent(side -> consumer.accept(definition)));
-		postInitCallbacks.forEach(consumer -> factory.<BootstrapComponent.PostInit>addBootstrapComponent(side -> consumer.accept(definition)));
+		preInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PreInit>addBootstrapComponent(side -> consumer.accept(definition)));
+		initCallbacks.forEach(consumer -> factory.<InitializationComponent.Init>addBootstrapComponent(side -> consumer.accept(definition)));
+		postInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PostInit>addBootstrapComponent(side -> consumer.accept(definition)));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));
 

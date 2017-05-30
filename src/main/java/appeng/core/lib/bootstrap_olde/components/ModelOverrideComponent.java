@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.AppEng;
 import com.google.common.collect.Sets;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
-public class ModelOverrideComponent implements BootstrapComponent.PreInit {
+public class ModelOverrideComponent implements InitializationComponent.PreInit {
 
 	// Maps from resource path to customizer
 	private final Map<String, BiFunction<ModelResourceLocation, IBakedModel, IBakedModel>> customizer = new HashMap<>();

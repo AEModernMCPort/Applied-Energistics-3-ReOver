@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.api.bootstrap.BootstrapComponent;
+import appeng.api.bootstrap.InitializationComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -14,7 +14,7 @@ import java.util.Map;
  * Registers the models that should by used for an item, including the ability to
  * distinguish by meta.
  */
-public class ItemModelComponent implements BootstrapComponent.Init {
+public class ItemModelComponent implements InitializationComponent.Init {
 
 	private final Item item;
 

@@ -21,4 +21,10 @@ public interface InitializationComponentsHandler extends Consumer<Initialization
 		accept(component);
 	}
 
+	void preInit();
+
+	void init();
+
+	void postInit();
+
 }

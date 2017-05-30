@@ -17,7 +17,7 @@ public interface DefinitionFactory {
 	 */
 	InitializationComponentsHandler initializationHandler(@Nullable Side side);
 
-	<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
+	<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
 
 	abstract class InputHandler<T, I> implements Supplier<I> {
 

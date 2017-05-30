@@ -61,9 +61,9 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 		D definition = def(setRegistryName(instance));
 
 		preInitCallbacks.add(t -> register((t).maybe().get()));
-		preInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PreInit>addBootstrapComponent(side -> consumer.accept(definition)));
-		initCallbacks.forEach(consumer -> factory.<InitializationComponent.Init>addBootstrapComponent(side -> consumer.accept(definition)));
-		postInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PostInit>addBootstrapComponent(side -> consumer.accept(definition)));
+		preInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PreInit>addBootstrapComponent(() -> consumer.accept(definition)));
+		initCallbacks.forEach(consumer -> factory.<InitializationComponent.Init>addBootstrapComponent(() -> consumer.accept(definition)));
+		postInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PostInit>addBootstrapComponent(() -> consumer.accept(definition)));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));
 

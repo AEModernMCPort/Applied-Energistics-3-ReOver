@@ -60,7 +60,7 @@ class ItemRendering implements IItemRendering {
 		return this;
 	}
 
-	void apply(FeatureFactory factory, Item item){
+	/*void apply(FeatureFactory factory, Item item){
 		if(this.itemMeshDefinition != null){
 			factory.addBootstrapComponent(new ItemMeshDefinitionComponent(item, itemMeshDefinition));
 		}
@@ -97,7 +97,7 @@ class ItemRendering implements IItemRendering {
 		if(itemColor != null){
 			factory.addBootstrapComponent(new ItemColorComponent(item, itemColor));
 		}
-	}
+	}*/
 
 	private static class StateMapperHelper extends StateMapperBase {
 

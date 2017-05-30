@@ -55,7 +55,7 @@ class BlockRendering implements IBlockRendering {
 		return this;
 	}
 
-	void apply(FeatureFactory registry, Block block, Class<?> tileEntityClass){
+	/*void apply(FeatureFactory registry, Block block, Class<?> tileEntityClass){
 		if(tesr != null){
 			if(tileEntityClass == null){
 				throw new IllegalStateException("Tried to register a TESR for " + block + " even though no tile entity has been specified.");
@@ -74,5 +74,5 @@ class BlockRendering implements IBlockRendering {
 		if(stateMapper != null){
 			registry.addBootstrapComponent(new StateMapperComponent(block, stateMapper));
 		}
-	}
+	}*/
 }

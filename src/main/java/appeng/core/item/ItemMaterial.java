@@ -3,7 +3,7 @@ package appeng.core.item;
 import appeng.api.item.IStateItem;
 import appeng.api.item.IStateItemState;
 import appeng.api.item.IStateItemState.Property;
-import appeng.core.AppEngCore;
+import appeng.core.core.AppEngCore;
 import appeng.core.api.items.IItemMaterial;
 import appeng.core.api.material.Material;
 import com.google.common.collect.Multimap;

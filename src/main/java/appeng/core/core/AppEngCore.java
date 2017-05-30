@@ -1,10 +1,11 @@
-package appeng.core;
+package appeng.core.core;
 
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
 import appeng.core.definitions.*;
@@ -22,6 +23,8 @@ public class AppEngCore implements ICore {
 
 	@Module.Instance(NAME)
 	public static final AppEngCore INSTANCE = null;
+
+
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;
 

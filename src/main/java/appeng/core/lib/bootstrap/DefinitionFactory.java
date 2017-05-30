@@ -2,6 +2,7 @@ package appeng.core.lib.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
@@ -16,10 +17,10 @@ import java.util.function.BiFunction;
 public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory {
 
 	private InitializationComponentsHandler commonInitHandler;
-	private InitializationComponentsHandler[] sidedInitHandlers;
+	private SidedICHProxy sidedInitHandlers;
 	private ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers;
 
-	public DefinitionFactory(InitializationComponentsHandler commonInitHandler, InitializationComponentsHandler[] sidedInitHandlers, ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
+	public DefinitionFactory(InitializationComponentsHandler commonInitHandler, SidedICHProxy sidedInitHandlers, ImmutableMap<Pair<Class, Class>, BiFunction> definitionBuilderSuppliers){
 		this.commonInitHandler = commonInitHandler;
 		this.sidedInitHandlers = sidedInitHandlers;
 		this.definitionBuilderSuppliers = definitionBuilderSuppliers;
@@ -27,7 +28,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 
 	@Override
 	public InitializationComponentsHandler initializationHandler(Side side){
-		return side == null ? commonInitHandler : sidedInitHandlers[side.ordinal()];
+		return side == Side.CLIENT ? sidedInitHandlers.client() : side == Side.SERVER ? sidedInitHandlers.server() : commonInitHandler;
 	}
 
 	private <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> BiFunction<ResourceLocation, I, B> get(Pair<Class, Class> key){

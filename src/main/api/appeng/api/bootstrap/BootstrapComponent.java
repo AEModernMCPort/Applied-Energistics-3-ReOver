@@ -1,7 +1,10 @@
 package appeng.api.bootstrap;
 
-import net.minecraftforge.fml.relauncher.Side;
-
+/**
+ * Throw it at {@linkplain BootstrapComponentsHandler} and the methods will be executed in corresponding initialization phases.
+ *
+ * @author Elix_x
+ */
 public interface BootstrapComponent {
 
 	default void preInit(){}

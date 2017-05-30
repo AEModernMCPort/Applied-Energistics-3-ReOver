@@ -9,5 +9,5 @@ public class CoreProxy extends BaseProxy {
 	public CoreProxy(Side side){
 		super(side);
 	}
-	
+
 }

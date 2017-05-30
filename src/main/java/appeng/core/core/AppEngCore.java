@@ -8,12 +8,14 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
+import appeng.core.core.proxy.CoreProxy;
 import appeng.core.definitions.*;
 import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
@@ -24,7 +26,8 @@ public class AppEngCore implements ICore {
 	@Module.Instance(NAME)
 	public static final AppEngCore INSTANCE = null;
 
-
+	@SidedProxy(clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
+	public static CoreProxy proxy;
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;
 

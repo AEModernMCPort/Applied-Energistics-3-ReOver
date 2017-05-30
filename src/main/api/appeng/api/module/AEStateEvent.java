@@ -20,7 +20,7 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEPreInitlizationEvent {
+	public interface AEPreInitializationEvent {
 
 	}
 

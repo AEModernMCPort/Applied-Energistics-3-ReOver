@@ -52,7 +52,7 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 	}
 
 	@ModuleEventHandler
-	public void preInitAE(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
 		registry = new FeatureFactory();
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);

@@ -54,7 +54,7 @@ public class AppEngSpatial implements ISpatial {
 	}
 
 	@ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = new FeatureFactory();
 		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
 		this.blockDefinitions = new SpatialBlockDefinitions(registry);

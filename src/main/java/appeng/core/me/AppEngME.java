@@ -49,7 +49,7 @@ public class AppEngME implements IME {
 	}
 
 	@ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = new FeatureFactory();
 		this.materialDefinitions = new MEMaterialDefinitions(registry);
 		this.blockDefinitions = new MEBlockDefinitions(registry);

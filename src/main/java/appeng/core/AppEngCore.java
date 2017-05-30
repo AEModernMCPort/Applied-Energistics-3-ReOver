@@ -62,7 +62,7 @@ public class AppEngCore implements ICore {
 	}
 
 	@ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		registry = new FeatureFactory();

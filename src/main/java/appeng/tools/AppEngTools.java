@@ -46,7 +46,7 @@ public class AppEngTools implements ITools {
 	}
 
 	@ModuleEventHandler
-	public void preInitAE(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
 		registry = new FeatureFactory();
 		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);

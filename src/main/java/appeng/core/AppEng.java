@@ -3,10 +3,6 @@ package appeng.core;
 import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
-import appeng.core.lib.bootstrap.DefinitionFactory;
-import appeng.core.lib.bootstrap_olde.BlockDefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.IBlockBuilder;
-import appeng.core.lib.definitions.BlockDefinition;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
@@ -17,10 +13,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBeacon;
-import net.minecraft.block.BlockGravel;
-import net.minecraft.block.BlockNetherBrick;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -223,7 +215,7 @@ public final class AppEng {
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		fireModulesEvent(new AEStateEventImpl.AEPreInitlizationEventImpl());
+		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl());
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}

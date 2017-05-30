@@ -34,7 +34,7 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	}
 
-	public static class AEPreInitlizationEventImpl extends AEStateEventImpl implements AEStateEvent.AEPreInitlizationEvent {
+	public static class AEPreInitializationEventImpl extends AEStateEventImpl implements AEPreInitializationEvent {
 
 	}
 

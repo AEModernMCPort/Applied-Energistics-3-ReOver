@@ -43,7 +43,7 @@ public class AppEngCrafting implements ICrafting {
 	}
 
 	@ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = new FeatureFactory();
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);

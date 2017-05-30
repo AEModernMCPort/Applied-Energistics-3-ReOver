@@ -137,7 +137,7 @@ public class FeatureFactory {
 		this.bootstrapComponents.add(component);
 	}
 
-	public void preInit(AEStateEvent.AEPreInitlizationEvent event){
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		this.bootstrapComponents.forEach(component -> component.preInit(null));
 	}
 

@@ -1,6 +1,10 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.core.bootstrap;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
+import appeng.core.api.bootstrap.IBlockBuilder;
+import appeng.core.lib.bootstrap.DefinitionBuilder;
+import appeng.core.lib.bootstrap_olde.*;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -19,13 +23,14 @@ public class BlockDefinitionBuilder<B extends Block>
 
 	private IItemBlockCustomizer itemBlock = null;
 
-	@SideOnly(Side.CLIENT)
+	//TODO 1.11.2-ReOver - Be back?
+/*	@SideOnly(Side.CLIENT)
 	private BlockRendering blockRendering;
 
 	@SideOnly(Side.CLIENT)
-	private ItemRendering itemRendering;
+	private ItemRendering itemRendering;*/
 
-	public BlockDefinitionBuilder(FeatureFactory factory, ResourceLocation id, B block){
+	public BlockDefinitionBuilder(DefinitionFactory factory, ResourceLocation id, B block){
 		super(factory, id, block);
 
 		/*if(Platform.isClient()){
@@ -52,10 +57,10 @@ public class BlockDefinitionBuilder<B extends Block>
 		return this;
 	}
 
-	@SideOnly(Side.CLIENT)
+	/*@SideOnly(Side.CLIENT)
 	private void customizeForClient(BlockRenderingCustomizer callback){
 		callback.customize(blockRendering, itemRendering);
-	}
+	}*/
 
 	@Override
 	public IBlockDefinition<B> def(B block){
@@ -81,7 +86,8 @@ public class BlockDefinitionBuilder<B extends Block>
 		}
 
 		if(itemBlock != null){
-			this.factory.addItemBlock(definition, itemBlock);
+			//TODO 1.11.2-ReOver - DEF BUILDERS DEFAULTS!!!
+			//this.factory.addItemBlock(definition, itemBlock);
 		}
 		return definition;
 	}

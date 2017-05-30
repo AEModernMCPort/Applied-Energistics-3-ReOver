@@ -59,7 +59,7 @@ public final class AppEng {
 	@Mod.Instance(MODID)
 	private static AppEng INSTANCE;
 
-	@SidedProxy(modId = MODID, clientSide = "appeng.core.proxy.AppEngModClientProxy", serverSide = "appeng.core.proxy.AppEngModServerProxy")
+	@SidedProxy(modId = MODID, clientSide = "appeng.core.proxy.AppEngClientProxy", serverSide = "appeng.core.proxy.AppEngServerProxy")
 	private static AppEngProxy proxy;
 
 	private ImmutableMap<String, ?> modules;

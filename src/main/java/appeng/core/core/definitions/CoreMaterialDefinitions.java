@@ -1,5 +1,6 @@
 package appeng.core.core.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreMaterialDefinitions;
@@ -13,8 +14,8 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	private static final String MATERIALSMODELSLOCATION = "material/";
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
-	public CoreMaterialDefinitions(FeatureFactory registry){
-		registry.material(new ResourceLocation(AppEng.MODID, "invalid"), new Material()).build();
+	public CoreMaterialDefinitions(DefinitionFactory registry){
+		registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), new Material()).build();
 
 		init();
 	}

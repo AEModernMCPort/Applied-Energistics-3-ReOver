@@ -1,5 +1,6 @@
 package appeng.core.me.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
@@ -7,7 +8,7 @@ import net.minecraft.block.Block;
 
 public class MEBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IMEBlockDefinitions {
 
-	public MEBlockDefinitions(FeatureFactory registry){
+	public MEBlockDefinitions(DefinitionFactory registry){
 		init();
 	}
 

@@ -1,5 +1,6 @@
 package appeng.core.core.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreItemDefinitions;
@@ -12,10 +13,10 @@ public class CoreItemDefinitions extends Definitions<Item, IItemDefinition<Item>
 
 	private final IItemDefinition material;
 
-	public CoreItemDefinitions(FeatureFactory registry){
-		this.material = registry.item(new ResourceLocation(AppEng.MODID, "material"), new ItemMaterial()).build();
+	public CoreItemDefinitions(DefinitionFactory registry){
+		this.material = registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "material"), new ItemMaterial()).build();
 
-		init(registry.buildDefaultItemBlocks());
+		init(/*registry.buildDefaultItemBlocks()*/);
 	}
 
 }

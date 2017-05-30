@@ -2,11 +2,20 @@ package appeng.api.bootstrap;
 
 import appeng.api.definitions.IDefinition;
 import com.google.common.reflect.TypeToken;
+import jline.internal.Nullable;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.function.Supplier;
 
 public interface DefinitionFactory {
+
+	/**
+	 * Retrieve initialization handler for given side, or common handler if side is <tt>null</tt>.
+	 * @param side logical side of the handler, or <tt>null</tt> for common handler
+	 * @return initialization handler for given side
+	 */
+	InitializationComponentsHandler initilizationHandler(@Nullable Side side);
 
 	<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
 

@@ -1,8 +1,9 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.lib.bootstrap;
 
-import appeng.api.bootstrap.InitializationComponent;
-import appeng.api.bootstrap.IDefinitionBuilder;
+import appeng.api.bootstrap.*;
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IDefinition;
+import appeng.core.lib.bootstrap_olde.FeatureFactory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
@@ -12,10 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extends DefinitionBuilder<I, T, D, B>>
-		implements IDefinitionBuilder<T, D, B> {
+public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extends DefinitionBuilder<I, T, D, B>> implements IDefinitionBuilder<T, D, B> {
 
-	protected final FeatureFactory factory;
+	protected final DefinitionFactory factory;
 
 	protected final ResourceLocation registryName;
 
@@ -26,7 +26,7 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	private final List<Consumer<D>> initCallbacks = new ArrayList<>();
 	private final List<Consumer<D>> postInitCallbacks = new ArrayList<>();
 
-	public DefinitionBuilder(FeatureFactory factory, ResourceLocation registryName, I instance){
+	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance){
 		this.factory = factory;
 		this.registryName = registryName;
 		this.instance = instance;
@@ -61,9 +61,9 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 		D definition = def(setRegistryName(instance));
 
 		preInitCallbacks.add(t -> register((t).maybe().get()));
-		preInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PreInit>addBootstrapComponent(() -> consumer.accept(definition)));
-		initCallbacks.forEach(consumer -> factory.<InitializationComponent.Init>addBootstrapComponent(() -> consumer.accept(definition)));
-		postInitCallbacks.forEach(consumer -> factory.<InitializationComponent.PostInit>addBootstrapComponent(() -> consumer.accept(definition)));
+		preInitCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptPreInit(() -> consumer.accept(definition)));
+		initCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptInit(() -> consumer.accept(definition)));
+		postInitCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptPostInit(() -> consumer.accept(definition)));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));
 

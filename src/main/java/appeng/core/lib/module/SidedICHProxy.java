@@ -6,8 +6,8 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class SidedICHProxy implements appeng.api.bootstrap.SidedICHProxy {
 
-	private final Side side;
-	private final InitializationComponentsHandler initCHandler;
+	protected final Side side;
+	protected final InitializationComponentsHandler initCHandler;
 
 	public SidedICHProxy(Side side, InitializationComponentsHandler initCHandler){
 		this.side = side;

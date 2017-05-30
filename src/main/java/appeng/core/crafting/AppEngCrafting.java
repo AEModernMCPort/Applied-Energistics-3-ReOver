@@ -5,6 +5,7 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.core.AppEng;
 import appeng.core.crafting.api.ICrafting;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
@@ -23,7 +24,7 @@ public class AppEngCrafting implements ICrafting {
 	@Module.Instance(NAME)
 	public static final AppEngCrafting INSTANCE = null;
 
-	@SidedProxy(clientSide = "appeng.core.core.proxy.CraftingClientProxy", serverSide = "appeng.core.core.proxy.CraftingServerProxy")
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.crafting.proxy.CraftingClientProxy", serverSide = "appeng.core.crafting.proxy.CraftingServerProxy")
 	public static CraftingProxy proxy;
 
 	private FeatureFactory registry;

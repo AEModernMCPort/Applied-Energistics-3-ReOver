@@ -26,7 +26,7 @@ public class AppEngCore implements ICore {
 	@Module.Instance(NAME)
 	public static final AppEngCore INSTANCE = null;
 
-	@SidedProxy(clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
 
 	private FMLControlledNamespacedRegistry<Material> materialRegistry;

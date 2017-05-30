@@ -1,5 +1,6 @@
 package appeng.core.lib.bootstrap_olde;
 
+import appeng.api.bootstrap.IBootstrapComponent;
 import appeng.api.definitions.IDefinitionsProvider;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.module.AEStateEvent;

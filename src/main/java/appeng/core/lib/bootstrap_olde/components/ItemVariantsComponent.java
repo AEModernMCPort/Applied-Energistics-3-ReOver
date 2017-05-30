@@ -1,6 +1,6 @@
 package appeng.core.lib.bootstrap_olde.components;
 
-import appeng.core.lib.bootstrap_olde.IBootstrapComponent;
+import appeng.api.bootstrap.IBootstrapComponent;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

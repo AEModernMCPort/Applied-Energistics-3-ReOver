@@ -1,4 +1,4 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.api.bootstrap;
 
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -7,12 +7,10 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public interface IBootstrapComponent {
 
-	default void preInit(Side side){
-	}
+	default void preInit(){}
 
-	default void init(Side side){
-	}
+	default void init(){}
 
-	default void postInit(Side side){
-	}
+	default void postInit(){}
+	
 }

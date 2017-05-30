@@ -224,10 +224,10 @@ public final class AppEng {
 		logger.info(definitionBuilderSuppliers);
 
 		DefinitionFactory factory = new DefinitionFactory(definitionBuilderSuppliers);
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){}));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockGravel()){}));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockNetherBrick()){}));
-		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), new InputHandler<Block, Block>(new BlockBeacon()){}));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockNetherBrick())));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockGravel())));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockNetherBrick())));
+		logger.info((Object) factory.definitionBuilder(new ResourceLocation(MODID, "testblock"), ih(new BlockBeacon())));
 		throw new IllegalArgumentException();
 
 
@@ -237,6 +237,10 @@ public final class AppEng {
 		fireModulesEvent(new AEStateEventImpl.AEPreInitlizationEventImpl());
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");*/
+	}
+
+	private InputHandler<Block, Block> ih(Block block){
+		return new InputHandler<Block, Block>(block){};
 	}
 
 	/**

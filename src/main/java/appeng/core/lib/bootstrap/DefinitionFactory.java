@@ -37,7 +37,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	}
 
 	@Override
-	public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input){
+	public<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input){
 		return this.<T, D, B, I>get(new ImmutablePair<>(input.defType(), input.inputType())).apply(this, registryName, input.get());
 	}
 }

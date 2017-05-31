@@ -11,10 +11,7 @@ import appeng.core.proxy.AppEngProxy;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.collect.*;
 import net.minecraft.block.Block;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
@@ -65,7 +62,7 @@ public final class AppEng {
 	@SidedProxy(modId = MODID, clientSide = "appeng.core.proxy.AppEngClientProxy", serverSide = "appeng.core.proxy.AppEngServerProxy")
 	private static AppEngProxy proxy;
 
-	private ImmutableMap<String, ?> modules;
+	private ImmutableBiMap<String, ?> modules;
 	private ImmutableMap<Class<?>, ?> classModule;
 	private ImmutableList<String> moduleOrder;
 	private ImmutableMap<?, Boolean> internal;
@@ -92,8 +89,17 @@ public final class AppEng {
 		return (M) classModule.get(clas);
 	}
 
+	@Deprecated
+	public <M> String getName(M module){
+		return modules.inverse().get(module);
+	}
+
 	public <M> M getCurrent(){
 		return (M) current;
+	}
+
+	public String getCurrentName(){
+		return getName(getCurrent());
 	}
 
 	public File getConfigDirectory(){
@@ -177,7 +183,7 @@ public final class AppEng {
 			event.getModLog().error("again depending on \"" + e.getNode() + "\"");
 			proxy.moduleLoadingException(String.format("Circular dependency at module %s", e.getNode()), "The module " + TextFormatting.BOLD + e.getNode() + TextFormatting.RESET + " has circular dependencies! See the log for a list!");
 		}
-		ImmutableMap.Builder<String, Object> modulesBuilder = ImmutableMap.builder();
+		ImmutableBiMap.Builder<String, Object> modulesBuilder = ImmutableBiMap.builder();
 		ImmutableMap.Builder<Class<?>, Object> classModuleBuilder = ImmutableMap.builder();
 		ImmutableMap.Builder<Object, Boolean> internalBuilder = ImmutableMap.builder();
 		ImmutableList.Builder<String> orderBuilder = ImmutableList.builder();
@@ -213,9 +219,9 @@ public final class AppEng {
 
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
-		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
 		Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
-		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers, configurationLoaderProviders));
+		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
+		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(configurationLoaderProviders, definitionBuilderSuppliers));
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();

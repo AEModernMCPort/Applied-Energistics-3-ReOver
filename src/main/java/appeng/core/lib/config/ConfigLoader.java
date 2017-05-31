@@ -31,13 +31,10 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 	}
 
 	@Override
-	public void load(Class<C> clas){
-		try{
-			featuresFile().createNewFile();
-			configFile().createNewFile();
-		} catch(IOException e){
-			//TODO 1.11.2-ReOver :(
-		}
+	public void load(Class<C> clas) throws IOException{
+		featuresFile().createNewFile();
+		configFile().createNewFile();
+
 		featuresManager = GlobalFeaturesManager.INSTANCE.get(module);
 		if(featuresManager == null) GlobalFeaturesManager.INSTANCE.register(module, featuresManager = new ModuleFeaturesManager(module));
 	}

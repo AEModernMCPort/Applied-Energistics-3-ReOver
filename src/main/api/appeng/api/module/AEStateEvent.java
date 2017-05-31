@@ -1,11 +1,13 @@
 package appeng.api.module;
 
 import appeng.api.bootstrap.*;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Parent class of all AE events sent to modules
@@ -28,6 +30,8 @@ public interface AEStateEvent {
 		 * @param <I> Definition builder input type
 		 */
 		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
+
+		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
 
 	}
 

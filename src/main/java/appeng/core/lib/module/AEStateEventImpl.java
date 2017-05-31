@@ -4,18 +4,18 @@ import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.lib.bootstrap.DefinitionFactory;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Implementations of {@linkplain AEStateEvent}s.
@@ -27,9 +27,11 @@ public class AEStateEventImpl implements AEStateEvent {
 	public static class AEBootstrapEventImpl extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
 
 		private Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers;
+		private Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders;
 
-		public AEBootstrapEventImpl(Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
+		public AEBootstrapEventImpl(Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers, Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders){
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
+			this.configurationLoaderProviders = configurationLoaderProviders;
 		}
 
 		@Override
@@ -37,6 +39,10 @@ public class AEStateEventImpl implements AEStateEvent {
 			definitionBuilderSuppliers.put(new ImmutablePair<>(defType, inputType), builderSupplier);
 		}
 
+		@Override
+		public void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider){
+			configurationLoaderProviders.put(format, clProvider);
+		}
 	}
 
 	public static class AEPreInitializationEventImpl extends AEStateEventImpl implements AEPreInitializationEvent {

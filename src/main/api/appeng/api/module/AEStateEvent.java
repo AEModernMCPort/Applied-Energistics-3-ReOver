@@ -18,6 +18,12 @@ public interface AEStateEvent {
 
 	public interface AEBootstrapEvent {
 
+		/**
+		 * Registers configuration loader provider for the given format.
+		 *
+		 * @param format a format (just an identifier to differentiate different loaders)
+		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name, all calls with the same module name should return the same {@linkplain ConfigurationLoader} instance
+		 */
 		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
 
 		/**

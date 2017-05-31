@@ -219,6 +219,9 @@ public final class AppEng {
 
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
+		configDirectory = new File(event.getModConfigurationDirectory(), NAME);
+		configDirectory.mkdirs();
+
 		Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
 		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
 		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(configurationLoaderProviders, definitionBuilderSuppliers));

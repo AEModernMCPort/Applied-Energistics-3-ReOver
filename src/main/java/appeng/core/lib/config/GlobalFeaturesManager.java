@@ -2,6 +2,7 @@ package appeng.core.lib.config;
 
 import appeng.api.config.FeaturesManager;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
 
@@ -36,5 +37,10 @@ public enum GlobalFeaturesManager implements FeaturesManager {
 	@Override
 	public FeaturesManager addDependencies(ResourceLocation feature, ResourceLocation... deps) throws IllegalStateException{
 		return managers.get(feature.getResourceDomain()).addDependencies(feature, deps);
+	}
+
+	@Override
+	public Map<ResourceLocation, Boolean> getAllFeatures(){
+		return ImmutableMap.of();
 	}
 }

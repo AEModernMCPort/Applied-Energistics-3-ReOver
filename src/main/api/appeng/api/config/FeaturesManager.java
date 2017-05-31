@@ -2,6 +2,8 @@ package appeng.api.config;
 
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Map;
+
 /**
  * This class manages features availability - only enable/disable per individual feature. Features are represented with {@linkplain ResourceLocation}, {@linkplain ResourceLocation#resourceDomain} being the module id/name and {@linkplain ResourceLocation#resourcePath} being the feature path - file like path (separated with <tt>/</tt>) sequence of feature hierarchy.<br>
  * A feature can have additional dependencies, but its' parent is always one of dependencies.<br>
@@ -37,5 +39,12 @@ public interface FeaturesManager {
 	 * @throws IllegalStateException if addition of given dependencies creates circularity
 	 */
 	FeaturesManager addDependencies(ResourceLocation feature, ResourceLocation... deps) throws IllegalStateException;
+
+	/**
+	 * <b>Mutable</b> map of al features required for saving & loading to/from config
+	 *
+	 * @return all the features this features manager holds
+	 */
+	Map<ResourceLocation, Boolean> getAllFeatures();
 
 }

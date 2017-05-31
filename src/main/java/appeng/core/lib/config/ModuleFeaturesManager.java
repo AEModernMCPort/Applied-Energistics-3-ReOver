@@ -51,4 +51,10 @@ public class ModuleFeaturesManager implements FeaturesManager {
 			return this;
 		} else return GlobalFeaturesManager.INSTANCE.addDependencies(feature, deps);
 	}
+
+	@Override
+	public Map<ResourceLocation, Boolean> getAllFeatures(){
+		return availability;
+	}
+
 }

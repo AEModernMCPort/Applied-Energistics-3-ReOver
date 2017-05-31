@@ -1,0 +1,49 @@
+package appeng.core.lib.config;
+
+import appeng.api.config.FeaturesManager;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import net.minecraft.util.ResourceLocation;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ModuleFeaturesManager implements FeaturesManager {
+
+	private final String domain;
+	private Map<ResourceLocation, Boolean> availability = new HashMap<>();
+	private Multimap<ResourceLocation, ResourceLocation> dependencies = HashMultimap.create();
+
+	public ModuleFeaturesManager(String domain){
+		this.domain = domain;
+	}
+
+	private boolean getOrSetToDefault(ResourceLocation feature, boolean def){
+		Boolean b = availability.get(feature);
+		if(b == null) availability.put(feature, b = def);
+		return b;
+	}
+
+	@Override
+	public FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps){
+		if(domain.equals(feature.getResourceDomain())){
+			getOrSetToDefault(feature, def);
+			return addDependencies(feature, deps);
+		} else return GlobalFeaturesManager.INSTANCE.addFeature(feature, def, deps);
+	}
+
+	@Override
+	public boolean isEnabled(ResourceLocation feature, boolean def){
+		if(domain.equals(feature.getResourceDomain())) return getOrSetToDefault(feature, def);
+		else return GlobalFeaturesManager.INSTANCE.isEnabled(feature, def);
+	}
+
+	@Override
+	public FeaturesManager addDependencies(ResourceLocation feature, ResourceLocation... deps) throws IllegalStateException{
+		if(domain.equals(feature.getResourceDomain())){
+			dependencies.putAll(feature, Arrays.asList(deps));
+			return this;
+		} else return GlobalFeaturesManager.INSTANCE.addDependencies(feature, deps);
+	}
+}

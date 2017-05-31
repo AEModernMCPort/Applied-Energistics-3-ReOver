@@ -11,6 +11,7 @@ import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
+import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.definitions.*;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
@@ -76,6 +77,8 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
+		event.registerConfigurationLoaderProvider("JSON", module -> new JSONConfigLoader(module));
+		
 		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
 		//TODO 1.11.2-ReOver - Find something better than Class for tiles & fix NPE

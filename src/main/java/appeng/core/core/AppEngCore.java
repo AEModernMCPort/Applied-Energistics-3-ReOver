@@ -2,7 +2,6 @@ package appeng.core.core;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
-import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -17,7 +16,6 @@ import appeng.core.core.definitions.*;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -27,10 +25,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
@@ -99,19 +93,6 @@ public class AppEngCore implements ICore {
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
-		ConfigurationLoader<POJODuh> configLoader = event.configurationLoader();
-		try{
-			configLoader.load(POJODuh.class);
-		} catch(IOException e){
-			e.printStackTrace();
-		}
-		System.out.println(configLoader.configuration());
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			e.printStackTrace();
-		}
-
 		registry = event.factory(initHandler, proxy);
 		this.materialDefinitions = new CoreMaterialDefinitions(registry);
 		this.blockDefinitions = new CoreBlockDefinitions(registry);
@@ -159,23 +140,5 @@ public class AppEngCore implements ICore {
 	public void serverStopped(FMLServerStoppedEvent event){
 
 	}*/
-
-	public static class POJODuh {
-
-		public boolean enabled = true;
-		public String justAString = "This is a string!";
-		public Map<ResourceLocation, ResourceLocation> theMap = new HashMap<>();
-
-		public POJODuh(){
-			theMap.put(new ResourceLocation("key1"), new ResourceLocation("v1"));
-			theMap.put(new ResourceLocation("key2"), new ResourceLocation("v2"));
-			theMap.put(new ResourceLocation(AppEng.MODID,"duhkey"), Blocks.ANVIL.getRegistryName());
-		}
-
-		@Override
-		public String toString(){
-			return "POJODuh{" + "enabled=" + enabled + ", justAString='" + justAString + '\'' + ", theMap=" + theMap + '}';
-		}
-	}
 
 }

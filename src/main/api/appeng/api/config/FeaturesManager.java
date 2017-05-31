@@ -10,6 +10,16 @@ import net.minecraft.util.ResourceLocation;
 public interface FeaturesManager {
 
 	/**
+	 * Adds a feature to the features manager without returning its' value.
+	 *
+	 * @param feature The feature
+	 * @param def default value
+	 * @param deps Additional feature dependencies
+	 * @return <tt>this</tt>
+	 */
+	FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps);
+
+	/**
 	 * A feature is enabled if and only if all the features it depends on are enabled AND this feature itself is enabled.
 	 *
 	 * @param feature The feature

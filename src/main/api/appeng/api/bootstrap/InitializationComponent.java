@@ -7,11 +7,14 @@ package appeng.api.bootstrap;
  */
 public interface InitializationComponent {
 
-	default void preInit(){}
+	default void preInit(){
+	}
 
-	default void init(){}
+	default void init(){
+	}
 
-	default void postInit(){}
+	default void postInit(){
+	}
 
 	@FunctionalInterface
 	interface PreInit extends InitializationComponent {
@@ -35,6 +38,5 @@ public interface InitializationComponent {
 		@Override
 		void postInit();
 	}
-
 
 }

@@ -39,7 +39,8 @@ public class ModuleFeaturesManager implements FeaturesManager {
 
 	@Override
 	public boolean isEnabled(ResourceLocation feature, boolean def){
-		if(domain.equals(feature.getResourceDomain())) return feature == null || (getOrSetToDefault(feature, def) && getOrSetToDefault(parent(feature), def) && dependencies.get(feature).stream().map(location -> isEnabled(location, def)).allMatch(enabled -> enabled == true));
+		if(domain.equals(feature.getResourceDomain()))
+			return feature == null || (getOrSetToDefault(feature, def) && getOrSetToDefault(parent(feature), def) && dependencies.get(feature).stream().map(location -> isEnabled(location, def)).allMatch(enabled -> enabled == true));
 		else return GlobalFeaturesManager.INSTANCE.isEnabled(feature, def);
 	}
 

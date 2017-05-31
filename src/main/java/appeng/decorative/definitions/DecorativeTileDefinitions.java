@@ -6,8 +6,7 @@ import appeng.core.lib.definitions.Definitions;
 import appeng.decorative.api.definitions.IDecorativeTileDefinitions;
 import net.minecraft.tileentity.TileEntity;
 
-public class DecorativeTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>>
-		implements IDecorativeTileDefinitions {
+public class DecorativeTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements IDecorativeTileDefinitions {
 
 	public DecorativeTileDefinitions(DefinitionFactory registry){
 		init();

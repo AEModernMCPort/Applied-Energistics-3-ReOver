@@ -5,8 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 
-public class DimensionTypeDefinition<D extends DimensionType> extends Definition<D>
-		implements IDimensionTypeDefinition<D> {
+public class DimensionTypeDefinition<D extends DimensionType> extends Definition<D> implements IDimensionTypeDefinition<D> {
 
 	public DimensionTypeDefinition(ResourceLocation identifier, D dimensionType){
 		super(identifier, dimensionType);

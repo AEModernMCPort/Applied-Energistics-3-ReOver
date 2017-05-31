@@ -6,8 +6,7 @@ import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMETileDefinitions;
 import net.minecraft.tileentity.TileEntity;
 
-public class METileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>>
-		implements IMETileDefinitions {
+public class METileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements IMETileDefinitions {
 
 	public METileDefinitions(DefinitionFactory registry){
 		init();

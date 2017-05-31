@@ -5,14 +5,11 @@ import appeng.api.definitions.IItemDefinition;
 import appeng.api.item.IStateItem;
 import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.ItemRenderingCustomizer;
 import appeng.core.lib.bootstrap_olde.ItemSubDefinition;
 import appeng.core.lib.definitions.ItemDefinition;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, I, IItemDefinition<I>, ItemDefinitionBuilder<I>> implements IItemBuilder<I, ItemDefinitionBuilder<I>> {
 

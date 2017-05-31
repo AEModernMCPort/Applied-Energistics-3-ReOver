@@ -15,8 +15,8 @@ public interface FeaturesManager {
 	 * Adds a feature to the features manager without returning its' value.
 	 *
 	 * @param feature The feature
-	 * @param def default value
-	 * @param deps Additional feature dependencies
+	 * @param def     default value
+	 * @param deps    Additional feature dependencies
 	 * @return <tt>this</tt>
 	 */
 	FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps);
@@ -25,7 +25,7 @@ public interface FeaturesManager {
 	 * A feature is enabled if and only if all the features it depends on are enabled AND this feature itself is enabled.
 	 *
 	 * @param feature The feature
-	 * @param def default value
+	 * @param def     default value
 	 * @return Whether the feature is enabled
 	 */
 	boolean isEnabled(ResourceLocation feature, boolean def);
@@ -34,7 +34,7 @@ public interface FeaturesManager {
 	 * Adds dependencies to the feature.
 	 *
 	 * @param feature The feature
-	 * @param deps Additional feature dependencies
+	 * @param deps    Additional feature dependencies
 	 * @return <tt>this</tt>
 	 * @throws IllegalStateException if addition of given dependencies creates circularity
 	 */

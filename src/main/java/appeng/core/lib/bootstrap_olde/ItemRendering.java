@@ -1,18 +1,10 @@
 package appeng.core.lib.bootstrap_olde;
 
-import appeng.core.lib.bootstrap_olde.components.ItemColorComponent;
-import appeng.core.lib.bootstrap_olde.components.ItemMeshDefinitionComponent;
-import appeng.core.lib.bootstrap_olde.components.ItemModelComponent;
-import appeng.core.lib.bootstrap_olde.components.ItemVariantsComponent;
-import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.color.IItemColor;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

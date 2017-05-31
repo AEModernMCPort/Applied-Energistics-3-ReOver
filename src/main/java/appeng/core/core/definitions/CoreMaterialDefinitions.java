@@ -6,11 +6,9 @@ import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreMaterialDefinitions;
 import appeng.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
-import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
-public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>>
-		implements ICoreMaterialDefinitions {
+public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 
 	private static final String MATERIALSMODELSLOCATION = "material/";
 	private static final String MATERIALSMODELSVARIANT = "inventory";
@@ -22,7 +20,9 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){
-		return new DefinitionFactory.InputHandler<Material, Material>(material){};
+		return new DefinitionFactory.InputHandler<Material, Material>(material) {
+
+		};
 	}
 
 }

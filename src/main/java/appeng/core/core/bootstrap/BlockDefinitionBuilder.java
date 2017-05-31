@@ -4,19 +4,17 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.*;
+import appeng.core.lib.bootstrap_olde.BlockRenderingCustomizer;
+import appeng.core.lib.bootstrap_olde.BlockSubDefinition;
+import appeng.core.lib.bootstrap_olde.IItemBlockCustomizer;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockDefinitionBuilder<B extends Block>
-		extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>>
-		implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
+public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
 
 	//TODO 1.11.2-ReOver - :P
 	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;

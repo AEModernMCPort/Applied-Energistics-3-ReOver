@@ -1,7 +1,7 @@
 package appeng.core.lib.bootstrap;
 
-import appeng.api.bootstrap.*;
 import appeng.api.bootstrap.DefinitionFactory;
+import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;

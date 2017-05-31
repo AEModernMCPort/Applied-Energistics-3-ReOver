@@ -8,8 +8,7 @@ import appeng.core.lib.definitions.Definition;
 import appeng.core.lib.definitions.ItemDefinition;
 import net.minecraft.item.Item;
 
-public class ItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends Definition<S>
-		implements IItemSubDefinition<S, I> {
+public class ItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends Definition<S> implements IItemSubDefinition<S, I> {
 
 	private final ItemDefinition<I> parent;
 	private final I item;

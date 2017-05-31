@@ -1,9 +1,7 @@
 package appeng.core.lib.config;
 
 import appeng.api.config.FeaturesManager;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;

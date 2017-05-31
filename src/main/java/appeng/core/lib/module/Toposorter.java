@@ -124,8 +124,7 @@ public class Toposorter {
 		return res;
 	}
 
-	private static <T> void inspectNode(String name, Graph<T> graph, List<T> res, LinkedList<String> debugger)
-			throws SortingException{
+	private static <T> void inspectNode(String name, Graph<T> graph, List<T> res, LinkedList<String> debugger) throws SortingException{
 		Graph<T>.Node node = graph.getNode(name);
 		if(node.isMarked()){
 			throw new SortingException(name, debugger);

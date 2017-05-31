@@ -12,6 +12,7 @@ public interface DefinitionFactory {
 
 	/**
 	 * Retrieve initialization handler for given side, or common handler if side is <tt>null</tt>.
+	 *
 	 * @param side logical side of the handler, or <tt>null</tt> for common handler
 	 * @return initialization handler for given side
 	 */
@@ -33,11 +34,15 @@ public interface DefinitionFactory {
 		}
 
 		public final Class<? super T> defType(){
-			return new TypeToken<T>(getClass()){}.getRawType();
+			return new TypeToken<T>(getClass()) {
+
+			}.getRawType();
 		}
 
 		public final Class<? super I> inputType(){
-			return new TypeToken<I>(getClass()){}.getRawType();
+			return new TypeToken<I>(getClass()) {
+
+			}.getRawType();
 		}
 
 	}

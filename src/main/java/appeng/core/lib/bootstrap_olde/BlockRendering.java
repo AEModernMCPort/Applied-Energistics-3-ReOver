@@ -1,9 +1,5 @@
 package appeng.core.lib.bootstrap_olde;
 
-import appeng.core.lib.bootstrap_olde.components.BlockColorComponent;
-import appeng.core.lib.bootstrap_olde.components.StateMapperComponent;
-import appeng.core.lib.bootstrap_olde.components.TesrComponent;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;

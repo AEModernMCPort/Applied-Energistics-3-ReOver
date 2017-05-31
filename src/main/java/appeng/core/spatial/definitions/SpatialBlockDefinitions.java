@@ -6,8 +6,7 @@ import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialBlockDefinitions;
 import net.minecraft.block.Block;
 
-public class SpatialBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>>
-		implements ISpatialBlockDefinitions {
+public class SpatialBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ISpatialBlockDefinitions {
 
 	public SpatialBlockDefinitions(DefinitionFactory registry){
 		init();

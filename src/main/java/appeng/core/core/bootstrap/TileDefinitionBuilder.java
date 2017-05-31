@@ -12,9 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class TileDefinitionBuilder<T extends TileEntity>
-		extends DefinitionBuilder<Class<T>, Class<T>, ITileDefinition<T>, TileDefinitionBuilder<T>>
-		implements ITileBuilder<T, TileDefinitionBuilder<T>> {
+public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuilder<Class<T>, Class<T>, ITileDefinition<T>, TileDefinitionBuilder<T>> implements ITileBuilder<T, TileDefinitionBuilder<T>> {
 
 	private Definitions<Block, IBlockDefinition<Block>> blockDefinitions;
 

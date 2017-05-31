@@ -10,7 +10,6 @@ import net.minecraft.block.state.IBlockState;
  * @param <B> Block
  * @author Elix_x
  */
-public interface IBlockSubDefinition<S extends IBlockState, B extends Block>
-		extends ISubDefinition<S, B, IBlockSubDefinition<S, B>> {
+public interface IBlockSubDefinition<S extends IBlockState, B extends Block> extends ISubDefinition<S, B, IBlockSubDefinition<S, B>> {
 
 }

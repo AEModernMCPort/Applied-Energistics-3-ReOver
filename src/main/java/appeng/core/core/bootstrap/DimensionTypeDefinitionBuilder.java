@@ -9,9 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
 
-public class DimensionTypeDefinitionBuilder<D extends DimensionType>
-		extends DefinitionBuilder<Integer, D, IDimensionTypeDefinition<D>, DimensionTypeDefinitionBuilder<D>>
-		implements IDimensionTypeBuilder<D, DimensionTypeDefinitionBuilder<D>> {
+public class DimensionTypeDefinitionBuilder<D extends DimensionType> extends DefinitionBuilder<Integer, D, IDimensionTypeDefinition<D>, DimensionTypeDefinitionBuilder<D>> implements IDimensionTypeBuilder<D, DimensionTypeDefinitionBuilder<D>> {
 
 	private String name;
 	private String suffix;

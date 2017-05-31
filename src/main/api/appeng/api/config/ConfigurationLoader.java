@@ -4,6 +4,7 @@ import java.io.IOException;
 
 /**
  * Configuration loader loads configuration - {@linkplain FeaturesManager} and custom configuration data stored as a POJO.
+ *
  * @param <C> Type of custom configuration class
  */
 public interface ConfigurationLoader<C> {

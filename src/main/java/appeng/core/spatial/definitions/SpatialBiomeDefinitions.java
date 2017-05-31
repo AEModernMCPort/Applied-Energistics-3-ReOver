@@ -6,8 +6,7 @@ import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialBiomeDefinitions;
 import net.minecraft.world.biome.Biome;
 
-public class SpatialBiomeDefinitions extends Definitions<Biome, IBiomeDefinition<Biome>>
-		implements ISpatialBiomeDefinitions {
+public class SpatialBiomeDefinitions extends Definitions<Biome, IBiomeDefinition<Biome>> implements ISpatialBiomeDefinitions {
 
 	public SpatialBiomeDefinitions(DefinitionFactory registry){
 		init();

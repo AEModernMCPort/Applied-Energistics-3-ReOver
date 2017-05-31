@@ -6,14 +6,12 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory {
 
@@ -37,7 +35,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	}
 
 	@Override
-	public<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input){
+	public <T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input){
 		return this.<T, D, B, I>get(new ImmutablePair<>(input.defType(), input.inputType())).apply(this, registryName, input.get());
 	}
 }

@@ -36,7 +36,8 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 		configFile().createNewFile();
 
 		featuresManager = GlobalFeaturesManager.INSTANCE.get(module);
-		if(featuresManager == null) GlobalFeaturesManager.INSTANCE.register(module, featuresManager = new ModuleFeaturesManager(module));
+		if(featuresManager == null)
+			GlobalFeaturesManager.INSTANCE.register(module, featuresManager = new ModuleFeaturesManager(module));
 	}
 
 	@Override
@@ -59,11 +60,13 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 	protected void hierarchicalToManager(HierarchicalFeatures features){
 		if(features == null) return;
 		Map<ResourceLocation, Boolean> allFeatures = featuresManager.getAllFeatures();
-		if(features.children != null) features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(next, hierarchicalFeatures, allFeatures));
+		if(features.children != null)
+			features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(next, hierarchicalFeatures, allFeatures));
 	}
 
 	protected void hierarchicalToManager(String path, HierarchicalFeatures features, Map<ResourceLocation, Boolean> allFeatures){
-		if(features.children != null) features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(String.join("/", path, next), hierarchicalFeatures, allFeatures));
+		if(features.children != null)
+			features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(String.join("/", path, next), hierarchicalFeatures, allFeatures));
 		allFeatures.put(new ResourceLocation(module, path), features.enabled);
 	}
 
@@ -80,7 +83,8 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 		}
 
 		public HierarchicalFeatures getOrCreateLocate(String loc){
-			if(loc.contains("/")) return getOrCreate(loc.substring(0, loc.indexOf('/'))).getOrCreate(loc.substring(loc.indexOf('/') + 1));
+			if(loc.contains("/"))
+				return getOrCreate(loc.substring(0, loc.indexOf('/'))).getOrCreate(loc.substring(loc.indexOf('/') + 1));
 			else return getOrCreate(loc);
 		}
 

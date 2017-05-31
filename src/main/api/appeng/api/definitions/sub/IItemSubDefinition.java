@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
  * @param <I> Item
  * @author Elix_x
  */
-public interface IItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>>
-		extends ISubDefinition<S, I, IItemSubDefinition<S, I>> {
+public interface IItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends ISubDefinition<S, I, IItemSubDefinition<S, I>> {
 
 }

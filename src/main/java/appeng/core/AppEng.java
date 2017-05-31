@@ -240,7 +240,9 @@ public final class AppEng {
 	}
 
 	private InputHandler<Block, Block> ih(Block block){
-		return new InputHandler<Block, Block>(block){};
+		return new InputHandler<Block, Block>(block) {
+
+		};
 	}
 
 	/**

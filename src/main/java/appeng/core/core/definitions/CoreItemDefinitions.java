@@ -3,7 +3,6 @@ package appeng.core.core.definitions;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.api.definitions.ICoreItemDefinitions;
 import appeng.core.core.bootstrap.ItemDefinitionBuilder;
 import appeng.core.item.ItemMaterial;
@@ -23,7 +22,9 @@ public class CoreItemDefinitions extends Definitions<Item, IItemDefinition<Item>
 	}
 
 	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){
-		return new DefinitionFactory.InputHandler<Item, Item>(item){};
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {
+
+		};
 	}
 
 }

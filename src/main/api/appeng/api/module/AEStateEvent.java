@@ -4,10 +4,8 @@ import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
 import appeng.api.definitions.IDefinition;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -22,7 +20,7 @@ public interface AEStateEvent {
 		/**
 		 * Registers configuration loader provider for the given format.
 		 *
-		 * @param format a format (just an identifier to differentiate different loaders)
+		 * @param format     a format (just an identifier to differentiate different loaders)
 		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name, all calls with the same module name should return the same {@linkplain ConfigurationLoader} instance
 		 */
 		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
@@ -30,13 +28,13 @@ public interface AEStateEvent {
 		/**
 		 * Registers definition builder supplier for new input/definition type pair.
 		 *
-		 * @param defType Definition type
-		 * @param inputType Input type
+		 * @param defType         Definition type
+		 * @param inputType       Input type
 		 * @param builderSupplier Builder supplier transforming input and regsitry name into definition builder
-		 * @param <T> Type held by definition
-		 * @param <D> Type of definition
-		 * @param <B> Definition Builder
-		 * @param <I> Definition builder input type
+		 * @param <T>             Type held by definition
+		 * @param <D>             Type of definition
+		 * @param <B>             Definition Builder
+		 * @param <I>             Definition builder input type
 		 */
 		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
 

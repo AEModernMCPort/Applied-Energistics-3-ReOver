@@ -30,7 +30,7 @@ public enum GlobalFeaturesManager implements FeaturesManager {
 
 	@Override
 	public boolean isEnabled(ResourceLocation feature, boolean def){
-		return managers.get(feature.getResourceDomain()).isEnabled(feature, def);
+		return feature == null || managers.get(feature.getResourceDomain()).isEnabled(feature, def);
 	}
 
 	@Override

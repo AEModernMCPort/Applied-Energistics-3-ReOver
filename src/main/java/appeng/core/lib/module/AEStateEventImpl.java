@@ -5,11 +5,13 @@ import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.config.ConfigurationLoader;
+import appeng.api.config.FeaturesManager;
 import appeng.api.definitions.IDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.DefinitionFactory;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.core.lib.config.GlobalFeaturesManager;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -60,6 +62,16 @@ public class AEStateEventImpl implements AEStateEvent {
 		@Override
 		public <C> ConfigurationLoader<C> configurationLoader(){
 			return configurationLoaderProvider.apply(AppEng.instance().getCurrentName());
+		}
+
+		@Override
+		public void registerFeatureManager(FeaturesManager manager){
+			GlobalFeaturesManager.INSTANCE.register(AppEng.instance().getCurrentName(), manager);
+		}
+
+		@Override
+		public FeaturesManager globalFeaturesManager(){
+			return GlobalFeaturesManager.INSTANCE;
 		}
 
 		@Override

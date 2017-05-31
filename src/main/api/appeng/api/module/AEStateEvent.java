@@ -2,6 +2,7 @@ package appeng.api.module;
 
 import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
+import appeng.api.config.FeaturesManager;
 import appeng.api.definitions.IDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
@@ -44,6 +45,10 @@ public interface AEStateEvent {
 	public interface AEPreInitializationEvent {
 
 		<C> ConfigurationLoader<C> configurationLoader();
+
+		void registerFeatureManager(FeaturesManager manager);
+
+		FeaturesManager globalFeaturesManager();
 
 		InitializationComponentsHandler defaultICHandler();
 

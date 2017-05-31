@@ -14,6 +14,11 @@ public enum GlobalFeaturesManager implements FeaturesManager {
 
 	private Map<String, FeaturesManager> managers = new HashMap<>();
 
+	public void register(String domain, FeaturesManager manager){
+		if(manager == this) throw new IllegalArgumentException("Cannot register global features manager to itself!");
+		managers.put(domain, manager);
+	}
+
 	@Override
 	public FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps){
 		return managers.get(feature.getResourceDomain()).addFeature(feature, def, deps);

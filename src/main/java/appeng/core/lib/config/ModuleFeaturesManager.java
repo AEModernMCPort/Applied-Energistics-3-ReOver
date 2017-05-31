@@ -11,6 +11,10 @@ import java.util.Map;
 
 public class ModuleFeaturesManager implements FeaturesManager {
 
+	public static ResourceLocation parent(ResourceLocation feature){
+		return feature.getResourcePath().contains("/") ? new ResourceLocation(feature.getResourceDomain(), feature.getResourcePath().substring(0, feature.getResourcePath().lastIndexOf('/'))) : null;
+	}
+
 	private final String domain;
 	private Map<ResourceLocation, Boolean> availability = new HashMap<>();
 	private Multimap<ResourceLocation, ResourceLocation> dependencies = HashMultimap.create();
@@ -35,13 +39,14 @@ public class ModuleFeaturesManager implements FeaturesManager {
 
 	@Override
 	public boolean isEnabled(ResourceLocation feature, boolean def){
-		if(domain.equals(feature.getResourceDomain())) return getOrSetToDefault(feature, def);
+		if(domain.equals(feature.getResourceDomain())) return feature == null || (getOrSetToDefault(feature, def) && getOrSetToDefault(parent(feature), def) && dependencies.get(feature).stream().map(location -> isEnabled(location, def)).allMatch(enabled -> enabled == true));
 		else return GlobalFeaturesManager.INSTANCE.isEnabled(feature, def);
 	}
 
 	@Override
 	public FeaturesManager addDependencies(ResourceLocation feature, ResourceLocation... deps) throws IllegalStateException{
 		if(domain.equals(feature.getResourceDomain())){
+			//TODO 1.11.2-ReOver - Check for circularities!
 			dependencies.putAll(feature, Arrays.asList(deps));
 			return this;
 		} else return GlobalFeaturesManager.INSTANCE.addDependencies(feature, deps);

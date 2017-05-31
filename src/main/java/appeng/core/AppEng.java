@@ -2,6 +2,7 @@ package appeng.core;
 
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.bootstrap.DefinitionFactory.InputHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.lib.module.AEStateEventImpl;
@@ -16,6 +17,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -42,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -211,7 +214,13 @@ public final class AppEng {
 		logger.info(String.format("Succesfully loaded %s modules", modules.size()));
 
 		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
-		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers));
+		Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
+		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(definitionBuilderSuppliers, configurationLoaderProviders));
+
+		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
+		config.load();
+		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading", configurationLoaderProviders.keySet().toArray(new String[0])));
+		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");

@@ -19,6 +19,10 @@ public enum GlobalFeaturesManager implements FeaturesManager {
 		managers.put(domain, manager);
 	}
 
+	public FeaturesManager get(String domain){
+		return managers.get(domain);
+	}
+
 	@Override
 	public FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps){
 		return managers.get(feature.getResourceDomain()).addFeature(feature, def, deps);

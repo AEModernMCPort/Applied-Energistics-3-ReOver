@@ -18,6 +18,8 @@ public interface AEStateEvent {
 
 	public interface AEBootstrapEvent {
 
+		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
+
 		/**
 		 * Registers definition builder supplier for new input/definition type pair.
 		 *
@@ -31,11 +33,11 @@ public interface AEStateEvent {
 		 */
 		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
 
-		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
-
 	}
 
 	public interface AEPreInitializationEvent {
+
+		<C> ConfigurationLoader<C> configurationLoader();
 
 		InitializationComponentsHandler defaultICHandler();
 

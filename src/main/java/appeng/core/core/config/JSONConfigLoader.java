@@ -31,30 +31,6 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 			return false;
 		}
 
-	}).registerTypeAdapter(Multimap.class, new JsonSerializer<Multimap>() {
-
-		public JsonElement serialize(Multimap multimap, Type type, JsonSerializationContext jsonSerializationContext){
-			return jsonSerializationContext.serialize(multimap.asMap());
-		}
-
-	}).registerTypeAdapter(Multimap.class, new JsonDeserializer<Multimap>() {
-
-		public Multimap deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
-				throws JsonParseException{
-			final SetMultimap<String, String> map = Multimaps.<String, String>newSetMultimap(new HashMap<String, Collection<String>>(), new com.google.common.base.Supplier<Set<String>>() {
-
-				public Set<String> get(){
-					return Sets.newHashSet();
-				}
-			});
-			for(Map.Entry<String, JsonElement> entry : ((JsonObject) jsonElement).entrySet()){
-				for(JsonElement element : (JsonArray) entry.getValue()){
-					map.get(entry.getKey()).add(element.getAsString());
-				}
-			}
-			return map;
-		}
-
 	}).create();
 
 	public JSONConfigLoader(String module){

@@ -16,8 +16,6 @@ import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.definitions.*;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -31,6 +29,8 @@ import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
@@ -164,17 +164,17 @@ public class AppEngCore implements ICore {
 
 		public boolean enabled = true;
 		public String justAString = "This is a string!";
-		public Multimap<ResourceLocation, ResourceLocation> theComplexMultimap = HashMultimap.create();
+		public Map<ResourceLocation, ResourceLocation> theMap = new HashMap<>();
 
 		public POJODuh(){
-			theComplexMultimap.put(new ResourceLocation("key1"), new ResourceLocation("v1"));
-			theComplexMultimap.put(new ResourceLocation("key2"), new ResourceLocation("v2"));
-			theComplexMultimap.put(new ResourceLocation("key2"), Blocks.ANVIL.getRegistryName());
+			theMap.put(new ResourceLocation("key1"), new ResourceLocation("v1"));
+			theMap.put(new ResourceLocation("key2"), new ResourceLocation("v2"));
+			theMap.put(new ResourceLocation(AppEng.MODID,"duhkey"), Blocks.ANVIL.getRegistryName());
 		}
 
 		@Override
 		public String toString(){
-			return "POJODuh{" + "enabled=" + enabled + ", justAString='" + justAString + '\'' + ", theComplexMultimap=" + theComplexMultimap + '}';
+			return "POJODuh{" + "enabled=" + enabled + ", justAString='" + justAString + '\'' + ", theMap=" + theMap + '}';
 		}
 	}
 

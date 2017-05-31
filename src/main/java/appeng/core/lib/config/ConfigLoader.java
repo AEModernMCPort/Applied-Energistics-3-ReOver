@@ -57,6 +57,7 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 	}
 
 	protected void hierarchicalToManager(HierarchicalFeatures features){
+		if(features == null) return;
 		Map<ResourceLocation, Boolean> allFeatures = featuresManager.getAllFeatures();
 		if(features.children != null) features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(next, hierarchicalFeatures, allFeatures));
 	}

@@ -65,7 +65,7 @@ public class AEStateEventImpl implements AEStateEvent {
 		}
 
 		@Override
-		public void registerFeatureManager(FeaturesManager manager){
+		public void registerCustomFeatureManager(FeaturesManager manager){
 			GlobalFeaturesManager.INSTANCE.register(AppEng.instance().getCurrentName(), manager);
 		}
 

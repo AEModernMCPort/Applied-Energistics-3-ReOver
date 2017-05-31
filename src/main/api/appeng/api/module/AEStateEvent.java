@@ -46,7 +46,7 @@ public interface AEStateEvent {
 
 		<C> ConfigurationLoader<C> configurationLoader();
 
-		void registerFeatureManager(FeaturesManager manager);
+		void registerCustomFeatureManager(FeaturesManager manager);
 
 		FeaturesManager globalFeaturesManager();
 

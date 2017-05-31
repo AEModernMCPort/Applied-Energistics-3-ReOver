@@ -31,7 +31,7 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 			return false;
 		}
 
-	}).create();
+	}).setPrettyPrinting().create();
 
 	public JSONConfigLoader(String module){
 		super(module, "json");

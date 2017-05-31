@@ -1,6 +1,6 @@
 package appeng.api.bootstrap;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.NotNull;
 
 public interface SidedICHProxy {
 

@@ -6,9 +6,9 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class JSONConfigLoader<C> extends ConfigLoader<C> {
@@ -41,8 +41,8 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 
 	@Override
 	public void save() throws IOException{
-		GSON.toJson(managerToHierarchical(), new FileWriter(featuresFile()));
-		GSON.toJson(config, new FileWriter(configFile()));
+		FileUtils.write(featuresFile(), GSON.toJson(managerToHierarchical()));
+		FileUtils.write(configFile(), GSON.toJson(config));
 	}
 
 }

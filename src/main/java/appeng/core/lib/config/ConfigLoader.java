@@ -19,14 +19,19 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 		this.extension = extension;
 	}
 
-	protected File configurationFile(){
-		return new File(AppEng.instance().getConfigDirectory(), module + "." + extension);
+	protected File featuresFile(){
+		return new File(AppEng.instance().getConfigDirectory(), module + ".features." + extension);
 	}
 
+	protected File configFile(){
+		return new File(AppEng.instance().getConfigDirectory(), module + ".config." + extension);
+	}
+	
 	@Override
 	public void load(Class<C> clas){
 		try{
-			configurationFile().createNewFile();
+			featuresFile().createNewFile();
+			configFile().createNewFile();
 		} catch(IOException e){
 			//TODO 1.11.2-ReOver :(
 		}

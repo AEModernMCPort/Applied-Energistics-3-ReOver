@@ -12,4 +12,8 @@ public class CoreBlockDefinitions extends Definitions<Block, IBlockDefinition<Bl
 		init();
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

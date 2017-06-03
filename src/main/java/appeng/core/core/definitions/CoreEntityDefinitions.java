@@ -12,4 +12,8 @@ public class CoreEntityDefinitions extends Definitions<EntityEntry, IEntityDefin
 		init();
 	}
 
+	private DefinitionFactory.InputHandler<EntityEntry, EntityEntry> ih(EntityEntry entity){
+		return new DefinitionFactory.InputHandler<EntityEntry, EntityEntry>(entity) {};
+	}
+
 }

@@ -12,4 +12,8 @@ public class CoreTileDefinitions extends Definitions<Class<TileEntity>, ITileDef
 		init();
 	}
 
+	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class<TileEntity> tile){
+		return new DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>>(tile) {};
+	}
+
 }

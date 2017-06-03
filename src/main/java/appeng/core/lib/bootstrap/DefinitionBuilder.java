@@ -79,6 +79,7 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	protected void register(T t){
 		if(t instanceof IForgeRegistryEntry){
 			GameRegistry.register((IForgeRegistryEntry) t);
+			System.out.println("Reg: " + t);
 		}
 	}
 

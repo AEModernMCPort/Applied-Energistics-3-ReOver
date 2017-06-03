@@ -7,16 +7,11 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
-import appeng.core.crafting.definitions.CraftingBlockDefinitions;
-import appeng.core.crafting.definitions.CraftingItemDefinitions;
-import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.staticfire.api.IStaticFire;
 import appeng.core.staticfire.proxy.StaticFireProxy;
-import appeng.core.staticfire.definitions.StaticFiregBlockDefinitions;
+import appeng.core.staticfire.definitions.StaticFireBlockDefinitions;
 import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -39,7 +34,7 @@ public class AppEngStaticFire implements IStaticFire{
     private DefinitionFactory registry;
 
     //private CraftingItemDefinitions itemDefinitions;
-    private StaticFiregBlockDefinitions blockDefinitions;
+    private StaticFireBlockDefinitions blockDefinitions;
     //private CraftingTileDefinitions tileDefinitions;
 
     @Override
@@ -63,7 +58,7 @@ public class AppEngStaticFire implements IStaticFire{
     @Module.ModuleEventHandler
     public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
         registry = event.factory(initHandler, proxy);
-        this.blockDefinitions = new StaticFiregBlockDefinitions(registry);
+        this.blockDefinitions = new StaticFireBlockDefinitions(registry);
         //this.itemDefinitions = new CraftingItemDefinitions(registry);
         //this.tileDefinitions = new CraftingTileDefinitions(registry);
 

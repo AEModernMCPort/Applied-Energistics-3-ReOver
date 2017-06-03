@@ -2,10 +2,10 @@ package appeng.api.bootstrap;
 
 import appeng.api.definitions.IDefinition;
 import com.google.common.reflect.TypeToken;
-import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public interface DefinitionFactory {

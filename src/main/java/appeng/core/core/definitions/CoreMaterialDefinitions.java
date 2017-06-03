@@ -20,9 +20,7 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){
-		return new DefinitionFactory.InputHandler<Material, Material>(material) {
-
-		};
+		return new DefinitionFactory.InputHandler<Material, Material>(material) {};
 	}
 
 }

@@ -14,8 +14,11 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
 
     public StaticFireBlockDefinitions(DefinitionFactory registry){
         init();
-        registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "Test"), ih(new TestBlock())).build();
+        registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "test"), ih(new TestBlock())).build();
+
         System.out.println("Stuff");
+
+
     }
 
     private DefinitionFactory.InputHandler<Block, Block> ih(Block block){

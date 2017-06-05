@@ -9,9 +9,12 @@ import appeng.api.module.Module;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.staticfire.api.IStaticFire;
+import appeng.core.staticfire.definitions.StaticFireItemDefinitions;
+import appeng.core.staticfire.gui.StaticFireGuiHandler;
 import appeng.core.staticfire.proxy.StaticFireProxy;
 import appeng.core.staticfire.definitions.StaticFireBlockDefinitions;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -19,6 +22,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Module(IStaticFire.NAME)
 public class AppEngStaticFire implements IStaticFire{
@@ -33,17 +37,17 @@ public class AppEngStaticFire implements IStaticFire{
 
     private DefinitionFactory registry;
 
-    //private CraftingItemDefinitions itemDefinitions;
+    private StaticFireItemDefinitions itemDefinitions;
     private StaticFireBlockDefinitions blockDefinitions;
     //private CraftingTileDefinitions tileDefinitions;
 
     @Override
     public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
-        /*
+
         if(clas == Item.class){
             return (D) itemDefinitions;
         }
-        */
+
         if(clas == Block.class){
             return (D) blockDefinitions;
         }
@@ -58,8 +62,9 @@ public class AppEngStaticFire implements IStaticFire{
     @Module.ModuleEventHandler
     public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
         registry = event.factory(initHandler, proxy);
+        this.itemDefinitions = new StaticFireItemDefinitions(registry);
         this.blockDefinitions = new StaticFireBlockDefinitions(registry);
-        //this.itemDefinitions = new CraftingItemDefinitions(registry);
+
         //this.tileDefinitions = new CraftingTileDefinitions(registry);
 
         initHandler.preInit();
@@ -75,6 +80,7 @@ public class AppEngStaticFire implements IStaticFire{
     public void initAE(final AEStateEvent.AEInitializationEvent event){
         initHandler.init();
         proxy.init(event);
+        NetworkRegistry.INSTANCE.registerGuiHandler(AppEng.instance(), new StaticFireGuiHandler());
     }
 
     @Mod.EventHandler

@@ -14,6 +14,7 @@ import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.definitions.*;
+import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
@@ -52,6 +53,8 @@ public class AppEngCore implements ICore {
 	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
+	private CoreGuiHandler guiHandler;
+
 	public AppEngCore(){
 
 	}
@@ -74,6 +77,11 @@ public class AppEngCore implements ICore {
 			return (D) entityDefinitions;
 		}
 		return null;
+	}
+
+	@Override
+	public CoreGuiHandler guiHandler(){
+		return guiHandler;
 	}
 
 	public FMLControlledNamespacedRegistry<Material> getMaterialRegistry(){
@@ -119,6 +127,8 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
+
+		guiHandler = new CoreGuiHandler();
 
 		initHandler.preInit();
 		proxy.preInit(event);

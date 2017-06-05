@@ -8,7 +8,7 @@ import net.minecraft.item.Item;
 public class DebugItemDefinitions extends Definitions<Item, IItemDefinition<Item>> {
 
 	public DebugItemDefinitions(DefinitionFactory registry){
-		init(/*registry.buildDefaultItemBlocks()*/);
+
 	}
 
 }

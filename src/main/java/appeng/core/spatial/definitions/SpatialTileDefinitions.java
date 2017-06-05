@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 public class SpatialTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements ISpatialTileDefinitions {
 
 	public SpatialTileDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

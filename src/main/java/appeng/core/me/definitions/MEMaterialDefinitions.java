@@ -12,7 +12,7 @@ public class MEMaterialDefinitions extends Definitions<Material, IMaterialDefini
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
 	public MEMaterialDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

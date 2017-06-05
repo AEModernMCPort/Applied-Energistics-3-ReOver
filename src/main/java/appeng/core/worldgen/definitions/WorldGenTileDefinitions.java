@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 public class WorldGenTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements IWorldGenTileDefinitions {
 
 	public WorldGenTileDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

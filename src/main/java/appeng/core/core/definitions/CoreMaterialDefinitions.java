@@ -14,9 +14,7 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){
-		registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).build();
-
-		init();
+		registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).build();
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

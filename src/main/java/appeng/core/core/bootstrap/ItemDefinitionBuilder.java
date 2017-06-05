@@ -49,9 +49,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 		ItemDefinition definition = new ItemDefinition(registryName, item);
 
-		if(item instanceof IStateItem){
-			this.<DefinitionInitializationComponent.PreInit>initializationComponent(null, def -> definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition)));
-		}
+		if(item instanceof IStateItem) definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
 
 		return definition;
 	}

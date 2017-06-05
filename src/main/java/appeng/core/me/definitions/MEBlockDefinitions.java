@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 public class MEBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IMEBlockDefinitions {
 
 	public MEBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

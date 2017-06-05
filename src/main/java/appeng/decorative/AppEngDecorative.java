@@ -63,9 +63,13 @@ public class AppEngDecorative implements IDecorative {
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
+		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

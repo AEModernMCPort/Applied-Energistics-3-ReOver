@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 public class MiscellaneousTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements IMiscellaneousTileDefinitions {
 
 	public MiscellaneousTileDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

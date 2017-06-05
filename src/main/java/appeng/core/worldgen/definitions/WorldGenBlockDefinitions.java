@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 public class WorldGenBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IWorldGenBlockDefinitions {
 
 	public WorldGenBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

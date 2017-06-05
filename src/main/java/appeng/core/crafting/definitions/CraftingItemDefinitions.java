@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 public class CraftingItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements ICraftingItemDefinitions {
 
 	public CraftingItemDefinitions(DefinitionFactory registry){
-		init(/*registry.buildDefaultItemBlocks()*/);
+
 	}
 
 }

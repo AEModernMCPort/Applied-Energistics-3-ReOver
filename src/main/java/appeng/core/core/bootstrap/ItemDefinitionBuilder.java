@@ -21,7 +21,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
 	public ItemDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I item){
-		super(factory, registryName, item);
+		super(factory, registryName, item, "item");
 		/*if(Platform.isClient()){
 			itemRendering = new ItemRendering();
 		}*/
@@ -49,9 +49,8 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 		ItemDefinition definition = new ItemDefinition(registryName, item);
 
-		if(item instanceof IStateItem){
-			preInit(def -> definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition)));
-		}
+		if(item instanceof IStateItem)
+			definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
 
 		return definition;
 	}

@@ -55,5 +55,4 @@ public interface IDefinitionBuilder<T, D extends IDefinition<T>, B extends IDefi
 
 	}
 
-
 }

@@ -20,7 +20,7 @@ public interface IDefinitions<T, D extends IDefinition<T>> {
 	}
 
 	default TypeToken<D> definitionType(){
-		return new TypeToken<D>(getClass()){};
+		return new TypeToken<D>(getClass()) {};
 	}
 
 }

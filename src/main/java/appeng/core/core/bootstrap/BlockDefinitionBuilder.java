@@ -4,10 +4,10 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.api.bootstrap.ItemBlockCustomizer;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.bootstrap_olde.BlockRenderingCustomizer;
 import appeng.core.lib.bootstrap_olde.BlockSubDefinition;
-import appeng.core.api.bootstrap.ItemBlockCustomizer;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -97,15 +97,17 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 		}*/
 
 		BlockDefinition definition = new BlockDefinition<B>(registryName, block);
-		if(!block.getBlockState().getProperties().isEmpty()) definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
+		if(!block.getBlockState().getProperties().isEmpty())
+			definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
 
-		if(itemBlock != null) factory.addDefault(itemBlock.customize(factory.definitionBuilder(registryName, itemBlockIh(itemBlock.createItemBlock(block)))).setFeature(feature).build());
+		if(itemBlock != null)
+			factory.addDefault(itemBlock.customize(factory.definitionBuilder(registryName, itemBlockIh(itemBlock.createItemBlock(block)))).setFeature(feature).build());
 
 		return definition;
 	}
 
 	public DefinitionFactory.InputHandler<Item, Item> itemBlockIh(ItemBlock item){
-		return new DefinitionFactory.InputHandler<Item, Item>(item){};
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
 	}
 
 }

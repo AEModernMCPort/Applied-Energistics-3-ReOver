@@ -2,11 +2,12 @@ package appeng.api.bootstrap;
 
 import appeng.api.definitions.IDefinition;
 import com.google.common.reflect.TypeToken;
-import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
+import javax.annotation.Nullable;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public interface DefinitionFactory {
 
@@ -19,6 +20,10 @@ public interface DefinitionFactory {
 	InitializationComponentsHandler initializationHandler(@Nullable Side side);
 
 	<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
+
+	<T, D extends IDefinition<T>> void addDefault(D def);
+
+	<T, D extends IDefinition<T>> Stream<D> getDefaults(TypeToken<D> type);
 
 	abstract class InputHandler<T, I> implements Supplier<I> {
 

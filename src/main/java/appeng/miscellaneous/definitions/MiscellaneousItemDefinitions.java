@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 public class MiscellaneousItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements IMiscellaneousItemDefinitions {
 
 	public MiscellaneousItemDefinitions(DefinitionFactory registry){
-		init(/*registry.buildDefaultItemBlocks()*/);
+
 	}
 
 }

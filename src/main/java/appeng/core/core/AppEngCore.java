@@ -2,6 +2,7 @@ package appeng.core.core;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -13,6 +14,7 @@ import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.definitions.*;
+import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
@@ -26,6 +28,8 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
 
+import java.io.IOException;
+
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
 
@@ -34,6 +38,8 @@ public class AppEngCore implements ICore {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
+
+	public CoreConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -46,6 +52,8 @@ public class AppEngCore implements ICore {
 	private CoreTileDefinitions tileDefinitions;
 	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
+
+	private CoreGuiHandler guiHandler;
 
 	public AppEngCore(){
 
@@ -71,6 +79,11 @@ public class AppEngCore implements ICore {
 		return null;
 	}
 
+	@Override
+	public CoreGuiHandler guiHandler(){
+		return guiHandler;
+	}
+
 	public FMLControlledNamespacedRegistry<Material> getMaterialRegistry(){
 		return materialRegistry;
 	}
@@ -93,15 +106,38 @@ public class AppEngCore implements ICore {
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
+		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(CoreConfig.class);
+		} catch(IOException e){
+			//TODO 1.11.2-ReOver - handle IOs
+		}
+
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
-		this.materialDefinitions = new CoreMaterialDefinitions(registry);
-		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.itemDefinitions = new CoreItemDefinitions(registry);
+		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
+		this.materialDefinitions = new CoreMaterialDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+		this.entityDefinitions.init(registry);
+		this.materialDefinitions.init(registry);
+
+		guiHandler = new CoreGuiHandler();
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			//TODO 1.11.2-ReOver - handle IOs
+		}
 	}
 
 	@ModuleEventHandler

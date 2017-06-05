@@ -12,7 +12,7 @@ public class ToolsMaterialDefinitions extends Definitions<Material, IMaterialDef
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
 	public ToolsMaterialDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

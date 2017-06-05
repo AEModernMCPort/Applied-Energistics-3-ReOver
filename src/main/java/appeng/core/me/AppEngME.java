@@ -61,11 +61,17 @@ public class AppEngME implements IME {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.materialDefinitions = new MEMaterialDefinitions(registry);
-		this.blockDefinitions = new MEBlockDefinitions(registry);
 		this.itemDefinitions = new MEItemDefinitions(registry);
+		this.blockDefinitions = new MEBlockDefinitions(registry);
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
+		this.materialDefinitions = new MEMaterialDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+		this.entityDefinitions.init(registry);
+		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

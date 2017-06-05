@@ -11,7 +11,7 @@ import net.minecraft.world.biome.Biome;
 public class BiomeDefinitionBuilder<B extends Biome> extends DefinitionBuilder<B, B, IBiomeDefinition<B>, BiomeDefinitionBuilder<B>> implements IBiomeBuilder<B, BiomeDefinitionBuilder<B>> {
 
 	public BiomeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, B biome){
-		super(factory, registryName, biome);
+		super(factory, registryName, biome, "biome");
 	}
 
 	@Override

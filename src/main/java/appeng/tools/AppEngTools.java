@@ -57,8 +57,11 @@ public class AppEngTools implements ITools {
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);
+		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

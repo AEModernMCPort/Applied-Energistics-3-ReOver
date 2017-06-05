@@ -62,11 +62,18 @@ public class AppEngDebug {
 		this.itemDefinitions = new DebugItemDefinitions(registry);
 		this.blockDefinitions = new DebugBlockDefinitions(registry);
 		this.tileDefinitions = new DebugTileDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+
+		initHandler.preInit();
+		proxy.preInit(event);
 	}
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		initHandler.preInit();
+
 	}
 
 	@EventHandler

@@ -94,11 +94,17 @@ public class AppEngCore implements ICore {
 		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		registry = event.factory(initHandler, proxy);
-		this.materialDefinitions = new CoreMaterialDefinitions(registry);
-		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.itemDefinitions = new CoreItemDefinitions(registry);
+		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
+		this.materialDefinitions = new CoreMaterialDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+		this.entityDefinitions.init(registry);
+		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

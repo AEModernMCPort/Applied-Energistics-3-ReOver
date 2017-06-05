@@ -17,8 +17,6 @@ public class CoreItemDefinitions extends Definitions<Item, IItemDefinition<Item>
 
 	public CoreItemDefinitions(DefinitionFactory registry){
 		this.material = registry.<Item, ItemDefinition<Item>, ItemDefinitionBuilder<Item>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "material"), ih(new ItemMaterial())).build();
-
-		init(/*registry.buildDefaultItemBlocks()*/);
 	}
 
 	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){

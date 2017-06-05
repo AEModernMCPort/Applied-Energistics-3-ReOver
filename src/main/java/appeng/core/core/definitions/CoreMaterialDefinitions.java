@@ -15,8 +15,6 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){
 		registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).build();
-
-		init();
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

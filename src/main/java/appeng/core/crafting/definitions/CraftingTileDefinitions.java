@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 public class CraftingTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements ICraftingTileDefinitions {
 
 	public CraftingTileDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 public abstract class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T, D> {
 
 	private ImmutableMap<ResourceLocation, D> map;
-	
+
 	public final void init(DefinitionFactory factory){
 		assert map == null;
 		ImmutableMap.Builder builder = ImmutableMap.builder();

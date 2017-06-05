@@ -54,9 +54,14 @@ public class AppEngCrafting implements ICrafting {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
+		this.blockDefinitions = new CraftingBlockDefinitions(registry);
 		this.tileDefinitions = new CraftingTileDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+
 		initHandler.preInit();
 		proxy.preInit(event);
 	}

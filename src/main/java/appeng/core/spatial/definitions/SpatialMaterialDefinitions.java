@@ -12,7 +12,7 @@ public class SpatialMaterialDefinitions extends Definitions<Material, IMaterialD
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
 	public SpatialMaterialDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

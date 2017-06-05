@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 public class MEBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IMEBlockDefinitions {
 
 	public MEBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

@@ -9,7 +9,7 @@ import net.minecraft.world.DimensionType;
 public class SpatialDimensionTypeDefinitions extends Definitions<DimensionType, IDimensionTypeDefinition<DimensionType>> implements ISpatialDimensionTypeDefinitions {
 
 	public SpatialDimensionTypeDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

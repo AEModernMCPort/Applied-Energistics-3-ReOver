@@ -4,6 +4,8 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponent;
 import appeng.api.definitions.IDefinition;
+import appeng.core.AppEng;
+import appeng.core.lib.config.GlobalFeaturesManager;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
@@ -21,16 +23,30 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	protected final DefinitionFactory factory;
 
 	protected final ResourceLocation registryName;
-
 	private final I instance;
+
+	protected final ResourceLocation feature;
+
+	protected boolean enabledByDefault = true;
 
 	private final List<Consumer<D>> buildCallbacks = new ArrayList<>();
 	private final Multimap<Side, DefinitionInitializationComponent<T, D>> initComponents = HashMultimap.create();
 
-	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance){
+	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance, ResourceLocation feature){
 		this.factory = factory;
 		this.registryName = registryName;
 		this.instance = instance;
+		this.feature = feature;
+	}
+
+	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance, String featurePrefix){
+		this(factory, registryName, instance, new ResourceLocation(AppEng.instance().getCurrentName(), featurePrefix + "/" + registryName.getResourcePath()));
+	}
+
+	@Override
+	public B setEnabledByDefault(boolean enabled){
+		this.enabledByDefault = enabled;
+		return (B) this;
 	}
 
 	@Override
@@ -47,6 +63,8 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 
 	@Override
 	public final D build(){
+		if(!GlobalFeaturesManager.INSTANCE.isEnabled(feature, enabledByDefault)) return def(null);
+
 		D definition = def(setRegistryName(instance));
 
 		this.<DefinitionInitializationComponent.PreInit<T, D>>initializationComponent(null, t -> register((t).maybe().get()));

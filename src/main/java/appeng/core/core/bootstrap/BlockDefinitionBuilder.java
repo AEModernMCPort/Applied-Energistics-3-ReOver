@@ -29,7 +29,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	private ItemRendering itemRendering;*/
 
 	public BlockDefinitionBuilder(DefinitionFactory factory, ResourceLocation id, B block){
-		super(factory, id, block);
+		super(factory, id, block, "block");
 
 		/*if(Platform.isClient()){
 			blockRendering = new BlockRendering();

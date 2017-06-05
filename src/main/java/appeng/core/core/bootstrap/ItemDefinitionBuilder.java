@@ -21,7 +21,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
 	public ItemDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I item){
-		super(factory, registryName, item);
+		super(factory, registryName, item, "item");
 		/*if(Platform.isClient()){
 			itemRendering = new ItemRendering();
 		}*/

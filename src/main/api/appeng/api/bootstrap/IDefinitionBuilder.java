@@ -8,6 +8,8 @@ import java.util.function.Consumer;
 
 public interface IDefinitionBuilder<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>> {
 
+	B setEnabledByDefault(boolean enabled);
+
 	B build(Consumer<D> callback);
 
 	<I extends DefinitionInitializationComponent<T, D>> B initializationComponent(@Nullable Side side, I init);

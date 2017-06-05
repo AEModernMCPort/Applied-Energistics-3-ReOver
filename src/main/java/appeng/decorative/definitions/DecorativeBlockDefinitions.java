@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 public class DecorativeBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IDecorativeBlockDefinitions {
 
 	public DecorativeBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

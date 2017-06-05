@@ -9,7 +9,11 @@ import net.minecraft.tileentity.TileEntity;
 public class CoreTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements ICoreTileDefinitions {
 
 	public CoreTileDefinitions(DefinitionFactory registry){
-		init();
+
+	}
+
+	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class<TileEntity> tile){
+		return new DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>>(tile) {};
 	}
 
 }

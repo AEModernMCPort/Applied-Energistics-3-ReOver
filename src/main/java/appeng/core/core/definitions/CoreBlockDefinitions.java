@@ -9,7 +9,11 @@ import net.minecraft.block.Block;
 public class CoreBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ICoreBlockDefinitions {
 
 	public CoreBlockDefinitions(DefinitionFactory registry){
-		init();
+
+	}
+
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
 	}
 
 }

@@ -53,9 +53,13 @@ public class AppEngWorldGen implements IWorldGen {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.blockDefinitions = new WorldGenBlockDefinitions(registry);
 		this.itemDefinitions = new WorldGenItemDefinitions(registry);
+		this.blockDefinitions = new WorldGenBlockDefinitions(registry);
 		this.tileDefinitions = new WorldGenTileDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

@@ -17,13 +17,13 @@ public class DimensionTypeDefinitionBuilder<D extends DimensionType> extends Def
 	private boolean shouldLoadSpawn;
 
 	public DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id){
-		super(factory, registryName, id);
+		super(factory, registryName, id, "dimension");
 		this.name = registryName.toString();
 		this.suffix = registryName.getResourcePath();
 	}
 
 	public DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id, String name, String suffix, Class<? extends WorldProvider> clazz, boolean shouldLoadSpawn){
-		super(factory, registryName, id);
+		super(factory, registryName, id, "dimension");
 		this.name = name;
 		this.suffix = suffix;
 		this.clazz = clazz;

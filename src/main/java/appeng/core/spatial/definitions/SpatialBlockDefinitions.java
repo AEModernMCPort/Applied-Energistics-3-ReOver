@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 public class SpatialBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ISpatialBlockDefinitions {
 
 	public SpatialBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

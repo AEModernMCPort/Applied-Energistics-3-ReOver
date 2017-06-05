@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 public class DebugBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> {
 
 	public DebugBlockDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

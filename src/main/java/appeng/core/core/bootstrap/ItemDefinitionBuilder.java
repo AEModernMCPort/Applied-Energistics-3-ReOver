@@ -5,7 +5,6 @@ import appeng.api.definitions.IItemDefinition;
 import appeng.api.item.IStateItem;
 import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.ItemSubDefinition;
 import appeng.core.lib.definitions.ItemDefinition;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;

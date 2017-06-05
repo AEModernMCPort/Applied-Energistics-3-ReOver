@@ -7,7 +7,6 @@ import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.api.bootstrap.ItemBlockCustomizer;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.bootstrap_olde.BlockRenderingCustomizer;
-import appeng.core.lib.bootstrap_olde.BlockSubDefinition;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;

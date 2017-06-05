@@ -2,10 +2,14 @@ package appeng.core.lib.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
+import appeng.api.bootstrap.InitializationComponent;
 import appeng.api.definitions.IDefinition;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -21,9 +25,7 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	private final I instance;
 
 	private final List<Consumer<D>> buildCallbacks = new ArrayList<>();
-	private final List<Consumer<D>> preInitCallbacks = new ArrayList<>();
-	private final List<Consumer<D>> initCallbacks = new ArrayList<>();
-	private final List<Consumer<D>> postInitCallbacks = new ArrayList<>();
+	private final Multimap<Side, DefinitionInitializationComponent<T, D>> initComponents = HashMultimap.create();
 
 	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance){
 		this.factory = factory;
@@ -38,20 +40,8 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	}
 
 	@Override
-	public B preInit(Consumer<D> callback){
-		preInitCallbacks.add(callback);
-		return (B) this;
-	}
-
-	@Override
-	public B init(Consumer<D> callback){
-		initCallbacks.add(callback);
-		return (B) this;
-	}
-
-	@Override
-	public B postInit(Consumer<D> callback){
-		postInitCallbacks.add(callback);
+	public <I extends DefinitionInitializationComponent<T, D>> B initializationComponent(@Nullable Side side, I init){
+		initComponents.put(side, init);
 		return (B) this;
 	}
 
@@ -59,10 +49,8 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	public final D build(){
 		D definition = def(setRegistryName(instance));
 
-		preInitCallbacks.add(t -> register((t).maybe().get()));
-		preInitCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptPreInit(() -> consumer.accept(definition)));
-		initCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptInit(() -> consumer.accept(definition)));
-		postInitCallbacks.forEach(consumer -> factory.initializationHandler(null).acceptPostInit(() -> consumer.accept(definition)));
+		this.<DefinitionInitializationComponent.PreInit<T, D>>initializationComponent(null, t -> register((t).maybe().get()));
+		initComponents.entries().forEach((entry) -> factory.initializationHandler(entry.getKey()).accept(new InitComponentPass<>(definition, entry.getValue())));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));
 
@@ -83,5 +71,31 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	}
 
 	protected abstract D def(@Nullable I t);
+
+	public static class InitComponentPass<T, D extends IDefinition<T>> implements InitializationComponent {
+
+		private final D definition;
+		private final DefinitionInitializationComponent<T, D> defInit;
+
+		public InitComponentPass(D definition, DefinitionInitializationComponent<T, D> defInit){
+			this.definition = definition;
+			this.defInit = defInit;
+		}
+
+		@Override
+		public void preInit(){
+			defInit.preInit(definition);
+		}
+
+		@Override
+		public void init(){
+			defInit.init(definition);
+		}
+
+		@Override
+		public void postInit(){
+			defInit.postInit(definition);
+		}
+	}
 
 }

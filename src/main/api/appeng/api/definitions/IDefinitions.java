@@ -1,5 +1,6 @@
 package appeng.api.definitions;
 
+import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;
 
 public interface IDefinitions<T, D extends IDefinition<T>> {
@@ -16,6 +17,10 @@ public interface IDefinitions<T, D extends IDefinition<T>> {
 
 	default <T2 extends T, D2 extends IDefinition<T2>> D2 getUncheked(String identifier){
 		return getUncheked(new ResourceLocation("appliedenergistics3", identifier));
+	}
+
+	default TypeToken<D> definitionType(){
+		return new TypeToken<D>(getClass()){};
 	}
 
 }

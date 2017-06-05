@@ -1,18 +1,18 @@
 package appeng.core.lib.definitions;
 
+import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.reflect.Field;
-import java.util.stream.Stream;
 
-public class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T, D> {
+public abstract class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T, D> {
 
 	private ImmutableMap<ResourceLocation, D> map;
-
-	public final void init(Stream<D> defaults){
+	
+	public final void init(DefinitionFactory factory){
 		assert map == null;
 		ImmutableMap.Builder builder = ImmutableMap.builder();
 		for(Field field : this.getClass().getDeclaredFields()){
@@ -26,7 +26,7 @@ public class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T,
 				}
 			}
 		}
-		defaults.forEach(d -> builder.put(d.identifier(), d));
+		factory.getDefaults(definitionType()).forEach(d -> builder.put(d.identifier(), d));
 		map = builder.build();
 	}
 

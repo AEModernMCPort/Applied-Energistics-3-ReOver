@@ -6,6 +6,7 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.definitions.IDefinition;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -49,7 +50,7 @@ public class DefinitionFactory implements appeng.api.bootstrap.DefinitionFactory
 	}
 
 	@Override
-	public <T, D extends IDefinition<T>> Stream<D> getDefaults(Class<D> type){
-		return (Stream<D>) defaults.stream().filter(def -> type.isInstance(def));
+	public <T, D extends IDefinition<T>> Stream<D> getDefaults(TypeToken<D> type){
+		return (Stream) defaults.stream().filter(def -> type.getRawType().isInstance(def));
 	}
 }

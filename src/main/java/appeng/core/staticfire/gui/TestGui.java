@@ -20,6 +20,7 @@ public class TestGui extends GuiScreen{
         int centerX = (width/2)-176/2;
         int centerY = (height/2)-166/2;
         super.drawTexturedModalRect(centerX,centerY,0,0,176,166);
+
     }
 
     @Override

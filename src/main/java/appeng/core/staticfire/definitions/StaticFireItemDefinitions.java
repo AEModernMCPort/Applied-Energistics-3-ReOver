@@ -8,6 +8,7 @@ import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireBlockDefinitions;
 import appeng.core.staticfire.api.definitions.IStaticFireItemDefinitions;
 import appeng.core.staticfire.block.TestBlock;
+import appeng.core.staticfire.item.ItemTest;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.BlockBone;
@@ -21,6 +22,7 @@ public class StaticFireItemDefinitions extends Definitions<Item, IItemDefinition
     public StaticFireItemDefinitions(DefinitionFactory registry){
         init();
         //registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "test"), ih(new ItemBlock(new TestBlock()))).build();
+        registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "itemtest"), ih(new ItemTest())).build();
         
         System.out.println("Stuff");
     }

@@ -23,7 +23,7 @@ public interface DefinitionFactory {
 
 	<T, D extends IDefinition<T>> void addDefault(D def);
 
-	<T, D extends IDefinition<T>> Stream<D> getDefaults(Class<D> type);
+	<T, D extends IDefinition<T>> Stream<D> getDefaults(Class<? extends IDefinition> type);
 
 	abstract class InputHandler<T, I> implements Supplier<I> {
 

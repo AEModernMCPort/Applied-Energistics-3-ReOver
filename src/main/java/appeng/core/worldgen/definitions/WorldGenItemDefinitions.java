@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 public class WorldGenItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements IWorldGenItemDefinitions {
 
 	public WorldGenItemDefinitions(DefinitionFactory registry){
-		init(/*registry.buildDefaultItemBlocks()*/);
+
 	}
 
 }

@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 public class MEItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements IMEItemDefinitions {
 
 	public MEItemDefinitions(DefinitionFactory registry){
-		init(/*registry.buildDefaultItemBlocks()*/);
+
 	}
 
 }

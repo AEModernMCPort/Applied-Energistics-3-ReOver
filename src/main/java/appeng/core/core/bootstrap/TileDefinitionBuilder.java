@@ -17,7 +17,7 @@ public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuild
 	private Definitions<Block, IBlockDefinition<Block>> blockDefinitions;
 
 	public TileDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, Class<T> tile, Definitions<Block, IBlockDefinition<Block>> blockDefinitions){
-		super(factory, registryName, tile);
+		super(factory, registryName, tile, "tile_entity");
 		this.blockDefinitions = blockDefinitions;
 	}
 

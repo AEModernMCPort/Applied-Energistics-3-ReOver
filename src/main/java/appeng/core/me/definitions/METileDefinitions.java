@@ -9,7 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 public class METileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements IMETileDefinitions {
 
 	public METileDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

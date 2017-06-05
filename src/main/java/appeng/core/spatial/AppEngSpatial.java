@@ -66,12 +66,19 @@ public class AppEngSpatial implements ISpatial {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		registry = event.factory(initHandler, proxy);
-		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
-		this.blockDefinitions = new SpatialBlockDefinitions(registry);
 		this.itemDefinitions = new SpatialItemDefinitions(registry);
+		this.blockDefinitions = new SpatialBlockDefinitions(registry);
 		this.tileDefinitions = new SpatialTileDefinitions(registry);
 		this.biomeDefinitions = new SpatialBiomeDefinitions(registry);
 		this.dimensionTypeDefinitions = new SpatialDimensionTypeDefinitions(registry);
+		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
+
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.tileDefinitions.init(registry);
+		this.biomeDefinitions.init(registry);
+		this.dimensionTypeDefinitions.init(registry);
+		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

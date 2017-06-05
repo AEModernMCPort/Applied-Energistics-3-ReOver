@@ -9,7 +9,7 @@ import net.minecraft.world.biome.Biome;
 public class SpatialBiomeDefinitions extends Definitions<Biome, IBiomeDefinition<Biome>> implements ISpatialBiomeDefinitions {
 
 	public SpatialBiomeDefinitions(DefinitionFactory registry){
-		init();
+
 	}
 
 }

@@ -11,4 +11,6 @@ public interface IBlockBuilder<B extends Block, BB extends IBlockBuilder<B, BB>>
 
 	BB createDefaultItemBlock();
 
+	BB createItemBlock(ItemBlockCustomizer ib);
+
 }

@@ -25,7 +25,7 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	protected final ResourceLocation registryName;
 	private final I instance;
 
-	protected final ResourceLocation feature;
+	protected ResourceLocation feature;
 
 	protected boolean enabledByDefault = true;
 
@@ -41,6 +41,12 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 
 	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance, String featurePrefix){
 		this(factory, registryName, instance, new ResourceLocation(AppEng.instance().getCurrentName(), featurePrefix + "/" + registryName.getResourcePath()));
+	}
+
+	@Override
+	public B setFeature(ResourceLocation feature){
+		this.feature = feature;
+		return (B) this;
 	}
 
 	@Override

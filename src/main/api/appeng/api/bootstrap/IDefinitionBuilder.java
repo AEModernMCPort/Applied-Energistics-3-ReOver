@@ -1,12 +1,15 @@
 package appeng.api.bootstrap;
 
 import appeng.api.definitions.IDefinition;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public interface IDefinitionBuilder<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>> {
+
+	B setFeature(ResourceLocation feature);
 
 	B setEnabledByDefault(boolean enabled);
 

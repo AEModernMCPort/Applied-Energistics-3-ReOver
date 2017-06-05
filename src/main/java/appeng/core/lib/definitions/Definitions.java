@@ -6,20 +6,13 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.stream.Stream;
 
 public class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T, D> {
 
 	private ImmutableMap<ResourceLocation, D> map;
 
-	/**
-	 * Make sure to call in the end of the constructor.
-	 */
-	protected final void init(){
-		init(null);
-	}
-
-	protected final void init(Map<ResourceLocation, D> extraEntries){
+	public final void init(Stream<D> defaults){
 		assert map == null;
 		ImmutableMap.Builder builder = ImmutableMap.builder();
 		for(Field field : this.getClass().getDeclaredFields()){
@@ -33,9 +26,7 @@ public class Definitions<T, D extends IDefinition<T>> implements IDefinitions<T,
 				}
 			}
 		}
-		if(extraEntries != null){
-			builder.putAll(extraEntries);
-		}
+		defaults.forEach(d -> builder.put(d.identifier(), d));
 		map = builder.build();
 	}
 

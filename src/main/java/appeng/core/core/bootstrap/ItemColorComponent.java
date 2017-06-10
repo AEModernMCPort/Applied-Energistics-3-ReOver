@@ -9,16 +9,16 @@ import net.minecraft.item.Item;
 /**
  * @author Fredi100
  */
-public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>>{
+public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-    private final IItemColor itemColor;
+	private final IItemColor itemColor;
 
-    public ItemColorComponent(IItemColor itemColor){
-        this.itemColor = itemColor;
-    }
+	public ItemColorComponent(IItemColor itemColor){
+		this.itemColor = itemColor;
+	}
 
-    @Override
-    public void init(IItemDefinition<Item> def){
-        Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor, def.maybe().get());
-    }
+	@Override
+	public void init(IItemDefinition<Item> def){
+		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor, def.maybe().get());
+	}
 }

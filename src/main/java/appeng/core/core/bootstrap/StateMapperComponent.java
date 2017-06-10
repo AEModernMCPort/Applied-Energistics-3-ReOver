@@ -12,19 +12,19 @@ import net.minecraftforge.client.model.ModelLoader;
 /**
  * @author Fredi100
  */
-public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>>{
+public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
 
-    private final IStateMapper stateMapper;
+	private final IStateMapper stateMapper;
 
-    public StateMapperComponent(IStateMapper stateMapper){
-        this.stateMapper = stateMapper;
-    }
+	public StateMapperComponent(IStateMapper stateMapper){
+		this.stateMapper = stateMapper;
+	}
 
-    @Override
-    public void init(IBlockDefinition<Block> def) {
-        ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper);
-        if(stateMapper instanceof IResourceManagerReloadListener){
-            ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);
-        }
-    }
+	@Override
+	public void init(IBlockDefinition<Block> def){
+		ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper);
+		if(stateMapper instanceof IResourceManagerReloadListener){
+			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);
+		}
+	}
 }

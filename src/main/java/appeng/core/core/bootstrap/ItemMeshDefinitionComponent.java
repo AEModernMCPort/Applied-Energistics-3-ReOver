@@ -11,16 +11,16 @@ import javax.annotation.Nonnull;
 /**
  * @author Fredi100
  */
-public class ItemMeshDefinitionComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>>{
+public class ItemMeshDefinitionComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-    private final ItemMeshDefinition meshDefinition;
+	private final ItemMeshDefinition meshDefinition;
 
-    public ItemMeshDefinitionComponent(@Nonnull ItemMeshDefinition meshDefinition){
-        this.meshDefinition = meshDefinition;
-    }
+	public ItemMeshDefinitionComponent(@Nonnull ItemMeshDefinition meshDefinition){
+		this.meshDefinition = meshDefinition;
+	}
 
-    @Override
-    public void init(IItemDefinition<Item> def) {
-        Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), meshDefinition);
-    }
+	@Override
+	public void init(IItemDefinition<Item> def){
+		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), meshDefinition);
+	}
 }

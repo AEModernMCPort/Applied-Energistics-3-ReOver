@@ -11,17 +11,17 @@ import java.util.Collection;
 /**
  * @author Fredi100
  */
-public class ItemVariantsComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item,IDefinition<Item>>{
+public class ItemVariantsComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IDefinition<Item>> {
 
-    private final Collection<ResourceLocation> resources;
+	private final Collection<ResourceLocation> resources;
 
-    public ItemVariantsComponent(Collection<ResourceLocation> resources){
-        this.resources = resources;
-    }
+	public ItemVariantsComponent(Collection<ResourceLocation> resources){
+		this.resources = resources;
+	}
 
-    @Override
-    public void preInit(IDefinition<Item> def) {
-        ResourceLocation[] resourceArr = resources.toArray(new ResourceLocation[0]);
-        ModelBakery.registerItemVariants(def.maybe().get(), resourceArr);
-    }
+	@Override
+	public void preInit(IDefinition<Item> def){
+		ResourceLocation[] resourceArr = resources.toArray(new ResourceLocation[0]);
+		ModelBakery.registerItemVariants(def.maybe().get(), resourceArr);
+	}
 }

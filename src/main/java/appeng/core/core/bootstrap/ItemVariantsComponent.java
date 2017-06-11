@@ -21,6 +21,7 @@ public class ItemVariantsComponent implements IDefinitionBuilder.DefinitionIniti
 
 	@Override
 	public void preInit(IDefinition<Item> def){
+		System.out.println("Initializing ItemVariantsComponent");
 		ResourceLocation[] resourceArr = resources.toArray(new ResourceLocation[0]);
 		ModelBakery.registerItemVariants(def.maybe().get(), resourceArr);
 	}

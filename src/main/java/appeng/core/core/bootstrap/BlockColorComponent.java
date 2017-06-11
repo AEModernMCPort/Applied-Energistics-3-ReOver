@@ -19,6 +19,7 @@ public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitial
 
 	@Override
 	public void init(IBlockDefinition<Block> def){
+		System.out.println("Initializing BlockColorComponent");
 		Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(blockColor, def.maybe().get());
 	}
 }

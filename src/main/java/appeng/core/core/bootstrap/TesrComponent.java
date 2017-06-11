@@ -19,6 +19,7 @@ public class TesrComponent implements IDefinitionBuilder.DefinitionInitializatio
 
 	@Override
 	public void preInit(ITileDefinition<TileEntity> def){
+		System.out.println("Initializing TesrComponent");
 		ClientRegistry.bindTileEntitySpecialRenderer(def.maybe().get(), tesr);
 	}
 }

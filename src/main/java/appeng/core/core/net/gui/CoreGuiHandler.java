@@ -50,6 +50,7 @@ public class CoreGuiHandler implements IGuiHandler, GuiHandler {
 	@Nullable
 	@Override
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z){
+		//System.out.print("ASDADS: "+clientElements.get(id));
 		return clientElements.get(id).getGuiElement(player, world, x, y, z);
 	}
 

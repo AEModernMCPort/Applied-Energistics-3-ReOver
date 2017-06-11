@@ -1,13 +1,16 @@
 package appeng.core.staticfire.gui;
 
 import appeng.core.AppEng;
+import appeng.core.api.net.gui.GuiHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
-public class TestGui extends GuiScreen{
+public class TestGui extends GuiScreen implements GuiHandler.GuiHandlerElement<GuiScreen>{
 
     ResourceLocation testGuiTexture = new ResourceLocation(AppEng.MODID,"textures/gui/test.png");
 
@@ -30,5 +33,10 @@ public class TestGui extends GuiScreen{
 
     @Override
     public void initGui() {
+    }
+
+    @Override
+    public GuiScreen getGuiElement(EntityPlayer player, World world, int x, int y, int z) {
+        return this;
     }
 }

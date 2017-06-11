@@ -20,10 +20,10 @@ import net.minecraft.util.ResourceLocation;
 public class StaticFireItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements IStaticFireItemDefinitions{
 
     public StaticFireItemDefinitions(DefinitionFactory registry){
-        init();
+
         //registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "test"), ih(new ItemBlock(new TestBlock()))).build();
         registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "itemtest"), ih(new ItemTest())).build();
-        
+        //init(registry);
         System.out.println("Stuff");
     }
 

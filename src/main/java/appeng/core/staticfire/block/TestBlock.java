@@ -1,6 +1,7 @@
 package appeng.core.staticfire.block;
 
 import appeng.core.AppEng;
+import appeng.core.core.AppEngCore;
 import appeng.core.staticfire.gui.StaticFireGuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -8,6 +9,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -39,7 +41,7 @@ public class TestBlock extends Block{
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         //System.out.print("asd");
         //if (!worldIn.isRemote) {
-            playerIn.openGui(AppEng.instance(), 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            AppEngCore.INSTANCE.guiHandler().display(new ResourceLocation(AppEng.MODID,"TestGui"), playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
             AppEng.logger.debug("asd2");
             System.out.print("asd");
         //}
@@ -47,5 +49,6 @@ public class TestBlock extends Block{
         //return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
 
     }
+
 
 }

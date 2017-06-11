@@ -7,6 +7,6 @@ import appeng.api.definitions.IDefinitionsProvider;
  */
 public interface IStaticFire extends IDefinitionsProvider {
 
-    String NAME = "StaticFire";
+    String NAME = "static_fire";
 
 }

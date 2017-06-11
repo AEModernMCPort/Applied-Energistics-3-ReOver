@@ -6,20 +6,22 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 
+import java.util.function.Supplier;
+
 /**
  * @author Fredi100
  */
 public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
 
-	private final IBlockColor blockColor;
+	private final Supplier<IBlockColor> blockColor;
 
-	public BlockColorComponent(IBlockColor blockColor){
+	public BlockColorComponent(Supplier<IBlockColor> blockColor){
 		this.blockColor = blockColor;
 	}
 
 	@Override
 	public void init(IBlockDefinition<Block> def){
-		System.out.println("Initializing BlockColorComponent");
-		Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(blockColor, def.maybe().get());
+		System.out.println(this);
+		Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(blockColor.get(), def.maybe().get());
 	}
 }

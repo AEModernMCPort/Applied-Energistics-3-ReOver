@@ -6,20 +6,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
 
+import java.util.function.Supplier;
+
 /**
  * @author Fredi100
  */
 public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-	private final IItemColor itemColor;
+	private final Supplier<IItemColor> itemColor;
 
-	public ItemColorComponent(IItemColor itemColor){
+	public ItemColorComponent(Supplier<IItemColor> itemColor){
 		this.itemColor = itemColor;
 	}
 
 	@Override
 	public void init(IItemDefinition<Item> def){
-		System.out.println("Initializing ItemColorComponent");
-		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor, def.maybe().get());
+		System.out.println(this);
+		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor.get(), def.maybe().get());
 	}
 }

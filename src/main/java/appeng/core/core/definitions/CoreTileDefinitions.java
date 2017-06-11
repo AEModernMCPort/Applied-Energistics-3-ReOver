@@ -4,7 +4,6 @@ import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.ITileDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.ITileBuilder;
 import appeng.core.api.definitions.ICoreTileDefinitions;
 import appeng.core.core.bootstrap.TesrComponent;
 import appeng.core.item.DummyTile;
@@ -17,11 +16,9 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CoreTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements ICoreTileDefinitions {
 
 	public CoreTileDefinitions(DefinitionFactory registry){
-		//<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>
-		registry.<TileEntity, ITileDefinition<TileEntity>, ITileBuilder<TileEntity, ?>, TileEntity>definitionBuilder(new ResourceLocation(AppEng.MODID,"component_test_tile"), ih(DummyTile.class))
-		//<IDefinitionBuilder.DefinitionInitializationComponent.Init<Item, IItemDefinition<Item>>>
-		.initializationComponent(Side.CLIENT, new TesrComponent(() -> new DummyTileRenderer()))
-		.build();
+		IDefinitionBuilder builder = registry.definitionBuilder(new ResourceLocation(AppEng.MODID,"component_test_tile"), ih(DummyTile.class));
+		builder.initializationComponent(Side.CLIENT, new TesrComponent(new DummyTileRenderer()));
+		//builder.build();
 }
 
 	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class tile){

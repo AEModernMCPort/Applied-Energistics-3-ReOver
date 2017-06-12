@@ -23,7 +23,6 @@ public class ItemMeshDefinitionComponent implements IDefinitionBuilder.Definitio
 
 	@Override
 	public void init(IItemDefinition<Item> def){
-		System.out.println("Initializing ItemMeshDefinitionComponent");
 		meshDefinition.get().ifPresent(itemMeshDefinition -> Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), itemMeshDefinition));
 	}
 }

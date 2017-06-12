@@ -27,7 +27,6 @@ public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitia
 
 	@Override
 	public void init(IBlockDefinition<Block> def){
-		System.out.println(this);
 		ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper.get().get());
 		if(stateMapper instanceof IResourceManagerReloadListener)
 			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);

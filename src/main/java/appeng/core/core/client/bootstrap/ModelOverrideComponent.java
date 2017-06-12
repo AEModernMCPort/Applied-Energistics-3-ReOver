@@ -61,7 +61,6 @@ public class ModelOverrideComponent implements IDefinitionBuilder.DefinitionInit
 
 	@Override
 	public void preInit(IDefinition def){
-		System.out.println(this);
 		instances.add(this);
 	}
 }

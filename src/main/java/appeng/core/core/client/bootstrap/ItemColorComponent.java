@@ -22,7 +22,6 @@ public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitiali
 
 	@Override
 	public void init(IItemDefinition<Item> def){
-		System.out.println(this);
 		itemColor.get().ifPresent(color -> Minecraft.getMinecraft().getItemColors().registerItemColorHandler(color, def.maybe().get()));
 	}
 }

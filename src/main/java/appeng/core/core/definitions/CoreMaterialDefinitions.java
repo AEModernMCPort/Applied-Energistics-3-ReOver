@@ -18,7 +18,7 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	private static final String MATERIALSMODELSVARIANT = "inventory";
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){
-		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<Material, IMaterialDefinition<Material>>>initializationComponent(Side.CLIENT, def -> def.maybe().get().setModel(new ModelResourceLocation(new ResourceLocation("minecraft:block/gravel"), "inventory"))).build();
+		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<Material, IMaterialDefinition<Material>>>initializationComponent(Side.CLIENT, def -> def.maybe().get().setModel(new ModelResourceLocation("beef", "inventory"))).build();
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

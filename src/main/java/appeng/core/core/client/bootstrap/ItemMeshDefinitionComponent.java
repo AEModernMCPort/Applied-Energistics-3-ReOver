@@ -1,4 +1,4 @@
-package appeng.core.core.bootstrap;
+package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IItemDefinition;
@@ -15,15 +15,15 @@ import java.util.function.Supplier;
  */
 public class ItemMeshDefinitionComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-	private final Optional<ItemMeshDefinition> meshDefinition;
+	private final Supplier<Optional<ItemMeshDefinition>> meshDefinition;
 
-	public ItemMeshDefinitionComponent(@Nonnull Optional<ItemMeshDefinition> meshDefinition){
+	public ItemMeshDefinitionComponent(@Nonnull Supplier<Optional<ItemMeshDefinition>> meshDefinition){
 		this.meshDefinition = meshDefinition;
 	}
 
 	@Override
 	public void init(IItemDefinition<Item> def){
 		System.out.println("Initializing ItemMeshDefinitionComponent");
-		Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), meshDefinition.get());
+		meshDefinition.get().ifPresent(itemMeshDefinition -> Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), itemMeshDefinition));
 	}
 }

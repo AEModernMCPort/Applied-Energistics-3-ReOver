@@ -1,4 +1,4 @@
-package appeng.core.core.bootstrap;
+package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;

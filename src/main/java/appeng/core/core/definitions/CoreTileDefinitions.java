@@ -5,7 +5,7 @@ import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.ITileDefinition;
 import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreTileDefinitions;
-import appeng.core.core.bootstrap.TesrComponent;
+import appeng.core.core.client.bootstrap.TesrComponent;
 import appeng.core.item.DummyTile;
 import appeng.core.item.DummyTileRenderer;
 import appeng.core.lib.definitions.Definitions;
@@ -19,7 +19,7 @@ public class CoreTileDefinitions extends Definitions<Class<TileEntity>, ITileDef
 
 	public CoreTileDefinitions(DefinitionFactory registry){
 		IDefinitionBuilder builder = registry.definitionBuilder(new ResourceLocation(AppEng.MODID,"component_test_tile"), ih(DummyTile.class));
-		builder.initializationComponent(Side.CLIENT, new TesrComponent(Optional.of(new DummyTileRenderer())));
+		builder.initializationComponent(Side.CLIENT, new TesrComponent(() -> Optional.of(new DummyTileRenderer())));
 		//builder.build();
 }
 

@@ -1,4 +1,4 @@
-package appeng.core.core.bootstrap;
+package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IItemDefinition;
@@ -14,15 +14,15 @@ import java.util.function.Supplier;
  */
 public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-	private final Optional<IItemColor> itemColor;
+	private final Supplier<Optional<IItemColor>> itemColor;
 
-	public ItemColorComponent(Optional<IItemColor> itemColor){
+	public ItemColorComponent(Supplier<Optional<IItemColor>> itemColor){
 		this.itemColor = itemColor;
 	}
 
 	@Override
 	public void init(IItemDefinition<Item> def){
 		System.out.println(this);
-		Minecraft.getMinecraft().getItemColors().registerItemColorHandler(itemColor.get(), def.maybe().get());
+		itemColor.get().ifPresent(color -> Minecraft.getMinecraft().getItemColors().registerItemColorHandler(color, def.maybe().get()));
 	}
 }

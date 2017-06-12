@@ -1,4 +1,4 @@
-package appeng.core.core.bootstrap;
+package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.ITileDefinition;
@@ -14,15 +14,15 @@ import java.util.function.Supplier;
  */
 public class TesrComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Class<TileEntity>, ITileDefinition<TileEntity>> {
 
-	private final Optional<TileEntitySpecialRenderer<? super TileEntity>> tesr;
+	private final Supplier<Optional<TileEntitySpecialRenderer<? super TileEntity>>> tesr;
 
-	public TesrComponent(Optional<TileEntitySpecialRenderer<? super TileEntity>> tesr){
+	public TesrComponent(Supplier<Optional<TileEntitySpecialRenderer<? super TileEntity>>> tesr){
 		this.tesr = tesr;
 	}
 
 	@Override
 	public void preInit(ITileDefinition<TileEntity> def){
 		System.out.println("Initializing TesrComponent");
-		ClientRegistry.bindTileEntitySpecialRenderer(def.maybe().get(), tesr.get());
+		tesr.get().ifPresent(tileEntitySpecialRenderer -> ClientRegistry.bindTileEntitySpecialRenderer(def.maybe().get(), tesr.get().get()));
 	}
 }

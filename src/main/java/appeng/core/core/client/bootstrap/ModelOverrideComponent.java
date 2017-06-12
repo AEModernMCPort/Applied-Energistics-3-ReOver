@@ -1,4 +1,4 @@
-package appeng.core.core.bootstrap;
+package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IDefinition;
@@ -61,7 +61,7 @@ public class ModelOverrideComponent implements IDefinitionBuilder.DefinitionInit
 
 	@Override
 	public void preInit(IDefinition def){
-		System.out.println("Initializing ModelOverrideComponent");
+		System.out.println(this);
 		instances.add(this);
 	}
 }

@@ -25,8 +25,8 @@ public class CoreClientProxy extends CoreProxy {
 
 	@Override
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		super.preInit(event);
 		MinecraftForge.EVENT_BUS.register(this);
+		super.preInit(event);
 	}
 
 	@Override

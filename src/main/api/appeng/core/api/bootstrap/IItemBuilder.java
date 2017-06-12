@@ -9,7 +9,6 @@ public interface IItemBuilder<I extends Item, II extends IItemBuilder<I, II>> ex
 
 	II creativeTab(CreativeTabs tab);
 
-	//TODO 1.11.2-ReOver - Be Back ?
-	//II rendering(ItemRenderingCustomizer callback);
+	II defaultModel();
 
 }

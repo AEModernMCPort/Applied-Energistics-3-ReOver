@@ -1,7 +1,10 @@
 package appeng.core.core.proxy;
 
-import appeng.core.lib.proxy.BaseProxy;
-import net.minecraftforge.fml.relauncher.Side;
+		import appeng.core.lib.proxy.BaseProxy;
+		import net.minecraftforge.client.event.ModelBakeEvent;
+		import net.minecraftforge.fml.relauncher.Side;
+
+		import java.util.function.Consumer;
 
 public class CoreProxy extends BaseProxy {
 
@@ -9,4 +12,5 @@ public class CoreProxy extends BaseProxy {
 		super(side);
 	}
 
+	public void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){};
 }

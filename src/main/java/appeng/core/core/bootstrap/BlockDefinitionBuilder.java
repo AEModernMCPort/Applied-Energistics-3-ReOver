@@ -6,7 +6,6 @@ import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.api.bootstrap.ItemBlockCustomizer;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.bootstrap_olde.BlockRenderingCustomizer;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -38,14 +37,6 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			blockRendering = new BlockRendering();
 			itemRendering = new ItemRendering();
 		}*/
-	}
-
-	public BlockDefinitionBuilder<B> rendering(BlockRenderingCustomizer callback){
-		/*if(Platform.isClient()){
-			customizeForClient(callback);
-		}*/
-
-		return this;
 	}
 
 	@Override

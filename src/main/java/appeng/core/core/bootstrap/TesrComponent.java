@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -13,9 +14,9 @@ import java.util.function.Supplier;
  */
 public class TesrComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Class<TileEntity>, ITileDefinition<TileEntity>> {
 
-	private final Supplier<TileEntitySpecialRenderer<? super TileEntity>> tesr;
+	private final Optional<TileEntitySpecialRenderer<? super TileEntity>> tesr;
 
-	public TesrComponent(Supplier<TileEntitySpecialRenderer<? super TileEntity>> tesr){
+	public TesrComponent(Optional<TileEntitySpecialRenderer<? super TileEntity>> tesr){
 		this.tesr = tesr;
 	}
 

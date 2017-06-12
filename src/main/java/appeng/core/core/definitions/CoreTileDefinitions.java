@@ -13,11 +13,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Optional;
+
 public class CoreTileDefinitions extends Definitions<Class<TileEntity>, ITileDefinition<TileEntity>> implements ICoreTileDefinitions {
 
 	public CoreTileDefinitions(DefinitionFactory registry){
 		IDefinitionBuilder builder = registry.definitionBuilder(new ResourceLocation(AppEng.MODID,"component_test_tile"), ih(DummyTile.class));
-		builder.initializationComponent(Side.CLIENT, new TesrComponent(new DummyTileRenderer()));
+		builder.initializationComponent(Side.CLIENT, new TesrComponent(Optional.of(new DummyTileRenderer())));
 		//builder.build();
 }
 

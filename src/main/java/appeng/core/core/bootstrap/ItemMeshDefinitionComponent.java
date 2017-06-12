@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.item.Item;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -14,9 +15,9 @@ import java.util.function.Supplier;
  */
 public class ItemMeshDefinitionComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-	private final Supplier<ItemMeshDefinition> meshDefinition;
+	private final Optional<ItemMeshDefinition> meshDefinition;
 
-	public ItemMeshDefinitionComponent(@Nonnull Supplier<ItemMeshDefinition> meshDefinition){
+	public ItemMeshDefinitionComponent(@Nonnull Optional<ItemMeshDefinition> meshDefinition){
 		this.meshDefinition = meshDefinition;
 	}
 

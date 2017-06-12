@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -13,9 +14,9 @@ import java.util.function.Supplier;
  */
 public class ItemColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
 
-	private final Supplier<IItemColor> itemColor;
+	private final Optional<IItemColor> itemColor;
 
-	public ItemColorComponent(Supplier<IItemColor> itemColor){
+	public ItemColorComponent(Optional<IItemColor> itemColor){
 		this.itemColor = itemColor;
 	}
 

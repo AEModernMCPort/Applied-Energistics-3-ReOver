@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -13,9 +14,9 @@ import java.util.function.Supplier;
  */
 public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
 
-	private final Supplier<IBlockColor> blockColor;
+	private final Optional<IBlockColor> blockColor;
 
-	public BlockColorComponent(Supplier<IBlockColor> blockColor){
+	public BlockColorComponent(Optional<IBlockColor> blockColor){
 		this.blockColor = blockColor;
 	}
 

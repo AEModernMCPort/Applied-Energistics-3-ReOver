@@ -12,11 +12,13 @@ import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
+import java.util.Optional;
+
 public class CoreBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ICoreBlockDefinitions {
 
 	public CoreBlockDefinitions(DefinitionFactory registry){
 		IDefinitionBuilder builder = registry.definitionBuilder(new ResourceLocation(AppEng.MODID,"component_test_block"), ih(new DummyBlock()));
-		builder.initializationComponent(Side.CLIENT, new BlockColorComponent((state, world, pos, anInt) -> 0));
+		builder.initializationComponent(Side.CLIENT, new BlockColorComponent(Optional.of((state, world, pos, anInt) -> 0)));
 		builder.build();
 	}
 

@@ -27,11 +27,15 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
+
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance(NAME)
 	public static final AppEngCore INSTANCE = null;

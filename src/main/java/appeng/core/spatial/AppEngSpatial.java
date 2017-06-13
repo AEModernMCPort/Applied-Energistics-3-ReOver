@@ -19,9 +19,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Module(ISpatial.NAME)
 public class AppEngSpatial implements ISpatial {
+
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance(NAME)
 	public static final AppEngSpatial INSTANCE = null;

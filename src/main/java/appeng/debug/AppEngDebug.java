@@ -20,6 +20,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /*
  * The only module not built with gradle.
@@ -33,6 +35,8 @@ public class AppEngDebug {
 	public static final String MODID = AppEng.MODID + "|" + NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + NAME;
+
+	public static final Logger logger = LogManager.getLogger(MODID);
 
 	@Module.Instance(NAME)
 	public static final AppEngDebug INSTANCE = null;

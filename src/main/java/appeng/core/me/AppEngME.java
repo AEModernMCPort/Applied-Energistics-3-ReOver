@@ -18,9 +18,13 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Module(IME.NAME)
 public class AppEngME implements IME {
+
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance(NAME)
 	public static final AppEngME INSTANCE = null;

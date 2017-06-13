@@ -23,6 +23,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Module(IDecorative.NAME)
 @Mod(modid = AppEngDecorative.MODID, name = AppEngDecorative.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
@@ -31,6 +33,8 @@ public class AppEngDecorative implements IDecorative {
 	public static final String MODID = AppEng.MODID + "|" + IDecorative.NAME;
 
 	public static final String MODNAME = AppEng.NAME + " | " + IDecorative.NAME;
+
+	public static final Logger logger = LogManager.getLogger(MODID);
 
 	@Module.Instance(NAME)
 	public static final AppEngDecorative INSTANCE = null;

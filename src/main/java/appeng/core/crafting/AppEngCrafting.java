@@ -19,9 +19,13 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.SidedProxy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Module(value = ICrafting.NAME, dependencies = "after:module-" + AppEngME.NAME)
 public class AppEngCrafting implements ICrafting {
+
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance(NAME)
 	public static final AppEngCrafting INSTANCE = null;

@@ -100,7 +100,7 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
 		//TODO 1.11.2-ReOver - Fix NPE
-		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile, null));
+		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile));
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, (factory, registryName, biome) -> new BiomeDefinitionBuilder(factory, registryName, biome));
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, (factory, registryName, dimensionId) -> new DimensionTypeDefinitionBuilder(factory, registryName, dimensionId));
 

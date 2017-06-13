@@ -32,7 +32,7 @@ public class AppEngME implements IME {
 
 	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngME INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.me.proxy.MEClientProxy", serverSide = "appeng.core.me.proxy.MEServerProxy")

@@ -43,7 +43,7 @@ public class AppEngDebug {
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngDebug INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.debug.proxy.DebugClientProxy", serverSide = "appeng.debug.proxy.DebugServerProxy")

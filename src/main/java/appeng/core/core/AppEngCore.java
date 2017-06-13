@@ -39,7 +39,7 @@ public class AppEngCore implements ICore {
 
 	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngCore INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")

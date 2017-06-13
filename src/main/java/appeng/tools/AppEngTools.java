@@ -39,7 +39,7 @@ public class AppEngTools implements ITools {
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngTools INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")

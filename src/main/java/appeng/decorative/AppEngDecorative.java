@@ -42,7 +42,7 @@ public class AppEngDecorative implements IDecorative {
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngDecorative INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.decorative.proxy.DecorativeClientProxy", serverSide = "appeng.decorative.proxy.DecorativeServerProxy")

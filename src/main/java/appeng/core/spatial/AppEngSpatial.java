@@ -33,7 +33,7 @@ public class AppEngSpatial implements ISpatial {
 
 	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngSpatial INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.spatial.proxy.SpatialClientProxy", serverSide = "appeng.core.spatial.proxy.SpatialServerProxy")

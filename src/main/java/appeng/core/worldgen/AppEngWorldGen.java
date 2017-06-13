@@ -32,7 +32,7 @@ public class AppEngWorldGen implements IWorldGen {
 
 	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngWorldGen INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.worldgen.proxy.WorldGenClientProxy", serverSide = "appeng.core.worldgen.proxy.WorldGenServerProxy")

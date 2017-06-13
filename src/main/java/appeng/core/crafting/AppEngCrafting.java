@@ -33,7 +33,7 @@ public class AppEngCrafting implements ICrafting {
 
 	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngCrafting INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.crafting.proxy.CraftingClientProxy", serverSide = "appeng.core.crafting.proxy.CraftingServerProxy")

@@ -42,7 +42,7 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 
-	@Module.Instance(NAME)
+	@Module.Instance
 	public static final AppEngMiscellaneous INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.miscellaneous.proxy.MiscClientProxy", serverSide = "appeng.miscellaneous.proxy.MiscServerProxy")

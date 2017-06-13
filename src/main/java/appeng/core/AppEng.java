@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -228,7 +229,7 @@ public final class AppEng {
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();
-		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading", configurationLoaderProviders.keySet().toArray(new String[0])));
+		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + configurationLoaderProviders.keySet().stream().collect(Collectors.joining(", ")), configurationLoaderProviders.keySet().toArray(new String[0])));
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();

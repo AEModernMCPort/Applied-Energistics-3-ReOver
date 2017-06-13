@@ -13,8 +13,8 @@ public class MiscellaneousTileDefinitions extends Definitions<TileRegistryEntry<
 
 	}
 
-	private DefinitionFactory.InputHandler<Class<TileEntity>, TileRegistryEntry<TileEntity>> ih(TileRegistryEntry tile){
-		return new DefinitionFactory.InputHandler<Class<TileEntity>, TileRegistryEntry<TileEntity>>(tile) {};
+	private DefinitionFactory.InputHandler<TileRegistryEntry<TileEntity>, Class<TileEntity>> ih(Class tile){
+		return new DefinitionFactory.InputHandler<TileRegistryEntry<TileEntity>, Class<TileEntity>>(tile) {};
 	}
 
 }

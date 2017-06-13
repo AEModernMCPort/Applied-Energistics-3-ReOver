@@ -1,5 +1,6 @@
 package appeng.api.definitions;
 
+import appeng.api.entry.TileRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import javax.annotation.Nonnull;
 
-public interface ITileDefinition<TE extends TileEntity> extends IDefinition<Class<TE>> {
+public interface ITileDefinition<TE extends TileEntity> extends IDefinition<TileRegistryEntry<TE>> {
 
 	/**
 	 * @return block of this tile

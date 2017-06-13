@@ -2,6 +2,7 @@ package appeng.core.lib.definitions;
 
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.ITileDefinition;
+import appeng.api.entry.TileRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -9,11 +10,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.apache.commons.lang3.tuple.Pair;
 
-public final class TileDefinition<TE extends TileEntity> extends Definition<Class<TE>> implements ITileDefinition<TE> {
+public final class TileDefinition<TE extends TileEntity> extends Definition<TileRegistryEntry<TE>> implements ITileDefinition<TE> {
 
 	private final IBlockDefinition block;
 
-	public TileDefinition(ResourceLocation identifier, Class<TE> tile, IBlockDefinition block){
+	public TileDefinition(ResourceLocation identifier, TileRegistryEntry<TE> tile, IBlockDefinition block){
 		super(identifier, tile);
 		this.block = block;
 	}
@@ -29,7 +30,7 @@ public final class TileDefinition<TE extends TileEntity> extends Definition<Clas
 			return true;
 		} else {
 			if(isEnabled()){
-				Class<TE> clas = maybe().get();
+				Class<TE> clas = maybe().get().getTileClass();
 				if(other instanceof TileEntity){
 					return other.getClass() == clas;
 				}

@@ -23,5 +23,5 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 	public Class<T> getTileClass(){
 		return tileClass;
 	}
-	
+
 }

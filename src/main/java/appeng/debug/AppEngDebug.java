@@ -57,7 +57,7 @@ public class AppEngDebug {
 	}
 
 	@Module.ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
 		DefinitionFactory registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new DebugItemDefinitions(registry);
 		this.blockDefinitions = new DebugBlockDefinitions(registry);
@@ -72,18 +72,30 @@ public class AppEngDebug {
 	}
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
+	public void preInitForge(FMLPreInitializationEvent event){
 
 	}
 
-	@EventHandler
-	public void init(final FMLInitializationEvent event){
+	@Module.ModuleEventHandler
+	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		initHandler.init();
+		proxy.init(event);
 	}
 
 	@EventHandler
-	public void postInit(final FMLPostInitializationEvent event){
+	public void initForge(final FMLInitializationEvent event){
+
+	}
+
+	@Module.ModuleEventHandler
+	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
+		proxy.postInit(event);
+	}
+
+	@EventHandler
+	public void postInitForge(final FMLPostInitializationEvent event){
+
 	}
 
 	@EventHandler

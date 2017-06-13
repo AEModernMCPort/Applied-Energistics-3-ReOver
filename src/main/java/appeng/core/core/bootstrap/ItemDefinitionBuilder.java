@@ -7,12 +7,11 @@ import appeng.api.item.IStateItem;
 import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.ItemDefinition;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, I, IItemDefinition<I>, ItemDefinitionBuilder<I>> implements IItemBuilder<I, ItemDefinitionBuilder<I>> {
@@ -39,7 +38,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 	@Override
 	public ItemDefinitionBuilder<I> defaultModel(){
-		return this.<IDefinitionBuilder.DefinitionInitializationComponent.Init<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), 0, new ModelResourceLocation(new ResourceLocation(Loader.instance().activeModContainer().getModId(), "material"), "inventory")));
+		return this.<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> ModelLoader.setCustomModelResourceLocation(def.maybe().get(), 0, new ModelResourceLocation(def.identifier(), "inventory")));
 	}
 
 	/*@SideOnly(Side.CLIENT)

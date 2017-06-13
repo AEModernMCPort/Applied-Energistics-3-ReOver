@@ -229,7 +229,7 @@ public final class AppEng {
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();
-		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + configurationLoaderProviders.keySet().stream().collect(Collectors.joining(", ")), configurationLoaderProviders.keySet().toArray(new String[0])));
+		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();

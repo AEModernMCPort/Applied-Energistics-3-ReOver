@@ -11,4 +11,8 @@ public class DebugBlockDefinitions extends Definitions<Block, IBlockDefinition<B
 
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

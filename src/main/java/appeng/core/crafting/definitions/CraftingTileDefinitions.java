@@ -12,4 +12,8 @@ public class CraftingTileDefinitions extends Definitions<Class<TileEntity>, ITil
 
 	}
 
+	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class tile){
+		return new DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>>(tile) {};
+	}
+
 }

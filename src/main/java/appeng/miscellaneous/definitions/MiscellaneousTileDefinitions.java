@@ -12,4 +12,8 @@ public class MiscellaneousTileDefinitions extends Definitions<Class<TileEntity>,
 
 	}
 
+	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class tile){
+		return new DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>>(tile) {};
+	}
+
 }

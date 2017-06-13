@@ -12,4 +12,8 @@ public class SpatialDimensionTypeDefinitions extends Definitions<DimensionType, 
 
 	}
 
+	private DefinitionFactory.InputHandler<DimensionType, Integer> ih(Integer id){
+		return new DefinitionFactory.InputHandler<DimensionType, Integer>(id) {};
+	}
+
 }

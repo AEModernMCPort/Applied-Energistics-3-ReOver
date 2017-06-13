@@ -12,4 +12,8 @@ public class DecorativeTileDefinitions extends Definitions<Class<TileEntity>, IT
 
 	}
 
+	private DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>> ih(Class tile){
+		return new DefinitionFactory.InputHandler<Class<TileEntity>, Class<TileEntity>>(tile) {};
+	}
+
 }

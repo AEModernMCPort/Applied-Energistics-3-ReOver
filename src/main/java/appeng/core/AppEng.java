@@ -239,12 +239,6 @@ public final class AppEng {
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
 
-	private InputHandler<Block, Block> ih(Block block){
-		return new InputHandler<Block, Block>(block) {
-
-		};
-	}
-
 	/**
 	 * Checks whether all required dependencies are here
 	 */

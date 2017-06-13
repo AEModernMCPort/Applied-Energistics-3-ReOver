@@ -2,6 +2,7 @@ package appeng.tools;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
@@ -9,8 +10,10 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
+import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.tools.api.ITools;
+import appeng.tools.config.ToolsConfig;
 import appeng.tools.definitions.ToolsItemDefinitions;
 import appeng.tools.definitions.ToolsMaterialDefinitions;
 import appeng.tools.proxy.ToolsProxy;
@@ -21,6 +24,10 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 @Module(ITools.NAME)
 @Mod(modid = AppEngTools.MODID, name = AppEngTools.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
@@ -30,11 +37,15 @@ public class AppEngTools implements ITools {
 
 	public static final String MODNAME = AppEng.NAME + " | " + ITools.NAME;
 
-	@Module.Instance(NAME)
+	public static final Logger logger = LogManager.getLogger(MODID);
+
+	@Module.Instance
 	public static final AppEngTools INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")
 	public static ToolsProxy proxy;
+
+	public ToolsConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -56,6 +67,14 @@ public class AppEngTools implements ITools {
 
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<ToolsConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(ToolsConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);
 		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
@@ -65,6 +84,12 @@ public class AppEngTools implements ITools {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@EventHandler

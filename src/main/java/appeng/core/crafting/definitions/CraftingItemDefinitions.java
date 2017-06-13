@@ -12,4 +12,8 @@ public class CraftingItemDefinitions extends Definitions<Item, IItemDefinition<I
 
 	}
 
+	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
+	}
+
 }

@@ -2,15 +2,22 @@ package appeng.core.api.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IBlockDefinition;
+import appeng.api.definitions.IItemDefinition;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemBlock;
+
+import javax.annotation.Nonnull;
+import java.util.function.Function;
 
 public interface IBlockBuilder<B extends Block, BB extends IBlockBuilder<B, BB>> extends IDefinitionBuilder<B, IBlockDefinition<B>, BB> {
 
 	//TODO 1.11.2-ReOver - Be back?
 	//BB rendering(BlockRenderingCustomizer callback);
 
-	BB createDefaultItemBlock();
+	<I extends ItemBlock> BB setItem(@Nonnull Function<IBlockDefinition<B>, IItemDefinition<I>> item);
 
-	BB createItemBlock(ItemBlockCustomizer ib);
+	<I extends ItemBlock> BB createItem(@Nonnull BlockItemCustomizer<I> ib);
+
+	BB createDefaultItem();
 
 }

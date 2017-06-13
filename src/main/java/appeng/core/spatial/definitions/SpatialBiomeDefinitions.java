@@ -12,4 +12,8 @@ public class SpatialBiomeDefinitions extends Definitions<Biome, IBiomeDefinition
 
 	}
 
+	private DefinitionFactory.InputHandler<Biome, Biome> ih(Biome biome){
+		return new DefinitionFactory.InputHandler<Biome, Biome>(biome) {};
+	}
+
 }

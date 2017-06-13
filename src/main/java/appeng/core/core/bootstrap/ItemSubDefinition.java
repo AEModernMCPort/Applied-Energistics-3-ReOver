@@ -1,4 +1,4 @@
-package appeng.core.lib.bootstrap_olde;
+package appeng.core.core.bootstrap;
 
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.sub.IItemSubDefinition;

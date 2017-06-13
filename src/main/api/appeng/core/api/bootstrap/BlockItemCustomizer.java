@@ -6,10 +6,10 @@ import net.minecraft.item.ItemBlock;
 import javax.annotation.Nonnull;
 
 @FunctionalInterface
-public interface ItemBlockCustomizer<I extends ItemBlock> {
+public interface BlockItemCustomizer<I extends ItemBlock> {
 
 	@Nonnull
-	I createItemBlock(Block block);
+	I createItem(Block block);
 
 	@Nonnull
 	default IItemBuilder<I, ?> customize(@Nonnull IItemBuilder<I, ?> builder){

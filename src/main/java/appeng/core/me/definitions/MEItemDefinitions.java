@@ -12,4 +12,8 @@ public class MEItemDefinitions extends Definitions<Item, IItemDefinition<Item>> 
 
 	}
 
+	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
+	}
+
 }

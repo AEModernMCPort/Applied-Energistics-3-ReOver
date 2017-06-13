@@ -12,4 +12,8 @@ public class CraftingBlockDefinitions extends Definitions<Block, IBlockDefinitio
 
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

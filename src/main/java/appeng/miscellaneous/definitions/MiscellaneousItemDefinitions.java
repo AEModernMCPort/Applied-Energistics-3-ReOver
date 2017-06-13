@@ -12,4 +12,8 @@ public class MiscellaneousItemDefinitions extends Definitions<Item, IItemDefinit
 
 	}
 
+	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
+	}
+
 }

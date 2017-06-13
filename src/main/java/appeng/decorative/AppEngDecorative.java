@@ -2,17 +2,21 @@ package appeng.decorative;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
+import appeng.core.core.CoreConfig;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.decorative.api.IDecorative;
+import appeng.decorative.config.DecorativeConfig;
 import appeng.decorative.proxy.DecorativeProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -23,6 +27,10 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 @Module(IDecorative.NAME)
 @Mod(modid = AppEngDecorative.MODID, name = AppEngDecorative.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
@@ -32,11 +40,15 @@ public class AppEngDecorative implements IDecorative {
 
 	public static final String MODNAME = AppEng.NAME + " | " + IDecorative.NAME;
 
-	@Module.Instance(NAME)
+	public static final Logger logger = LogManager.getLogger(MODID);
+
+	@Module.Instance
 	public static final AppEngDecorative INSTANCE = null;
 
 	@SidedProxy(modId = MODID, clientSide = "appeng.decorative.proxy.DecorativeClientProxy", serverSide = "appeng.decorative.proxy.DecorativeServerProxy")
 	public static DecorativeProxy proxy;
+
+	public DecorativeConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -54,7 +66,7 @@ public class AppEngDecorative implements IDecorative {
 		if(clas == Block.class){
 			return (D) blockDefinitions;
 		}
-		if(clas == TileEntity.class){
+		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
 		}
 		return null;
@@ -62,6 +74,14 @@ public class AppEngDecorative implements IDecorative {
 
 	@ModuleEventHandler
 	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<DecorativeConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(DecorativeConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
@@ -73,6 +93,12 @@ public class AppEngDecorative implements IDecorative {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@EventHandler

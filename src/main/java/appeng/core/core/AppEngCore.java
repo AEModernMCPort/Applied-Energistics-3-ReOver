@@ -14,6 +14,7 @@ import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
+import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
@@ -96,6 +97,7 @@ public class AppEngCore implements ICore {
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerConfigurationLoaderProvider("JSON", module -> new JSONConfigLoader(module));
+		event.registerConfigurationLoaderProvider("YAML", module -> new YAMLConfigLoader(module));
 
 		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));

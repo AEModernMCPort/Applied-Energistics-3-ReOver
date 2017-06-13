@@ -2,14 +2,17 @@ package appeng.core.worldgen;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
+import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.worldgen.api.IWorldGen;
+import appeng.core.worldgen.config.WorldGenConfig;
 import appeng.core.worldgen.definitions.WorldGenBlockDefinitions;
 import appeng.core.worldgen.definitions.WorldGenItemDefinitions;
 import appeng.core.worldgen.definitions.WorldGenTileDefinitions;
@@ -21,6 +24,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 @Module(IWorldGen.NAME)
 public class AppEngWorldGen implements IWorldGen {
 
@@ -31,6 +36,8 @@ public class AppEngWorldGen implements IWorldGen {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.worldgen.proxy.WorldGenClientProxy", serverSide = "appeng.core.worldgen.proxy.WorldGenServerProxy")
 	public static WorldGenProxy proxy;
+
+	public WorldGenConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -56,6 +63,14 @@ public class AppEngWorldGen implements IWorldGen {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<WorldGenConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(WorldGenConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new WorldGenItemDefinitions(registry);
 		this.blockDefinitions = new WorldGenBlockDefinitions(registry);
@@ -67,6 +82,12 @@ public class AppEngWorldGen implements IWorldGen {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

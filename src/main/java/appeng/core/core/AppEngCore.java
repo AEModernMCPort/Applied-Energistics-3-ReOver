@@ -114,9 +114,8 @@ public class AppEngCore implements ICore {
 		try{
 			configLoader.load(CoreConfig.class);
 		} catch(IOException e){
-			//TODO 1.11.2-ReOver - handle IOs
+			logger.error("Caught exception loading configuration", e);
 		}
-
 		config = configLoader.configuration();
 
 		registry = event.factory(initHandler, proxy);
@@ -140,7 +139,7 @@ public class AppEngCore implements ICore {
 		try{
 			configLoader.save();
 		} catch(IOException e){
-			//TODO 1.11.2-ReOver - handle IOs
+			logger.error("Caught exception saving configuration", e);
 		}
 	}
 

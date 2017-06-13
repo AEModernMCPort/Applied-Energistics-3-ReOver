@@ -2,13 +2,16 @@ package appeng.core.crafting;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
+import appeng.core.core.CoreConfig;
 import appeng.core.crafting.api.ICrafting;
+import appeng.core.crafting.config.CraftingConfig;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
@@ -22,6 +25,8 @@ import net.minecraftforge.fml.common.SidedProxy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+
 @Module(value = ICrafting.NAME, dependencies = "after:module-" + AppEngME.NAME)
 public class AppEngCrafting implements ICrafting {
 
@@ -32,6 +37,8 @@ public class AppEngCrafting implements ICrafting {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.crafting.proxy.CraftingClientProxy", serverSide = "appeng.core.crafting.proxy.CraftingServerProxy")
 	public static CraftingProxy proxy;
+
+	public CraftingConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -57,6 +64,14 @@ public class AppEngCrafting implements ICrafting {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<CraftingConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(CraftingConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new CraftingItemDefinitions(registry);
 		this.blockDefinitions = new CraftingBlockDefinitions(registry);
@@ -68,6 +83,12 @@ public class AppEngCrafting implements ICrafting {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

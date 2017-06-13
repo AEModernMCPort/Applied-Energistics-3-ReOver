@@ -1,5 +1,6 @@
 {
     "variants": {
-        "normal": { "model": "appliedenergistics3:test_block" }
+        "normal": { "model": "appliedenergistics3:test_block" },
+        "inventory": { "model": "appliedenergistics3:test_block" }
     }
 }

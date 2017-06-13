@@ -19,7 +19,7 @@ public interface DefinitionFactory {
 	 */
 	InitializationComponentsHandler initializationHandler(@Nullable Side side);
 
-	<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<T, I> input);
+	<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> B definitionBuilder(ResourceLocation registryName, InputHandler<? super T, ? super I> input);
 
 	<T, D extends IDefinition<T>> void addDefault(D def);
 
@@ -39,15 +39,11 @@ public interface DefinitionFactory {
 		}
 
 		public final Class<? super T> defType(){
-			return new TypeToken<T>(getClass()) {
-
-			}.getRawType();
+			return new TypeToken<T>(getClass()){}.getRawType();
 		}
 
 		public final Class<? super I> inputType(){
-			return new TypeToken<I>(getClass()) {
-
-			}.getRawType();
+			return new TypeToken<I>(getClass()){}.getRawType();
 		}
 
 	}

@@ -2,12 +2,15 @@ package appeng.debug;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
+import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.debug.config.DebugConfig;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
 import appeng.debug.definitions.DebugTileDefinitions;
@@ -20,6 +23,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 /*
  * The only module not built with gradle.
@@ -34,8 +41,15 @@ public class AppEngDebug {
 
 	public static final String MODNAME = AppEng.NAME + " | " + NAME;
 
+	public static final Logger logger = LogManager.getLogger(MODID);
+
+	@Module.Instance
+	public static final AppEngDebug INSTANCE = null;
+
 	@SidedProxy(modId = MODID, clientSide = "appeng.debug.proxy.DebugClientProxy", serverSide = "appeng.debug.proxy.DebugServerProxy")
 	public static DebugProxy proxy;
+
+	public DebugConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -57,7 +71,15 @@ public class AppEngDebug {
 	}
 
 	@Module.ModuleEventHandler
-	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+	public void preInitAE(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<DebugConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(DebugConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		DefinitionFactory registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new DebugItemDefinitions(registry);
 		this.blockDefinitions = new DebugBlockDefinitions(registry);
@@ -69,21 +91,39 @@ public class AppEngDebug {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event){
+	public void preInitForge(FMLPreInitializationEvent event){
 
 	}
 
-	@EventHandler
-	public void init(final FMLInitializationEvent event){
+	@Module.ModuleEventHandler
+	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		initHandler.init();
+		proxy.init(event);
 	}
 
 	@EventHandler
-	public void postInit(final FMLPostInitializationEvent event){
+	public void initForge(final FMLInitializationEvent event){
+
+	}
+
+	@Module.ModuleEventHandler
+	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
+		proxy.postInit(event);
+	}
+
+	@EventHandler
+	public void postInitForge(final FMLPostInitializationEvent event){
+
 	}
 
 	@EventHandler

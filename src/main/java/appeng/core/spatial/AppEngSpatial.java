@@ -2,15 +2,19 @@ package appeng.core.spatial;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
+import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
+import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.spatial.api.ISpatial;
+import appeng.core.spatial.config.SpatialConfig;
 import appeng.core.spatial.definitions.*;
 import appeng.core.spatial.proxy.SpatialProxy;
 import net.minecraft.block.Block;
@@ -19,15 +23,23 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 
 @Module(ISpatial.NAME)
 public class AppEngSpatial implements ISpatial {
 
-	@Module.Instance(NAME)
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
+
+	@Module.Instance
 	public static final AppEngSpatial INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.spatial.proxy.SpatialClientProxy", serverSide = "appeng.core.spatial.proxy.SpatialServerProxy")
 	public static SpatialProxy proxy;
+
+	public SpatialConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -48,7 +60,7 @@ public class AppEngSpatial implements ISpatial {
 		if(clas == Block.class){
 			return (D) blockDefinitions;
 		}
-		if(clas == TileEntity.class){
+		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
 		}
 		if(clas == Material.class){
@@ -65,6 +77,14 @@ public class AppEngSpatial implements ISpatial {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		ConfigurationLoader<SpatialConfig> configLoader = event.configurationLoader();
+		try{
+			configLoader.load(SpatialConfig.class);
+		} catch(IOException e){
+			logger.error("Caught exception loading configuration", e);
+		}
+		config = configLoader.configuration();
+
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new SpatialItemDefinitions(registry);
 		this.blockDefinitions = new SpatialBlockDefinitions(registry);
@@ -82,6 +102,12 @@ public class AppEngSpatial implements ISpatial {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

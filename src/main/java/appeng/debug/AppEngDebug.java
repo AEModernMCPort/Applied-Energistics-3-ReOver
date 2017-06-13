@@ -34,6 +34,9 @@ public class AppEngDebug {
 
 	public static final String MODNAME = AppEng.NAME + " | " + NAME;
 
+	@Module.Instance(NAME)
+	public static final AppEngDebug INSTANCE = null;
+
 	@SidedProxy(modId = MODID, clientSide = "appeng.debug.proxy.DebugClientProxy", serverSide = "appeng.debug.proxy.DebugServerProxy")
 	public static DebugProxy proxy;
 

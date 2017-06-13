@@ -5,6 +5,7 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
@@ -57,7 +58,7 @@ public class AppEngME implements IME {
 		if(clas == Block.class){
 			return (D) blockDefinitions;
 		}
-		if(clas == TileEntity.class){
+		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
 		}
 		if(clas == Material.class){

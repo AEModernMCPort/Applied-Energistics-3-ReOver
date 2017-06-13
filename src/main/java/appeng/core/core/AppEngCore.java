@@ -73,7 +73,7 @@ public class AppEngCore implements ICore {
 		if(clas == Block.class){
 			return (D) blockDefinitions;
 		}
-		if(clas == TileEntity.class){
+		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
 		}
 		if(clas == Material.class){

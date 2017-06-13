@@ -12,4 +12,8 @@ public class DecorativeItemDefinitions extends Definitions<Item, IItemDefinition
 
 	}
 
+	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){
+		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
+	}
+
 }

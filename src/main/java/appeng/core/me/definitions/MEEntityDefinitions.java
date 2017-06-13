@@ -12,4 +12,8 @@ public class MEEntityDefinitions extends Definitions<EntityEntry, IEntityDefinit
 
 	}
 
+	private DefinitionFactory.InputHandler<EntityEntry, EntityEntry> ih(EntityEntry entity){
+		return new DefinitionFactory.InputHandler<EntityEntry, EntityEntry>(entity) {};
+	}
+
 }

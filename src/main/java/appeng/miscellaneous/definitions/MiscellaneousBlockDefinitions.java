@@ -12,4 +12,8 @@ public class MiscellaneousBlockDefinitions extends Definitions<Block, IBlockDefi
 
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

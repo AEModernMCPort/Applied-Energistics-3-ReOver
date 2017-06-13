@@ -12,4 +12,8 @@ public class MEBlockDefinitions extends Definitions<Block, IBlockDefinition<Bloc
 
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

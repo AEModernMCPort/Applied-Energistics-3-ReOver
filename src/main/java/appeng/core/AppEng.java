@@ -8,6 +8,7 @@ import appeng.api.module.Module;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import appeng.core.proxy.AppEngProxy;
+import code.elix_x.excomms.reflection.ReflectionHelper;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -228,7 +230,7 @@ public final class AppEng {
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();
-		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading", configurationLoaderProviders.keySet().toArray(new String[0])));
+		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();
@@ -237,12 +239,6 @@ public final class AppEng {
 		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(configurationLoaderProvider, definitionBuilderSuppliers));
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
-	}
-
-	private InputHandler<Block, Block> ih(Block block){
-		return new InputHandler<Block, Block>(block) {
-
-		};
 	}
 
 	/**
@@ -359,14 +355,11 @@ public final class AppEng {
 
 		for(ASMData data : annotations.getAll(Module.Instance.class.getTypeName())){
 			try{
-				Object instance = modules.get(data.getAnnotationInfo().get("value"));
-				if(instance == null){
-					instance = classModule.get(Class.forName((String) data.getAnnotationInfo().get("value")));
-				}
 				AClass<I> target = new AClass(Class.forName(data.getClassName(), true, mcl));
-				target.getDeclaredField(data.getObjectName()).setAccessible(true).setFinal(false).set((I) classModule.get(target.getClass()), instance);
+				ReflectionHelper.AField<I, ?> field = target.getDeclaredField(data.getObjectName());
+				modules.values().stream().filter(module -> field.get().getType().isInstance(module)).findFirst().ifPresent(instance -> field.setAccessible(true).setFinal(false).set((I) classModule.get(target.getClass()), instance));
 			} catch(ReflectiveOperationException e){
-				e.printStackTrace();
+				logger.error("Could not inject module's instance", e);
 				// :(
 			}
 		}

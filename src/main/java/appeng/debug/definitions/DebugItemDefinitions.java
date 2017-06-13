@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 public class DebugItemDefinitions extends Definitions<Item, IItemDefinition<Item>> {
 
 	public DebugItemDefinitions(DefinitionFactory registry){
-		registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "test_item_model_default"), ih(new TestItem())).defaultModel().build();
+		registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "test_item_model_default"), ih(new TestItem())).defaultModel(null).build();
 	}
 
 	private DefinitionFactory.InputHandler<Item, Item> ih(Item item){

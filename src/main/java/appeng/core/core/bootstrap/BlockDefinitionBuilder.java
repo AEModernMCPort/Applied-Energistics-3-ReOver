@@ -65,7 +65,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			@Nonnull
 			@Override
 			public IItemBuilder<ItemBlock, ?> customize(@Nonnull IItemBuilder<ItemBlock, ?> builder){
-				return builder.defaultModel();
+				return builder.defaultModel("normal");
 			}
 
 		});

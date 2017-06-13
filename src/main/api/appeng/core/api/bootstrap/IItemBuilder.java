@@ -5,10 +5,17 @@ import appeng.api.definitions.IItemDefinition;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
+import javax.annotation.Nullable;
+
 public interface IItemBuilder<I extends Item, II extends IItemBuilder<I, II>> extends IDefinitionBuilder<I, IItemDefinition<I>, II> {
 
 	II creativeTab(CreativeTabs tab);
 
-	II defaultModel();
+	/**
+	 * Loads default model for this item
+	 * @param variant model variant, defaults to <tt>"inventory"</tt>
+	 * @return <tt>this</tt>
+	 */
+	II defaultModel(@Nullable String variant);
 
 }

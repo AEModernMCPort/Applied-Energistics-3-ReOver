@@ -12,27 +12,28 @@ import java.io.IOException;
 
 public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 
-	public final YamlConfig CONFIG = new YamlConfig();
+	public final YamlConfig FEATURESCONFIG = new YamlConfig();
+	public final YamlConfig CONFIGCONFIG = new YamlConfig();
 
 	public YAMLConfigLoader(String module){
-		super(module, "yaml");
-		CONFIG.setPrivateFields(true);
-		CONFIG.writeConfig.setWriteDefaultValues(true);
-		CONFIG.writeConfig.setWriteRootTags(false);
-		CONFIG.setClassTag("feature", HierarchicalFeatures.class);
+		super(module, "yml");
+		FEATURESCONFIG.writeConfig.setWriteRootTags(false);
+		FEATURESCONFIG.setClassTag("feature", HierarchicalFeatures.class);
+		CONFIGCONFIG.writeConfig.setWriteRootTags(false);
+		CONFIGCONFIG.setPrivateFields(true);
+		CONFIGCONFIG.writeConfig.setWriteDefaultValues(true);
+		CONFIGCONFIG.readConfig.setIgnoreUnknownProperties(true);
 	}
 
 	@Override
 	public void load(Class<C> clas) throws IOException{
 		super.load(clas);
 
-		CONFIG.setClassTag("config", clas);
-
-		YamlReader featuresReader = new YamlReader(new FileReader(featuresFile()), CONFIG);
+		YamlReader featuresReader = new YamlReader(new FileReader(featuresFile()), FEATURESCONFIG);
 		hierarchicalToManager(featuresReader.read(HierarchicalFeatures.class));
 		featuresReader.close();
 
-		YamlReader configReader = new YamlReader(new FileReader(configFile()), CONFIG);
+		YamlReader configReader = new YamlReader(new FileReader(configFile()), CONFIGCONFIG);
 		config = configReader.read(clas);
 		configReader.close();
 		if(config == null)
@@ -41,11 +42,11 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 
 	@Override
 	public void save() throws IOException{
-		YamlWriter featuresWriter = new YamlWriter(new FileWriter(featuresFile()), CONFIG);
+		YamlWriter featuresWriter = new YamlWriter(new FileWriter(featuresFile()), FEATURESCONFIG);
 		featuresWriter.write(managerToHierarchical());
 		featuresWriter.close();
 
-		YamlWriter configWriter = new YamlWriter(new FileWriter(configFile()), CONFIG);
+		YamlWriter configWriter = new YamlWriter(new FileWriter(configFile()), CONFIGCONFIG);
 		configWriter.write(config);
 		configWriter.close();
 	}

@@ -2,9 +2,10 @@ package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
+import appeng.api.definitions.IItemDefinition;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.api.bootstrap.ItemBlockCustomizer;
+import appeng.core.api.bootstrap.BlockItemCustomizer;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
@@ -15,13 +16,14 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 
 public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
 
 	//TODO 1.11.2-ReOver - :P
 	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
 
-	private ItemBlockCustomizer itemBlock = null;
+	private Function<IBlockDefinition<B>, IItemDefinition<ItemBlock>> item = def -> null;
 
 	//TODO 1.11.2-ReOver - Be back?
 /*	@SideOnly(Side.CLIENT)
@@ -40,27 +42,33 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	}
 
 	@Override
-	public BlockDefinitionBuilder<B> createDefaultItemBlock(){
-		return createItemBlock(new ItemBlockCustomizer<ItemBlock>() {
+	public <I extends ItemBlock> BlockDefinitionBuilder<B> setItem(@Nonnull Function<IBlockDefinition<B>, IItemDefinition<I>> item){
+		this.item = (Function) item;
+		return this;
+	}
+
+	@Override
+	public <I extends ItemBlock> BlockDefinitionBuilder<B> createItem(@Nonnull BlockItemCustomizer<I> itemBlock){
+		return setItem(block -> itemBlock.customize(factory.definitionBuilder(registryName, blockItemIh(itemBlock.createItem(block.maybe().get())))).setFeature(feature).build());
+	}
+
+	@Override
+	public BlockDefinitionBuilder<B> createDefaultItem(){
+		return createItem(new BlockItemCustomizer<ItemBlock>(){
 
 			@Nonnull
 			@Override
-			public ItemBlock createItemBlock(Block block){
+			public ItemBlock createItem(Block block){
 				return new ItemBlock(block);
 			}
 
 			@Nonnull
 			@Override
 			public IItemBuilder<ItemBlock, ?> customize(@Nonnull IItemBuilder<ItemBlock, ?> builder){
-				return builder.setFeature(feature);
+				return builder.defaultModel();
 			}
 
 		});
-	}
-
-	public BlockDefinitionBuilder<B> createItemBlock(ItemBlockCustomizer ib){
-		itemBlock = ib;
-		return this;
 	}
 
 	/*@SideOnly(Side.CLIENT)
@@ -90,13 +98,14 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 		if(!block.getBlockState().getProperties().isEmpty())
 			definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
 
-		if(itemBlock != null)
-			factory.addDefault(itemBlock.customize(factory.definitionBuilder(registryName, itemBlockIh(itemBlock.createItemBlock(block)))).setFeature(feature).build());
+		IItemDefinition<ItemBlock> item = this.item.apply(definition);
+		definition.setItem(item);
+		if(item != null) factory.addDefault(item);
 
 		return definition;
 	}
 
-	public DefinitionFactory.InputHandler<Item, Item> itemBlockIh(ItemBlock item){
+	public DefinitionFactory.InputHandler<Item, Item> blockItemIh(ItemBlock item){
 		return new DefinitionFactory.InputHandler<Item, Item>(item) {};
 	}
 

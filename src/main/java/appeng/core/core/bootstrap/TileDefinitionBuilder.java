@@ -74,7 +74,9 @@ public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuild
 		}
 
 		TileDefinition<T> definition = new TileDefinition<T>(registryName, new TileRegistryEntryImpl<T>(registryName, t));
-		definition.setBlock(block.apply(definition));
+		IBlockDefinition block = this.block.apply(definition);
+		definition.setBlock(block);
+		factory.addDefault(block);
 		return definition;
 	}
 

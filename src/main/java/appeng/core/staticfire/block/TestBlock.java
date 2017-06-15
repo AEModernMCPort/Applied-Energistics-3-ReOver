@@ -17,7 +17,9 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 import javax.annotation.Nullable;
 
 // /setblock ~ ~ ~ appliedenergistics3:test
-public class TestBlock extends Block{
+public class TestBlock extends Block implements StaticFireBlockBase{
+
+    final String REGISTRY_NAME = "test_block";
 
     public TestBlock() {
         super(Material.ROCK);
@@ -51,4 +53,8 @@ public class TestBlock extends Block{
     }
 
 
+    @Override
+    public String getRegistryNameSF() {
+        return REGISTRY_NAME;
+    }
 }

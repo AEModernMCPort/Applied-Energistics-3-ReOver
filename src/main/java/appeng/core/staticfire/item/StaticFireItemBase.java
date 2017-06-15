@@ -1,12 +1,15 @@
 package appeng.core.staticfire.item;
 
+import appeng.api.bootstrap.DefinitionFactory;
+import appeng.core.AppEng;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
-public class StaticFireItemBase extends Item {
+public interface StaticFireItemBase{
 
-    static String REGISTRY_NAME = "";
+    //static public String REGISTRY_NAME = "";
 
+    String getRegistryNameSF();
 
     //public ResourceLocation getRegistryName()
 

@@ -35,7 +35,7 @@ import java.io.IOException;
 @Module(IStaticFire.NAME)
 public class AppEngStaticFire implements IStaticFire{
 
-    @Module.Instance(NAME)
+    //@Module.Instance(IStaticFire.NAME)
     public static final AppEngStaticFire INSTANCE = null;
 
     @SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.staticfire.proxy.StaticFireClientProxy", serverSide = "appeng.core.staticfire.proxy.StaticFireServerProxy")
@@ -87,9 +87,6 @@ public class AppEngStaticFire implements IStaticFire{
 
         this.itemDefinitions.init(registry);
         this.blockDefinitions.init(registry);
-
-
-
 
         initHandler.preInit();
         proxy.preInit(event);

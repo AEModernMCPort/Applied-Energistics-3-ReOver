@@ -16,7 +16,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
-public class FiberCableMaker extends Block implements ITileEntityProvider{
+public class FiberCableMaker extends Block implements ITileEntityProvider, StaticFireBlockBase{
+
+    final String REGISTRY_NAME = "fiber_cable_maker";
 
     public FiberCableMaker() {
         super(Material.PISTON);
@@ -64,4 +66,8 @@ public class FiberCableMaker extends Block implements ITileEntityProvider{
         return (FiberCableMakerTileEntity) world.getTileEntity(pos);
     }
 
+    @Override
+    public String getRegistryNameSF() {
+        return REGISTRY_NAME;
+    }
 }

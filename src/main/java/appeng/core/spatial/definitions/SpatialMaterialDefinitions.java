@@ -15,4 +15,8 @@ public class SpatialMaterialDefinitions extends Definitions<Material, IMaterialD
 
 	}
 
+	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){
+		return new DefinitionFactory.InputHandler<Material, Material>(material) {};
+	}
+
 }

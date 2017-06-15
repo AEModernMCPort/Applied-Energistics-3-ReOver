@@ -60,25 +60,32 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 	protected void hierarchicalToManager(HierarchicalFeatures features){
 		if(features == null) return;
 		Map<ResourceLocation, Boolean> allFeatures = featuresManager.getAllFeatures();
-		if(features.children != null)
-			features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(next, hierarchicalFeatures, allFeatures));
+		if(features.subfeatures != null)
+			features.subfeatures.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(next, hierarchicalFeatures, allFeatures));
 	}
 
 	protected void hierarchicalToManager(String path, HierarchicalFeatures features, Map<ResourceLocation, Boolean> allFeatures){
-		if(features.children != null)
-			features.children.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(String.join("/", path, next), hierarchicalFeatures, allFeatures));
+		if(features.subfeatures != null)
+			features.subfeatures.forEach((next, hierarchicalFeatures) -> hierarchicalToManager(String.join("/", path, next), hierarchicalFeatures, allFeatures));
 		allFeatures.put(new ResourceLocation(module, path), features.enabled);
 	}
 
 	public static class HierarchicalFeatures {
 
 		public boolean enabled;
-		public Map<String, HierarchicalFeatures> children;
+		public Map<String, HierarchicalFeatures> subfeatures;
+
+		public HierarchicalFeatures(){
+		}
+
+		public HierarchicalFeatures(boolean enabled){
+			this.enabled = enabled;
+		}
 
 		public HierarchicalFeatures getOrCreate(String loc){
-			if(children == null) children = new HashMap<>();
-			HierarchicalFeatures features = children.get(loc);
-			if(features == null) children.put(loc, features = new HierarchicalFeatures());
+			if(subfeatures == null) subfeatures = new HashMap<>();
+			HierarchicalFeatures features = subfeatures.get(loc);
+			if(features == null) subfeatures.put(loc, features = new HierarchicalFeatures());
 			return features;
 		}
 

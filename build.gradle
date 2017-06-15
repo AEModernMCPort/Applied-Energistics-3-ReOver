@@ -31,6 +31,7 @@ dependencies {
 	compile("code.elix_x.excore:EXCore:$excore_version-$minecraft_version"){
 		exclude group: "com.google.guava"
 	}
+	compile "com.esotericsoftware.yamlbeans:yamlbeans:$yamlbeans_version"
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
 	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
@@ -58,10 +59,13 @@ jar {
 	from {
         zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXComms")})
     } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
+        exclude "META-INF/**"
     }
+	from {
+		zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("yamlbeans")})
+	} {
+		exclude "META-INF/**"
+	}
 }
 
 sourceSets {

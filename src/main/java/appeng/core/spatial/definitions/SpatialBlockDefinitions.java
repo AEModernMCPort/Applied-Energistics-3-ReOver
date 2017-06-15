@@ -12,4 +12,8 @@ public class SpatialBlockDefinitions extends Definitions<Block, IBlockDefinition
 
 	}
 
+	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){
+		return new DefinitionFactory.InputHandler<Block, Block>(block) {};
+	}
+
 }

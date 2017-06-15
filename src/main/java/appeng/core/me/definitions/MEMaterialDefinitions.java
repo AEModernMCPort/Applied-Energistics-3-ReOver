@@ -15,4 +15,8 @@ public class MEMaterialDefinitions extends Definitions<Material, IMaterialDefini
 
 	}
 
+	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){
+		return new DefinitionFactory.InputHandler<Material, Material>(material) {};
+	}
+
 }

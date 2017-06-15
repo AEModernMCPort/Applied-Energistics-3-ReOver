@@ -5,6 +5,7 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
@@ -13,6 +14,7 @@ import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
+import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
@@ -27,13 +29,17 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.common.registry.RegistryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
 
-	@Module.Instance(NAME)
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
+
+	@Module.Instance
 	public static final AppEngCore INSTANCE = null;
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
@@ -67,7 +73,7 @@ public class AppEngCore implements ICore {
 		if(clas == Block.class){
 			return (D) blockDefinitions;
 		}
-		if(clas == TileEntity.class){
+		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
 		}
 		if(clas == Material.class){
@@ -91,11 +97,12 @@ public class AppEngCore implements ICore {
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerConfigurationLoaderProvider("JSON", module -> new JSONConfigLoader(module));
+		event.registerConfigurationLoaderProvider("YAML", module -> new YAMLConfigLoader(module));
 
 		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
-		//TODO 1.11.2-ReOver - Find something better than Class for tiles & fix NPE
-		event.registerDefinitionBuilderSupplier(Class.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile, null));
+		//TODO 1.11.2-ReOver - Fix NPE
+		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile));
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, (factory, registryName, biome) -> new BiomeDefinitionBuilder(factory, registryName, biome));
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, (factory, registryName, dimensionId) -> new DimensionTypeDefinitionBuilder(factory, registryName, dimensionId));
 
@@ -110,9 +117,8 @@ public class AppEngCore implements ICore {
 		try{
 			configLoader.load(CoreConfig.class);
 		} catch(IOException e){
-			//TODO 1.11.2-ReOver - handle IOs
+			logger.error("Caught exception loading configuration", e);
 		}
-
 		config = configLoader.configuration();
 
 		registry = event.factory(initHandler, proxy);
@@ -136,7 +142,7 @@ public class AppEngCore implements ICore {
 		try{
 			configLoader.save();
 		} catch(IOException e){
-			//TODO 1.11.2-ReOver - handle IOs
+			logger.error("Caught exception saving configuration", e);
 		}
 	}
 

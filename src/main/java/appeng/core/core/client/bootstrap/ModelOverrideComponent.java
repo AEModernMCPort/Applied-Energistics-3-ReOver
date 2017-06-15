@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 /**
  * @author Fredi100
  */
-public class ModelOverrideComponent implements IDefinitionBuilder.DefinitionInitializationComponent {
+public class ModelOverrideComponent<T, D extends IDefinition<T>> implements IDefinitionBuilder.DefinitionInitializationComponent<T, D> {
 
 	private final Consumer<ModelBakeEvent> customizer;
 
@@ -28,7 +28,7 @@ public class ModelOverrideComponent implements IDefinitionBuilder.DefinitionInit
 	}
 
 	@Override
-	public void preInit(IDefinition def){
+	public void preInit(D def){
 		AppEngCore.proxy.acceptModelCustomizer(customizer);
 	}
 

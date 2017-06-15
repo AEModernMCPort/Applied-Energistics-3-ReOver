@@ -1,4 +1,4 @@
-package appeng.core.api;
+package appeng.api.entry;
 
 import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;

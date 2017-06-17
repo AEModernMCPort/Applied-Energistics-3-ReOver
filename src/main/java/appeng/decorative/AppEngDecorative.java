@@ -36,9 +36,9 @@ import java.io.IOException;
 @Mod(modid = AppEngDecorative.MODID, name = AppEngDecorative.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngDecorative implements IDecorative {
 
-	public static final String MODID = AppEng.MODID + "|" + IDecorative.NAME;
+	public static final String MODID = AppEng.MODID + "." + IDecorative.NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + IDecorative.NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + IDecorative.NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

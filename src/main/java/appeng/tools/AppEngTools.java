@@ -33,9 +33,9 @@ import java.io.IOException;
 @Mod(modid = AppEngTools.MODID, name = AppEngTools.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngTools implements ITools {
 
-	public static final String MODID = AppEng.MODID + "|" + ITools.NAME;
+	public static final String MODID = AppEng.MODID + "." + ITools.NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + ITools.NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + ITools.NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

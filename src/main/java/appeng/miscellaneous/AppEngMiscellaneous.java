@@ -36,9 +36,9 @@ import java.io.IOException;
 @Mod(modid = AppEngMiscellaneous.MODID, name = AppEngMiscellaneous.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngMiscellaneous implements IMiscellaneous {
 
-	public static final String MODID = AppEng.MODID + "|" + IMiscellaneous.NAME;
+	public static final String MODID = AppEng.MODID + "." + IMiscellaneous.NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + IMiscellaneous.NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + IMiscellaneous.NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

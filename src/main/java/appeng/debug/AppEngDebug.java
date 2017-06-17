@@ -37,9 +37,9 @@ public class AppEngDebug {
 
 	public static final String NAME = "debug";
 
-	public static final String MODID = AppEng.MODID + "|" + NAME;
+	public static final String MODID = AppEng.MODID + "." + NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

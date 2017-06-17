@@ -8,10 +8,12 @@ import appeng.core.api.material.Material;
 import appeng.core.core.AppEngCore;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
@@ -103,7 +105,7 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	 */
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems){
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems){
 		for(Material material : REGISTRY){
 			subItems.add(getItemStack(material, 1));
 		}
@@ -189,8 +191,8 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced){
-		getMaterial(stack).addInformation(stack, playerIn, tooltip, advanced);
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
+		getMaterial(stack).addInformation(stack, worldIn, tooltip, flagIn);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -266,8 +268,8 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	}
 
 	@Override
-	public boolean onEntityItemUpdate(net.minecraft.entity.item.EntityItem entityItem){
-		return getMaterial(entityItem.getEntityItem()).onEntityItemUpdate(entityItem);
+	public boolean onEntityItemUpdate(EntityItem entityItem){
+		return getMaterial(entityItem.getItem()).onEntityItemUpdate(entityItem);
 	}
 
 	@Override

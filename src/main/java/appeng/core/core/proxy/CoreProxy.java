@@ -12,5 +12,7 @@ public class CoreProxy extends BaseProxy {
 		super(side);
 	}
 
+	public void acceptModelRegisterer(Runnable registerer){};
+
 	public void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){};
 }

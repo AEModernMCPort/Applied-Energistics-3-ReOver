@@ -5,6 +5,7 @@ import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IItemDefinition;
 import appeng.api.item.IStateItem;
 import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.AppEngCore;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.ItemDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -38,7 +39,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 	@Override
 	public ItemDefinitionBuilder<I> defaultModel(String variant){
-		return this.<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> ModelLoader.setCustomModelResourceLocation(def.maybe().get(), 0, new ModelResourceLocation(def.identifier(), variant != null ? variant : "inventory")));
+		return this.<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> AppEngCore.proxy.acceptModelRegisterer(() -> ModelLoader.setCustomModelResourceLocation(def.maybe().get(), 0, new ModelResourceLocation(def.identifier(), variant != null ? variant : "inventory"))));
 	}
 
 	/*@SideOnly(Side.CLIENT)

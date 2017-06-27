@@ -1,7 +1,6 @@
 package appeng.core;
 
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
-import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
@@ -13,7 +12,6 @@ import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
-import net.minecraft.block.Block;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
@@ -43,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {

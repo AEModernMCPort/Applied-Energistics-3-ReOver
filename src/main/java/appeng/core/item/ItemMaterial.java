@@ -3,15 +3,17 @@ package appeng.core.item;
 import appeng.api.item.IStateItem;
 import appeng.api.item.IStateItemState;
 import appeng.api.item.IStateItemState.Property;
-import appeng.core.api.items.IItemMaterial;
+import appeng.core.api.item.IItemMaterial;
 import appeng.core.api.material.Material;
 import appeng.core.core.AppEngCore;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
@@ -21,16 +23,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.ForgeRegistry;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
 
-	public static final FMLControlledNamespacedRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();
+	public static final ForgeRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();
 
 	public static enum MaterialProperty implements IStateItemState.Property<Material> {
 
@@ -64,17 +66,17 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	@Override
 	public IStateItemState<ItemMaterial> getState(ItemStack itemstack){
-		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getObjectById(itemstack.getMetadata()));
+		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getValue(itemstack.getMetadata()));
 	}
 
 	@Override
 	public IStateItemState<ItemMaterial> getDefaultState(){
-		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getObjectById(0));
+		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getValue(0));
 	}
 
 	@Override
 	public ItemStack getItemStack(IStateItemState<ItemMaterial> state, int amount){
-		return new ItemStack(this, amount, REGISTRY.getId(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
+		return new ItemStack(this, amount, REGISTRY.getID(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
 	}
 
 	/**
@@ -103,7 +105,7 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	 */
 
 	@Override
-	public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems){
+	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems){
 		for(Material material : REGISTRY){
 			subItems.add(getItemStack(material, 1));
 		}
@@ -189,8 +191,8 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced){
-		getMaterial(stack).addInformation(stack, playerIn, tooltip, advanced);
+	public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn){
+		getMaterial(stack).addInformation(stack, worldIn, tooltip, flagIn);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -266,8 +268,8 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	}
 
 	@Override
-	public boolean onEntityItemUpdate(net.minecraft.entity.item.EntityItem entityItem){
-		return getMaterial(entityItem.getEntityItem()).onEntityItemUpdate(entityItem);
+	public boolean onEntityItemUpdate(EntityItem entityItem){
+		return getMaterial(entityItem.getItem()).onEntityItemUpdate(entityItem);
 	}
 
 	@Override

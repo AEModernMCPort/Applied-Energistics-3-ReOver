@@ -10,7 +10,6 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.core.CoreConfig;
 import appeng.core.crafting.definitions.CraftingBlockDefinitions;
 import appeng.core.crafting.definitions.CraftingItemDefinitions;
 import appeng.core.crafting.definitions.CraftingTileDefinitions;
@@ -20,7 +19,6 @@ import appeng.decorative.config.DecorativeConfig;
 import appeng.decorative.proxy.DecorativeProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -36,9 +34,9 @@ import java.io.IOException;
 @Mod(modid = AppEngDecorative.MODID, name = AppEngDecorative.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngDecorative implements IDecorative {
 
-	public static final String MODID = AppEng.MODID + "|" + IDecorative.NAME;
+	public static final String MODID = AppEng.MODID + "." + IDecorative.NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + IDecorative.NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + IDecorative.NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

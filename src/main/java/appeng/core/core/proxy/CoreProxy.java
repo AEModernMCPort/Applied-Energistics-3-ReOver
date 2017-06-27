@@ -1,10 +1,10 @@
 package appeng.core.core.proxy;
 
-		import appeng.core.lib.proxy.BaseProxy;
-		import net.minecraftforge.client.event.ModelBakeEvent;
-		import net.minecraftforge.fml.relauncher.Side;
+import appeng.core.lib.proxy.BaseProxy;
+import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
-		import java.util.function.Consumer;
+import java.util.function.Consumer;
 
 public class CoreProxy extends BaseProxy {
 

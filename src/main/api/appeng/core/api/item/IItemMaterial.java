@@ -1,4 +1,4 @@
-package appeng.core.api.items;
+package appeng.core.api.item;
 
 import appeng.api.item.IStateItem;
 import net.minecraft.item.Item;

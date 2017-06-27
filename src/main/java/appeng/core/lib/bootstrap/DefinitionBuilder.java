@@ -9,9 +9,8 @@ import appeng.core.lib.config.GlobalFeaturesManager;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.common.registry.IForgeRegistryEntry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -82,17 +81,12 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	}
 
 	protected I setRegistryName(I t){
-		if(t instanceof IForgeRegistryEntry){
-			((IForgeRegistryEntry) t).setRegistryName(registryName);
-		}
+		if(t instanceof IForgeRegistryEntry) ((IForgeRegistryEntry) t).setRegistryName(registryName);
 		return t;
 	}
 
 	protected void register(T t){
-		if(t instanceof IForgeRegistryEntry){
-			GameRegistry.register((IForgeRegistryEntry) t);
-			System.out.println("Reg: " + t);
-		}
+		if(t instanceof IForgeRegistryEntry) StaticRegistrator.addToRegistryQueue((IForgeRegistryEntry<T>) t);
 	}
 
 	protected abstract D def(@Nullable I t);

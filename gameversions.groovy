@@ -5,7 +5,7 @@ def javaVersion = args[1].replace('1.', '') as Integer
 
 def versions = []
 
-new JsonSlurper().parse(new File("gameversions.json")).each { version ->
+new JsonSlurper().parseText(new File("gameversions.json").text).each { version ->
 	if(version.name.contains('Java')){
 		if((version.name.replace('Java ', '') as Integer) >= javaVersion) versions << version.id
 	} else if(version.name == mcVersion){

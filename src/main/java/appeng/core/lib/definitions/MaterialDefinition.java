@@ -4,7 +4,7 @@ import appeng.api.definitions.IItemDefinition;
 import appeng.api.definitions.IMaterialDefinition;
 import appeng.api.definitions.sub.IItemSubDefinition;
 import appeng.api.item.IStateItemState;
-import appeng.core.api.items.IItemMaterial;
+import appeng.core.api.item.IItemMaterial;
 import appeng.core.api.material.Material;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.definitions.CoreItemDefinitions;

@@ -8,7 +8,6 @@ import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
-import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.debug.config.DebugConfig;
 import appeng.debug.definitions.DebugBlockDefinitions;
@@ -37,9 +36,9 @@ public class AppEngDebug {
 
 	public static final String NAME = "debug";
 
-	public static final String MODID = AppEng.MODID + "|" + NAME;
+	public static final String MODID = AppEng.MODID + "." + NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

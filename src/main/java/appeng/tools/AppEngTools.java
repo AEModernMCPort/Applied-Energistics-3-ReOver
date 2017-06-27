@@ -10,7 +10,6 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
-import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.tools.api.ITools;
 import appeng.tools.config.ToolsConfig;
@@ -33,9 +32,9 @@ import java.io.IOException;
 @Mod(modid = AppEngTools.MODID, name = AppEngTools.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngTools implements ITools {
 
-	public static final String MODID = AppEng.MODID + "|" + ITools.NAME;
+	public static final String MODID = AppEng.MODID + "." + ITools.NAME;
 
-	public static final String MODNAME = AppEng.NAME + " | " + ITools.NAME;
+	public static final String MODNAME = AppEng.NAME + " . " + ITools.NAME;
 
 	public static final Logger logger = LogManager.getLogger(MODID);
 

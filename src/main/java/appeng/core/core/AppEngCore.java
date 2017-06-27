@@ -9,6 +9,7 @@ import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.api.ICore;
 import appeng.core.api.material.Material;
@@ -27,6 +28,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,7 @@ public class AppEngCore implements ICore {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
+	private IForgeRegistry<IGRecipeRegistry<?>> recipeRegistryRegistry;
 	private ForgeRegistry<Material> materialRegistry;
 
 	private DefinitionFactory registry;
@@ -110,7 +113,8 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
+		recipeRegistryRegistry = new RegistryBuilder<IGRecipeRegistry<?>>().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType((Class) IGRecipeRegistry.class).disableSaving().create();
+		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
 		try{

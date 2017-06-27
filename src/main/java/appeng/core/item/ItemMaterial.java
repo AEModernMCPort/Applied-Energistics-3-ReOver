@@ -66,17 +66,17 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	@Override
 	public IStateItemState<ItemMaterial> getState(ItemStack itemstack){
-		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getObjectById(itemstack.getMetadata()));
+		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getValue(itemstack.getMetadata()));
 	}
 
 	@Override
 	public IStateItemState<ItemMaterial> getDefaultState(){
-		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getObjectById(0));
+		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getValue(0));
 	}
 
 	@Override
 	public ItemStack getItemStack(IStateItemState<ItemMaterial> state, int amount){
-		return new ItemStack(this, amount, REGISTRY.getId(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
+		return new ItemStack(this, amount, REGISTRY.getID(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
 	}
 
 	/**

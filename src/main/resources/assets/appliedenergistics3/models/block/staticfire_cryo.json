@@ -1,12 +1,12 @@
 {
 	"textures": {
-        "particle": "appliedenergistics3:blocks/mustache",
-        "down": "appliedenergistics3:blocks/mustache",
-        "up": "appliedenergistics3:blocks/mustache",
-        "north": "appliedenergistics3:blocks/mustache",
-        "east": "appliedenergistics3:blocks/mustache",
-        "south": "appliedenergistics3:blocks/mustache",
-        "west": "appliedenergistics3:blocks/mustache"
+        "particle": "appliedenergistics3:blocks/staticfire/cryo",
+        "down": "appliedenergistics3:blocks/staticfire/cryo",
+        "up": "appliedenergistics3:blocks/staticfire/cryo",
+        "north": "appliedenergistics3:blocks/staticfire/cryo",
+        "east": "appliedenergistics3:blocks/staticfire/cryo",
+        "south": "appliedenergistics3:blocks/staticfire/cryo",
+        "west": "appliedenergistics3:blocks/staticfire/cryo"
     },
 	"elements": [
         {   "from": [ 0, 0, 0 ],

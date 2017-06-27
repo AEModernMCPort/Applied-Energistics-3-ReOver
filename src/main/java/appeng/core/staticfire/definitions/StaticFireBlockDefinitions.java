@@ -8,10 +8,7 @@ import appeng.core.core.bootstrap.BlockDefinitionBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireBlockDefinitions;
-import appeng.core.staticfire.block.FiberCableMaker;
-import appeng.core.staticfire.block.QuantumPillarBase;
-import appeng.core.staticfire.block.StaticFireBlockBase;
-import appeng.core.staticfire.block.TestBlock;
+import appeng.core.staticfire.block.*;
 import appeng.core.staticfire.tesr.FiberCableMakerTESR;
 import appeng.core.staticfire.tileEntity.FiberCableMakerTileEntity;
 import net.minecraft.block.Block;
@@ -31,7 +28,7 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
         Reg(registry, new FiberCableMaker());
 
         Reg(registry, new QuantumPillarBase());
-
+        Reg(registry, new CryoPod());
         // Bind our TESR to our tile entity
         ClientRegistry.bindTileEntitySpecialRenderer(FiberCableMakerTileEntity.class, new FiberCableMakerTESR());
 
@@ -43,8 +40,9 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
 
     public <T extends Block & StaticFireBlockBase> void Reg(DefinitionFactory registry, T item)
     {
-        BlockDefinitionBuilder a = registry.definitionBuilder(new ResourceLocation(AppEng.MODID, item.getRegistryNameSF()), ih(item));
+        BlockDefinitionBuilder a = registry.definitionBuilder(new ResourceLocation(AppEng.MODID, "staticfire_" + item.getRegistryNameSF()), ih(item));
         a.createDefaultItem();
+
         //a.defaultModel(new ResourceLocation(AppEng.MODID, item.getRegistryNameSF()).toString());
         a.build();
     }

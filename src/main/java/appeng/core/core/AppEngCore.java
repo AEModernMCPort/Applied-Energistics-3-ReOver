@@ -50,7 +50,7 @@ public class AppEngCore implements ICore {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private IForgeRegistry<IGRecipeRegistry<?>> recipeRegistryRegistry;
+	private IForgeRegistry recipeRegistryRegistry;
 	private ForgeRegistry<Material> materialRegistry;
 
 	private DefinitionFactory registry;
@@ -113,7 +113,7 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		recipeRegistryRegistry = new RegistryBuilder<IGRecipeRegistry<?>>().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType((Class) IGRecipeRegistry.class).disableSaving().create();
+		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().create();
 		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();

@@ -2,7 +2,6 @@ package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
-import appeng.api.definitions.IDefinition;
 import appeng.api.definitions.ITileDefinition;
 import appeng.api.entry.TileRegistryEntry;
 import appeng.core.api.bootstrap.IBlockBuilder;
@@ -10,7 +9,6 @@ import appeng.core.api.bootstrap.ITileBuilder;
 import appeng.core.api.bootstrap.TileBlockCustomizer;
 import appeng.core.core.block.TileBlockBase;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.Definitions;
 import appeng.core.lib.definitions.TileDefinition;
 import appeng.core.lib.entry.TileRegistryEntryImpl;
 import net.minecraft.block.Block;
@@ -21,7 +19,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuilder<Class<T>, TileRegistryEntry<T>, ITileDefinition<T>, TileDefinitionBuilder<T>> implements ITileBuilder<T, TileDefinitionBuilder<T>> {

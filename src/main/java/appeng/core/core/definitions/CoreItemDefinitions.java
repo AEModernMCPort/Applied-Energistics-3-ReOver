@@ -1,7 +1,6 @@
 package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;
 import appeng.core.api.bootstrap.IItemBuilder;
@@ -9,7 +8,6 @@ import appeng.core.api.definitions.ICoreItemDefinitions;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.item.ItemMaterial;
 import appeng.core.lib.definitions.Definitions;
-import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;

@@ -21,14 +21,13 @@ import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +48,7 @@ public class AppEngCore implements ICore {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FMLControlledNamespacedRegistry<Material> materialRegistry;
+	private ForgeRegistry<Material> materialRegistry;
 
 	private DefinitionFactory registry;
 
@@ -90,7 +89,7 @@ public class AppEngCore implements ICore {
 		return guiHandler;
 	}
 
-	public FMLControlledNamespacedRegistry<Material> getMaterialRegistry(){
+	public ForgeRegistry<Material> getMaterialRegistry(){
 		return materialRegistry;
 	}
 
@@ -111,7 +110,7 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
+		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
 		try{

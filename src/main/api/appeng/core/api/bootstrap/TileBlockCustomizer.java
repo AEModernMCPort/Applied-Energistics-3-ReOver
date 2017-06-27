@@ -3,7 +3,6 @@ package appeng.core.api.bootstrap;
 import appeng.api.entry.TileRegistryEntry;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 
 import javax.annotation.Nonnull;

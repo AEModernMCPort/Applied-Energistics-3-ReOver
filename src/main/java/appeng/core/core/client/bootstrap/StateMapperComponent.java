@@ -8,8 +8,6 @@ import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraftforge.client.model.ModelLoader;
-import scala.Option;
-import scala.tools.cmd.Opt;
 
 import java.util.Optional;
 import java.util.function.Supplier;

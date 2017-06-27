@@ -18,7 +18,7 @@ before_install:
   - chmod +x curseforge.sh
   - export GROOVY_HOME=$(./install.sh "https://dl.bintray.com/groovy/maven/" "apache-groovy-binary-2.4.7.zip" "groovy-2.4.7")
   - export PATH=$GROOVY_HOME/bin:$PATH
-  - gradle setupCIWorkspace
+  - gradlew setupCIWorkspace
   
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

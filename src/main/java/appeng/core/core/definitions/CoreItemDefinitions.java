@@ -21,7 +21,7 @@ public class CoreItemDefinitions extends Definitions<Item, IItemDefinition<Item>
 	public CoreItemDefinitions(DefinitionFactory registry){
 		this.material = registry
 				.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "material"), ih(new ItemMaterial())).setFeature(null)
-				.initializationComponent(Side.CLIENT, new ItemMeshDefinitionComponent(() -> Optional.of(stack -> ((ItemMaterial) stack.getItem()).getMaterial(stack).getModel(stack))))
+				.initializationComponent(Side.CLIENT, new ItemMeshDefinitionComponent(() -> Optional.of(stack -> ((ItemMaterial) stack.getItem()).getMaterial(stack).getModel())))
 				.build();
 	}
 

@@ -12,6 +12,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.skyfall.api.ISkyfall;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
+import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import net.minecraft.util.ResourceLocation;
@@ -45,6 +46,11 @@ public class AppEngSkyfall implements ISkyfall {
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
 		return null;
+	}
+
+	@ModuleEventHandler
+	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
+		event.registerDefinitionBuilderSupplier(SkyobjectGenerator.class, SkyobjectGenerator.class, (factory, registryName, skyobjectGenerator) -> new SkyobjectGeneratorDefinitionBuilder<>(factory,registryName, skyobjectGenerator));
 	}
 
 	@ModuleEventHandler

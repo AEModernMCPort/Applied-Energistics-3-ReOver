@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.joml.Matrix4f;
 
-public class TransformedMutableBlockAccessM4f extends TransformedBlockAccessM4f implements MutableBlockAccess {
+public class TransformedMutableBlockAccessM4f extends TransformedBlockAccessM4f implements TransformingMutableBlockAccess {
 
 	protected final MutableBlockAccess delegate;
 
@@ -17,13 +17,8 @@ public class TransformedMutableBlockAccessM4f extends TransformedBlockAccessM4f 
 	}
 
 	@Override
-	public void setBlockState(BlockPos pos, IBlockState state){
-		delegate.setBlockState(transform(pos), state);
-	}
-
-	@Override
-	public void setTileEntity(BlockPos pos, TileEntity tile){
-		delegate.setTileEntity(transform(pos), tile);
+	public MutableBlockAccess delegate(){
+		return delegate;
 	}
 
 }

@@ -12,7 +12,7 @@ import org.joml.Vector4f;
 
 import javax.annotation.Nullable;
 
-public class TransformedBlockAccessM4f implements IBlockAccess {
+public class TransformedBlockAccessM4f implements TransformingBlockAccess {
 
 	protected final IBlockAccess delegate;
 	protected final Matrix4f transform;
@@ -32,6 +32,11 @@ public class TransformedBlockAccessM4f implements IBlockAccess {
 		this.w = w;
 	}
 
+	@Override
+	public IBlockAccess delegate(){
+		return delegate;
+	}
+
 	public BlockPos transform(BlockPos pos){
 		Vector4f res = new Vector4f(pos.getX(), pos.getY(), pos.getZ(), w).mul(transform);
 		return new BlockPos(res.x, res.y, res.z);
@@ -42,44 +47,4 @@ public class TransformedBlockAccessM4f implements IBlockAccess {
 		return EnumFacing.getFacingFromVector(res.x, res.y, res.z);
 	}
 
-	@Nullable
-	@Override
-	public TileEntity getTileEntity(BlockPos pos){
-		return delegate.getTileEntity(transform(pos));
-	}
-
-	@Override
-	public int getCombinedLight(BlockPos pos, int lightValue){
-		return delegate.getCombinedLight(transform(pos), lightValue);
-	}
-
-	@Override
-	public IBlockState getBlockState(BlockPos pos){
-		return delegate.getBlockState(transform(pos));
-	}
-
-	@Override
-	public boolean isAirBlock(BlockPos pos){
-		return delegate.isAirBlock(transform(pos));
-	}
-
-	@Override
-	public Biome getBiome(BlockPos pos){
-		return delegate.getBiome(transform(pos));
-	}
-
-	@Override
-	public int getStrongPower(BlockPos pos, EnumFacing direction){
-		return delegate.getStrongPower(transform(pos), transform(direction));
-	}
-
-	@Override
-	public WorldType getWorldType(){
-		return delegate.getWorldType();
-	}
-
-	@Override
-	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default){
-		return delegate.isSideSolid(transform(pos), transform(side), _default);
-	}
 }

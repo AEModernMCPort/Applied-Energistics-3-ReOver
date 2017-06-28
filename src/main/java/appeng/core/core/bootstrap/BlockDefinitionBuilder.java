@@ -48,7 +48,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	}
 
 	@Override
-	public <I extends ItemBlock> BlockDefinitionBuilder<B> createItem(@Nonnull BlockItemCustomizer<I> itemBlock){
+	public <I extends ItemBlock, C extends BlockItemCustomizer<I>> BlockDefinitionBuilder<B> createItem(@Nonnull C itemBlock){
 		return setItem(block -> itemBlock.customize(factory.definitionBuilder(registryName, blockItemIh(itemBlock.createItem(block.maybe().get())))).setFeature(feature).build());
 	}
 

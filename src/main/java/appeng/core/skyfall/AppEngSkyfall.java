@@ -11,9 +11,13 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.skyfall.api.ISkyfall;
+import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.proxy.SkyfallProxy;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,8 +38,9 @@ public class AppEngSkyfall implements ISkyfall {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private DefinitionFactory registry;
+	private IForgeRegistry<SkyobjectGenerator> skyobjectGeneratorsRegistry;
 
+	private DefinitionFactory registry;
 
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
@@ -44,6 +49,8 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		skyobjectGeneratorsRegistry = new RegistryBuilder<SkyobjectGenerator>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectGenerator.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+
 		ConfigurationLoader<SkyfallConfig> configLoader = event.configurationLoader();
 		try{
 			configLoader.load(SkyfallConfig.class);

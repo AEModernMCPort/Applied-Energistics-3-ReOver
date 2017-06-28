@@ -32,6 +32,7 @@ dependencies {
 		exclude group: "com.google.guava"
 	}
 	compile "com.esotericsoftware.yamlbeans:yamlbeans:$yamlbeans_version"
+	compile "org.joml:joml:$joml_version"
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
 	// deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	// deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
@@ -63,6 +64,11 @@ jar {
     }
 	from {
 		zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("yamlbeans")})
+	} {
+		exclude "META-INF/**"
+	}
+	from {
+		zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("joml")})
 	} {
 		exclude "META-INF/**"
 	}

@@ -31,19 +31,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 @Module(IMiscellaneous.NAME)
-@Mod(modid = AppEngMiscellaneous.MODID, name = AppEngMiscellaneous.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngMiscellaneous implements IMiscellaneous {
 
-	public static final String MODID = AppEng.MODID + "." + IMiscellaneous.NAME;
-
-	public static final String MODNAME = AppEng.NAME + " . " + IMiscellaneous.NAME;
-
-	public static final Logger logger = LogManager.getLogger(MODID);
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance
 	public static final AppEngMiscellaneous INSTANCE = null;
 
-	@SidedProxy(modId = MODID, clientSide = "appeng.miscellaneous.proxy.MiscClientProxy", serverSide = "appeng.miscellaneous.proxy.MiscServerProxy")
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.miscellaneous.proxy.MiscClientProxy", serverSide = "appeng.miscellaneous.proxy.MiscServerProxy")
 	public static MiscProxy proxy;
 
 	public MiscellaneousConfig config;
@@ -99,20 +94,10 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 		}
 	}
 
-	@EventHandler
-	public void preInitForge(FMLPreInitializationEvent event){
-
-	}
-
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		initHandler.init();
 		proxy.init(event);
-	}
-
-	@EventHandler
-	public void initForge(final FMLInitializationEvent event){
-
 	}
 
 	@ModuleEventHandler
@@ -121,58 +106,8 @@ public class AppEngMiscellaneous implements IMiscellaneous {
 		proxy.postInit(event);
 	}
 
-	@EventHandler
-	public void postInitForge(final FMLPostInitializationEvent event){
-
-	}
-
 	@ModuleEventHandler
 	public void handleIMCEventAE(AEStateEvent.ModuleIMCMessageEvent event){
-
-	}
-
-	@EventHandler
-	public void handleIMCEventForge(IMCEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverAboutToStartAE(FMLServerAboutToStartEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverAboutToStartForge(FMLServerAboutToStartEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStartingAE(FMLServerStartingEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStartingForge(FMLServerStartingEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStoppingAE(FMLServerStoppingEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStoppingForge(FMLServerStoppingEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStoppedAE(FMLServerStoppedEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStoppedForge(FMLServerStoppedEvent event){
 
 	}
 

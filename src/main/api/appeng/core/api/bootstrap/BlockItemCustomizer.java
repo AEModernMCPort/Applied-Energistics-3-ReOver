@@ -16,4 +16,19 @@ public interface BlockItemCustomizer<I extends ItemBlock> {
 		return builder;
 	}
 
+	@FunctionalInterface
+	interface UseDefaultItemCustomize extends BlockItemCustomizer<ItemBlock> {
+
+		@Nonnull
+		@Override
+		default ItemBlock createItem(Block block){
+			return new ItemBlock(block);
+		}
+
+		@Nonnull
+		@Override
+		IItemBuilder customize(@Nonnull IItemBuilder builder);
+
+	}
+
 }

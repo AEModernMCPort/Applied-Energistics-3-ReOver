@@ -70,7 +70,7 @@ public class TransformedBlockAccessM4f implements IBlockAccess {
 
 	@Override
 	public int getStrongPower(BlockPos pos, EnumFacing direction){
-		return delegate.getStrongPower(transform(pos), direction);
+		return delegate.getStrongPower(transform(pos), transform(direction));
 	}
 
 	@Override
@@ -80,6 +80,6 @@ public class TransformedBlockAccessM4f implements IBlockAccess {
 
 	@Override
 	public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default){
-		return delegate.isSideSolid(transform(pos), side, _default);
+		return delegate.isSideSolid(transform(pos), transform(side), _default);
 	}
 }

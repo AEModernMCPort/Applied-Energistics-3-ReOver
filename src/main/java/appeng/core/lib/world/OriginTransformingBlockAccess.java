@@ -21,7 +21,7 @@ public class OriginTransformingBlockAccess implements TransformingBlockAccess {
 
 	@Override
 	public BlockPos transform(BlockPos pos){
-		return pos.subtract(origin);
+		return pos.add(origin);
 	}
 
 	@Override

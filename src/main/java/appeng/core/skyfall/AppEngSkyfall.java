@@ -33,7 +33,7 @@ public class AppEngSkyfall implements ISkyfall {
 	@Module.Instance
 	public static final AppEngSkyfall INSTANCE = null;
 
-	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.skyfall.proxy.SkyfallClientProxy", serverSide = "appeng.core.worldgen.proxy.WorldGenServerProxy")
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.skyfall.proxy.SkyfallClientProxy", serverSide = "appeng.core.skyfall.proxy.SkyfallServerProxy")
 	public static SkyfallProxy proxy;
 
 	public SkyfallConfig config;

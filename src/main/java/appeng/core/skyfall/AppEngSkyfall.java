@@ -46,6 +46,8 @@ public class AppEngSkyfall implements ISkyfall {
 
 	private SkyfallSkyobjectGeneratorDefinitions skyobjectGeneratorDefinitions;
 
+	private ConfigurationLoader<SkyfallConfig> configLoader;
+
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
 		if(clas == SkyobjectGenerator.class) return (D) skyobjectGeneratorDefinitions;
@@ -61,7 +63,7 @@ public class AppEngSkyfall implements ISkyfall {
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		skyobjectGeneratorsRegistry = new RegistryBuilder<SkyobjectGenerator>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectGenerator.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
-		ConfigurationLoader<SkyfallConfig> configLoader = event.configurationLoader();
+		configLoader = event.configurationLoader();
 		try{
 			configLoader.load(SkyfallConfig.class);
 		} catch(IOException e){
@@ -76,12 +78,6 @@ public class AppEngSkyfall implements ISkyfall {
 
 		initHandler.preInit();
 		proxy.preInit(event);
-
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			logger.error("Caught exception saving configuration", e);
-		}
 	}
 
 	@ModuleEventHandler
@@ -94,6 +90,13 @@ public class AppEngSkyfall implements ISkyfall {
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
+
+		config.populateMissingWeights(skyobjectGeneratorsRegistry);
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

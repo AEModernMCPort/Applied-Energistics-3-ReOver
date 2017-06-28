@@ -9,6 +9,6 @@ public interface SkyobjectGenerator extends IForgeRegistryEntry<SkyobjectGenerat
 
 	float getDefaultWeight();
 
-	void generate(IBlockAccess world, Random random);
+	void generate(MutableBlockAccess world, Random random);
 
 }

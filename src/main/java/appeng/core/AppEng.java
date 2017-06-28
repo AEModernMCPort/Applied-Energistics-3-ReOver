@@ -1,7 +1,6 @@
 package appeng.core;
 
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
-import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
@@ -13,7 +12,6 @@ import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
-import net.minecraft.block.Block;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
@@ -43,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -67,7 +64,6 @@ public final class AppEng {
 	private ImmutableBiMap<String, ?> modules;
 	private ImmutableMap<Class<?>, ?> classModule;
 	private ImmutableList<String> moduleOrder;
-	private ImmutableMap<?, Boolean> internal;
 	private Object current;
 
 	private File configDirectory;
@@ -187,25 +183,18 @@ public final class AppEng {
 		}
 		ImmutableBiMap.Builder<String, Object> modulesBuilder = ImmutableBiMap.builder();
 		ImmutableMap.Builder<Class<?>, Object> classModuleBuilder = ImmutableMap.builder();
-		ImmutableMap.Builder<Object, Boolean> internalBuilder = ImmutableMap.builder();
 		ImmutableList.Builder<String> orderBuilder = ImmutableList.builder();
 
 		for(String name : moduleLoadingOrder){
 			try{
 				Class<?> moduleClass = modules.get(name);
-				boolean mod = moduleClass.isAnnotationPresent(Mod.class);
 				MutableObject<Object> moduleHolder = new MutableObject<>();
-				if(mod){
-					Loader.instance().getModObjectList().entrySet().stream().filter(entry -> entry.getValue().getClass() == moduleClass).findFirst().ifPresent(instance -> moduleHolder.setValue(instance.getValue()));
-				}
-				if(moduleHolder.getValue() == null){
-					moduleHolder.setValue(moduleClass.newInstance());
-				}
+				if(moduleClass.isAnnotationPresent(Mod.class)) Loader.instance().getModObjectList().entrySet().stream().filter(entry -> entry.getValue().getClass() == moduleClass).findFirst().ifPresent(instance -> moduleHolder.setValue(instance.getValue()));
+				if(moduleHolder.getValue() == null) moduleHolder.setValue(moduleClass.newInstance());
 				Object module = moduleHolder.getValue();
 				orderBuilder.add(name);
 				modulesBuilder.put(name, module);
 				classModuleBuilder.put(moduleClass, module);
-				internalBuilder.put(module, !mod);
 			} catch(ReflectiveOperationException e){
 				event.getModLog().error("Error while trying to setup the module " + name);
 				e.printStackTrace();
@@ -215,7 +204,6 @@ public final class AppEng {
 		this.moduleOrder = orderBuilder.build();
 		this.modules = modulesBuilder.build();
 		this.classModule = classModuleBuilder.build();
-		this.internal = internalBuilder.build();
 
 		populateInstances(annotations);
 

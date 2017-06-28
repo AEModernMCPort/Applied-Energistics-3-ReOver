@@ -10,7 +10,6 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.api.material.Material;
-import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.tools.api.ITools;
 import appeng.tools.config.ToolsConfig;
@@ -30,19 +29,14 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 
 @Module(ITools.NAME)
-@Mod(modid = AppEngTools.MODID, name = AppEngTools.MODNAME, version = AppEng.VERSION, dependencies = "required-after:" + AppEng.MODID, acceptedMinecraftVersions = ForgeVersion.mcVersion)
 public class AppEngTools implements ITools {
 
-	public static final String MODID = AppEng.MODID + "|" + ITools.NAME;
-
-	public static final String MODNAME = AppEng.NAME + " | " + ITools.NAME;
-
-	public static final Logger logger = LogManager.getLogger(MODID);
+	public static final Logger logger = LogManager.getLogger(AppEng.NAME + "|"+ NAME);
 
 	@Module.Instance
 	public static final AppEngTools INSTANCE = null;
 
-	@SidedProxy(modId = MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")
+	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.tools.proxy.ToolsClientProxy", serverSide = "appeng.tools.proxy.ToolsServerProxy")
 	public static ToolsProxy proxy;
 
 	public ToolsConfig config;
@@ -92,20 +86,10 @@ public class AppEngTools implements ITools {
 		}
 	}
 
-	@EventHandler
-	public void preInitForge(FMLPreInitializationEvent event){
-
-	}
-
 	@ModuleEventHandler
 	public void initAE(final AEStateEvent.AEInitializationEvent event){
 		initHandler.init();
 		proxy.init(event);
-	}
-
-	@EventHandler
-	public void initForge(final FMLInitializationEvent event){
-
 	}
 
 	@ModuleEventHandler
@@ -114,58 +98,8 @@ public class AppEngTools implements ITools {
 		proxy.postInit(event);
 	}
 
-	@EventHandler
-	public void postInitForge(final FMLPostInitializationEvent event){
-
-	}
-
 	@ModuleEventHandler
 	public void handleIMCEventAE(AEStateEvent.ModuleIMCMessageEvent event){
-
-	}
-
-	@EventHandler
-	public void handleIMCEventForge(IMCEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverAboutToStartAE(FMLServerAboutToStartEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverAboutToStartForge(FMLServerAboutToStartEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStartingAE(FMLServerStartingEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStartingForge(FMLServerStartingEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStoppingAE(FMLServerStoppingEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStoppingForge(FMLServerStoppingEvent event){
-
-	}
-
-	/*@ModuleEventHandler
-	public void serverStoppedAE(FMLServerStoppedEvent event){
-
-	}*/
-
-	@EventHandler
-	public void serverStoppedForge(FMLServerStoppedEvent event){
 
 	}
 

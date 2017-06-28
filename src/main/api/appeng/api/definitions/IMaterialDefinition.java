@@ -2,7 +2,7 @@ package appeng.api.definitions;
 
 import appeng.api.definitions.sub.IItemSubDefinition;
 import appeng.api.item.IStateItemState;
-import appeng.core.api.items.IItemMaterial;
+import appeng.core.api.item.IItemMaterial;
 import appeng.core.api.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

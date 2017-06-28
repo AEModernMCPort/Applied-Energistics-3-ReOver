@@ -3,9 +3,9 @@ package appeng.core.core.bootstrap;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IItemDefinition;
+import appeng.core.api.bootstrap.BlockItemCustomizer;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.api.bootstrap.BlockItemCustomizer;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
@@ -48,7 +48,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	}
 
 	@Override
-	public <I extends ItemBlock> BlockDefinitionBuilder<B> createItem(@Nonnull BlockItemCustomizer<I> itemBlock){
+	public <I extends ItemBlock, C extends BlockItemCustomizer<I>> BlockDefinitionBuilder<B> createItem(@Nonnull C itemBlock){
 		return setItem(block -> itemBlock.customize(factory.definitionBuilder(registryName, blockItemIh(itemBlock.createItem(block.maybe().get())))).setFeature(feature).build());
 	}
 

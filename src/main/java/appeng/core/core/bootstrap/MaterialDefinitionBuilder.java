@@ -17,6 +17,7 @@ public class MaterialDefinitionBuilder<M extends Material> extends DefinitionBui
 		super(factory, registryName, material, "material");
 	}
 
+	@Override
 	public MaterialDefinitionBuilder<M> model(ModelResourceLocation model){
 		this.model = model;
 		return this;

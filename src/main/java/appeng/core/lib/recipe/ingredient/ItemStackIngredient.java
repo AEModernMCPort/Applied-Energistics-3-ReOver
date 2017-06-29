@@ -60,6 +60,7 @@ public interface ItemStackIngredient extends IGIngredient<ItemStack> {
 
 		public EquivalentStack(ItemStack itemstack){
 			this.itemstack = itemstack;
+			itemstack.setCount(1);
 		}
 
 		@Override

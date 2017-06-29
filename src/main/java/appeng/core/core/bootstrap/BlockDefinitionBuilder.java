@@ -3,9 +3,14 @@ package appeng.core.core.bootstrap;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IItemDefinition;
+import appeng.core.AppEng;
 import appeng.core.api.bootstrap.BlockItemCustomizer;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.AppEngCore;
+import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
+import appeng.core.core.client.bootstrap.StateMapperComponent;
+import appeng.core.core.client.statemap.SubfolderStateMapper;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
 import net.minecraft.block.Block;
@@ -14,8 +19,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
@@ -48,27 +57,13 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	}
 
 	@Override
-	public <I extends ItemBlock, C extends BlockItemCustomizer<I>> BlockDefinitionBuilder<B> createItem(@Nonnull C itemBlock){
-		return setItem(block -> itemBlock.customize(factory.definitionBuilder(registryName, blockItemIh(itemBlock.createItem(block.maybe().get())))).setFeature(feature).build());
+	public <I extends ItemBlock, C extends BlockItemCustomizer<B, I>> BlockDefinitionBuilder<B> createItem(@Nonnull C itemBlock){
+		return setItem(block -> itemBlock.customize(factory.definitionBuilder(registryName, blockItemIh(itemBlock.createItem(block))), block).setFeature(feature).build());
 	}
 
 	@Override
 	public BlockDefinitionBuilder<B> createDefaultItem(){
-		return createItem(new BlockItemCustomizer<ItemBlock>(){
-
-			@Nonnull
-			@Override
-			public ItemBlock createItem(Block block){
-				return new ItemBlock(block);
-			}
-
-			@Nonnull
-			@Override
-			public IItemBuilder<ItemBlock, ?> customize(@Nonnull IItemBuilder<ItemBlock, ?> builder){
-				return builder.defaultModel("normal");
-			}
-
-		});
+		return this.<ItemBlock, BlockItemCustomizer.UseDefaultItemCustomize<B>>createItem((builder, block) -> builder.<ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition<ItemBlock>>initializationComponent(Side.CLIENT, ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition.createByMetadata(block.maybe().get())));
 	}
 
 	/*@SideOnly(Side.CLIENT)
@@ -84,6 +79,11 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 
 		block.setCreativeTab(creativeTab);
 		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+
+		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
+			String module = AppEng.instance().getCurrentName();
+			initializationComponent(Side.CLIENT, new StateMapperComponent<>(old -> Optional.of(new SubfolderStateMapper(old, module))));
+		}
 
 		/*if(Platform.isClient()){
 			if(block instanceof AEBaseTileBlock){

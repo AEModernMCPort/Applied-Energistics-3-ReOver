@@ -60,11 +60,14 @@ public interface ItemStackIngredient extends IGIngredient<ItemStack> {
 
 		public EquivalentStack(ItemStack itemstack){
 			this.itemstack = itemstack;
+			itemstack.setCount(1);
 		}
 
 		@Override
 		public boolean test(ItemStack itemstack){
-			return ItemStack.areItemStacksEqual(itemstack, this.itemstack);
+			ItemStack toCompareTo = itemstack.copy();
+			toCompareTo.setCount(1);
+			return ItemStack.areItemStacksEqual(toCompareTo, this.itemstack);
 		}
 
 	}

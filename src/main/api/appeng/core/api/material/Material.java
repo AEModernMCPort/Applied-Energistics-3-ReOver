@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -37,7 +38,7 @@ import java.util.List;
  */
 public class Material extends IForgeRegistryEntry.Impl<Material> {
 
-	private ModelResourceLocation model;
+	private ResourceLocation model;
 	private String unlocalizedName;
 
 	/**
@@ -45,7 +46,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 *
 	 * @param model - new default model location
 	 */
-	public void setModel(ModelResourceLocation model){
+	public void setModel(ResourceLocation model){
 		this.model = model;
 	}
 
@@ -55,7 +56,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @return model location for the given stack
 	 */
 	@Nonnull
-	public ModelResourceLocation getModel(){
+	public ResourceLocation getModel(){
 		return model;
 	}
 

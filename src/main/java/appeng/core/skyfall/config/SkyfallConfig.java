@@ -32,8 +32,8 @@ public class SkyfallConfig {
 
 	public static class Meteorite {
 
-		public int minRadius = 5;
-		public int maxRadius = 110;
+		public float minRadius = 5;
+		public float maxRadius = 110;
 		private Set<String> allowedBlocks;
 		public transient Set<IBlockState> allowedBlockStates;
 

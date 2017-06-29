@@ -32,7 +32,7 @@ public class StaticFireItemDefinitions extends Definitions<Item, IItemDefinition
     public <T extends Item & StaticFireItemBase> void Reg(DefinitionFactory registry, T item)
     {
         ItemDefinitionBuilder a = registry.definitionBuilder(new ResourceLocation(AppEng.MODID, item.getRegistryNameSF()), ih(item));
-        a.defaultModel(new ResourceLocation(AppEng.MODID, item.getRegistryNameSF()).toString());
+        a.defaultModel();
         a.build();
     }
 }

@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
@@ -71,12 +72,6 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	}*/
 
 	@Override
-	public BlockDefinitionBuilder<B> mapBlockStateToModuleSubfolder(){
-		String module = AppEng.instance().getCurrentName();
-		return this.<StateMapperComponent<B>>initializationComponent(Side.CLIENT, new StateMapperComponent<B>(() -> Optional.of(new SubfolderStateMapper(module))));
-	}
-
-	@Override
 	public IBlockDefinition<B> def(B block){
 		if(block == null){
 			return new BlockDefinition<B>(registryName, null);
@@ -84,6 +79,11 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 
 		block.setCreativeTab(creativeTab);
 		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+
+		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
+			String module = AppEng.instance().getCurrentName();
+			initializationComponent(Side.CLIENT, new StateMapperComponent<>(() -> Optional.of(new SubfolderStateMapper(module))));
+		}
 
 		/*if(Platform.isClient()){
 			if(block instanceof AEBaseTileBlock){

@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 public class DebugBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> {
 
 	public DebugBlockDefinitions(DefinitionFactory registry){
-		registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "test_block"), ih(new TestBlock())).mapBlockStateToModuleSubfolder().createDefaultItem().build();
+		registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "test_block"), ih(new TestBlock())).createDefaultItem().build();
 	}
 
 	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){

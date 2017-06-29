@@ -2,6 +2,7 @@ package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.AppEngCore;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.statemap.IStateMapper;
@@ -24,9 +25,8 @@ public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitia
 	}
 
 	@Override
-	public void init(IBlockDefinition<Block> def){
-		ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper.get().get());
-		if(stateMapper instanceof IResourceManagerReloadListener)
-			((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);
+	public void preInit(IBlockDefinition<Block> def){
+		AppEngCore.proxy.acceptModelRegisterer(() -> ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper.get().get()));
+		if(stateMapper instanceof IResourceManagerReloadListener) ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);
 	}
 }

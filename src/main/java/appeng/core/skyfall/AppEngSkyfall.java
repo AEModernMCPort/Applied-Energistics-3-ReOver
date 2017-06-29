@@ -91,7 +91,7 @@ public class AppEngSkyfall implements ISkyfall {
 		initHandler.postInit();
 		proxy.postInit(event);
 
-		config.populateMissingWeights(skyobjectGeneratorsRegistry);
+		config.initPostLoad(skyobjectGeneratorsRegistry);
 		try{
 			configLoader.save();
 		} catch(IOException e){

@@ -38,8 +38,8 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 	}
 
 	@Override
-	public ItemDefinitionBuilder<I> defaultModel(String variant){
-		return this.<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> AppEngCore.proxy.acceptModelRegisterer(() -> ModelLoader.setCustomModelResourceLocation(def.maybe().get(), 0, new ModelResourceLocation(def.identifier(), variant != null ? variant : "inventory"))));
+	public ItemDefinitionBuilder<I> defaultModel(){
+		return this.<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<I, IItemDefinition<I>>>initializationComponent(Side.CLIENT, def -> AppEngCore.proxy.acceptModelRegisterer(() -> ModelLoader.setCustomModelResourceLocation(def.maybe().get(), 0, new ModelResourceLocation(def.identifier(), "inventory"))));
 	}
 
 	/*@SideOnly(Side.CLIENT)

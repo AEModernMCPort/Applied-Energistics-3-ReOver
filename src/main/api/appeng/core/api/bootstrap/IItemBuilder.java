@@ -13,9 +13,8 @@ public interface IItemBuilder<I extends Item, II extends IItemBuilder<I, II>> ex
 
 	/**
 	 * Loads default model for this item
-	 * @param variant model variant, defaults to <tt>"inventory"</tt>
 	 * @return <tt>this</tt>
 	 */
-	II defaultModel(@Nullable String variant);
+	II defaultModel();
 
 }

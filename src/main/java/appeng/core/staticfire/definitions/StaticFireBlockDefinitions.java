@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IStaticFireBlockDefinitions{
 
-    private final IBlockDefinition skyblock
+    private final IBlockDefinition skyblock;
 
 
     public StaticFireBlockDefinitions(DefinitionFactory registry){

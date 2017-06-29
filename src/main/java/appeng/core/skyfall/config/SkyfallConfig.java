@@ -43,7 +43,7 @@ public class SkyfallConfig {
 		}
 
 		public Meteorite(){
-			this(Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState());
+			this(Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
 		}
 
 		public void initPostLoad(){

@@ -18,6 +18,8 @@ public interface IBlockBuilder<B extends Block, BB extends IBlockBuilder<B, BB>>
 
 	<I extends ItemBlock, C extends BlockItemCustomizer<I>> BB createItem(@Nonnull C ib);
 
+	BB mapBlockStateToModuleSubfolder();
+
 	BB createDefaultItem();
 
 }

@@ -30,7 +30,8 @@ public class TestItem extends Item {
 		MutableBlockAccess wworld = new MutableBlockAccessWorldDelegate(oldworld);
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random(/*523*/);
-		float radius = RandomUtils.nextFloat(config.minRadius, config.maxRadius);
+		float radius = RandomUtils.nextFloat(config.minRadius, /*config.maxRadius*/ 35);
+		System.out.println(radius);
 		float radiusX = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusY = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusZ = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);

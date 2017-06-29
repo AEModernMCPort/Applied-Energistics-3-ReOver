@@ -31,6 +31,7 @@ public class TestItem extends Item {
 		float radiusX = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusY = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusZ = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
+		float corruption = RandomUtils.nextFloat(0.65f, 0.95f);
 		SphericalSurfaceFractalNoiseGenerator noiseGenerator = new SphericalSurfaceFractalNoiseGenerator(random.nextLong());
 		TransformingMutableBlockAccess world = new OriginTransformingMutableBlockAccess(wworld, pos.add(0, radius * 1.5, 0));
 		{
@@ -41,7 +42,7 @@ public class TestItem extends Item {
 						Quaternionf quaternion = new Quaternionf().rotateTo(new Vector3f(1, 0, 0), new Vector3f(x, y, z).normalize());
 						AxisAngle4f angle4f = quaternion.get(new AxisAngle4f());
 						if(x*x/(radiusX*radiusX) + y*y/(radiusY*radiusY) + z*z/(radiusZ*radiusZ) <= 1f + noiseGenerator.valueAt(0.1f, angle4f.angle * angle4f.x, angle4f.angle * angle4f.y)){
-							world.setBlockState(next, Blocks.STONE.getDefaultState());
+							if(random.nextFloat() < corruption) world.setBlockState(next, Blocks.STONE.getDefaultState());
 						}
 					}
 				}

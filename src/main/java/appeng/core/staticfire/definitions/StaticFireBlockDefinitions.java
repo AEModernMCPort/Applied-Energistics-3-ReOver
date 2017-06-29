@@ -50,8 +50,8 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
 
         skyblock = registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "sky_stone"), ih(item))
                 .<ItemBlock, BlockItemCustomizer.UseDefaultItemCustomize>createItem(
-                        builder -> ((IItemBuilder<ItemBlock>) builder).<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<ItemBlock, IItemDefinition<ItemBlock>>>initializationComponent(
-                                Side.CLIENT, def -> new ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition.createByMetadata(Block.getBlockFromItem(def.maybe().get()))));
+                        builder -> ((IItemBuilder<ItemBlock, ?>) builder).<IDefinitionBuilder.DefinitionInitializationComponent.PreInit<ItemBlock, IItemDefinition<ItemBlock>>>initializationComponent(
+                                Side.CLIENT, def -> ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition.createByMetadata(Block.getBlockFromItem(def.maybe().get())))).build();
 
     }
 

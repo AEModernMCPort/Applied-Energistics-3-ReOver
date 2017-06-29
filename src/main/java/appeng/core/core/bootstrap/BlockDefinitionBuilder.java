@@ -8,6 +8,7 @@ import appeng.core.api.bootstrap.BlockItemCustomizer;
 import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.bootstrap.IItemBuilder;
 import appeng.core.core.AppEngCore;
+import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.core.client.statemap.SubfolderStateMapper;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.lib.definitions.BlockDefinition;
@@ -21,6 +22,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
@@ -84,7 +86,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	@Override
 	public BlockDefinitionBuilder<B> mapBlockStateToModuleSubfolder(){
 		String module = AppEng.instance().getCurrentName();
-		return this.<DefinitionInitializationComponent.PreInit<B, IBlockDefinition<B>>>initializationComponent(Side.CLIENT, def -> AppEngCore.proxy.acceptModelCustomizer(modelBakeEvent -> ModelLoader.setCustomStateMapper(def.maybe().get(), new SubfolderStateMapper(module))));
+		return this.<StateMapperComponent<B>>initializationComponent(Side.CLIENT, new StateMapperComponent<B>(() -> Optional.of(new SubfolderStateMapper(module))));
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 /**
  * @author Fredi100
  */
-public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
+public class StateMapperComponent<B extends Block> implements IDefinitionBuilder.DefinitionInitializationComponent<B, IBlockDefinition<B>> {
 
 	private final Supplier<Optional<IStateMapper>> stateMapper;
 
@@ -25,7 +25,7 @@ public class StateMapperComponent implements IDefinitionBuilder.DefinitionInitia
 	}
 
 	@Override
-	public void preInit(IBlockDefinition<Block> def){
+	public void preInit(IBlockDefinition<B> def){
 		AppEngCore.proxy.acceptModelRegisterer(() -> ModelLoader.setCustomStateMapper(def.maybe().get(), stateMapper.get().get()));
 		if(stateMapper instanceof IResourceManagerReloadListener) ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener((IResourceManagerReloadListener) stateMapper);
 	}

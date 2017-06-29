@@ -3,7 +3,9 @@ package appeng.debug.item;
 import appeng.core.lib.world.MutableBlockAccessWorldDelegate;
 import appeng.core.lib.world.OriginTransformingMutableBlockAccess;
 import appeng.core.lib.world.TransformingMutableBlockAccess;
+import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.generator.MutableBlockAccess;
+import appeng.core.skyfall.config.SkyfallConfig;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -26,8 +28,9 @@ public class TestItem extends Item {
 	public EnumActionResult onItemUse(EntityPlayer player, World oldworld, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
 		if(oldworld.isRemote) return EnumActionResult.SUCCESS;
 		MutableBlockAccess wworld = new MutableBlockAccessWorldDelegate(oldworld);
+		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random(/*523*/);
-		float radius = (float) Math.sqrt(RandomUtils.nextFloat(25, 100/*2500/*15625*/));
+		float radius = RandomUtils.nextFloat(config.minRadius, config.maxRadius);
 		float radiusX = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusY = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
 		float radiusZ = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);

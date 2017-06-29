@@ -82,7 +82,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 
 		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
 			String module = AppEng.instance().getCurrentName();
-			initializationComponent(Side.CLIENT, new StateMapperComponent<>(() -> Optional.of(new SubfolderStateMapper(module))));
+			initializationComponent(Side.CLIENT, new StateMapperComponent<>(old -> Optional.of(new SubfolderStateMapper(old, module))));
 		}
 
 		/*if(Platform.isClient()){

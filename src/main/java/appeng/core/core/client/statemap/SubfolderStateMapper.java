@@ -9,19 +9,20 @@ import net.minecraft.client.renderer.block.statemap.IStateMapper;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class SubfolderStateMapper implements IStateMapper {
 
 	private final IStateMapper delegate;
 	private final String subfolder;
 
-	public SubfolderStateMapper(IStateMapper delegate, String subfolder){
-		this.delegate = delegate;
+	public SubfolderStateMapper(Optional<IStateMapper> delegate, String subfolder){
+		this.delegate = delegate.orElse(new DefaultStateMapper());
 		this.subfolder = subfolder;
 	}
 
 	public SubfolderStateMapper(String subfolder){
-		this(new DefaultStateMapper(), subfolder);
+		this(Optional.empty(), subfolder);
 	}
 
 	@Override

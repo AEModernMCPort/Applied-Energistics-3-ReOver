@@ -13,8 +13,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
-//import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -96,6 +94,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	/**
 	 * Called when a Block is right-clicked with this Item
 	 */
+	@Deprecated
 	public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
 		return EnumActionResult.PASS;
 	}
@@ -111,6 +110,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
 	 * the Item before the action is complete.
 	 */
+	@Deprecated
 	public void onItemUseFinish(World worldIn, EntityLivingBase entityLiving){
 	}
 
@@ -121,6 +121,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	/**
 	 * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
 	 */
+	@Deprecated
 	public boolean onBlockDestroyed(World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving){
 		return false;
 	}
@@ -136,12 +137,14 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
 	 * update it's contents.
 	 */
+	@Deprecated
 	public void onUpdate(World worldIn, Entity entityIn, int itemSlot, boolean isSelected){
 	}
 
 	/**
 	 * Called when item is crafted/smelted. Used only by maps so far.
 	 */
+	@Deprecated
 	public void onCreated(World worldIn, EntityPlayer playerIn){
 	}
 
@@ -162,6 +165,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	/**
 	 * Called when the player stops using an Item (stops holding the right mouse button).
 	 */
+	@Deprecated
 	public void onPlayerStoppedUsing(World worldIn, EntityLivingBase entityLiving, int timeLeft){
 	}
 
@@ -209,6 +213,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 *
 	 * @param player The player that dropped the item
 	 */
+	@Deprecated
 	public boolean onDroppedByPlayer(EntityPlayer player){
 		return true;
 	}
@@ -234,6 +239,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param hand   Which hand the item is being held in.
 	 * @return Return PASS to allow vanilla handling, any other to skip normal code.
 	 */
+	@Deprecated
 	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand){
 		return EnumActionResult.PASS;
 	}
@@ -247,6 +253,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param player    The Player that is wielding the item
 	 * @return True to prevent harvesting, false to continue as normal
 	 */
+	@Deprecated
 	public boolean onBlockStartBreak(BlockPos pos, EntityPlayer player){
 		return false;
 	}
@@ -257,6 +264,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param player The Player using the item
 	 * @param count  The amount of time in tick the item has been used for continuously
 	 */
+	@Deprecated
 	public void onUsingTick(EntityLivingBase player, int count){
 	}
 
@@ -269,6 +277,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param entity The entity being attacked
 	 * @return True to cancel the rest of the interaction.
 	 */
+	@Deprecated
 	public boolean onLeftClickEntity(EntityPlayer player, Entity entity){
 		return false;
 	}
@@ -337,6 +346,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param entityItem The entity Item
 	 * @return Return true to skip any further update code.
 	 */
+	@Deprecated
 	public boolean onEntityItemUpdate(net.minecraft.entity.item.EntityItem entityItem){
 		return false;
 	}
@@ -382,6 +392,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 * @param entityLiving The entity swinging the item.
 	 * @return True to cancel any further processing by EntityLiving
 	 */
+	@Deprecated
 	public boolean onEntitySwing(EntityLivingBase entityLiving){
 		return false;
 	}

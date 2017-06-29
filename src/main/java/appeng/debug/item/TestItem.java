@@ -6,7 +6,9 @@ import appeng.core.lib.world.TransformingMutableBlockAccess;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.generator.MutableBlockAccess;
 import appeng.core.skyfall.config.SkyfallConfig;
+import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -20,7 +22,7 @@ import org.joml.AxisAngle4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.Random;
+import java.util.*;
 
 public class TestItem extends Item {
 
@@ -29,24 +31,31 @@ public class TestItem extends Item {
 		if(oldworld.isRemote) return EnumActionResult.SUCCESS;
 		MutableBlockAccess wworld = new MutableBlockAccessWorldDelegate(oldworld);
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
-		Random random = new Random(/*523*/);
+		Random random = new Random();
 		float radius = RandomUtils.nextFloat(config.minRadius, /*config.maxRadius*/ 35);
-		System.out.println(radius);
-		float radiusX = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
-		float radiusY = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
-		float radiusZ = radius - radius * 0.25f + RandomUtils.nextFloat(0, radius * 0.5f);
-		float corruption = RandomUtils.nextFloat(0.65f, 0.95f);
-		SphericalSurfaceFractalNoiseGenerator noiseGenerator = new SphericalSurfaceFractalNoiseGenerator(random.nextLong());
-		TransformingMutableBlockAccess world = new OriginTransformingMutableBlockAccess(wworld, pos.add(0, radius * 1.5, 0));
-		{
-			for(float x = -radius*1.5f; x < radius*1.5f; x++){
-				for(float y = -radius*1.5f; y < radius*1.5f; y++){
-					for(float z = -radius*1.5f; z < radius*1.5f; z++){
-						BlockPos next = new BlockPos(x, y, z);
-						Quaternionf quaternion = new Quaternionf().rotateTo(new Vector3f(1, 0, 0), new Vector3f(x, y, z).normalize());
-						AxisAngle4f angle4f = quaternion.get(new AxisAngle4f());
-						if(x*x/(radiusX*radiusX) + y*y/(radiusY*radiusY) + z*z/(radiusZ*radiusZ) <= 1f + noiseGenerator.valueAt(0.1f, angle4f.angle * angle4f.x, angle4f.angle * angle4f.y)){
-							if(random.nextFloat() < corruption) world.setBlockState(next, Blocks.STONE.getDefaultState());
+		List<IBlockState> allowed = Lists.newArrayList(config.allowedBlockStates);
+		Collections.shuffle(allowed, random);
+		int count = RandomUtils.nextInt(1, allowed.size() + 1);
+		for(int i = 0; i < count; i++){
+			IBlockState block = allowed.get(i);
+			Random localRandom = new Random(random.nextLong());
+			float localRadius = RandomUtils.nextFloat(radius * 0.75f, radius * 1.25f);
+			float radiusX = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
+			float radiusY = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
+			float radiusZ = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
+			float corruption = RandomUtils.nextFloat(0.65f, 0.95f);
+			SphericalSurfaceFractalNoiseGenerator noiseGenerator = new SphericalSurfaceFractalNoiseGenerator(localRandom.nextLong());
+			TransformingMutableBlockAccess world = new OriginTransformingMutableBlockAccess(wworld, pos.add(0, localRadius * 1.5, 0));
+			{
+				for(float x = -localRadius * 1.5f; x < localRadius * 1.5f; x++){
+					for(float y = -localRadius * 1.5f; y < localRadius * 1.5f; y++){
+						for(float z = -localRadius * 1.5f; z < localRadius * 1.5f; z++){
+							BlockPos next = new BlockPos(x, y, z);
+							Quaternionf quaternion = new Quaternionf().rotateTo(new Vector3f(1, 0, 0), new Vector3f(x, y, z).normalize());
+							AxisAngle4f angle4f = quaternion.get(new AxisAngle4f());
+							if(x * x / (radiusX * radiusX) + y * y / (radiusY * radiusY) + z * z / (radiusZ * radiusZ) <= 1f + noiseGenerator.valueAt(0.1f, angle4f.angle * angle4f.x, angle4f.angle * angle4f.y)){
+								if(localRandom.nextFloat() < corruption) world.setBlockState(next, block);
+							}
 						}
 					}
 				}

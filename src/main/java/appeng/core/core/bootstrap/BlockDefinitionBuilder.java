@@ -29,9 +29,6 @@ import java.util.function.Function;
 
 public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
 
-	//TODO 1.11.2-ReOver - :P
-	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
-
 	private Function<IBlockDefinition<B>, IItemDefinition<ItemBlock>> item = def -> null;
 
 	//TODO 1.11.2-ReOver - Be back?
@@ -77,7 +74,6 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			return new BlockDefinition<B>(registryName, null);
 		}
 
-		block.setCreativeTab(creativeTab);
 		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
 		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){

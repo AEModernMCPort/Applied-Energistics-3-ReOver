@@ -1,6 +1,7 @@
 package appeng.core.api.bootstrap;
 
 import appeng.api.definitions.IBlockDefinition;
+import appeng.core.item.ItemBlockGood;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
 
@@ -23,7 +24,8 @@ public interface BlockItemCustomizer<B extends Block, I extends ItemBlock> {
 		@Nonnull
 		@Override
 		default ItemBlock createItem(IBlockDefinition<B> block){
-			return new ItemBlock(block.maybe().get());
+			//TODO do something. This can't be in API now.
+			return new ItemBlockGood(block.maybe().get());
 		}
 
 		@Nonnull

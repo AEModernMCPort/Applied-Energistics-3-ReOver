@@ -20,6 +20,7 @@ public class SkystoneBlock extends Block {
 
 	public SkystoneBlock(){
 		super(Material.ROCK);
+		setCreativeTab(CreativeTabs.DECORATIONS);
 	}
 
 	@Override

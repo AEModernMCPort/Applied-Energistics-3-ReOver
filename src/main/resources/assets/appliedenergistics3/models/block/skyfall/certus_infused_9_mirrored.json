@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_mirrored_all",
+    "textures": {
+        "all": "appliedenergistics3:blocks/skyfall/certus_infused_9"
+    }
+}

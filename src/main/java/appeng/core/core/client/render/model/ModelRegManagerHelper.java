@@ -4,6 +4,7 @@ import appeng.core.AppEng;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
@@ -71,9 +72,15 @@ public class ModelRegManagerHelper {
 		}
 	}
 
+	private static Optional<IModel> tryLoadAndRegisterTextures(ResourceLocation location, TextureMap textureMap){
+		Optional<IModel> iModel = tryLoad(location);
+		iModel.ifPresent(model -> model.getTextures().forEach(texture -> textureMap.registerSprite(texture)));
+		return iModel;
+	}
+
 	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter){
 		MutableObject<Optional<IModel>> model = new MutableObject<>(Optional.empty());
-		acceptTextureStitchEventListener(event -> model.setValue(tryLoad(modelLocation)));
+		acceptTextureStitchEventListener(event -> model.setValue(tryLoadAndRegisterTextures(modelLocation, event.getMap())));
 		acceptBakeEventListener(event -> model.getValue().ifPresent(iModel -> event.getModelRegistry().putObject(registryKey, iModel.bake(state, format, bakedTextureGetter))));
 	}
 

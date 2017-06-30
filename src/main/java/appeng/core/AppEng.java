@@ -1,5 +1,6 @@
 package appeng.core;
 
+import appeng.api.AEModInfo;
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
@@ -45,9 +46,9 @@ import java.util.function.Function;
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
 
-	public static final String MODID = "appliedenergistics3";
-	public static final String NAME = "Applied Energistics 3";
-	public static final String VERSION = "${version}";
+	public static final String MODID = AEModInfo.MODID;
+	public static final String NAME = AEModInfo.NAME;
+	public static final String VERSION = AEModInfo.VERSION;
 
 	public static final String ASSETS = MODID + ":";
 

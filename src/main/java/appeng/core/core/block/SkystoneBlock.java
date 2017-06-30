@@ -23,8 +23,8 @@ public class SkystoneBlock extends Block {
 	}
 
 	@Override
-	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(Variant variants : Variant.values()) items.add(new ItemStack(this, 1, variants.ordinal()));
+	protected BlockStateContainer createBlockState(){
+		return new BlockStateContainer(this, VARIANT);
 	}
 
 	@Override
@@ -38,8 +38,8 @@ public class SkystoneBlock extends Block {
 	}
 
 	@Override
-	protected BlockStateContainer createBlockState(){
-		return new BlockStateContainer(this, VARIANT);
+	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
+		for(Variant variants : Variant.values()) items.add(new ItemStack(this, 1, variants.ordinal()));
 	}
 
 	public enum Variant implements IStringSerializable {

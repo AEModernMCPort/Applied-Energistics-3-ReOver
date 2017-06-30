@@ -30,10 +30,10 @@ public class ModelRegManagerHelper {
 	public static final IModelState DEFAULTMODELSTATE = opt -> Optional.empty();
 	public static final VertexFormat DEFAULTVERTEXFORMAT = DefaultVertexFormats.BLOCK;
 	public static final Function<ResourceLocation, TextureAtlasSprite> DEFAULTTEXTUREGETTER = texture -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
-	private static List<Consumer<TextureStitchEvent.Pre>> textureStitchEventListeners = new ArrayList<>();
-	private static List<Runnable> registryEventListeners = new ArrayList<>();
 
+	private static List<Runnable> registryEventListeners = new ArrayList<>();
 	private static List<Consumer<ModelBakeEvent>> bakeEventListeners = new ArrayList<>();
+	private static List<Consumer<TextureStitchEvent.Pre>> textureStitchEventListeners = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event){
@@ -72,9 +72,9 @@ public class ModelRegManagerHelper {
 	}
 
 	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter){
-		MutableObject<Optional<IModel>> model = new MutableObject(Optional.empty());
-		acceptRegistryEventListener(() -> model.setValue(tryLoad(modelLocation)));
-		acceptBakeEventListener(modelBakeEvent -> model.getValue().ifPresent(iModel -> modelBakeEvent.getModelRegistry().putObject(registryKey, iModel.bake(state, format, bakedTextureGetter))));
+		MutableObject<Optional<IModel>> model = new MutableObject<>(Optional.empty());
+		acceptTextureStitchEventListener(event -> model.setValue(tryLoad(modelLocation)));
+		acceptBakeEventListener(event -> model.getValue().ifPresent(iModel -> event.getModelRegistry().putObject(registryKey, iModel.bake(state, format, bakedTextureGetter))));
 	}
 
 	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format){

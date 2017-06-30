@@ -15,10 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SkyfallConfig {
@@ -44,38 +41,22 @@ public class SkyfallConfig {
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
-		private Set<String> allowedBlocks;
-		private transient ImmutableSet<IBlockState> allowedBlockStatesSet;
-		private transient ImmutableList<IBlockState> allowedBlockStatesList;
+		private Set<String> allowedBlocks = new HashSet<>();
 
 		public Meteorite(){
-			populate(Blocks.AIR.getDefaultState());
+
 		}
 
-		public void populate(IBlockState... defaultStates){
-			allowedBlockStatesSet = ImmutableSet.copyOf(Arrays.stream(defaultStates).filter(Predicates.notNull()).collect(Collectors.toSet()));
-			allowedBlockStatesList = ImmutableList.copyOf(allowedBlockStatesSet);
-			allowedBlocks = allowedBlockStatesSet.stream().map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
+		public void populateFromStates(IBlockState... defaultStates){
+			allowedBlocks = Arrays.stream(defaultStates).filter(Predicates.notNull()).map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
 		}
 
 		public void initPostLoad(){
-			if(allowedBlockStatesList == null || allowedBlockStatesList.size() == 0 || (allowedBlockStatesList.size() == 1 && allowedBlockStatesList.get(0) == Blocks.AIR.getDefaultState())) populate(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
+			if(allowedBlocks.isEmpty()) populateFromStates(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
 
-			allowedBlockStatesSet = ImmutableSet.copyOf(allowedBlocks.stream().limit(16).map(s -> BlockState2String.fromString(s)).collect(Collectors.toSet()));
-			allowedBlockStatesList = ImmutableList.copyOf(allowedBlockStatesSet);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
 			CertusInfusedBlock.recompile(this);
-
-			allowedBlocks = allowedBlockStatesSet.stream().map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
-		}
-
-		public ImmutableSet<IBlockState> allowedBlockStatesSet(){
-			return allowedBlockStatesSet;
-		}
-
-		public ImmutableList<IBlockState> allowedBlockStatesList(){
-			return allowedBlockStatesList;
 		}
 
 	}

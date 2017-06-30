@@ -14,26 +14,26 @@ import java.util.function.Consumer;
 @Mod.EventBusSubscriber(modid = AppEng.MODID, value = Side.CLIENT)
 public class ModelRegManagerHelper {
 
-	private static List<Runnable> modelRegisterers = new ArrayList<>();
+	private static List<Runnable> registryEventListeners = new ArrayList<>();
 
-	private static List<Consumer<ModelBakeEvent>> modelCustomizers = new ArrayList<>();
+	private static List<Consumer<ModelBakeEvent>> bakeEventListeners = new ArrayList<>();
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event){
-		modelRegisterers.forEach(Runnable::run);
+		registryEventListeners.forEach(Runnable::run);
 	}
 
 	@SubscribeEvent
 	public static void sub(ModelBakeEvent event){
-		modelCustomizers.forEach(customizer -> customizer.accept(event));
+		bakeEventListeners.forEach(customizer -> customizer.accept(event));
 	}
 
-	public static void acceptModelRegisterer(Runnable registerer){
-		modelRegisterers.add(registerer);
+	public static void acceptRegistryEventListener(Runnable registerer){
+		registryEventListeners.add(registerer);
 	}
 
-	public static void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){
-		modelCustomizers.add(customizer);
+	public static void acceptBakeEventListener(Consumer<ModelBakeEvent> customizer){
+		bakeEventListeners.add(customizer);
 	}
 
 }

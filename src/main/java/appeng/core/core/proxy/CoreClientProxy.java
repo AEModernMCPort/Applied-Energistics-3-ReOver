@@ -30,12 +30,12 @@ public class CoreClientProxy extends CoreProxy {
 
 	@Override
 	public void acceptModelRegisterer(Runnable registerer){
-		ModelRegManagerHelper.acceptModelRegisterer(registerer);
+		ModelRegManagerHelper.acceptRegistryEventListener(registerer);
 	}
 
 	@Override
 	public void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){
-		ModelRegManagerHelper.acceptModelCustomizer(customizer);
+		ModelRegManagerHelper.acceptBakeEventListener(customizer);
 	}
 
 }

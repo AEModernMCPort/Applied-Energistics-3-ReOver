@@ -12,6 +12,7 @@ import net.minecraft.block.properties.PropertyHelper;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -55,6 +56,11 @@ public class CertusInfusedBlock extends Block {
 	@Override
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
 		for(int i = 0; i < BLOCK.states.size(); i++) items.add(new ItemStack(this, 1, i));
+	}
+
+	public String getDisplayName(IBlockState state){
+		IBlockState pState = state.getValue(BLOCK).state;
+		return Item.getItemFromBlock(pState.getBlock()).getItemStackDisplayName(new ItemStack(pState.getBlock(), 1, pState.getBlock().getMetaFromState(state)));
 	}
 
 	public static class CertusInfusedProperty extends PropertyHelper<CertusInfusedProperty.IBlockStateWrapper> {

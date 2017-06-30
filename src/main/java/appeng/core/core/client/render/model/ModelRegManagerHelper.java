@@ -62,7 +62,7 @@ public class ModelRegManagerHelper {
 	}
 
 	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter){
-		final MutableObject<Optional<IModel>> model = new MutableObject(Optional.empty());
+		MutableObject<Optional<IModel>> model = new MutableObject(Optional.empty());
 		acceptRegistryEventListener(() -> model.setValue(tryLoad(modelLocation)));
 		acceptBakeEventListener(modelBakeEvent -> model.getValue().ifPresent(iModel -> modelBakeEvent.getModelRegistry().putObject(registryKey, iModel.bake(state, format, bakedTextureGetter))));
 	}

@@ -48,21 +48,26 @@ public class SkyfallConfig {
 		private transient ImmutableSet<IBlockState> allowedBlockStatesSet;
 		private transient ImmutableList<IBlockState> allowedBlockStatesList;
 
-		public Meteorite(IBlockState... defaultStates){
+		public Meteorite(){
+			populate(Blocks.AIR.getDefaultState());
+		}
+
+		public void populate(IBlockState... defaultStates){
 			allowedBlockStatesSet = ImmutableSet.copyOf(Arrays.stream(defaultStates).filter(Predicates.notNull()).collect(Collectors.toSet()));
+			allowedBlockStatesList = ImmutableList.copyOf(allowedBlockStatesSet);
 			allowedBlocks = allowedBlockStatesSet.stream().map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
 		}
 
-		public Meteorite(){
-			this(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
-		}
-
 		public void initPostLoad(){
+			if(allowedBlockStatesList == null || allowedBlockStatesList.size() == 0 || (allowedBlockStatesList.size() == 1 && allowedBlockStatesList.get(0) == Blocks.AIR.getDefaultState())) populate(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
+
 			allowedBlockStatesSet = ImmutableSet.copyOf(allowedBlocks.stream().limit(16).map(s -> BlockState2String.fromString(s)).collect(Collectors.toSet()));
 			allowedBlockStatesList = ImmutableList.copyOf(allowedBlockStatesSet);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
 			CertusInfusedBlock.recompile(this);
+
+			allowedBlocks = allowedBlockStatesSet.stream().map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
 		}
 
 		public ImmutableSet<IBlockState> allowedBlockStatesSet(){

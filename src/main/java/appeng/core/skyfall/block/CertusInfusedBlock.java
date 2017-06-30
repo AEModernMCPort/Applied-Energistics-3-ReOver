@@ -1,7 +1,6 @@
 package appeng.core.skyfall.block;
 
 import appeng.core.lib.util.OptionalUtil;
-import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.config.SkyfallConfig;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -20,9 +19,9 @@ import java.util.Collection;
 
 public class CertusInfusedBlock extends Block {
 
-	public static final CertusInfusedProperty BLOCK = new CertusInfusedProperty("block");
+	private static SkyfallConfig.Meteorite config = new SkyfallConfig.Meteorite();
 
-	private static SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
+	public static final CertusInfusedProperty BLOCK = new CertusInfusedProperty("block");
 
 	public static void recompile(SkyfallConfig.Meteorite config){
 		CertusInfusedBlock.config = config;
@@ -40,7 +39,7 @@ public class CertusInfusedBlock extends Block {
 
 	@Override
 	public IBlockState getStateFromMeta(int meta){
-		return getDefaultState().withProperty(BLOCK, BLOCK.states.get(meta));
+		return super.getStateFromMeta(meta).withProperty(BLOCK, BLOCK.states.get(meta));
 	}
 
 	@Override
@@ -91,7 +90,7 @@ public class CertusInfusedBlock extends Block {
 			return Integer.toString(states.indexOf(value));
 		}
 
-		public static class IBlockStateWrapper implements Comparable<IBlockStateWrapper> {
+		public class IBlockStateWrapper implements Comparable<IBlockStateWrapper> {
 
 			public final IBlockState state;
 
@@ -101,7 +100,7 @@ public class CertusInfusedBlock extends Block {
 
 			@Override
 			public int compareTo(IBlockStateWrapper o){
-				return 0;
+				return states.indexOf(this) - states.indexOf(o);
 			}
 
 		}

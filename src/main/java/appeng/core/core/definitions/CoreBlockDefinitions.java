@@ -2,15 +2,20 @@ package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.definitions.IBlockDefinition;
+import appeng.core.AppEng;
+import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.api.definitions.ICoreBlockDefinitions;
+import appeng.core.core.block.SkystoneBlock;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.block.Block;
-
+import net.minecraft.util.ResourceLocation;
 
 public class CoreBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ICoreBlockDefinitions {
 
-	public CoreBlockDefinitions(DefinitionFactory registry){
+	private final IBlockDefinition<Block> skystone;
 
+	public CoreBlockDefinitions(DefinitionFactory registry){
+		skystone = registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "skystone"), ih(new SkystoneBlock())).createDefaultItem().build();
 	}
 
 	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){

@@ -1,14 +1,21 @@
 package appeng.core.skyfall.config;
 
+import appeng.core.api.definitions.ICoreBlockDefinitions;
+import appeng.core.core.AppEngCore;
+import appeng.core.core.block.SkystoneBlock;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import com.google.common.base.Predicates;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SkyfallConfig {
@@ -43,7 +50,7 @@ public class SkyfallConfig {
 		}
 
 		public Meteorite(){
-			this(Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
+			this(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
 		}
 
 		public void initPostLoad(){

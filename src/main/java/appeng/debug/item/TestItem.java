@@ -6,7 +6,6 @@ import appeng.core.lib.world.TransformingMutableBlockAccess;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.generator.MutableBlockAccess;
 import appeng.core.skyfall.config.SkyfallConfig;
-import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.RandomUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -31,7 +31,7 @@ public class TestItem extends Item {
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random();
 		float radius = RandomUtils.nextFloat(config.minRadius, /*config.maxRadius*/ 35);
-		List<IBlockState> allowed = Lists.newArrayList(config.allowedBlockStates);
+		List<IBlockState> allowed = new ArrayList<>(config.allowedBlockStatesList());
 		Collections.shuffle(allowed, random);
 		int count = RandomUtils.nextInt(1, allowed.size() + 1);
 		for(int i = 0; i < count; i++){

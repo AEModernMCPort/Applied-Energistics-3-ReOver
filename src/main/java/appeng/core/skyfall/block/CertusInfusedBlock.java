@@ -8,10 +8,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyHelper;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import java.util.Collection;
 
@@ -28,6 +30,31 @@ public class CertusInfusedBlock extends Block {
 
 	public CertusInfusedBlock(){
 		super(Material.GROUND);
+	}
+
+	@Override
+	public BlockStateContainer getBlockState(){
+		return new BlockStateContainer(this, BLOCK);
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta){
+		return getDefaultState().withProperty(BLOCK, BLOCK.states.get(meta));
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state){
+		return BLOCK.states.indexOf(state.getValue(BLOCK));
+	}
+
+	@Override
+	public int damageDropped(IBlockState state){
+		return getMetaFromState(state);
+	}
+
+	@Override
+	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
+		for(int i = 0; i < BLOCK.states.size(); i++) items.add(new ItemStack(this, 1, i));
 	}
 
 	public static class CertusInfusedProperty extends PropertyHelper<CertusInfusedProperty.IBlockStateWrapper> {

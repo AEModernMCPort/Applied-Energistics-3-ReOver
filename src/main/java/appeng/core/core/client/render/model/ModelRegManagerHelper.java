@@ -1,8 +1,10 @@
 package appeng.core.core.client.render.model;
 
 import appeng.core.AppEng;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -23,6 +25,10 @@ import java.util.function.Function;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID, value = Side.CLIENT)
 public class ModelRegManagerHelper {
+
+	public static final IModelState DEFAULTMODELSTATE = opt -> Optional.empty();
+	public static final VertexFormat DEFAULTVERTEXFORMAT = DefaultVertexFormats.BLOCK;
+	public static final Function<ResourceLocation, TextureAtlasSprite> DEFAULTTEXTUREGETTER = texture -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
 
 	private static List<Runnable> registryEventListeners = new ArrayList<>();
 
@@ -54,11 +60,39 @@ public class ModelRegManagerHelper {
 			return Optional.empty();
 		}
 	}
-	
-	public static void loadAndRegisterModel(ResourceLocation modelLocation, ModelResourceLocation registryKey, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter){
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter){
 		final MutableObject<Optional<IModel>> model = new MutableObject(Optional.empty());
 		acceptRegistryEventListener(() -> model.setValue(tryLoad(modelLocation)));
 		acceptBakeEventListener(modelBakeEvent -> model.getValue().ifPresent(iModel -> modelBakeEvent.getModelRegistry().putObject(registryKey, iModel.bake(state, format, bakedTextureGetter))));
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, VertexFormat format){
+		loadAndRegisterModel(registryKey, modelLocation, state, format, DEFAULTTEXTUREGETTER);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state, Function<ResourceLocation, TextureAtlasSprite> textureGetter){
+		loadAndRegisterModel(registryKey, modelLocation, state, DEFAULTVERTEXFORMAT, textureGetter);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> textureGetter){
+		loadAndRegisterModel(registryKey, modelLocation, DEFAULTMODELSTATE, format, textureGetter);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, IModelState state){
+		loadAndRegisterModel(registryKey, modelLocation, state, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, VertexFormat format){
+		loadAndRegisterModel(registryKey, modelLocation, DEFAULTMODELSTATE, format, DEFAULTTEXTUREGETTER);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation, Function<ResourceLocation, TextureAtlasSprite> textureGetter){
+		loadAndRegisterModel(registryKey, modelLocation, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, textureGetter);
+	}
+
+	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation){
+		loadAndRegisterModel(registryKey, modelLocation, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
 	}
 
 }

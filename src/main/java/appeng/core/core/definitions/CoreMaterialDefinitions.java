@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){
-		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).model(new ResourceLocation(AppEng.MODID, "invalid")).build();
+		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).build();
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

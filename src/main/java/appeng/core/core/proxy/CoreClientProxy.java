@@ -1,20 +1,22 @@
 package appeng.core.core.proxy;
 
 import appeng.api.module.AEStateEvent;
+import appeng.core.api.material.Material;
+import appeng.core.core.AppEngCore;
+import appeng.core.core.client.render.model.ModelRegManagerHelper;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 public class CoreClientProxy extends CoreProxy {
-
-
 
 	public CoreClientProxy(){
 		super(Side.CLIENT);
@@ -26,28 +28,19 @@ public class CoreClientProxy extends CoreProxy {
 		super.preInit(event);
 	}
 
-	private List<Runnable> modelRegisterers = new ArrayList<>();
-
-	@SubscribeEvent
-	public void registerModels(ModelRegistryEvent event){
-		modelRegisterers.forEach(Runnable::run);
-	}
-
 	@Override
 	public void acceptModelRegisterer(Runnable registerer){
-		modelRegisterers.add(registerer);
-	}
-
-	private List<Consumer<ModelBakeEvent>> modelCustomizers = new ArrayList<>();
-
-	@SubscribeEvent
-	public void sub(ModelBakeEvent event){
-		modelCustomizers.forEach(customizer -> customizer.accept(event));
+		ModelRegManagerHelper.acceptRegistryEventListener(registerer);
 	}
 
 	@Override
 	public void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){
-		super.acceptModelCustomizer(customizer);
-		modelCustomizers.add(customizer);
+		ModelRegManagerHelper.acceptBakeEventListener(customizer);
 	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void allMaterialsRegistered(RegistryEvent.Register<Material> event){
+		AppEngCore.INSTANCE.getMaterialRegistry().forEach(material -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(material.getModel(), "inventory"), new ResourceLocation(material.getModel().getResourceDomain(), "material/" + material.getModel().getResourcePath()), DefaultVertexFormats.ITEM));
+	}
+
 }

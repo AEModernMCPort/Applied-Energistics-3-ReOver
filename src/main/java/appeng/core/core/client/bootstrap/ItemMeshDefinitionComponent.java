@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 /**
  * @author Fredi100
  */
-public class ItemMeshDefinitionComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Item, IItemDefinition<Item>> {
+public class ItemMeshDefinitionComponent<I extends Item> implements IDefinitionBuilder.DefinitionInitializationComponent<I, IItemDefinition<I>> {
 
 	private final Supplier<Optional<ItemMeshDefinition>> meshDefinition;
 
@@ -28,11 +28,11 @@ public class ItemMeshDefinitionComponent implements IDefinitionBuilder.Definitio
 	}
 
 	@Override
-	public void init(IItemDefinition<Item> def){
+	public void init(IItemDefinition<I> def){
 		meshDefinition.get().ifPresent(itemMeshDefinition -> Minecraft.getMinecraft().getRenderItem().getItemModelMesher().register(def.maybe().get(), itemMeshDefinition));
 	}
 
-	public static class BlockStateMapper2ItemMeshDefinition extends ItemMeshDefinitionComponent {
+	public static class BlockStateMapper2ItemMeshDefinition<I extends Item> extends ItemMeshDefinitionComponent<I> {
 
 		public BlockStateMapper2ItemMeshDefinition(Optional<Block> blocko, Function<ItemStack, IBlockState> stackToState){
 			super(() -> blocko.map(block -> {
@@ -41,8 +41,8 @@ public class ItemMeshDefinitionComponent implements IDefinitionBuilder.Definitio
 			}));
 		}
 
-		public static BlockStateMapper2ItemMeshDefinition createByMetadata(Block block){
-			return new BlockStateMapper2ItemMeshDefinition(Optional.<Block>of(block), itemstack -> block.getStateFromMeta(itemstack.getItemDamage()));
+		public static <I extends Item> BlockStateMapper2ItemMeshDefinition<I> createByMetadata(Block block){
+			return new BlockStateMapper2ItemMeshDefinition<>(Optional.<Block>of(block), itemstack -> block.getStateFromMeta(itemstack.getItemDamage()));
 		}
 
 	}

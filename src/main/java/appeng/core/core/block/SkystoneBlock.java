@@ -42,6 +42,11 @@ public class SkystoneBlock extends Block {
 		for(Variant variants : Variant.values()) items.add(new ItemStack(this, 1, variants.ordinal()));
 	}
 
+	@Override
+	public int damageDropped(IBlockState state){
+		return getMetaFromState(state);
+	}
+
 	public enum Variant implements IStringSerializable {
 		STONE, BLOCK, BRICK, BRICK_SMALL;
 

@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.model.IModelState;
@@ -29,7 +30,7 @@ public class ModelRegManagerHelper {
 	public static final IModelState DEFAULTMODELSTATE = opt -> Optional.empty();
 	public static final VertexFormat DEFAULTVERTEXFORMAT = DefaultVertexFormats.BLOCK;
 	public static final Function<ResourceLocation, TextureAtlasSprite> DEFAULTTEXTUREGETTER = texture -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(texture.toString());
-
+	private static List<Consumer<TextureStitchEvent.Pre>> textureStitchEventListeners = new ArrayList<>();
 	private static List<Runnable> registryEventListeners = new ArrayList<>();
 
 	private static List<Consumer<ModelBakeEvent>> bakeEventListeners = new ArrayList<>();
@@ -44,12 +45,21 @@ public class ModelRegManagerHelper {
 		bakeEventListeners.forEach(customizer -> customizer.accept(event));
 	}
 
+	@SubscribeEvent
+	public static void sub(TextureStitchEvent.Pre event){
+		textureStitchEventListeners.forEach(customizer -> customizer.accept(event));
+	}
+
 	public static void acceptRegistryEventListener(Runnable registerer){
 		registryEventListeners.add(registerer);
 	}
 
 	public static void acceptBakeEventListener(Consumer<ModelBakeEvent> customizer){
 		bakeEventListeners.add(customizer);
+	}
+
+	public static void acceptTextureStitchEventListener(Consumer<TextureStitchEvent.Pre> customizer){
+		textureStitchEventListeners.add(customizer);
 	}
 
 	private static Optional<IModel> tryLoad(ResourceLocation location){

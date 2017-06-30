@@ -14,6 +14,8 @@ import appeng.core.skyfall.api.ISkyfall;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
 import appeng.core.skyfall.config.SkyfallConfig;
+import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
+import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectGeneratorDefinitions;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import net.minecraft.util.ResourceLocation;
@@ -44,6 +46,8 @@ public class AppEngSkyfall implements ISkyfall {
 
 	private DefinitionFactory registry;
 
+	private SkyfallBlockDefinitions blockDefinitions;
+	private SkyfallItemDefinitions itemDefinitions;
 	private SkyfallSkyobjectGeneratorDefinitions skyobjectGeneratorDefinitions;
 
 	private ConfigurationLoader<SkyfallConfig> configLoader;
@@ -72,9 +76,13 @@ public class AppEngSkyfall implements ISkyfall {
 		config = configLoader.configuration();
 
 		registry = event.factory(initHandler, proxy);
-		skyobjectGeneratorDefinitions = new SkyfallSkyobjectGeneratorDefinitions(registry);
+		this.blockDefinitions = new SkyfallBlockDefinitions(registry);
+		this.itemDefinitions = new SkyfallItemDefinitions(registry);
+		this.skyobjectGeneratorDefinitions = new SkyfallSkyobjectGeneratorDefinitions(registry);
 
-		skyobjectGeneratorDefinitions.init(registry);
+		this.itemDefinitions.init(registry);
+		this.blockDefinitions.init(registry);
+		this.skyobjectGeneratorDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

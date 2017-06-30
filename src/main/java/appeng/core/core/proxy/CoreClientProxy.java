@@ -6,6 +6,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.client.render.model.ModelRegManagerHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -36,10 +37,10 @@ public class CoreClientProxy extends CoreProxy {
 	public void acceptModelCustomizer(Consumer<ModelBakeEvent> customizer){
 		ModelRegManagerHelper.acceptBakeEventListener(customizer);
 	}
-	
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void allMaterialsRegistered(RegistryEvent.Register<Material> event){
-		AppEngCore.INSTANCE.getMaterialRegistry().forEach(material -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(material.getModel(), "inventory"), material.getModel(), DefaultVertexFormats.ITEM));
+		AppEngCore.INSTANCE.getMaterialRegistry().forEach(material -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(material.getModel(), "inventory"), new ResourceLocation(material.getModel().getResourceDomain(), "material/" + material.getModel().getResourcePath()), DefaultVertexFormats.ITEM));
 	}
 
 }

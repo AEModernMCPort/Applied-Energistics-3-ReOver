@@ -1,21 +1,25 @@
 package appeng.core.skyfall.block;
 
+import appeng.core.lib.util.BlockState2String;
 import appeng.core.lib.util.OptionalUtil;
 import appeng.core.skyfall.config.SkyfallConfig;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyHelper;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class CertusInfusedBlock extends Block {
 
@@ -68,11 +72,13 @@ public class CertusInfusedBlock extends Block {
 
 		private CertusInfusedProperty(String name){
 			super(name, IBlockStateWrapper.class);
-			recompile();
+			ImmutableList.Builder<IBlockStateWrapper> statesBuilder = ImmutableList.builder();
+			for(int i = 0; i < 16; i++) statesBuilder.add(new IBlockStateWrapper(Blocks.AIR.getDefaultState()));
+			states = statesBuilder.build();
 		}
 
 		private void recompile(){
-			states = ImmutableList.copyOf(Lists.transform(config.allowedBlockStatesList(), IBlockStateWrapper::new));
+			states = ImmutableList.copyOf(config.allowedBlocks.stream().map(s -> new IBlockStateWrapper(BlockState2String.fromString(s))).collect(Collectors.toList()));
 		}
 
 		@Override

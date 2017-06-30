@@ -41,7 +41,7 @@ public class SkyfallConfig {
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
-		private Set<String> allowedBlocks = new HashSet<>();
+		public Set<String> allowedBlocks = new HashSet<>();
 
 		public Meteorite(){
 

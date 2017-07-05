@@ -5,8 +5,6 @@ sudo: required
 jdk:
   - oraclejdk8
 
-install: true
-  
 env:
   global:
     - GITWEBPAGES_USER="#REPLACE#"

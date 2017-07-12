@@ -28,16 +28,19 @@ public class CertusInfusedBlockModelComponent<B extends Block> implements IDefin
 			IBakedModel overlay = event.getModelRegistry().getObject(infusedOverlay);
 			for(int i = 0; i <= CertusInfusedBlock.MAXVARIANTS; i++){
 				if(CertusInfusedBlock.isValid(i)){
+					IBlockState varState = CertusInfusedBlock.getVariantState(i);
 					event.getModelRegistry().putObject(new ModelResourceLocation(infusedRL, CertusInfusedBlock.VARIANT.getName() + "=" + i), new SimpleBakedModel(null, null, overlay.isAmbientOcclusion(), overlay.isGui3d(), overlay.getParticleTexture(), overlay.getItemCameraTransforms(), overlay.getOverrides()){
 
-						IBakedModel infused(IBlockState varState){
-							return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(varState);
+						IBakedModel infused;
+
+						IBakedModel infused(){
+							if(infused == null) infused = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(varState);
+							return infused;
 						}
 
 						@Override
 						public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand){
-							IBlockState varState = CertusInfusedBlock.getVariantState(state.getValue(CertusInfusedBlock.VARIANT));
-							List<BakedQuad> list = Lists.newArrayList(infused(varState).getQuads(varState, side, rand));
+							List<BakedQuad> list = Lists.newArrayList(infused().getQuads(varState, side, rand));
 							list.addAll(overlay.getQuads(state, side, rand));
 							return list;
 						}

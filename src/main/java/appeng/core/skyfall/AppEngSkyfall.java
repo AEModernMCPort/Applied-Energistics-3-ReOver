@@ -12,9 +12,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.skyfall.api.ISkyfall;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
-import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
-import appeng.core.skyfall.certusinfused.CertusInfused;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
@@ -27,7 +25,6 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +47,6 @@ public class AppEngSkyfall implements ISkyfall {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private ForgeRegistry<CertusInfused> certusInfusedRegistry;
 	private IForgeRegistry<SkyobjectGenerator> skyobjectGeneratorsRegistry;
 
 	private DefinitionFactory registry;
@@ -67,10 +63,6 @@ public class AppEngSkyfall implements ISkyfall {
 		return null;
 	}
 
-	public ForgeRegistry<CertusInfused> getCertusInfusedRegistry(){
-		return certusInfusedRegistry;
-	}
-
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerDefinitionBuilderSupplier(SkyobjectGenerator.class, SkyobjectGenerator.class, (factory, registryName, skyobjectGenerator) -> new SkyobjectGeneratorDefinitionBuilder<>(factory,registryName, skyobjectGenerator));
@@ -78,7 +70,6 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		certusInfusedRegistry = (ForgeRegistry<CertusInfused>) new RegistryBuilder<CertusInfused>().setName(new ResourceLocation(AppEng.MODID, "certus_infused")).setType(CertusInfused.class).setIDRange(0, CertusInfusedBlock.MAXVARIANTS).create();
 		skyobjectGeneratorsRegistry = new RegistryBuilder<SkyobjectGenerator>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectGenerator.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
 		configLoader = event.configurationLoader();

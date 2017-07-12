@@ -10,6 +10,7 @@ import appeng.core.api.definitions.ICoreBlockDefinitions;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.lib.definitions.Definitions;
+import appeng.core.skyfall.client.CertusInfusedBlockModelComponent;
 import appeng.core.skyfall.item.CertusInfusedBlockItem;
 import appeng.core.skyfall.block.CertusInfusedBlock;
 import net.minecraft.block.Block;
@@ -40,7 +41,7 @@ public class SkyfallBlockDefinitions extends Definitions<Block, IBlockDefinition
 				return builder.<ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition<ItemBlock>>initializationComponent(Side.CLIENT, ItemMeshDefinitionComponent.BlockStateMapper2ItemMeshDefinition.createByMetadata(block.maybe().get()));
 			}
 
-		}).initializationComponent(Side.CLIENT, new StateMapperComponent<>(iStateMapper -> Optional.of(new DefaultStateMapper()))).build();
+		}).initializationComponent(Side.CLIENT, new CertusInfusedBlockModelComponent<>()).build();
 	}
 
 	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){

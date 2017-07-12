@@ -10,7 +10,10 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -81,6 +84,11 @@ public class CertusInfusedBlock extends Block {
 			original = "tile.null.name";
 		}
 		return String.format(def, original);
+	}
+
+	@SideOnly(Side.CLIENT)
+	public BlockRenderLayer getBlockLayer(){
+		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 
 }

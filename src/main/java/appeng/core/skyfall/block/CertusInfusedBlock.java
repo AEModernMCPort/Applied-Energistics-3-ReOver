@@ -53,7 +53,7 @@ public class CertusInfusedBlock extends Block {
 
 	@Override
 	public IBlockState getStateFromMeta(int meta){
-		return getDefaultState().withProperty(VARIANT, 0);
+		return getDefaultState().withProperty(VARIANT, meta);
 	}
 
 	@Override

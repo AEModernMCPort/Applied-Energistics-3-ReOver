@@ -1,4 +1,4 @@
-package appeng.core.skyfall;
+package appeng.core.skyfall.item;
 
 import appeng.core.item.ItemBlockGood;
 import appeng.core.skyfall.block.CertusInfusedBlock;

@@ -19,6 +19,7 @@ import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectGeneratorDefinitions;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
@@ -59,6 +60,8 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+		if(clas == Item.class) return (D) itemDefinitions;
+		if(clas == Block.class) return (D) blockDefinitions;
 		if(clas == SkyobjectGenerator.class) return (D) skyobjectGeneratorDefinitions;
 		return null;
 	}

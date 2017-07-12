@@ -10,6 +10,7 @@ import appeng.core.api.definitions.ICoreBlockDefinitions;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.lib.definitions.Definitions;
+import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
 import appeng.core.skyfall.client.CertusInfusedBlockModelComponent;
 import appeng.core.skyfall.item.CertusInfusedBlockItem;
 import appeng.core.skyfall.block.CertusInfusedBlock;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
-public class SkyfallBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ICoreBlockDefinitions {
+public class SkyfallBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ISkyfallBlockDefinitions {
 
 	private final IBlockDefinition<Block> certusInfused;
 

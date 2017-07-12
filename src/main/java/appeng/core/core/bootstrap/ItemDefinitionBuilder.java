@@ -43,7 +43,7 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 			itemRendering.apply(factory, item);
 		}*/
 
-		if(item.getUnlocalizedName() == null) item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+		if(item.getUnlocalizedName().equals("item.null")) item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
 		ItemDefinition definition = new ItemDefinition(registryName, item);
 

@@ -18,8 +18,13 @@ import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectGeneratorDefinitions;
 import appeng.core.skyfall.proxy.SkyfallProxy;
+import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -86,6 +91,18 @@ public class AppEngSkyfall implements ISkyfall {
 
 		initHandler.preInit();
 		proxy.preInit(event);
+
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void postRegisterBlocks(RegistryEvent.Register<Block> event){
+		config.initPostLoad(skyobjectGeneratorsRegistry);
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler
@@ -98,13 +115,6 @@ public class AppEngSkyfall implements ISkyfall {
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
-
-		config.initPostLoad(skyobjectGeneratorsRegistry);
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			logger.error("Caught exception saving configuration", e);
-		}
 	}
 
 	@ModuleEventHandler

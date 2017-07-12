@@ -7,6 +7,9 @@ import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import appeng.core.skyfall.block.CertusInfusedBlock;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectComparators;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -40,6 +43,7 @@ public class SkyfallConfig {
 		public float minRadius = 5;
 		public float maxRadius = 110;
 		private List<String> allowedBlocks = new ArrayList<>();
+		private transient ImmutableList<IBlockState> allowedBlockStates;
 
 		public Meteorite(){
 
@@ -48,8 +52,13 @@ public class SkyfallConfig {
 		public void initPostLoad(){
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
+			allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList());
+			allowedBlockStates = ImmutableList.copyOf(Lists.transform(allowedBlocks, s -> BlockState2String.fromString(s)));
 		}
 
+		public List<IBlockState> getAllowedBlockStates(){
+			return allowedBlockStates;
+		}
 	}
 
 }

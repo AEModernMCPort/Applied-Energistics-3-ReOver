@@ -63,6 +63,6 @@ public class CertusInfusedBlock extends Block {
 
 	@Override
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(int meta = 0; meta <= 15; meta++) items.add(new ItemStack(this, 1, meta));
+		for(int meta = 0; meta <= 15; meta++) if(isValid(meta)) items.add(new ItemStack(this, 1, meta));
 	}
 }

@@ -55,7 +55,7 @@ public class SkyfallConfig {
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
 			allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList());
-			allowedBlockStates = ImmutableList.copyOf(Lists.transform(allowedBlocks, s -> BlockState2String.fromString(s)));
+			allowedBlockStates = ImmutableList.copyOf(allowedBlocks.stream().map(s -> BlockState2String.fromStringSafe(s)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
 		}
 
 		public List<IBlockState> getAllowedBlockStates(){

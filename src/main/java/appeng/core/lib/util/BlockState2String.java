@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class BlockState2String {
 
@@ -36,6 +37,19 @@ public class BlockState2String {
 			return state.isEmpty() ? block.getDefaultState() : CommandBase.convertArgToBlockState(block, state);
 		} catch(NumberInvalidException | InvalidBlockStateException e){
 			throw new IllegalArgumentException("Invalid block state string \"" + s + "\". State could not be parsed.", e);
+		}
+	}
+
+	public static Optional<IBlockState> fromStringSafe(String s){
+		String state = s.contains("{") ? s.split("\\{")[1].replace("}", "") : "";
+		return Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s.split("\\{")[0]))).map(block -> state.isEmpty() ? block.getDefaultState() : convertArgToBlockStateSafe(block, state));
+	}
+
+	private static IBlockState convertArgToBlockStateSafe(Block block, String state){
+		try {
+			return CommandBase.convertArgToBlockState(block, state);
+		} catch(NumberInvalidException | InvalidBlockStateException e){
+			return null;
 		}
 	}
 

@@ -74,7 +74,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			return new BlockDefinition<B>(registryName, null);
 		}
 
-		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+		if(block.getUnlocalizedName() == null) block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
 		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
 			String module = AppEng.instance().getCurrentName();

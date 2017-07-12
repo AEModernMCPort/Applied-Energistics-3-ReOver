@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.ObjectComparators;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -62,6 +63,17 @@ public class SkyfallConfig {
 		public List<IBlockState> getAllowedBlockStates(){
 			return allowedBlockStates;
 		}
+
+		public boolean isAllowedState(IBlockState state){
+			states: for(IBlockState next : allowedBlockStates){
+				if(next.getBlock() == state.getBlock()){
+					for(IProperty property : next.getBlock().getBlockState().getProperties()) if(!Objects.equals(next.getValue(property), state.getValue(property))) continue states;
+					return true;
+				}
+			}
+			return false;
+		}
+
 	}
 
 }

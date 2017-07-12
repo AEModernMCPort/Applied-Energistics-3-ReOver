@@ -1,16 +1,19 @@
 package appeng.debug.item;
 
 import appeng.core.skyfall.AppEngSkyfall;
+import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
+import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.config.SkyfallConfig;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
 import code.elix_x.excore.utils.world.MutableBlockAccessWorldDelegate;
 import code.elix_x.excore.utils.world.OriginTransformingMutableBlockAccess;
 import code.elix_x.excore.utils.world.TransformingMutableBlockAccess;
-import com.google.common.collect.Lists;
+import hall.collin.christopher.math.noise.DefaultFractalNoiseGenerator3D;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
+import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -51,14 +54,33 @@ public class TestItem extends Item {
 					for(float y = -localRadius * 1.5f; y < localRadius * 1.5f; y++){
 						for(float z = -localRadius * 1.5f; z < localRadius * 1.5f; z++){
 							BlockPos next = new BlockPos(x, y, z);
-							if(x * x / (radiusX * radiusX) + y * y / (radiusY * radiusY) + z * z / (radiusZ * radiusZ) <= 1f + noiseGenerator.valueAt(1f / (2f * localRadius) , Math.atan(y/x), Math.acos(z/Math.sqrt(x*x+y*y+z*z)))){
+							if(x * x / (radiusX * radiusX) + y * y / (radiusY * radiusY) + z * z / (radiusZ * radiusZ) <= 1f + noiseGenerator.valueAt(1f / (2f * localRadius) , Math.atan(y/x), Math.acos(z/Math.sqrt(x*x+y*y+z*z))))
 								if(localRandom.nextFloat() < corruption) world.setBlockState(next, block);
-							}
 						}
 					}
 				}
 			}
 		}
+		AppEngSkyfall.INSTANCE.<Block, ISkyfallBlockDefinitions>definitions(Block.class).certusInfused().maybe().ifPresent(certusInfusedBlock -> {
+			Random localRandom = new Random(random.nextLong());
+			DefaultFractalNoiseGenerator3D infusionNoise = new DefaultFractalNoiseGenerator3D(500, 0.3, 0.9, 1, new DefaultRandomNumberGenerator(localRandom.nextLong()));
+			TransformingMutableBlockAccess world = new OriginTransformingMutableBlockAccess(wworld, pos.add(0, radius * 1.5, 0));
+			final double p = 0.02;
+			final double s = 0.05;
+			final double threshold = 0.85;
+			float corruption = RandomUtils.nextFloat(0.65f, 0.95f);
+			for(float x = -radius * 1.5f; x < radius * 1.5f; x++){
+				for(float y = -radius * 1.5f; y < radius * 1.5f; y++){
+					for(float z = -radius * 1.5f; z < radius * 1.5f; z++){
+						BlockPos next = new BlockPos(x, y, z);
+						if(infusionNoise.valueAt(p, x * s, y * s, z * s) >= threshold)
+							if(localRandom.nextFloat() < corruption)
+								if(config.isAllowedState(world.getBlockState(next)))
+									world.setBlockState(next, certusInfusedBlock.getStateFromMeta(CertusInfusedBlock.getStateVariant(world.getBlockState(next))));
+					}
+				}
+			}
+		});
 		return EnumActionResult.SUCCESS;
 	}
 

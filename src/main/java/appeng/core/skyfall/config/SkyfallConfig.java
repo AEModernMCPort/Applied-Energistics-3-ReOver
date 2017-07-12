@@ -42,7 +42,7 @@ public class SkyfallConfig {
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
-		private List<String> allowedBlocks = new ArrayList<>();
+		private List<String> allowedBlocks = Lists.newArrayList("minecraft:stone", "minecraft:cobblestone", "minecraft:ice", "minecraft:obsidian");
 		private transient ImmutableList<IBlockState> allowedBlockStates;
 
 		public Meteorite(){

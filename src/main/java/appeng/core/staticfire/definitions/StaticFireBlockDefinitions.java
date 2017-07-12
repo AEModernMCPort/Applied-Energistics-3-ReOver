@@ -7,6 +7,7 @@ import appeng.core.api.bootstrap.IBlockBuilder;
 import appeng.core.core.bootstrap.BlockDefinitionBuilder;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireBlockDefinitions;
+import appeng.core.staticfire.block.CryoPod;
 import appeng.core.staticfire.block.SkyBlock;
 import appeng.core.staticfire.block.StaticFireBlockBase;
 import appeng.core.staticfire.block.TestBlock;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IStaticFireBlockDefinitions{
 
-    private final IBlockDefinition skyblock;
+    //private final IBlockDefinition skyblock;
 
 
     public StaticFireBlockDefinitions(DefinitionFactory registry){
@@ -32,7 +33,7 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
         //Reg(registry, new FiberCableMaker());
 
         //Reg(registry, new QuantumPillarBase());
-        //Reg(registry, new CryoPod());
+        Reg(registry, new CryoPod());
         //Reg(registry, new SkyBlock());
 
         // Bind our TESR to our tile entity
@@ -40,7 +41,7 @@ public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinit
 
         Block item = new SkyBlock();
 
-        skyblock = registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "sky_stone"), ih(item)).createDefaultItem().build();
+        //skyblock = registry.<Block, IBlockDefinition<Block>, IBlockBuilder<Block, ?>, Block>definitionBuilder(new ResourceLocation(AppEng.MODID, "sky_stone"), ih(item)).createDefaultItem().build();
 
     }
 

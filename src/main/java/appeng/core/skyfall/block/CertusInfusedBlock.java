@@ -1,6 +1,7 @@
 package appeng.core.skyfall.block;
 
 import appeng.core.skyfall.AppEngSkyfall;
+import appeng.core.skyfall.certusinfused.CertusInfused;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -14,6 +15,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.registries.ForgeRegistry;
 
 import java.util.List;
 
@@ -23,24 +25,16 @@ public class CertusInfusedBlock extends Block {
 
 	public static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, MAXVARIANTS);
 
-	private static List<IBlockState> getConfig(){
-		return AppEngSkyfall.INSTANCE.config.meteorite.getAllowedBlockStates();
+	private static ForgeRegistry<CertusInfused> getRegistry(){
+		return AppEngSkyfall.INSTANCE.getCertusInfusedRegistry();
 	}
 
 	public static boolean isValid(int variant){
-		return variant < getConfig().size();
-	}
-
-	public static boolean isValid(IBlockState state){
-		return getConfig().contains(state);
+		return getRegistry().getValue(variant) != null;
 	}
 
 	public static IBlockState getVariantState(int variant){
-		return getConfig().get(variant);
-	}
-
-	public static int getStateVariant(IBlockState state){
-		return getConfig().indexOf(state);
+		return getRegistry().getValue(variant).original;
 	}
 
 	public CertusInfusedBlock(){

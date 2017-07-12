@@ -4,9 +4,11 @@ import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreBlockDefinitions;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.block.SkystoneBlock;
+import appeng.core.lib.bootstrap.StaticRegistrator;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import appeng.core.skyfall.block.CertusInfusedBlock;
+import appeng.core.skyfall.certusinfused.CertusInfused;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -44,7 +46,6 @@ public class SkyfallConfig {
 		public float minRadius = 5;
 		public float maxRadius = 110;
 		private List<String> allowedBlocks = Lists.newArrayList(AppEng.MODID + ":skystone", "minecraft:stone", "minecraft:cobblestone", "minecraft:ice", "minecraft:obsidian");
-		private transient ImmutableList<IBlockState> allowedBlockStates;
 
 		public Meteorite(){
 
@@ -55,13 +56,9 @@ public class SkyfallConfig {
 			maxRadius = Math.max(minRadius, maxRadius);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
-			allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList());
-			allowedBlockStates = ImmutableList.copyOf(allowedBlocks.stream().map(s -> BlockState2String.fromStringSafe(s)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
+			(allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList())).stream().map(s -> BlockState2String.fromStringSafe(s)).filter(Optional::isPresent).forEach(state -> StaticRegistrator.addToRegistryQueue(new CertusInfused(state.get())));
 		}
 
-		public List<IBlockState> getAllowedBlockStates(){
-			return allowedBlockStates;
-		}
 	}
 
 }

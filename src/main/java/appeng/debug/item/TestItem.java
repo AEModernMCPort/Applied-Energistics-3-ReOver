@@ -2,6 +2,10 @@ package appeng.debug.item;
 
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.config.SkyfallConfig;
+import code.elix_x.excore.utils.world.MutableBlockAccess;
+import code.elix_x.excore.utils.world.MutableBlockAccessWorldDelegate;
+import code.elix_x.excore.utils.world.OriginTransformingMutableBlockAccess;
+import code.elix_x.excore.utils.world.TransformingMutableBlockAccess;
 import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import net.minecraft.block.state.IBlockState;

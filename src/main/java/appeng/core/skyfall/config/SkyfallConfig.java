@@ -5,6 +5,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.block.SkystoneBlock;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
+import appeng.core.skyfall.block.CertusInfusedBlock;
 import com.google.common.base.Predicates;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -53,7 +54,7 @@ public class SkyfallConfig {
 
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
-			CertusInfusedBlock.recompile(this);
+//			CertusInfusedBlock.recompile(this);
 		}
 
 	}

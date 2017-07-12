@@ -1,6 +1,6 @@
 package appeng.core.skyfall.api.generator;
 
-import net.minecraft.world.IBlockAccess;
+import code.elix_x.excore.utils.world.MutableBlockAccess;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Random;

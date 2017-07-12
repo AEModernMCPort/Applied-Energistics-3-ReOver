@@ -1,5 +1,6 @@
 package appeng.core.skyfall.block;
 
+import appeng.core.skyfall.AppEngSkyfall;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -9,9 +10,31 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import java.util.List;
+
 public class CertusInfusedBlock extends Block {
 
 	private static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, 15);
+
+	private static List<IBlockState> getConfig(){
+		return AppEngSkyfall.INSTANCE.config.meteorite.getAllowedBlockStates();
+	}
+
+	public static boolean isValid(int variant){
+		return variant < getConfig().size();
+	}
+
+	public static boolean isValid(IBlockState state){
+		return getConfig().contains(state);
+	}
+
+	public static IBlockState getVariantState(int variant){
+		return getConfig().get(variant);
+	}
+
+	public static int getStateVariant(IBlockState state){
+		return getConfig().indexOf(state);
+	}
 
 	public CertusInfusedBlock(){
 		super(Material.ROCK);

@@ -39,22 +39,15 @@ public class SkyfallConfig {
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
-		public Set<String> allowedBlocks = new HashSet<>();
+		private List<String> allowedBlocks = new ArrayList<>();
 
 		public Meteorite(){
 
 		}
 
-		public void populateFromStates(IBlockState... defaultStates){
-			allowedBlocks = Arrays.stream(defaultStates).filter(Predicates.notNull()).map(state -> BlockState2String.toString(state)).collect(Collectors.toSet());
-		}
-
 		public void initPostLoad(){
-			if(allowedBlocks.isEmpty()) populateFromStates(AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.STONE)).orElse(null), AppEngCore.INSTANCE.<Block, ICoreBlockDefinitions>definitions(Block.class).skystone().maybe().map(block -> block.getDefaultState().withProperty(SkystoneBlock.VARIANT, SkystoneBlock.Variant.BLOCK)).orElse(null), Blocks.STONE.getDefaultState(), Blocks.OBSIDIAN.getDefaultState(), Blocks.ICE.getDefaultState());
-
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
-//			CertusInfusedBlock.recompile(this);
 		}
 
 	}

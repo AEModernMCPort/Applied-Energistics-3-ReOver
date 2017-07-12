@@ -10,8 +10,8 @@ public class CertusInfusedBlockItem extends ItemBlockGood<CertusInfusedBlock> {
 		super(block);
 	}
 
-	/*@Override
+	@Override
 	public String getItemStackDisplayName(ItemStack stack){
-		return getBlock().getDisplayName(getBlock().getStateFromMeta(stack.getItemDamage()));
-	}*/
+		return getBlock().getDisplayName(stack.getItemDamage(), super.getItemStackDisplayName(stack));
+	}
 }

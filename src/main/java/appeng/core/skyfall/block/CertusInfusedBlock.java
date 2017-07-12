@@ -65,4 +65,11 @@ public class CertusInfusedBlock extends Block {
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
 		for(int meta = 0; meta <= 15; meta++) if(isValid(meta)) items.add(new ItemStack(this, 1, meta));
 	}
+
+	public String getDisplayName(int variant, String def){
+		String original = "";
+
+		return String.format(def, original);
+	}
+
 }

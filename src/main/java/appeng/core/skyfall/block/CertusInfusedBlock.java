@@ -18,7 +18,7 @@ public class CertusInfusedBlock extends Block {
 
 	public static final int MAXVARIANTS = 15;
 
-	private static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, MAXVARIANTS);
+	public static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, MAXVARIANTS);
 
 	private static List<IBlockState> getConfig(){
 		return AppEngSkyfall.INSTANCE.config.meteorite.getAllowedBlockStates();

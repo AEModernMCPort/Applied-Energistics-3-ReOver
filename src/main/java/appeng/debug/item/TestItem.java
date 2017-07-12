@@ -1,10 +1,6 @@
 package appeng.debug.item;
 
-import appeng.core.lib.world.MutableBlockAccessWorldDelegate;
-import appeng.core.lib.world.OriginTransformingMutableBlockAccess;
-import appeng.core.lib.world.TransformingMutableBlockAccess;
 import appeng.core.skyfall.AppEngSkyfall;
-import appeng.core.skyfall.api.generator.MutableBlockAccess;
 import appeng.core.skyfall.config.SkyfallConfig;
 import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
@@ -19,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;

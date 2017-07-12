@@ -1,25 +1,20 @@
 package appeng.core.lib.world;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
+import code.elix_x.excore.utils.world.TransformingBlockAccess;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.Biome;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
-import javax.annotation.Nullable;
-
-public class TransformedBlockAccessM4f implements TransformingBlockAccess {
+public class TransformingBlockAccessM4f implements TransformingBlockAccess {
 
 	protected final IBlockAccess delegate;
 	protected final Matrix4f transform;
 
 	private float w = 1;
 
-	public TransformedBlockAccessM4f(IBlockAccess delegate, Matrix4f transform){
+	public TransformingBlockAccessM4f(IBlockAccess delegate, Matrix4f transform){
 		this.delegate = delegate;
 		this.transform = transform;
 	}

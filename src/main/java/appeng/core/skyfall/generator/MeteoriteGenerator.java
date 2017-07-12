@@ -1,7 +1,5 @@
 package appeng.core.skyfall.generator;
 
-import appeng.core.skyfall.api.generator.MutableBlockAccess;
-
 import java.util.Random;
 
 public class MeteoriteGenerator extends SkyobjectGenerator {

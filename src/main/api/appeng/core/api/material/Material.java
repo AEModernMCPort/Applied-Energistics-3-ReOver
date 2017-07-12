@@ -77,7 +77,7 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	 */
 	@Nonnull
 	public String getUnlocalizedName(){
-		return unlocalizedName;
+		return "material." + unlocalizedName;
 	}
 
 	/**

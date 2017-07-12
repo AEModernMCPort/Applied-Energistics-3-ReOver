@@ -51,7 +51,7 @@ public class TestItem extends Item {
 					for(float y = -localRadius * 1.5f; y < localRadius * 1.5f; y++){
 						for(float z = -localRadius * 1.5f; z < localRadius * 1.5f; z++){
 							BlockPos next = new BlockPos(x, y, z);
-							if(x * x / (radiusX * radiusX) + y * y / (radiusY * radiusY) + z * z / (radiusZ * radiusZ) <= 1f + noiseGenerator.valueAt(0.1d, Math.atan(y/x), Math.acos(z/Math.sqrt(x*x+y*y+z*z)))){
+							if(x * x / (radiusX * radiusX) + y * y / (radiusY * radiusY) + z * z / (radiusZ * radiusZ) <= 1f + noiseGenerator.valueAt(1f / (2f * localRadius) , Math.atan(y/x), Math.acos(z/Math.sqrt(x*x+y*y+z*z)))){
 								if(localRandom.nextFloat() < corruption) world.setBlockState(next, block);
 							}
 						}

@@ -11,6 +11,7 @@ import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.skyfall.CertusInfusedBlockItem;
+import appeng.core.skyfall.block.CertusInfusedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.ItemBlock;

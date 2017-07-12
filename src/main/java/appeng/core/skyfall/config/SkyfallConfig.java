@@ -1,5 +1,6 @@
 package appeng.core.skyfall.config;
 
+import appeng.core.AppEng;
 import appeng.core.api.definitions.ICoreBlockDefinitions;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.block.SkystoneBlock;
@@ -42,7 +43,7 @@ public class SkyfallConfig {
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
-		private List<String> allowedBlocks = Lists.newArrayList("minecraft:stone", "minecraft:cobblestone", "minecraft:ice", "minecraft:obsidian");
+		private List<String> allowedBlocks = Lists.newArrayList(AppEng.MODID + ":skystone", "minecraft:stone", "minecraft:cobblestone", "minecraft:ice", "minecraft:obsidian");
 		private transient ImmutableList<IBlockState> allowedBlockStates;
 
 		public Meteorite(){

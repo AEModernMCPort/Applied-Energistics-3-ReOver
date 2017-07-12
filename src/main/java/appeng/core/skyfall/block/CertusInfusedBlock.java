@@ -67,8 +67,7 @@ public class CertusInfusedBlock extends Block {
 	}
 
 	public String getDisplayName(int variant, String def){
-		String original = "";
-
+		String original = Integer.toString(variant);
 		return String.format(def, original);
 	}
 

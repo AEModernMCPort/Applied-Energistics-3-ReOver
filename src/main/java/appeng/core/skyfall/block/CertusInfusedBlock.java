@@ -70,10 +70,14 @@ public class CertusInfusedBlock extends Block {
 
 	public String getDisplayName(int variant, String def){
 		String original;
-		IBlockState infusedS = getVariantState(variant);
-		Item infusedI = Item.getItemFromBlock(infusedS.getBlock());
-		if(infusedI != Items.AIR) original = new ItemStack(infusedI, 1, infusedS.getBlock().damageDropped(infusedS)).getDisplayName();
-		else original = infusedS.getBlock().getLocalizedName();
+		if(isValid(variant)){
+			IBlockState infusedS = getVariantState(variant);
+			Item infusedI = Item.getItemFromBlock(infusedS.getBlock());
+			if(infusedI != Items.AIR) original = new ItemStack(infusedI, 1, infusedS.getBlock().damageDropped(infusedS)).getDisplayName();
+			else original = infusedS.getBlock().getLocalizedName();
+		} else {
+			original = "tile.null.name";
+		}
 		return String.format(def, original);
 	}
 

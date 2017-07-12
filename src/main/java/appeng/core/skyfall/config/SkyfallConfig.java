@@ -50,6 +50,8 @@ public class SkyfallConfig {
 		}
 
 		public void initPostLoad(){
+			minRadius = Math.min(minRadius, maxRadius);
+			maxRadius = Math.max(minRadius, maxRadius);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
 			allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList());

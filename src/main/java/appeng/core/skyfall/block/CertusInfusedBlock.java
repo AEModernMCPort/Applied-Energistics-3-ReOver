@@ -16,7 +16,9 @@ import java.util.List;
 
 public class CertusInfusedBlock extends Block {
 
-	private static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, 15);
+	public static final int MAXVARIANTS = 15;
+
+	private static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, MAXVARIANTS);
 
 	private static List<IBlockState> getConfig(){
 		return AppEngSkyfall.INSTANCE.config.meteorite.getAllowedBlockStates();
@@ -65,7 +67,7 @@ public class CertusInfusedBlock extends Block {
 
 	@Override
 	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(int meta = 0; meta <= 15; meta++) if(isValid(meta)) items.add(new ItemStack(this, 1, meta));
+		for(int meta = 0; meta <= MAXVARIANTS; meta++) if(isValid(meta)) items.add(new ItemStack(this, 1, meta));
 	}
 
 	public String getDisplayName(int variant, String def){

@@ -7,6 +7,8 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -67,7 +69,11 @@ public class CertusInfusedBlock extends Block {
 	}
 
 	public String getDisplayName(int variant, String def){
-		String original = Integer.toString(variant);
+		String original;
+		IBlockState infusedS = getVariantState(variant);
+		Item infusedI = Item.getItemFromBlock(infusedS.getBlock());
+		if(infusedI != Items.AIR) original = new ItemStack(infusedI, 1, infusedS.getBlock().damageDropped(infusedS)).getDisplayName();
+		else original = infusedS.getBlock().getLocalizedName();
 		return String.format(def, original);
 	}
 

@@ -98,17 +98,17 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
-		event.registerConfigurationLoaderProvider("JSON", module -> new JSONConfigLoader(module));
-		event.registerConfigurationLoaderProvider("YAML", module -> new YAMLConfigLoader(module));
+		event.registerConfigurationLoaderProvider("JSON", JSONConfigLoader::new);
+		event.registerConfigurationLoaderProvider("YAML", YAMLConfigLoader::new);
 
-		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
-		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
+		event.registerDefinitionBuilderSupplier(Item.class, Item.class, ItemDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Block.class, Block.class, BlockDefinitionBuilder::new);
 		//TODO 1.11.2-ReOver - Fix NPE
-		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile));
-		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, (factory, registryName, biome) -> new BiomeDefinitionBuilder(factory, registryName, biome));
-		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, (factory, registryName, dimensionId) -> new DimensionTypeDefinitionBuilder(factory, registryName, dimensionId));
+		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, TileDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
 
-		event.registerDefinitionBuilderSupplier(Material.class, Material.class, (factory, registryName, material) -> new MaterialDefinitionBuilder(factory, registryName, material));
+		event.registerDefinitionBuilderSupplier(Material.class, Material.class, MaterialDefinitionBuilder::new);
 	}
 
 	@ModuleEventHandler

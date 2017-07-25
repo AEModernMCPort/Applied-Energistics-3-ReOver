@@ -36,7 +36,7 @@ public interface AEStateEvent {
 		 * @param <B>             Definition Builder
 		 * @param <I>             Definition builder input type
 		 */
-		<T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
+		<T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier);
 
 	}
 

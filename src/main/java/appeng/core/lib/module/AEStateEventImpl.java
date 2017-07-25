@@ -43,7 +43,7 @@ public class AEStateEventImpl implements AEStateEvent {
 		}
 
 		@Override
-		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier){
+		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier){
 			definitionBuilderSuppliers.put(new ImmutablePair<>(defType, inputType), builderSupplier);
 		}
 

@@ -16,6 +16,8 @@ public class EntityDefinitionBuilder<E extends EntityEntry> extends DefinitionBu
 
 	@Override
 	protected IEntityDefinition<E> def(E entity){
-		return new EntityDefinition<E>(registryName, entity);
+		if(entity == null) return new EntityDefinition<>(registryName, null);
+
+		return new EntityDefinition<>(registryName, entity);
 	}
 }

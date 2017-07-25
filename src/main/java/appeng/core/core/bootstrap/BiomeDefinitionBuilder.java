@@ -16,6 +16,8 @@ public class BiomeDefinitionBuilder<B extends Biome> extends DefinitionBuilder<B
 
 	@Override
 	public IBiomeDefinition<B> def(B biome){
+		if(biome == null) return new BiomeDefinition<>(registryName, null);
+
 		return new BiomeDefinition(registryName, biome);
 	}
 }

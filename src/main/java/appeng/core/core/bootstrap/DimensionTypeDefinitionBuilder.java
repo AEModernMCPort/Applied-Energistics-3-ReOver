@@ -52,7 +52,9 @@ public class DimensionTypeDefinitionBuilder<D extends DimensionType> extends Def
 
 	@Override
 	public IDimensionTypeDefinition<D> def(Integer id){
-		return new DimensionTypeDefinition(registryName, DimensionType.register(name, suffix, id, clazz, shouldLoadSpawn));
+		if(id == null) return new DimensionTypeDefinition<>(registryName, null);
+
+		return new DimensionTypeDefinition<>(registryName, (D) DimensionType.register(name, suffix, id, clazz, shouldLoadSpawn));
 	}
 
 }

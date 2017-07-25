@@ -67,9 +67,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 
 	@Override
 	public IBlockDefinition<B> def(B block){
-		if(block == null){
-			return new BlockDefinition<B>(registryName, null);
-		}
+		if(block == null) return new BlockDefinition<>(registryName, null);
 
 		if(block.getUnlocalizedName().equals("tile.null")) block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
@@ -87,9 +85,8 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			}
 		}*/
 
-		BlockDefinition definition = new BlockDefinition<B>(registryName, block);
-		if(!block.getBlockState().getProperties().isEmpty())
-			definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
+		BlockDefinition<B> definition = new BlockDefinition<>(registryName, block);
+		if(!block.getBlockState().getProperties().isEmpty()) definition.setSubDefinition(() -> new BlockSubDefinition(block.getDefaultState(), definition));
 
 		IItemDefinition<ItemBlock> item = this.item.apply(definition);
 		definition.setItem(item);

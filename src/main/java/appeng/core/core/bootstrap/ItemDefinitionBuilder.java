@@ -40,16 +40,16 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 	@Override
 	public IItemDefinition<I> def(I item){
+		if(item == null) return new ItemDefinition<>(registryName, null);
 		/*if(Platform.isClient()){
 			itemRendering.apply(factory, item);
 		}*/
 
 		if(item.getUnlocalizedName().equals("item.null")) item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
-		ItemDefinition definition = new ItemDefinition(registryName, item);
+		ItemDefinition<I> definition = new ItemDefinition<>(registryName, item);
 
-		if(item instanceof IStateItem)
-			definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
+		if(item instanceof IStateItem) definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
 
 		return definition;
 	}

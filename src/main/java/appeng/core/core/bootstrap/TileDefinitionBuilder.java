@@ -66,11 +66,9 @@ public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuild
 
 	@Override
 	protected ITileDefinition<T> def(Class<T> t){
-		if(t == null){
-			return new TileDefinition<T>(registryName, null);
-		}
+		if(t == null) return new TileDefinition<T>(registryName, null);
 
-		TileDefinition<T> definition = new TileDefinition<T>(registryName, new TileRegistryEntryImpl<T>(registryName, t));
+		TileDefinition<T> definition = new TileDefinition<>(registryName, new TileRegistryEntryImpl<>(registryName, t));
 		factory.addDefault(this.block.apply(definition));
 		return definition;
 	}

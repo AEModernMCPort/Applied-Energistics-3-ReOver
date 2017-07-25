@@ -26,6 +26,8 @@ public class MaterialDefinitionBuilder<M extends Material> extends DefinitionBui
 
 	@Override
 	public IMaterialDefinition<M> def(M material){
+		if(material == null) return new MaterialDefinition<>(registryName, material);
+
 		if(material.getUnlocalizedName().equals("material.null")) material.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)) model = new ResourceLocation(model != null ? model.getResourceDomain() : registryName.getResourceDomain(), AppEng.instance().getCurrentName() + "/" + (model != null ? model.getResourcePath() : registryName.getResourcePath()));
 		if(model != null) material.setModel(model);

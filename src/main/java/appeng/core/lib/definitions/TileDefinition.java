@@ -13,19 +13,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public final class TileDefinition<TE extends TileEntity> extends Definition<TileRegistryEntry<TE>> implements ITileDefinition<TE> {
 
-	private IBlockDefinition block;
-
 	public TileDefinition(ResourceLocation identifier, TileRegistryEntry<TE> tile){
 		super(identifier, tile);
-	}
-
-	public void setBlock(IBlockDefinition block){
-		this.block = block;
-	}
-
-	@Override
-	public <B extends Block & ITileEntityProvider> IBlockDefinition<B> block(){
-		return block;
 	}
 
 	@Override

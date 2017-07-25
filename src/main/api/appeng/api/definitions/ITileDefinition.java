@@ -13,12 +13,6 @@ import javax.annotation.Nonnull;
 public interface ITileDefinition<TE extends TileEntity> extends IDefinition<TileRegistryEntry<TE>> {
 
 	/**
-	 * @return block of this tile
-	 */
-	@Nonnull
-	<B extends Block & ITileEntityProvider> IBlockDefinition<B> block();
-
-	/**
 	 * Compare tile in world with this.
 	 *
 	 * @param world of tile

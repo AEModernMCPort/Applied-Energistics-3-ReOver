@@ -69,7 +69,7 @@ public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuild
 		if(t == null) return new TileDefinition<T>(registryName, null);
 
 		TileDefinition<T> definition = new TileDefinition<>(registryName, new TileRegistryEntryImpl<>(registryName, t));
-		factory.addDefault(this.block.apply(definition));
+		if(block != null) factory.addDefault(this.block.apply(definition));
 		return definition;
 	}
 

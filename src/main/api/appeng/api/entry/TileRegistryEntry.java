@@ -4,12 +4,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public interface TileRegistryEntry<T extends TileEntity> {
+import java.util.function.BiFunction;
+
+public interface TileRegistryEntry<T extends TileEntity> extends BiFunction<World, Integer, T> {
 
 	ResourceLocation getRegistryName();
 
 	Class<T> getTileClass();
-
-	T createNewTile(World world, int meta);
 
 }

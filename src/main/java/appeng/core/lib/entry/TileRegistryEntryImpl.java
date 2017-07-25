@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistryEntry<T> {
 
 	public static <T extends TileEntity> BiFunction<World, Integer, T> createFromConstructor(Class<T> rClass){
-		ReflectionHelper.AClass<T> clas = new ReflectionHelper.AClass<>(rClass);
+		/*ReflectionHelper.AClass<T> clas = new ReflectionHelper.AClass<>(rClass);
 		ReflectionHelper.AConstructor<T> constructor;
 		if((constructor = clas.getDeclaredConstructor(World.class, int.class)) != null && constructor.isAccessible()){
 			ReflectionHelper.AConstructor<T> aConstructor = constructor;
@@ -29,7 +29,8 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 			ReflectionHelper.AConstructor<T> aConstructor = constructor;
 			return (world, meta) -> aConstructor.newInstance();
 		}
-		throw new IllegalArgumentException("Tried to create tile registry entry impl by using class constructor as instantiator, but tile does not have any (accessible) one(s)!");
+		throw new IllegalArgumentException("Tried to create tile registry entry impl by using class constructor as instantiator, but tile does not have any (accessible) one(s)!");*/
+		return null;
 	}
 
 	private final ResourceLocation registryName;
@@ -57,7 +58,8 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 	}
 
 	@Override
-	public T createNewTile(World world, int meta){
+	public T apply(World world, Integer meta){
+		//TODO How badly do we need this?
 		return instantiator.apply(world, meta);
 	}
 

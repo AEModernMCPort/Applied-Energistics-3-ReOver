@@ -3,7 +3,7 @@ package appeng.api.module;
 import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import java.util.function.Function;

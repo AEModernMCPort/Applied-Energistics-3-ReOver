@@ -1,7 +1,7 @@
 package appeng.core.crafting.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.crafting.api.definitions.ICraftingBlockDefinitions;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.block.Block;

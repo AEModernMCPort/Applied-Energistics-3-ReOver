@@ -1,16 +1,13 @@
 package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IMaterialDefinition;
+import appeng.core.core.api.definition.IMaterialDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IMaterialBuilder;
-import appeng.core.api.definitions.ICoreMaterialDefinitions;
-import appeng.core.api.material.Material;
+import appeng.core.core.api.bootstrap.IMaterialBuilder;
+import appeng.core.core.api.definitions.ICoreMaterialDefinitions;
+import appeng.core.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.relauncher.Side;
 
 public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 

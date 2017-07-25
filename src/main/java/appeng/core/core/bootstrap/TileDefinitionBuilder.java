@@ -1,15 +1,15 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
-import appeng.api.definitions.ITileDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
+import appeng.core.core.api.definition.ITileDefinition;
 import appeng.api.entry.TileRegistryEntry;
-import appeng.core.api.bootstrap.IBlockBuilder;
-import appeng.core.api.bootstrap.ITileBuilder;
-import appeng.core.api.bootstrap.TileBlockCustomizer;
+import appeng.core.core.api.bootstrap.IBlockBuilder;
+import appeng.core.core.api.bootstrap.ITileBuilder;
+import appeng.core.core.api.bootstrap.TileBlockCustomizer;
 import appeng.core.core.block.TileBlockBase;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.TileDefinition;
+import appeng.core.core.definition.TileDefinition;
 import appeng.core.lib.entry.TileRegistryEntryImpl;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;

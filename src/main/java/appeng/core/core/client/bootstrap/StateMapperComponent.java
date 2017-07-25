@@ -1,7 +1,7 @@
 package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.client.statemap.StateMapperHelper;
 import net.minecraft.block.Block;

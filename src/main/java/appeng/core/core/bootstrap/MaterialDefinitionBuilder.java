@@ -1,12 +1,12 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IMaterialDefinition;
+import appeng.core.core.api.definition.IMaterialDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IMaterialBuilder;
-import appeng.core.api.material.Material;
+import appeng.core.core.api.bootstrap.IMaterialBuilder;
+import appeng.core.core.api.material.Material;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.MaterialDefinition;
+import appeng.core.core.definition.MaterialDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 

@@ -1,13 +1,12 @@
 package appeng.core.lib.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Queue;
 

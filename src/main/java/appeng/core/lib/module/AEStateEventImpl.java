@@ -6,7 +6,7 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.DefinitionFactory;

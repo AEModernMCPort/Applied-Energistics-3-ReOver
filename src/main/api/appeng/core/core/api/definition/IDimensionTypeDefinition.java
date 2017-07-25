@@ -1,0 +1,8 @@
+package appeng.core.core.api.definition;
+
+import appeng.api.definition.IDefinition;
+import net.minecraft.world.DimensionType;
+
+public interface IDimensionTypeDefinition<D extends DimensionType> extends IDefinition<D> {
+
+}

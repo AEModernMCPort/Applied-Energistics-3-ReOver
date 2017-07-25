@@ -1,9 +1,9 @@
 package appeng.debug.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IBlockBuilder;
+import appeng.core.core.api.bootstrap.IBlockBuilder;
 import appeng.core.lib.definitions.Definitions;
 import appeng.debug.block.TestBlock;
 import net.minecraft.block.Block;

@@ -3,7 +3,7 @@ package appeng.core.lib.bootstrap;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponent;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.core.AppEng;
 import appeng.core.lib.config.GlobalFeaturesManager;
 import com.google.common.collect.HashMultimap;

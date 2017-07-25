@@ -2,12 +2,13 @@ package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.api.item.IStateItem;
-import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.api.bootstrap.IItemBuilder;
 import appeng.core.core.AppEngCore;
+import appeng.core.core.definition.ItemSubDefinition;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.ItemDefinition;
+import appeng.core.core.definition.ItemDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

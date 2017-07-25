@@ -1,25 +1,22 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.BlockItemCustomizer;
-import appeng.core.api.bootstrap.IBlockBuilder;
-import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.core.AppEngCore;
+import appeng.core.core.api.bootstrap.BlockItemCustomizer;
+import appeng.core.core.api.bootstrap.IBlockBuilder;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.core.client.statemap.SubfolderStateMapper;
+import appeng.core.core.definition.BlockSubDefinition;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.BlockDefinition;
+import appeng.core.core.definition.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 

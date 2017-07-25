@@ -1,7 +1,7 @@
 package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.core.core.AppEngCore;
 import net.minecraftforge.client.event.ModelBakeEvent;
 

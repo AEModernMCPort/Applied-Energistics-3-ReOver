@@ -1,7 +1,7 @@
 package appeng.core.spatial.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialItemDefinitions;
 import net.minecraft.item.Item;

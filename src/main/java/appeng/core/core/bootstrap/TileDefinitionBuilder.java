@@ -30,13 +30,13 @@ public class TileDefinitionBuilder<T extends TileEntity> extends DefinitionBuild
 	}
 
 	@Override
-	public <B extends Block & ITileEntityProvider> TileDefinitionBuilder<T> setBlock(@Nonnull Function<ITileDefinition<T>, IBlockDefinition<B>> block){
+	public <B extends Block> TileDefinitionBuilder<T> setBlock(@Nonnull Function<ITileDefinition<T>, IBlockDefinition<B>> block){
 		this.block = (Function) block;
 		return null;
 	}
 
 	@Override
-	public <B extends Block & ITileEntityProvider> TileDefinitionBuilder<T> createBlock(@Nonnull TileBlockCustomizer<T, B> customizer){
+	public <B extends Block> TileDefinitionBuilder<T> createBlock(@Nonnull TileBlockCustomizer<T, B> customizer){
 		return setBlock(def -> customizer.customize(factory.definitionBuilder(registryName, tileBlockIh(customizer.createBlock(def.maybe().get())))).setFeature(feature).build());
 	}
 

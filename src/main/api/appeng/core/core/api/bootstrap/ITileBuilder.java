@@ -14,9 +14,9 @@ import java.util.function.Function;
 
 public interface ITileBuilder<T extends TileEntity, TT extends ITileBuilder<T, TT>> extends IDefinitionBuilder<TileRegistryEntry<T>, ITileDefinition<T>, TT> {
 
-	<B extends Block & ITileEntityProvider> TT setBlock(@Nonnull Function<ITileDefinition<T>, IBlockDefinition<B>> block);
+	<B extends Block> TT setBlock(@Nonnull Function<ITileDefinition<T>, IBlockDefinition<B>> block);
 
-	<B extends Block & ITileEntityProvider> TT createBlock(@Nonnull TileBlockCustomizer<T, B> customizer);
+	<B extends Block> TT createBlock(@Nonnull TileBlockCustomizer<T, B> customizer);
 
 	TT createDefaultBlock(Material material);
 

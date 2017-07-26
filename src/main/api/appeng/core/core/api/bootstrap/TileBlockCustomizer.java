@@ -8,7 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nonnull;
 
 @FunctionalInterface
-public interface TileBlockCustomizer<T extends TileEntity, B extends Block & ITileEntityProvider> {
+public interface TileBlockCustomizer<T extends TileEntity, B extends Block> {
 
 	@Nonnull
 	B createBlock(TileRegistryEntry<T> tile);

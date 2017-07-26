@@ -1,7 +1,7 @@
 package appeng.core.lib.entry;
 
 import appeng.api.entry.TileRegistryEntry;
-import code.elix_x.excomms.reflection.ReflectionHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistryEntry<T> {
 
-	public static <T extends TileEntity> BiFunction<World, Integer, T> createFromConstructor(Class<T> rClass){
+	public static <T extends TileEntity> BiFunction<World, IBlockState, T> createFromConstructor(Class<T> rClass){
 		/*ReflectionHelper.AClass<T> clas = new ReflectionHelper.AClass<>(rClass);
 		ReflectionHelper.AConstructor<T> constructor;
 		if((constructor = clas.getDeclaredConstructor(World.class, int.class)) != null && constructor.isAccessible()){
@@ -35,9 +35,9 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 
 	private final ResourceLocation registryName;
 	private final Class<T> tileClass;
-	private final BiFunction<World, Integer, T> instantiator;
+	private final BiFunction<World, IBlockState, T> instantiator;
 
-	public TileRegistryEntryImpl(ResourceLocation registryName, Class<T> tileClass, BiFunction<World, Integer, T> instantiator){
+	public TileRegistryEntryImpl(ResourceLocation registryName, Class<T> tileClass, BiFunction<World, IBlockState, T> instantiator){
 		this.registryName = registryName;
 		this.tileClass = tileClass;
 		this.instantiator = instantiator;
@@ -58,7 +58,7 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 	}
 
 	@Override
-	public T apply(World world, Integer meta){
+	public T apply(World world, IBlockState meta){
 		//TODO How badly do we need this?
 		return instantiator.apply(world, meta);
 	}

@@ -3,15 +3,16 @@ package appeng.core.core;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
-import appeng.core.api.ICore;
-import appeng.core.api.material.Material;
+import appeng.core.core.api.ICore;
+import appeng.core.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
@@ -21,14 +22,14 @@ import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.FMLControlledNamespacedRegistry;
-import net.minecraftforge.fml.common.registry.RegistryBuilder;
+import net.minecraftforge.registries.ForgeRegistry;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +50,8 @@ public class AppEngCore implements ICore {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private FMLControlledNamespacedRegistry<Material> materialRegistry;
+	private IForgeRegistry recipeRegistryRegistry;
+	private ForgeRegistry<Material> materialRegistry;
 
 	private DefinitionFactory registry;
 
@@ -90,28 +92,29 @@ public class AppEngCore implements ICore {
 		return guiHandler;
 	}
 
-	public FMLControlledNamespacedRegistry<Material> getMaterialRegistry(){
+	public ForgeRegistry<Material> getMaterialRegistry(){
 		return materialRegistry;
 	}
 
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
-		event.registerConfigurationLoaderProvider("JSON", module -> new JSONConfigLoader(module));
-		event.registerConfigurationLoaderProvider("YAML", module -> new YAMLConfigLoader(module));
+		event.registerConfigurationLoaderProvider("JSON", JSONConfigLoader::new);
+		event.registerConfigurationLoaderProvider("YAML", YAMLConfigLoader::new);
 
-		event.registerDefinitionBuilderSupplier(Item.class, Item.class, (factory, registryName, item) -> new ItemDefinitionBuilder(factory, registryName, item));
-		event.registerDefinitionBuilderSupplier(Block.class, Block.class, (factory, registryName, block) -> new BlockDefinitionBuilder(factory, registryName, block));
+		event.registerDefinitionBuilderSupplier(Item.class, Item.class, ItemDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Block.class, Block.class, BlockDefinitionBuilder::new);
 		//TODO 1.11.2-ReOver - Fix NPE
-		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, (factory, registryName, tile) -> new TileDefinitionBuilder(factory, registryName, tile));
-		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, (factory, registryName, biome) -> new BiomeDefinitionBuilder(factory, registryName, biome));
-		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, (factory, registryName, dimensionId) -> new DimensionTypeDefinitionBuilder(factory, registryName, dimensionId));
+		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, TileDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
 
-		event.registerDefinitionBuilderSupplier(Material.class, Material.class, (factory, registryName, material) -> new MaterialDefinitionBuilder(factory, registryName, material));
+		event.registerDefinitionBuilderSupplier(Material.class, Material.class, MaterialDefinitionBuilder::new);
 	}
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		materialRegistry = (FMLControlledNamespacedRegistry<Material>) new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
+		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
 		try{

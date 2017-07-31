@@ -1,7 +1,7 @@
 package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;

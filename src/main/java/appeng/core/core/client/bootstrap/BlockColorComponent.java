@@ -1,11 +1,10 @@
 package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
-import scala.collection.parallel.ParIterableLike;
 
 import java.util.Optional;
 import java.util.function.Supplier;

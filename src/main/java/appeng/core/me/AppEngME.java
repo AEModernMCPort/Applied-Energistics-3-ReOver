@@ -13,13 +13,27 @@ import appeng.core.AppEng;
 import appeng.core.core.api.material.Material;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
+import appeng.core.me.api.parts.container.IPartsContainer;
+import appeng.core.me.api.parts.container.IWorldPartsAccess;
+import appeng.core.me.api.parts.part.Part;
+import appeng.core.me.api.parts.placement.PartPlacementLogic;
+import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
+import appeng.core.me.parts.container.PartsContainer;
+import appeng.core.me.parts.container.WorldPartsAccess;
+import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import appeng.core.me.proxy.MEProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,6 +54,8 @@ public class AppEngME implements IME {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
+	private IForgeRegistry partRegistry;
+
 	private DefinitionFactory registry;
 
 	private MEItemDefinitions itemDefinitions;
@@ -47,6 +63,9 @@ public class AppEngME implements IME {
 	private METileDefinitions tileDefinitions;
 	private MEMaterialDefinitions materialDefinitions;
 	private MEEntityDefinitions entityDefinitions;
+	private MEPartDefinitions partDefinitions;
+
+	private PartsHelper partsHelper;
 
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
@@ -65,11 +84,34 @@ public class AppEngME implements IME {
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
 		}
+		if(clas == Part.class){
+			return (D) partDefinitions;
+		}
 		return null;
+	}
+
+	public <P extends Part<P, S>, S extends Part.State<P, S>> IForgeRegistry<P> getPartRegistry(){
+		return partRegistry;
+	}
+
+	public PartsHelper getPartsHelper(){
+		return partsHelper;
+	}
+
+	@Override
+	public PartPlacementLogic createDefaultPlacementLogic(Part part){
+		return new DefaultPartPlacementLogic(part);
+	}
+
+	@ModuleEventHandler
+	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
+		event.registerDefinitionBuilderSupplier(Part.class, Part.class, (factory, registryName, input) -> new PartDefinitionBuilder(factory, registryName, input));
 	}
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		partRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "parts")).setType(Part.class).setMaxID(Integer.MAX_VALUE - 1).create();
+
 		ConfigurationLoader<MEConfig> configLoader = event.configurationLoader();
 		try{
 			configLoader.load(MEConfig.class);
@@ -84,12 +126,20 @@ public class AppEngME implements IME {
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
 		this.materialDefinitions = new MEMaterialDefinitions(registry);
+		this.partDefinitions = new MEPartDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
+		this.partDefinitions.init(registry);
+
+		initHandler.accept(partsHelper = new PartsHelper());
+		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
+		CapabilityManager.INSTANCE.register(IWorldPartsAccess.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
+
+		MinecraftForge.EVENT_BUS.register(this);
 
 		initHandler.preInit();
 		proxy.preInit(event);

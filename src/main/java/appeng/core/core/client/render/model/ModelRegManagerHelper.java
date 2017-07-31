@@ -2,6 +2,7 @@ package appeng.core.core.client.render.model;
 
 import appeng.core.AppEng;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -110,6 +111,12 @@ public class ModelRegManagerHelper {
 
 	public static void loadAndRegisterModel(ModelResourceLocation registryKey, ResourceLocation modelLocation){
 		loadAndRegisterModel(registryKey, modelLocation, DEFAULTMODELSTATE, DEFAULTVERTEXFORMAT, DEFAULTTEXTUREGETTER);
+	}
+
+
+
+	public static IBakedModel getModel(ModelResourceLocation modelLocation){
+		return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelManager().getModel(modelLocation);
 	}
 
 }

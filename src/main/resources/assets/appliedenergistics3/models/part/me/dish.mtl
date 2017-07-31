@@ -1,0 +1,13 @@
+# Blender MTL File: 'Satellite+dish_Blender+Internal+render.blend'
+# Material Count: 1
+
+newmtl Material.013
+Ns 37.254902
+Ka 1.000000 1.000000 1.000000
+Kd 0.302439 0.302439 0.302439
+Ks 0.709150 0.709150 0.709150
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd appliedenergistics3:parts/me/satellite_dish_col

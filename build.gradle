@@ -33,7 +33,7 @@ dependencies {
 	}
 	compile "com.esotericsoftware.yamlbeans:yamlbeans:$yamlbeans_version"
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
-	// deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
+	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	// deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
 	// deobfCompile "embers:embers:$embers_version"
 	// deobfCompile "refinedstorage:refinedstorage:$rs_version"

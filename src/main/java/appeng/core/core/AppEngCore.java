@@ -25,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -58,6 +59,7 @@ public class AppEngCore implements ICore {
 	private CoreItemDefinitions itemDefinitions;
 	private CoreBlockDefinitions blockDefinitions;
 	private CoreTileDefinitions tileDefinitions;
+	private CoreFluidDefinitions fluidDefinitions;
 	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
@@ -77,6 +79,9 @@ public class AppEngCore implements ICore {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
+		}
+		if(clas == Fluid.class){
+			return (D) fluidDefinitions;
 		}
 		if(clas == Material.class){
 			return (D) materialDefinitions;
@@ -105,6 +110,7 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, BlockDefinitionBuilder::new);
 		//TODO 1.11.2-ReOver - Fix NPE
 		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, TileDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Fluid.class, Fluid.class, FluidDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
 
@@ -128,11 +134,13 @@ public class AppEngCore implements ICore {
 		this.itemDefinitions = new CoreItemDefinitions(registry);
 		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
+		this.fluidDefinitions = new CoreFluidDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
 		this.materialDefinitions = new CoreMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
+		this.fluidDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);

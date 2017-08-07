@@ -12,20 +12,30 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
+import appeng.core.core.api.crafting.ion.Ion;
+import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
+import appeng.core.core.crafting.ion.CraftingIonRegistry;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -34,6 +44,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
@@ -47,12 +58,16 @@ public class AppEngCore implements ICore {
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
 
+	@CapabilityInject(IonEnvironment.class)
+	public static Capability<IonEnvironment> ionEnvironmentCapability;
+
 	public CoreConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private IForgeRegistry recipeRegistryRegistry;
 	private ForgeRegistry<Material> materialRegistry;
+	private IForgeRegistry<Ion> ionRegistry;
 
 	private DefinitionFactory registry;
 
@@ -62,6 +77,8 @@ public class AppEngCore implements ICore {
 	private CoreFluidDefinitions fluidDefinitions;
 	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
+
+	private CraftingIonRegistry craftingIonRegistry;
 
 	private CoreGuiHandler guiHandler;
 
@@ -101,6 +118,14 @@ public class AppEngCore implements ICore {
 		return materialRegistry;
 	}
 
+	public IForgeRegistry<Ion> getIonRegistry(){
+		return ionRegistry;
+	}
+
+	public CraftingIonRegistry getCraftingIonRegistry(){
+		return craftingIonRegistry;
+	}
+
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerConfigurationLoaderProvider("JSON", JSONConfigLoader::new);
@@ -121,6 +146,10 @@ public class AppEngCore implements ICore {
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
+		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+
+		craftingIonRegistry = new CraftingIonRegistry();
+		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
 
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
 		try{
@@ -144,6 +173,21 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
+
+		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side){
+				return instance.serializeNBT();
+			}
+
+			@Override
+			public void readNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side, NBTBase nbt){
+				instance.deserializeNBT((NBTTagCompound) nbt);
+			}
+
+		}, appeng.core.core.crafting.ion.IonEnvironment::new);
 
 		guiHandler = new CoreGuiHandler();
 

@@ -40,7 +40,11 @@ public class FluidDefinitionBuilder<F extends Fluid> extends DefinitionBuilder<F
 		if(fluid == null) return new FluidDefinition<>(registryName, fluid);
 
 		FluidDefinition<F> definition = new FluidDefinition<>(registryName, fluid);
-		if(block != null) factory.addDefault(block.apply(definition));
+		if(block != null){
+			IBlockDefinition<?> blockDefinition = block.apply(definition);
+			blockDefinition.maybe().ifPresent(fluid::setBlock);
+			factory.addDefault(blockDefinition);
+		}
 		return definition;
 	}
 

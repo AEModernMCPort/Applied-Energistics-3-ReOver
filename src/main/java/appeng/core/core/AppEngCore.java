@@ -25,6 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.ForgeRegistry;
@@ -105,6 +106,7 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(Block.class, Block.class, BlockDefinitionBuilder::new);
 		//TODO 1.11.2-ReOver - Fix NPE
 		event.registerDefinitionBuilderSupplier(TileRegistryEntry.class, Class.class, TileDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Fluid.class, Fluid.class, FluidDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
 

@@ -17,6 +17,6 @@ public class FluidDefinition<F extends Fluid> extends Definition<F> implements I
 
 	@Override
 	public <B extends Block & IFluidBlock> Optional<B> maybeBlock(){
-		return (Optional<B>) maybe().map(Fluid::getBlock);
+		return (Optional) maybe().map(Fluid::getBlock);
 	}
 }

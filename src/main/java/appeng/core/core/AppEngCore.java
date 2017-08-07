@@ -59,6 +59,7 @@ public class AppEngCore implements ICore {
 	private CoreItemDefinitions itemDefinitions;
 	private CoreBlockDefinitions blockDefinitions;
 	private CoreTileDefinitions tileDefinitions;
+	private CoreFluidDefinitions fluidDefinitions;
 	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
@@ -78,6 +79,9 @@ public class AppEngCore implements ICore {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
+		}
+		if(clas == Fluid.class){
+			return (D) fluidDefinitions;
 		}
 		if(clas == Material.class){
 			return (D) materialDefinitions;
@@ -130,11 +134,13 @@ public class AppEngCore implements ICore {
 		this.itemDefinitions = new CoreItemDefinitions(registry);
 		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
+		this.fluidDefinitions = new CoreFluidDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
 		this.materialDefinitions = new CoreMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
+		this.fluidDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);

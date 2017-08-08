@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * @author Fredi100
  */
-public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
+public class BlockColorComponent<B extends Block> implements IDefinitionBuilder.DefinitionInitializationComponent<B, IBlockDefinition<B>> {
 
 	private final Supplier<Optional<IBlockColor>> blockColor;
 
@@ -21,7 +21,7 @@ public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitial
 	}
 
 	@Override
-	public void init(IBlockDefinition<Block> def){
+	public void init(IBlockDefinition<B> def){
 		blockColor.get().ifPresent(color -> Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(color, def.maybe().get()));
 	}
 }

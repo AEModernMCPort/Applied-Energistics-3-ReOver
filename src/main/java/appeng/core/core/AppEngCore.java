@@ -84,6 +84,7 @@ public class AppEngCore implements ICore {
 	private CoreTileDefinitions tileDefinitions;
 	private CoreFluidDefinitions fluidDefinitions;
 	private CoreMaterialDefinitions materialDefinitions;
+	private CoreIonDefinitions ionDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
 	private CraftingIonRegistry craftingIonRegistry;
@@ -110,6 +111,9 @@ public class AppEngCore implements ICore {
 		}
 		if(clas == Material.class){
 			return (D) materialDefinitions;
+		}
+		if(clas == Ion.class){
+			return (D) ionDefinitions;
 		}
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
@@ -175,6 +179,7 @@ public class AppEngCore implements ICore {
 		this.fluidDefinitions = new CoreFluidDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
 		this.materialDefinitions = new CoreMaterialDefinitions(registry);
+		this.ionDefinitions = new CoreIonDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
@@ -182,6 +187,7 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
+		this.ionDefinitions.init(registry);
 
 		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
 

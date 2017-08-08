@@ -61,7 +61,7 @@ public class IonMaterial extends Material implements ICapabilityProvider {
 
 	@Override
 	public boolean onEntityItemUpdate(EntityItem entityItem){
-		AppEngCore.INSTANCE.getCraftingIonRegistry().onIonEntityItemTick(entityItem);
+		AppEngCore.INSTANCE.getCraftingIonRegistry().onIonEntityItemTick(entityItem, ionProvider);
 		return true;
 	}
 }

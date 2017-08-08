@@ -6,6 +6,7 @@ import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.item.IItemMaterial;
 import appeng.core.core.api.material.Material;
 import appeng.core.core.crafting.ion.IonProviderImpl;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -58,4 +59,9 @@ public class IonMaterial extends Material implements ICapabilityProvider {
 		return capability == AppEngCore.ionProviderCapability ? (T) ionProvider : null;
 	}
 
+	@Override
+	public boolean onEntityItemUpdate(EntityItem entityItem){
+		AppEngCore.INSTANCE.getCraftingIonRegistry().onIonEntityItemTick(entityItem);
+		return true;
+	}
 }

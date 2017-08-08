@@ -15,6 +15,10 @@ public class IonProviderImpl implements IonProvider {
 		this.ions = ImmutableMap.copyOf(ions);
 	}
 
+	public IonProviderImpl(Ion ion, int amount){
+		this.ions = ImmutableMap.of(ion, amount);
+	}
+
 	public IonProviderImpl(){
 		this(Collections.EMPTY_MAP);
 	}

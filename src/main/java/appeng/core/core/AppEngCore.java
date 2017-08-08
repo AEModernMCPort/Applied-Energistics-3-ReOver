@@ -161,9 +161,6 @@ public class AppEngCore implements ICore {
 		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
-		craftingIonRegistry = new CraftingIonRegistry();
-		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
-
 		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
 		try{
 			configLoader.load(CoreConfig.class);
@@ -218,6 +215,9 @@ public class AppEngCore implements ICore {
 			}
 
 		}, IonProviderImpl::new);
+
+		craftingIonRegistry = new CraftingIonRegistry();
+		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
 
 		guiHandler = new CoreGuiHandler();
 

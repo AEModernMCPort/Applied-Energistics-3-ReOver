@@ -21,10 +21,10 @@ public class CoreIonDefinitions extends Definitions<Ion, IIonDefinition<Ion>> im
 
 	public CoreIonDefinitions(DefinitionFactory factory){
 		certus = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus"), ih(new IonImpl(new RGBA(174, 215, 255)))).build();
-		quartz = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "quartz"), ih(new IonImpl())).build();
-		redstone = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "redstone"), ih(new IonImpl())).build();
-		sulfur = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "sulfur"), ih(new IonImpl())).build();
-		ender = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "ender"), ih(new IonImpl())).build();
+		quartz = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "quartz"), ih(new IonImpl(new RGBA(240, 237, 233)))).build();
+		redstone = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "redstone"), ih(new IonImpl(new RGBA(255, 62, 62)))).build();
+		sulfur = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "sulfur"), ih(new IonImpl(new RGBA(215, 226, 52)))).build();
+		ender = factory.<Ion, IIonDefinition<Ion>, IIonBuilder<Ion, ?>, Ion>definitionBuilder(new ResourceLocation(AppEng.MODID, "ender"), ih(new IonImpl(new RGBA(37, 132, 116)))).build();
 	}
 
 	private DefinitionFactory.InputHandler<Ion, Ion> ih(Ion entity){

@@ -72,7 +72,13 @@ public class CraftingIonRegistry {
 			world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null).addIons(ionProvider);
 			world.markBlockRangeForRenderUpdate(pos, pos);
 			item.setDead();
-		} else if(ionized2normal.containsKey(fluid)){
+		}
+	}
+
+	public void onIonEntityItemEnterEnvironment(World world, BlockPos pos, EntityItem item, IonProvider ionProvider){
+		IBlockState block = world.getBlockState(pos);
+		Fluid fluid = FluidRegistry.lookupFluidForBlock(block.getBlock());
+		if(ionized2normal.containsKey(fluid)){
 			world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null).addIons(ionProvider);
 			world.markBlockRangeForRenderUpdate(pos, pos);
 			item.setDead();

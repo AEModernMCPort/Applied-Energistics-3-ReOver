@@ -14,11 +14,13 @@ import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
 import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
+import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.crafting.ion.CraftingIonRegistry;
+import appeng.core.core.crafting.ion.IonProviderImpl;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
@@ -47,6 +49,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
@@ -61,6 +65,9 @@ public class AppEngCore implements ICore {
 
 	@CapabilityInject(IonEnvironment.class)
 	public static Capability<IonEnvironment> ionEnvironmentCapability;
+
+	@CapabilityInject(IonProvider.class)
+	public static Capability<IonProvider> ionProviderCapability;
 
 	public CoreConfig config;
 
@@ -190,6 +197,21 @@ public class AppEngCore implements ICore {
 			}
 
 		}, appeng.core.core.crafting.ion.IonEnvironment::new);
+
+		CapabilityManager.INSTANCE.register(IonProvider.class, new Capability.IStorage<IonProvider>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, IonProviderImpl::new);
 
 		guiHandler = new CoreGuiHandler();
 

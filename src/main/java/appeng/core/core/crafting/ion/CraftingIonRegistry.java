@@ -59,7 +59,7 @@ public class CraftingIonRegistry {
 		return color.getValue();*/
 		Set<RGBA> colors = new HashSet<>();
 		colors.add(original);
-		environment.getIons().forEach(ion -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(environment.getAmount(ion)))));
+		environment.getIons().forEach((ion, amount) -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(amount))));
 		return blend(colors);
 	}
 

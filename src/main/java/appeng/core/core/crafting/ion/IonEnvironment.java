@@ -9,6 +9,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +37,8 @@ public class IonEnvironment implements appeng.core.core.api.crafting.ion.IonEnvi
 	}
 
 	@Override
-	public Iterable<Ion> getIons(){
-		return ions.keySet();
+	public Map<Ion, Integer> getIons(){
+		return Collections.unmodifiableMap(ions);
 	}
 
 	@Override

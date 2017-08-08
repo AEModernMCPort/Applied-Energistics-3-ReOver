@@ -5,6 +5,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.fluids.Fluid;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 public interface IonEnvironment extends INBTSerializable<NBTTagCompound> {
 
@@ -13,7 +14,7 @@ public interface IonEnvironment extends INBTSerializable<NBTTagCompound> {
 
 
 
-	Iterable<Ion> getIons();
+	Map<Ion, Integer> getIons();
 
 	int getAmount(Ion ion);
 

@@ -11,11 +11,15 @@ import appeng.core.core.api.definition.IFluidDefinition;
 import appeng.core.core.api.definitions.ICoreFluidDefinitions;
 import appeng.core.core.block.IonEnvironmentFluidBlock;
 import appeng.core.core.client.bootstrap.BlockColorComponent;
+import appeng.core.core.client.bootstrap.ModelOverrideComponent;
 import appeng.core.core.client.render.color.IonEnvironmentFluidBlockColor;
+import appeng.core.core.client.render.model.TintIndexOverrideBakedModel;
 import appeng.core.core.fluid.IonEnvironmentFluid;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.relauncher.Side;
@@ -37,7 +41,7 @@ public class CoreFluidDefinitions extends Definitions<Fluid, IFluidDefinition<Fl
 			@Nonnull
 			@Override
 			public IBlockBuilder<BlockFluidBase, ?> customize(@Nonnull IBlockBuilder<BlockFluidBase, ?> builder){
-				return builder.doNotRemapSubmodule().initializationComponent(Side.CLIENT, new BlockColorComponent<>(() -> Optional.of(new IonEnvironmentFluidBlockColor(fluid))));
+				return builder.doNotRemapSubmodule().initializationComponent(Side.CLIENT, new BlockColorComponent<>(() -> Optional.of(new IonEnvironmentFluidBlockColor(fluid)))).initializationComponent(Side.CLIENT, new ModelOverrideComponent<>(event -> event.getModelRegistry().putObject(new ModelResourceLocation(new ResourceLocation(ForgeVersion.MOD_ID, "fluid"), "ae3_ion_" + fluid.getName()), new TintIndexOverrideBakedModel(event.getModelRegistry().getObject(new ModelResourceLocation(new ResourceLocation(ForgeVersion.MOD_ID, "fluid"), "ae3_ion_" + fluid.getName())), 0))));
 			}
 
 		}).<IDefinitionBuilder.DefinitionInitializationComponent.Init<Fluid, IFluidDefinition<Fluid>>>initializationComponent(null, def -> AppEngCore.INSTANCE.getCraftingIonRegistry().registerIonVariant(fluid, def.maybe().get())).build()));

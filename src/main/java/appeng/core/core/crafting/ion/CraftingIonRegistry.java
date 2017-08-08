@@ -58,16 +58,16 @@ public class CraftingIonRegistry {
 		environment.getIons().forEach(ion -> color.setValue(blend(color.getValue(), ion.getColorModifier(), amount2mul(environment.getAmount(ion)))));
 		return color.getValue();*/
 		Set<RGBA> colors = new HashSet<>();
-		colors.add(original);
-		environment.getIons().forEach((ion, amount) -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(amount))));
+		float aSum = 0.1f + (float) environment.getIons().values().stream().mapToDouble(this::amount2mul).sum();
+		colors.add(new RGBA(original.getRF(), original.getGF(), original.getBF(), 0.1f * original.getAF() / aSum));
+		environment.getIons().forEach((ion, amount) -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(amount) / aSum)));
 		return blend(colors);
 	}
 
 	public RGBA blend(Set<RGBA> colors){
-		double aSum = colors.stream().mapToDouble(RGBA::getAF).sum();
-		double r = colors.stream().mapToDouble(color -> color.getRF() * (color.getAF() / aSum)).sum();
-		double g = colors.stream().mapToDouble(color -> color.getGF() * (color.getAF() / aSum)).sum();
-		double b = colors.stream().mapToDouble(color -> color.getBF() * (color.getAF() / aSum)).sum();
+		double r = colors.stream().mapToDouble(color -> color.getRF() * color.getAF()).sum();
+		double g = colors.stream().mapToDouble(color -> color.getGF() * color.getAF()).sum();
+		double b = colors.stream().mapToDouble(color -> color.getBF() * color.getAF()).sum();
 		return new RGBA((float) r, (float) g, (float) b, 1f);
 	}
 

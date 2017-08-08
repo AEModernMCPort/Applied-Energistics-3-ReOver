@@ -170,6 +170,10 @@ public class AppEngCore implements ICore {
 		config = configLoader.configuration();
 
 		registry = event.factory(initHandler, proxy);
+
+		craftingIonRegistry = new CraftingIonRegistry();
+		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
+
 		this.itemDefinitions = new CoreItemDefinitions(registry);
 		this.blockDefinitions = new CoreBlockDefinitions(registry);
 		this.tileDefinitions = new CoreTileDefinitions(registry);
@@ -215,9 +219,6 @@ public class AppEngCore implements ICore {
 			}
 
 		}, IonProviderImpl::new);
-
-		craftingIonRegistry = new CraftingIonRegistry();
-		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
 
 		guiHandler = new CoreGuiHandler();
 

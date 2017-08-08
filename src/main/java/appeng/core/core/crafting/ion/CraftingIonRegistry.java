@@ -36,16 +36,18 @@ public class CraftingIonRegistry {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
-	private ICoreIonDefinitions ionDefinitions = AppEngCore.INSTANCE.definitions(Ion.class);
+	private ICoreIonDefinitions ionDefinitions(){
+		return AppEngCore.INSTANCE.definitions(Ion.class);
+	}
 
 	@SubscribeEvent
 	public void attachProviderCapsToVanilla(AttachCapabilitiesEvent<ItemStack> event){
 		Item item = event.getObject().getItem();
 		MutableObject<IonProvider> ionProvider = new MutableObject<>();
-		if(item == Items.QUARTZ) ionDefinitions.quartz().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.REDSTONE) ionDefinitions.redstone().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.GUNPOWDER) ionDefinitions.sulfur().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.ENDER_PEARL) ionDefinitions.ender().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
+		if(item == Items.QUARTZ) ionDefinitions().quartz().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
+		else if(item == Items.REDSTONE) ionDefinitions().redstone().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
+		else if(item == Items.GUNPOWDER) ionDefinitions().sulfur().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
+		else if(item == Items.ENDER_PEARL) ionDefinitions().ender().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
 		if(ionProvider.getValue() != null) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(AppEngCore.ionProviderCapability, ionProvider.getValue()));
 	}
 

@@ -17,6 +17,8 @@ import appeng.core.lib.definitions.Definitions;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.Collections;
+
 public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 
 	private final IMaterialDefinition certusQuartz;
@@ -26,10 +28,10 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){
 		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).build();
-		certusQuartz = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_quartz"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "quartz"), 3))).build();
-		certusRedstone = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_redstone"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "redstone"), 3))).build();
-		certusSulfur = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_sulfur"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "sulfur"), 2))).build();
-		incertus = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "incertus"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "ender"), 1))).build();
+		certusQuartz = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_quartz"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "quartz"), 3), true, Collections.emptySet())).build();
+		certusRedstone = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_redstone"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "redstone"), 3), true, Collections.emptySet())).build();
+		certusSulfur = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_sulfur"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "sulfur"), 2), true, Collections.emptySet())).build();
+		incertus = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "incertus"), ih(new IonMaterial())).initializationComponent(null, new IonMaterialSetProviderComponent<>(ImmutableMap.of(new ResourceLocation(AppEng.MODID, "certus"), 1, new ResourceLocation(AppEng.MODID, "ender"), 1), true, Collections.emptySet())).build();
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

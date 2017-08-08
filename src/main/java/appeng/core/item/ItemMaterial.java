@@ -79,6 +79,11 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 		return new ItemStack(this, amount, REGISTRY.getID(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
 	}
 
+	@Override
+	public Material getMaterial(IStateItemState<ItemMaterial> state){
+		return state.getValue(MaterialProperty.INSTANCE);
+	}
+
 	/**
 	 * Helper method for {@linkplain ItemStack} to {@linkplain Material} conversion.
 	 *
@@ -86,7 +91,7 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 	 * @return {@linkplain Material} corresponding to given stack.
 	 */
 	public Material getMaterial(ItemStack itemstack){
-		return getState(itemstack).getValue(ItemMaterial.MaterialProperty.INSTANCE);
+		return getMaterial(getState(itemstack));
 	}
 
 	/**

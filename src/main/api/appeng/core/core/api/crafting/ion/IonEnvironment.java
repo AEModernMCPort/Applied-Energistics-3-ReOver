@@ -19,4 +19,8 @@ public interface IonEnvironment extends INBTSerializable<NBTTagCompound> {
 
 	void addIons(Ion ion, int amount);
 
+	default void addIons(IonProvider ionProvider){
+		ionProvider.getIons().forEach(this::addIons);
+	}
+
 }

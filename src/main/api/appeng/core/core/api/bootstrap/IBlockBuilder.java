@@ -14,6 +14,8 @@ public interface IBlockBuilder<B extends Block, BB extends IBlockBuilder<B, BB>>
 	//TODO 1.11.2-ReOver - Be back?
 	//BB rendering(BlockRenderingCustomizer callback);
 
+	BB doNotRemapSubmodule();
+
 	<I extends ItemBlock> BB setItem(@Nonnull Function<IBlockDefinition<B>, IItemDefinition<I>> item);
 
 	<I extends ItemBlock, C extends BlockItemCustomizer<B, I>> BB createItem(@Nonnull C ib);

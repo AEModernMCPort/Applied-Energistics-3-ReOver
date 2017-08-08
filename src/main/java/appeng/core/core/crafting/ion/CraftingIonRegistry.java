@@ -20,9 +20,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fluids.BlockFluidBase;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.*;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -70,7 +70,8 @@ public class CraftingIonRegistry {
 		Fluid fluid = FluidRegistry.lookupFluidForBlock(block.getBlock());
 		if(normal2ionized.containsKey(fluid) && ionProvider.isReactive(fluid)){
 			Fluid ionized = normal2ionized.get(fluid);
-			world.setBlockState(pos, ionized.getBlock().getDefaultState().withProperty(BlockFluidBase.LEVEL, 15));
+			world.setBlockToAir(pos);
+			FluidUtil.tryPlaceFluid(null, world, pos, new FluidTank(ionized, Fluid.BUCKET_VOLUME, Fluid.BUCKET_VOLUME), new FluidStack(ionized, Fluid.BUCKET_VOLUME));
 			world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null).addIons(ionProvider);
 			world.markBlockRangeForRenderUpdate(pos, pos);
 			item.setDead();

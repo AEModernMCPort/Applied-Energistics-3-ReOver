@@ -23,6 +23,7 @@ import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTBase;
@@ -140,6 +141,7 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
 
 		event.registerDefinitionBuilderSupplier(Material.class, Material.class, MaterialDefinitionBuilder::new);
+		event.registerDefinitionBuilderSupplier(Ion.class, Ion.class, IonDefinitionBuilder::new);
 	}
 
 	@ModuleEventHandler

@@ -1,19 +1,21 @@
 package appeng.core.core.tile;
 
 import appeng.core.core.AppEngCore;
+import appeng.core.core.api.tick.IHasChildrenTickables;
 import appeng.core.core.crafting.ion.IonEnvironment;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 
 import javax.annotation.Nullable;
 
-public class IonEnvironmentTile extends TileEntity {
+public class IonEnvironmentTile extends TileEntity implements ITickable, IHasChildrenTickables {
 
 	protected IonEnvironment environment = new IonEnvironment();
 
@@ -22,6 +24,11 @@ public class IonEnvironmentTile extends TileEntity {
 
 	public IonEnvironmentTile(Fluid fluid){
 		this.environment.setEnvironment(fluid);
+	}
+
+	@Override
+	public void update(){
+		if(hasCapability(AppEngCore.tickablesCapability, null)) getCapability(AppEngCore.tickablesCapability, null).tick(this);
 	}
 
 	@Override

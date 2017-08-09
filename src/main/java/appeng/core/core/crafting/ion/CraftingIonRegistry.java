@@ -6,6 +6,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.*;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.definitions.ICoreIonDefinitions;
+import appeng.core.core.crafting.ion.temp.InWorldIonEnvTemperatureListener;
 import appeng.core.lib.capability.DelegateCapabilityStorage;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import code.elix_x.excomms.color.RGBA;

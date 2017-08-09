@@ -1,4 +1,4 @@
-package appeng.core.core.crafting.ion;
+package appeng.core.core.crafting.ion.temp;
 
 import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
@@ -6,6 +6,9 @@ import appeng.core.core.api.crafting.ion.IonEnvironmentContext;
 import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import appeng.core.core.api.tick.ChildrenTickable;
 import appeng.core.core.api.tick.Tickables;
+import appeng.core.core.crafting.ion.CraftingIonRegistry;
+import appeng.core.core.crafting.ion.IonEnvironmentContextChangeEvent;
+import appeng.core.core.crafting.ion.IonEnvironmentContextImpl;
 import appeng.core.core.tile.IonEnvironmentTile;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import net.minecraft.block.Block;

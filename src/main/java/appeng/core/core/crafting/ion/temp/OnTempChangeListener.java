@@ -13,7 +13,12 @@ public class OnTempChangeListener {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void destroyInWorldEnv(IonEnvironmentContextChangeEvent event){
+		//TODO FX the crap out of this!
 		if(event.getChange() == NativeEnvironmentChange.COOLING || event.getChange() == NativeEnvironmentChange.HEATING) if(IonEnvironmentContext.isInWorldEnv(event.getContext())) event.getContext().world().get().setBlockToAir(event.getContext().pos().get());
 	}
+
+	//TODO Resolve results & create them
+
+	//TODO Spawn a chilly explosion of positrons or a whirly outbreak of certus vapors
 
 }

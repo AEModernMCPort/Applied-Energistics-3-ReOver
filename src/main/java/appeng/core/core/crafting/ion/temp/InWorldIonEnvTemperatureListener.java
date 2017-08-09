@@ -42,6 +42,7 @@ public class InWorldIonEnvTemperatureListener implements ChildrenTickable<TileEn
 		}
 	}
 
+	//TODO Unhardcode
 	public static final double RANGED = 2.5;
 	public static final double RANGEI = 3;
 
@@ -66,6 +67,7 @@ public class InWorldIonEnvTemperatureListener implements ChildrenTickable<TileEn
 		return temp.getValue();
 	}
 
+	//TODO Unhardcode
 	public static final int COOLINGTHRESHOLD = -50;
 	public static final int HEATINGTHRESHOLD = +50;
 

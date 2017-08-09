@@ -17,7 +17,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -54,20 +53,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	@Override
 	public void preInit(){
-		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side){
-				return instance.serializeNBT();
-			}
-
-			@Override
-			public void readNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side, NBTBase nbt){
-				instance.deserializeNBT((NBTTagCompound) nbt);
-			}
-
-		}, appeng.core.core.crafting.ion.IonEnvironment::new);
+		CapabilityManager.INSTANCE.register(IonEnvironment.class, new DelegateCapabilityStorage<>(), appeng.core.core.crafting.ion.IonEnvironment::new);
 
 		CapabilityManager.INSTANCE.register(IonProvider.class, new Capability.IStorage<IonProvider>() {
 

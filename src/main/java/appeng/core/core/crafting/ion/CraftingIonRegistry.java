@@ -6,8 +6,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.*;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.definitions.ICoreIonDefinitions;
-import appeng.core.core.api.tick.Tickables;
-import appeng.core.core.tick.TickablesImpl;
+import appeng.core.lib.capability.DelegateCapabilityStorage;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import code.elix_x.excomms.color.RGBA;
 import com.google.common.collect.BiMap;
@@ -50,6 +49,9 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	@CapabilityInject(IonProvider.class)
 	public static Capability<IonProvider> ionProviderCapability;
 
+	@CapabilityInject(InWorldIonEnvTemperatureListener.class)
+	public static Capability<InWorldIonEnvTemperatureListener> ionEnvTemperatureListenerCapability;
+
 	@Override
 	public void preInit(){
 		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
@@ -81,6 +83,8 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 			}
 
 		}, IonProviderImpl::new);
+
+		CapabilityManager.INSTANCE.register(InWorldIonEnvTemperatureListener.class, new DelegateCapabilityStorage<>(), InWorldIonEnvTemperatureListener::new);
 
 		MinecraftForge.EVENT_BUS.register(this);
 	}

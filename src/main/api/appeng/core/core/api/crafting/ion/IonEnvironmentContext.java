@@ -8,6 +8,22 @@ import java.util.Optional;
 
 public interface IonEnvironmentContext {
 
+	static boolean exists(IonEnvironmentContext context){
+		return (context.world().isPresent() && context.pos().isPresent()) || context.capabilities().isPresent();
+	}
+
+	static boolean isInWorldEnv(IonEnvironmentContext context){
+		return context.world().isPresent() && context.pos().isPresent() && !context.capabilities().isPresent();
+	}
+
+	static boolean isInAbstractEnv(IonEnvironmentContext context){
+		return !context.world().isPresent() && !context.pos().isPresent() && context.capabilities().isPresent();
+	}
+
+	static boolean isInWorldAbstractEnv(IonEnvironmentContext context){
+		return context.world().isPresent() && context.pos().isPresent() && context.capabilities().isPresent();
+	}
+
 	/**
 	 * Maybe the world of the environment
 	 * @return the world of the environment

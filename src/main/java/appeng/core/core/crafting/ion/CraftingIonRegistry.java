@@ -2,9 +2,8 @@ package appeng.core.core.crafting.ion;
 
 import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
-import appeng.core.core.api.crafting.ion.Ion;
+import appeng.core.core.api.crafting.ion.*;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
-import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.definitions.ICoreIonDefinitions;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import code.elix_x.excomms.color.RGBA;
@@ -21,14 +20,17 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.*;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.lang3.reflect.InheritanceUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CraftingIonRegistry {
 
@@ -108,6 +110,26 @@ public class CraftingIonRegistry {
 
 	public float amount2mul(int amount){
 		return -1f/(2*amount) + 1f;
+	}
+
+	public Map<Class, IonEnvironmentProductConsumer> consumers = new HashMap<>();
+
+	public <T> void registerProductConsumer(Class<T> type, IonEnvironmentProductConsumer<T> consumer){
+		consumers.put(type, consumer);
+	}
+
+	public List<Pair<Class, Consumer>> compileProductConsumersL(IonEnvironmentContext context){
+		return consumers.entrySet().stream().map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue().createConsumer(context))).collect(Collectors.toList());
+	}
+
+	public Function<Class, Optional<Consumer>> compileProductConsumersF(IonEnvironmentContext context){
+		List<Pair<Class, Consumer>> consumers = compileProductConsumersL(context);
+		return clas -> consumers.stream().filter(consumer -> consumer.getLeft().isAssignableFrom(clas)).sorted(Comparator.comparingInt(consumer -> InheritanceUtils.distance(clas, consumer.getLeft()))).findFirst().map(Pair::getRight);
+	}
+
+	public Consumer compileProductConsumersC(IonEnvironmentContext context){
+		Function<Class, Optional<Consumer>> consumers = compileProductConsumersF(context);
+		return product -> consumers.apply(product.getClass()).ifPresent(consumer -> consumer.accept(product));
 	}
 
 }

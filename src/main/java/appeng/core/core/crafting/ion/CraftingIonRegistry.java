@@ -112,14 +112,20 @@ public class CraftingIonRegistry {
 		return -1f/(2*amount) + 1f;
 	}
 
-	public Map<Class, IonEnvironmentProductConsumer> consumers = new HashMap<>();
+	public Map<IonEnvironmentContext.Change, Map<Class, IonEnvironmentProductConsumer>> consumers = new HashMap<>();
 
-	public <T> void registerProductConsumer(Class<T> type, IonEnvironmentProductConsumer<T> consumer){
-		consumers.put(type, consumer);
+	protected Map<Class, IonEnvironmentProductConsumer> getChangeMap(IonEnvironmentContext.Change change){
+		Map<Class, IonEnvironmentProductConsumer> map = consumers.get(change);
+		if(map == null) consumers.put(change, map = new HashMap<>());
+		return map;
+	}
+
+	public <T> void registerProductConsumer(Class<T> type, IonEnvironmentProductConsumer<T> consumer, IonEnvironmentContext.Change... changes){
+		for(IonEnvironmentContext.Change change : changes) getChangeMap(change).put(type, consumer);
 	}
 
 	public List<Pair<Class, Consumer>> compileProductConsumersL(IonEnvironmentContext context, IonEnvironmentContext.Change change){
-		return consumers.entrySet().stream().map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue().createConsumer(context, change))).collect(Collectors.toList());
+		return getChangeMap(change).entrySet().stream().map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue().createConsumer(context))).collect(Collectors.toList());
 	}
 
 	public Function<Class, Optional<Consumer>> compileProductConsumersF(IonEnvironmentContext context, IonEnvironmentContext.Change change){

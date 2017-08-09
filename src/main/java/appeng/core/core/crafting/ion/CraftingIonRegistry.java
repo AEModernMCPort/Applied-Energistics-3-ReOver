@@ -1,10 +1,13 @@
 package appeng.core.core.crafting.ion;
 
+import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.*;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.definitions.ICoreIonDefinitions;
+import appeng.core.core.api.tick.Tickables;
+import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import code.elix_x.excomms.color.RGBA;
 import com.google.common.collect.BiMap;
@@ -14,10 +17,15 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -27,14 +35,61 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class CraftingIonRegistry {
+public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
-	public CraftingIonRegistry(){
+	@Override
+	public void preInit(){
+		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, TickablesImpl::new);
+
+		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side){
+				return instance.serializeNBT();
+			}
+
+			@Override
+			public void readNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side, NBTBase nbt){
+				instance.deserializeNBT((NBTTagCompound) nbt);
+			}
+
+		}, appeng.core.core.crafting.ion.IonEnvironment::new);
+
+		CapabilityManager.INSTANCE.register(IonProvider.class, new Capability.IStorage<IonProvider>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, IonProviderImpl::new);
+
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 

@@ -22,25 +22,19 @@ import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.crafting.ion.CraftingIonRegistry;
-import appeng.core.core.crafting.ion.IonProviderImpl;
 import appeng.core.core.crafting.ion.changeconsumers.IETempChangeItemStackConsumer;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
-import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -51,7 +45,6 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
@@ -176,7 +169,7 @@ public class AppEngCore implements ICore {
 
 		registry = event.factory(initHandler, proxy);
 
-		craftingIonRegistry = new CraftingIonRegistry();
+		initHandler.accept(craftingIonRegistry = new CraftingIonRegistry());
 		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
 
 		this.itemDefinitions = new CoreItemDefinitions(registry);
@@ -194,51 +187,6 @@ public class AppEngCore implements ICore {
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
 		this.ionDefinitions.init(registry);
-
-		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
-				return null;
-			}
-
-			@Override
-			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
-
-			}
-
-		}, TickablesImpl::new);
-
-		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side){
-				return instance.serializeNBT();
-			}
-
-			@Override
-			public void readNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side, NBTBase nbt){
-				instance.deserializeNBT((NBTTagCompound) nbt);
-			}
-
-		}, appeng.core.core.crafting.ion.IonEnvironment::new);
-
-		CapabilityManager.INSTANCE.register(IonProvider.class, new Capability.IStorage<IonProvider>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side){
-				return null;
-			}
-
-			@Override
-			public void readNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side, NBTBase nbt){
-
-			}
-
-		}, IonProviderImpl::new);
 
 		guiHandler = new CoreGuiHandler();
 

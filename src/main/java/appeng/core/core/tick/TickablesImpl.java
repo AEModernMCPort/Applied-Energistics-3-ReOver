@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
@@ -21,7 +22,7 @@ public class TickablesImpl<T> implements Tickables<T> {
 		if(event.getObject() instanceof IHasChildrenTickables) event.addCapability(KEY, new SingleCapabilityProvider<>(AppEngCore.tickablesCapability, new TickablesImpl<>()));
 	}
 
-	public List<ChildrenTickable<T>> tickables;
+	public List<ChildrenTickable<T>> tickables = new ArrayList<>();
 
 	@Override
 	public void accept(ChildrenTickable<T> tickable){

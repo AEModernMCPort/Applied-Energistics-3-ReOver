@@ -9,6 +9,7 @@ import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.tile.IonEnvironmentTile;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -42,6 +43,18 @@ public class InWorldIonEnvTemperatureListener implements ChildrenTickable<TileEn
 	public static final double RANGEI = 3;
 
 	public static Map<Block, Integer> temperatures = new HashMap<>();
+
+	static {
+		//TODO Unhardcode
+		temperatures.put(Blocks.FIRE, 1);
+		temperatures.put(Blocks.NETHERRACK, 2);
+		temperatures.put(Blocks.LAVA, 3);
+		temperatures.put(Blocks.FLOWING_LAVA, 3);
+
+		temperatures.put(Blocks.SNOW, 1);
+		temperatures.put(Blocks.ICE, 2);
+		temperatures.put(Blocks.PACKED_ICE, 3);
+	}
 
 	public static int computeDelta(World world, BlockPos pos){
 		//All Blocks in range of 2.5 blocks

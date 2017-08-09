@@ -1,25 +1,22 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.BlockItemCustomizer;
-import appeng.core.api.bootstrap.IBlockBuilder;
-import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.core.AppEngCore;
+import appeng.core.core.api.bootstrap.BlockItemCustomizer;
+import appeng.core.core.api.bootstrap.IBlockBuilder;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.core.client.statemap.SubfolderStateMapper;
+import appeng.core.core.definition.BlockSubDefinition;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.BlockDefinition;
+import appeng.core.core.definition.BlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -29,8 +26,7 @@ import java.util.function.Function;
 
 public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B, B, IBlockDefinition<B>, BlockDefinitionBuilder<B>> implements IBlockBuilder<B, BlockDefinitionBuilder<B>> {
 
-	//TODO 1.11.2-ReOver - :P
-	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
+	private boolean remapSubmodule = true;
 
 	private Function<IBlockDefinition<B>, IItemDefinition<ItemBlock>> item = def -> null;
 
@@ -48,6 +44,12 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			blockRendering = new BlockRendering();
 			itemRendering = new ItemRendering();
 		}*/
+	}
+
+	@Override
+	public BlockDefinitionBuilder<B> doNotRemapSubmodule(){
+		remapSubmodule = false;
+		return this;
 	}
 
 	@Override
@@ -73,14 +75,11 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 
 	@Override
 	public IBlockDefinition<B> def(B block){
-		if(block == null){
-			return new BlockDefinition<B>(registryName, null);
-		}
+		if(block == null) return new BlockDefinition<>(registryName, null);
 
-		block.setCreativeTab(creativeTab);
-		block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+		if(block.getUnlocalizedName().equals("tile.null")) block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
-		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
+		if(remapSubmodule && Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
 			String module = AppEng.instance().getCurrentName();
 			initializationComponent(Side.CLIENT, new StateMapperComponent<>(old -> Optional.of(new SubfolderStateMapper(old, module))));
 		}
@@ -94,9 +93,8 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 			}
 		}*/
 
-		BlockDefinition definition = new BlockDefinition<B>(registryName, block);
-		if(!block.getBlockState().getProperties().isEmpty())
-			definition.setSubDefinition(() -> new BlockSubDefinition<IBlockState, Block>(block.getDefaultState(), definition));
+		BlockDefinition<B> definition = new BlockDefinition<>(registryName, block);
+		if(!block.getBlockState().getProperties().isEmpty()) definition.setSubDefinition(() -> new BlockSubDefinition(block.getDefaultState(), definition));
 
 		IItemDefinition<ItemBlock> item = this.item.apply(definition);
 		definition.setItem(item);

@@ -1,7 +1,7 @@
 package appeng.core.crafting.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.crafting.api.definitions.ICraftingItemDefinitions;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.item.Item;

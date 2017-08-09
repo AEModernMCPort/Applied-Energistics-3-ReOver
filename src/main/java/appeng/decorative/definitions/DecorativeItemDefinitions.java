@@ -1,7 +1,7 @@
 package appeng.decorative.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.decorative.api.definitions.IDecorativeItemDefinitions;
 import net.minecraft.item.Item;

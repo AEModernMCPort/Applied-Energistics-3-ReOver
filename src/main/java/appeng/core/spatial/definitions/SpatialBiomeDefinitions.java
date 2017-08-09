@@ -1,7 +1,7 @@
 package appeng.core.spatial.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBiomeDefinition;
+import appeng.core.core.api.definition.IBiomeDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialBiomeDefinitions;
 import net.minecraft.world.biome.Biome;

@@ -1,7 +1,7 @@
 package appeng.core.lib.entry;
 
 import appeng.api.entry.TileRegistryEntry;
-import code.elix_x.excomms.reflection.ReflectionHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -10,8 +10,8 @@ import java.util.function.BiFunction;
 
 public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistryEntry<T> {
 
-	public static <T extends TileEntity> BiFunction<World, Integer, T> createFromConstructor(Class<T> rClass){
-		ReflectionHelper.AClass<T> clas = new ReflectionHelper.AClass<>(rClass);
+	public static <T extends TileEntity> BiFunction<World, IBlockState, T> createFromConstructor(Class<T> rClass){
+		/*ReflectionHelper.AClass<T> clas = new ReflectionHelper.AClass<>(rClass);
 		ReflectionHelper.AConstructor<T> constructor;
 		if((constructor = clas.getDeclaredConstructor(World.class, int.class)) != null && constructor.isAccessible()){
 			ReflectionHelper.AConstructor<T> aConstructor = constructor;
@@ -29,14 +29,15 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 			ReflectionHelper.AConstructor<T> aConstructor = constructor;
 			return (world, meta) -> aConstructor.newInstance();
 		}
-		throw new IllegalArgumentException("Tried to create tile registry entry impl by using class constructor as instantiator, but tile does not have any (accessible) one(s)!");
+		throw new IllegalArgumentException("Tried to create tile registry entry impl by using class constructor as instantiator, but tile does not have any (accessible) one(s)!");*/
+		return null;
 	}
 
 	private final ResourceLocation registryName;
 	private final Class<T> tileClass;
-	private final BiFunction<World, Integer, T> instantiator;
+	private final BiFunction<World, IBlockState, T> instantiator;
 
-	public TileRegistryEntryImpl(ResourceLocation registryName, Class<T> tileClass, BiFunction<World, Integer, T> instantiator){
+	public TileRegistryEntryImpl(ResourceLocation registryName, Class<T> tileClass, BiFunction<World, IBlockState, T> instantiator){
 		this.registryName = registryName;
 		this.tileClass = tileClass;
 		this.instantiator = instantiator;
@@ -57,7 +58,8 @@ public class TileRegistryEntryImpl<T extends TileEntity> implements TileRegistry
 	}
 
 	@Override
-	public T createNewTile(World world, int meta){
+	public T apply(World world, IBlockState meta){
+		//TODO How badly do we need this?
 		return instantiator.apply(world, meta);
 	}
 

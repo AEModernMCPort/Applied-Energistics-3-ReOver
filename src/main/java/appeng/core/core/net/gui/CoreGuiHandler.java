@@ -1,7 +1,7 @@
 package appeng.core.core.net.gui;
 
 import appeng.core.AppEng;
-import appeng.core.api.net.gui.GuiHandler;
+import appeng.core.core.api.net.gui.GuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;

@@ -2,14 +2,14 @@ package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.api.item.IStateItem;
-import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.api.bootstrap.IItemBuilder;
 import appeng.core.core.AppEngCore;
+import appeng.core.core.definition.ItemSubDefinition;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.ItemDefinition;
+import appeng.core.core.definition.ItemDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
@@ -21,20 +21,11 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 	/*@SideOnly(Side.CLIENT)
 	private ItemRendering itemRendering;*/
 
-	//TODO 1.11.2-ReOver - :P
-	private CreativeTabs creativeTab = CreativeTabs.REDSTONE;
-
 	public ItemDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I item){
 		super(factory, registryName, item, "item");
 		/*if(Platform.isClient()){
 			itemRendering = new ItemRendering();
 		}*/
-	}
-
-	@Override
-	public ItemDefinitionBuilder<I> creativeTab(CreativeTabs tab){
-		this.creativeTab = tab;
-		return this;
 	}
 
 	@Override
@@ -49,17 +40,16 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 	@Override
 	public IItemDefinition<I> def(I item){
-		item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
-		item.setCreativeTab(creativeTab);
-
+		if(item == null) return new ItemDefinition<>(registryName, null);
 		/*if(Platform.isClient()){
 			itemRendering.apply(factory, item);
 		}*/
 
-		ItemDefinition definition = new ItemDefinition(registryName, item);
+		if(item.getUnlocalizedName().equals("item.null")) item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
-		if(item instanceof IStateItem)
-			definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
+		ItemDefinition<I> definition = new ItemDefinition<>(registryName, item);
+
+		if(item instanceof IStateItem) definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
 
 		return definition;
 	}

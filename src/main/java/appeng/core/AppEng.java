@@ -1,5 +1,6 @@
 package appeng.core;
 
+import appeng.api.AEModInfo;
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
@@ -45,9 +46,9 @@ import java.util.function.Function;
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
 
-	public static final String MODID = "appliedenergistics3";
-	public static final String NAME = "Applied Energistics 3";
-	public static final String VERSION = "${version}";
+	public static final String MODID = AEModInfo.MODID;
+	public static final String NAME = AEModInfo.NAME;
+	public static final String VERSION = AEModInfo.VERSION;
 
 	public static final String ASSETS = MODID + ":";
 
@@ -110,21 +111,19 @@ public final class AppEng {
 		}
 	}
 
-	private <M> void fireModuleEvent(M module, final AEStateEvent event){
-		if(module instanceof String){
-			module = getModule((String) module);
-		}
-		if(module instanceof Class){
-			module = getModule((Class<M>) module);
-		}
+	private <M> void fireModuleEvent(M m, final AEStateEvent event){
+		M module;
+		if(m instanceof String) module = getModule((String) m);
+		else if(m instanceof Class) module = getModule((Class<M>) m);
+		else module = m;
 		if(module != null){
-			for(AMethod<M, ?> method : new AClass<M>((Class<M>) module.getClass()).getDeclaredMethods()){
+			new AClass<M>((Class<M>) module.getClass()).getDeclaredMethods().forEach(method -> {
 				if(method.get().getParameterTypes().length == 1 && method.get().getParameterTypes()[0].isAssignableFrom(event.getClass()) && method.get().getDeclaredAnnotation(Module.ModuleEventHandler.class) != null){
 					current = module;
 					method.invoke(module, event);
 					current = null;
 				}
-			}
+			});
 		}
 	}
 

@@ -1,7 +1,7 @@
 package appeng.core.worldgen.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.worldgen.api.definitions.IWorldGenBlockDefinitions;
 import net.minecraft.block.Block;

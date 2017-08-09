@@ -1,8 +1,8 @@
 package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IEntityDefinition;
-import appeng.core.api.definitions.ICoreEntityDefinitions;
+import appeng.core.core.api.definition.IEntityDefinition;
+import appeng.core.core.api.definitions.ICoreEntityDefinitions;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 

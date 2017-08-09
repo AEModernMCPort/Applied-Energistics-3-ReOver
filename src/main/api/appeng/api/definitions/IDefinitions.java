@@ -1,5 +1,6 @@
 package appeng.api.definitions;
 
+import appeng.api.definition.IDefinition;
 import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;
 

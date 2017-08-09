@@ -1,8 +1,7 @@
 package appeng.core.me.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
-import appeng.core.AppEng;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
 import appeng.core.staticfire.block.TestBlock;

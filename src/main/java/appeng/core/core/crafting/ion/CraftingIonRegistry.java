@@ -118,17 +118,17 @@ public class CraftingIonRegistry {
 		consumers.put(type, consumer);
 	}
 
-	public List<Pair<Class, Consumer>> compileProductConsumersL(IonEnvironmentContext context){
-		return consumers.entrySet().stream().map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue().createConsumer(context))).collect(Collectors.toList());
+	public List<Pair<Class, Consumer>> compileProductConsumersL(IonEnvironmentContext context, IonEnvironmentContext.Change change){
+		return consumers.entrySet().stream().map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue().createConsumer(context, change))).collect(Collectors.toList());
 	}
 
-	public Function<Class, Optional<Consumer>> compileProductConsumersF(IonEnvironmentContext context){
-		List<Pair<Class, Consumer>> consumers = compileProductConsumersL(context);
+	public Function<Class, Optional<Consumer>> compileProductConsumersF(IonEnvironmentContext context, IonEnvironmentContext.Change change){
+		List<Pair<Class, Consumer>> consumers = compileProductConsumersL(context, change);
 		return clas -> consumers.stream().filter(consumer -> consumer.getLeft().isAssignableFrom(clas)).sorted(Comparator.comparingInt(consumer -> InheritanceUtils.distance(clas, consumer.getLeft()))).findFirst().map(Pair::getRight);
 	}
 
-	public Consumer compileProductConsumersC(IonEnvironmentContext context){
-		Function<Class, Optional<Consumer>> consumers = compileProductConsumersF(context);
+	public Consumer compileProductConsumersC(IonEnvironmentContext context, IonEnvironmentContext.Change change){
+		Function<Class, Optional<Consumer>> consumers = compileProductConsumersF(context, change);
 		return product -> consumers.apply(product.getClass()).ifPresent(consumer -> consumer.accept(product));
 	}
 

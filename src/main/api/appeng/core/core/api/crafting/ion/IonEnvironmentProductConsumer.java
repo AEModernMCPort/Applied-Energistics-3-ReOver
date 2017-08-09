@@ -4,6 +4,6 @@ import java.util.function.Consumer;
 
 public interface IonEnvironmentProductConsumer<T> {
 
-	Consumer<T> createConsumer(IonEnvironmentContext context);
+	Consumer<T> createConsumer(IonEnvironmentContext context, IonEnvironmentContext.Change change);
 
 }

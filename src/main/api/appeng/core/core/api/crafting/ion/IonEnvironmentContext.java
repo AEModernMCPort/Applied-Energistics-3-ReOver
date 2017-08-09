@@ -26,4 +26,9 @@ public interface IonEnvironmentContext {
 	 */
 	Optional<ICapabilityProvider> capabilities();
 
+	/**
+	 * Singleton
+	 */
+	interface Change {}
+
 }

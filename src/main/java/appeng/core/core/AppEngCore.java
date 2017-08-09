@@ -15,12 +15,14 @@ import appeng.core.core.api.ICore;
 import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.crafting.ion.IonProvider;
+import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import appeng.core.core.api.material.Material;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.crafting.ion.CraftingIonRegistry;
 import appeng.core.core.crafting.ion.IonProviderImpl;
+import appeng.core.core.crafting.ion.changeconsumers.IETempChangeItemStackConsumer;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
@@ -28,6 +30,7 @@ import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -234,6 +237,8 @@ public class AppEngCore implements ICore {
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
+		craftingIonRegistry.registerProductConsumer(ItemStack.class, new IETempChangeItemStackConsumer(), NativeEnvironmentChange.HEATING, NativeEnvironmentChange.COOLING);
+
 		initHandler.init();
 		proxy.init(event);
 	}

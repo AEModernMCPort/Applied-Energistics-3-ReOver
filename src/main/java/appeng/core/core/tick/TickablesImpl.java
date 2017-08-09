@@ -6,7 +6,6 @@ import appeng.core.core.api.tick.ChildrenTickable;
 import appeng.core.core.api.tick.IHasChildrenTickables;
 import appeng.core.core.api.tick.Tickables;
 import appeng.core.lib.capability.SingleCapabilityProvider;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -19,7 +18,7 @@ public class TickablesImpl<T> implements Tickables<T> {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public static void attachCaps(AttachCapabilitiesEvent event){
-		if(event.getObject() instanceof IHasChildrenTickables) event.addCapability(new ResourceLocation(AppEng.MODID, "tickables"), new SingleCapabilityProvider<>(AppEngCore.tickablesCapability, new TickablesImpl<>()));
+		if(event.getObject() instanceof IHasChildrenTickables) event.addCapability(KEY, new SingleCapabilityProvider<>(AppEngCore.tickablesCapability, new TickablesImpl<>()));
 	}
 
 	public List<ChildrenTickable<T>> tickables;

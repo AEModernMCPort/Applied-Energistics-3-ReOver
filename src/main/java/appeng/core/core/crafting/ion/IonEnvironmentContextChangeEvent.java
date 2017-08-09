@@ -7,7 +7,7 @@ import appeng.core.core.api.crafting.ion.IonEnvironmentContext;
 public class IonEnvironmentContextChangeEvent extends appeng.core.core.api.crafting.ion.IonEnvironmentContextChangeEvent {
 
 	public IonEnvironmentContextChangeEvent(IonEnvironment environment, IonEnvironmentContext context, IonEnvironmentContext.Change change){
-		super(environment, change, AppEngCore.INSTANCE.getCraftingIonRegistry().compileProductConsumersC(context, change));
+		super(environment, context, change, AppEngCore.INSTANCE.getCraftingIonRegistry().compileProductConsumersC(context, change));
 	}
 
 }

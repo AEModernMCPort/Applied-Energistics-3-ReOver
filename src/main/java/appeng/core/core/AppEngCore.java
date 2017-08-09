@@ -13,18 +13,25 @@ import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
 import appeng.core.core.api.material.Material;
+import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
+import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
@@ -34,6 +41,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
@@ -46,6 +54,9 @@ public class AppEngCore implements ICore {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
+
+	@CapabilityInject(Tickables.class)
+	public static Capability<Tickables> tickablesCapability;
 
 	public CoreConfig config;
 
@@ -144,6 +155,22 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
+
+		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, TickablesImpl::new);
+
 
 		guiHandler = new CoreGuiHandler();
 

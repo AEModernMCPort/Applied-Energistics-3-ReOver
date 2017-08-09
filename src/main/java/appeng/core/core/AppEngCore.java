@@ -17,6 +17,7 @@ import appeng.core.core.api.crafting.ion.IonEnvironment;
 import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import appeng.core.core.api.material.Material;
+import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
@@ -26,8 +27,8 @@ import appeng.core.core.crafting.ion.changeconsumers.IETempChangeItemStackConsum
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
+import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -52,8 +53,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
@@ -65,6 +64,9 @@ public class AppEngCore implements ICore {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
+
+	@CapabilityInject(Tickables.class)
+	public static Capability<Tickables> tickablesCapability;
 
 	@CapabilityInject(IonEnvironment.class)
 	public static Capability<IonEnvironment> ionEnvironmentCapability;
@@ -192,6 +194,21 @@ public class AppEngCore implements ICore {
 		this.entityDefinitions.init(registry);
 		this.materialDefinitions.init(registry);
 		this.ionDefinitions.init(registry);
+
+		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, TickablesImpl::new);
 
 		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
 

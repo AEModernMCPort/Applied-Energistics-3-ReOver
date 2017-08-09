@@ -1,8 +1,8 @@
 package appeng.core.staticfire.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
 import appeng.core.AppEng;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.core.bootstrap.ItemDefinitionBuilder;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireItemDefinitions;
@@ -13,7 +13,7 @@ import appeng.core.staticfire.item.StaticFireItemBase;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
-public class StaticFireItemDefinitions extends Definitions<Item, IItemDefinition<Item>> implements IStaticFireItemDefinitions{
+public class StaticFireItemDefinitions extends  Definitions<Item, IItemDefinition<Item>> implements IStaticFireItemDefinitions {
 
     public StaticFireItemDefinitions(DefinitionFactory registry){
 

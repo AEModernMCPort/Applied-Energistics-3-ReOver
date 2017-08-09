@@ -1,9 +1,8 @@
 package appeng.core.staticfire.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IBlockBuilder;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.core.bootstrap.BlockDefinitionBuilder;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireBlockDefinitions;
@@ -17,7 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IStaticFireBlockDefinitions{
+public class StaticFireBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements IStaticFireBlockDefinitions {
 
     //private final IBlockDefinition skyblock;
 

@@ -14,8 +14,8 @@ public class StaticFireGuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         if (ID == 0)
-            return new TestGui();
-
+            //return new TestGui();
+            return null;
 
         return null;
     }

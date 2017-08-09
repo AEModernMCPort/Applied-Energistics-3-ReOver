@@ -3,22 +3,22 @@ package appeng.core.staticfire;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
-import appeng.core.api.net.gui.GuiHandler;
 import appeng.core.core.AppEngCore;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.staticfire.api.IStaticFire;
 import appeng.core.staticfire.block.TestBlock;
 import appeng.core.staticfire.definitions.StaticFireItemDefinitions;
 import appeng.core.staticfire.gui.StaticFireGuiHandler;
-import appeng.core.staticfire.gui.TestGui;
+//import appeng.core.staticfire.gui.TestGui;
 import appeng.core.staticfire.proxy.StaticFireProxy;
 import appeng.core.staticfire.definitions.StaticFireBlockDefinitions;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeVersion;
@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.io.IOException;
+import java.rmi.registry.Registry;
 
 @Module(IStaticFire.NAME)
 public class AppEngStaticFire implements IStaticFire{
@@ -61,6 +62,8 @@ public class AppEngStaticFire implements IStaticFire{
         if(clas == Block.class){
             return (D) blockDefinitions;
         }
+
+
         /*
         if(clas == TileEntity.class){
             return (D) tileDefinitions;
@@ -109,8 +112,8 @@ public class AppEngStaticFire implements IStaticFire{
         initHandler.init();
         proxy.init(event);
         //NetworkRegistry.INSTANCE.registerGuiHandler(AppEng.instance(), new StaticFireGuiHandler());
-        AppEngCore.INSTANCE.guiHandler().registerGuiElement(new ResourceLocation(AppEng.MODID, "TestGui"), new TestGui());
-        AppEngCore.INSTANCE.guiHandler().registerGuiClientElement(new ResourceLocation(AppEng.MODID, "TestGui"), new TestGui());
+        //AppEngCore.INSTANCE.guiHandler().registerGuiElement(new ResourceLocation(AppEng.MODID, "TestGui"), new TestGui());
+        //AppEngCore.INSTANCE.guiHandler().registerGuiClientElement(new ResourceLocation(AppEng.MODID, "TestGui"), new TestGui());
     }
 
     @Mod.EventHandler

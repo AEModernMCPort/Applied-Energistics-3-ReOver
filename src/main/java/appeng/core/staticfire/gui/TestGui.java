@@ -1,5 +1,5 @@
 package appeng.core.staticfire.gui;
-
+/*
 import appeng.core.AppEng;
 import appeng.core.api.net.gui.GuiHandler;
 import net.minecraft.client.Minecraft;
@@ -40,3 +40,4 @@ public class TestGui extends GuiScreen implements GuiHandler.GuiHandlerElement<G
         return this;
     }
 }
+*/

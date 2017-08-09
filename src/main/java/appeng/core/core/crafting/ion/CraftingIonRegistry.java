@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.*;
@@ -42,6 +43,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class CraftingIonRegistry implements InitializationComponent.PreInit {
+
+	@CapabilityInject(IonEnvironment.class)
+	public static Capability<IonEnvironment> ionEnvironmentCapability;
+
+	@CapabilityInject(IonProvider.class)
+	public static Capability<IonProvider> ionProviderCapability;
 
 	@Override
 	public void preInit(){
@@ -105,7 +112,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 		else if(item == Items.REDSTONE) ionDefinitions().redstone().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
 		else if(item == Items.GUNPOWDER) ionDefinitions().sulfur().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
 		else if(item == Items.ENDER_PEARL) ionDefinitions().ender().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		if(ionProvider.getValue() != null) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(AppEngCore.ionProviderCapability, ionProvider.getValue()));
+		if(ionProvider.getValue() != null) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, ionProvider.getValue()));
 	}
 
 	public BiMap<Fluid, Fluid> normal2ionized = HashBiMap.create();
@@ -129,7 +136,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 			Fluid ionized = normal2ionized.get(fluid);
 			world.setBlockToAir(pos);
 			FluidUtil.tryPlaceFluid(null, world, pos, new FluidTank(ionized, Fluid.BUCKET_VOLUME, Fluid.BUCKET_VOLUME), new FluidStack(ionized, Fluid.BUCKET_VOLUME));
-			world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null).addIons(ionProvider);
+			world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null).addIons(ionProvider);
 			world.markBlockRangeForRenderUpdate(pos, pos);
 			item.setDead();
 		}
@@ -139,7 +146,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 		IBlockState block = world.getBlockState(pos);
 		Fluid fluid = FluidRegistry.lookupFluidForBlock(block.getBlock());
 		if(ionized2normal.containsKey(fluid)){
-			world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null).addIons(ionProvider);
+			world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null).addIons(ionProvider);
 			world.markBlockRangeForRenderUpdate(pos, pos);
 			item.setDead();
 		}

@@ -5,6 +5,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.item.IItemMaterial;
 import appeng.core.core.api.material.Material;
+import appeng.core.core.crafting.ion.CraftingIonRegistry;
 import appeng.core.core.crafting.ion.IonProviderImpl;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import net.minecraft.entity.item.EntityItem;
@@ -21,7 +22,7 @@ public class IonMaterial extends Material {
 	public static void attachItemCaps(AttachCapabilitiesEvent<ItemStack> event){
 		if(event.getObject().getItem() instanceof IItemMaterial){
 			Material material = ((IItemMaterial) event.getObject().getItem()).getMaterial(event.getObject());
-			if(material instanceof IonMaterial) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(AppEngCore.ionProviderCapability, ((IonMaterial) material).ionProvider));
+			if(material instanceof IonMaterial) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(CraftingIonRegistry.ionProviderCapability, ((IonMaterial) material).ionProvider));
 		}
 	}
 

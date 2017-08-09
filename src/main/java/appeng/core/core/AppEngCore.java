@@ -61,12 +61,6 @@ public class AppEngCore implements ICore {
 	@CapabilityInject(Tickables.class)
 	public static Capability<Tickables> tickablesCapability;
 
-	@CapabilityInject(IonEnvironment.class)
-	public static Capability<IonEnvironment> ionEnvironmentCapability;
-
-	@CapabilityInject(IonProvider.class)
-	public static Capability<IonProvider> ionProviderCapability;
-
 	public CoreConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();

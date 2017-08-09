@@ -2,6 +2,7 @@ package appeng.core.core.tile;
 
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.tick.IHasChildrenTickables;
+import appeng.core.core.crafting.ion.CraftingIonRegistry;
 import appeng.core.core.crafting.ion.IonEnvironment;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -9,7 +10,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 
@@ -33,13 +33,13 @@ public class IonEnvironmentTile extends TileEntity implements ITickable, IHasChi
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing){
-		return capability == AppEngCore.ionEnvironmentCapability || super.hasCapability(capability, facing);
+		return capability == CraftingIonRegistry.ionEnvironmentCapability || super.hasCapability(capability, facing);
 	}
 
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing){
-		return capability == AppEngCore.ionEnvironmentCapability ? (T) environment : super.getCapability(capability, facing);
+		return capability == CraftingIonRegistry.ionEnvironmentCapability ? (T) environment : super.getCapability(capability, facing);
 	}
 
 	@Override

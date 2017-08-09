@@ -12,9 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class OnTempChangeListener {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void destroyInWorldEnv(IonEnvironmentContextChangeEvent event){
+	public static void destroyInWorldEnv(IonEnvironmentContextChangeEvent event){
 		if(event.getChange() == NativeEnvironmentChange.COOLING || event.getChange() == NativeEnvironmentChange.HEATING) if(IonEnvironmentContext.isInWorldEnv(event.getContext())) event.getContext().world().get().setBlockToAir(event.getContext().pos().get());
 	}
-
 
 }

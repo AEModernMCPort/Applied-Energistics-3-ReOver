@@ -26,15 +26,19 @@ import appeng.core.core.crafting.ion.changeconsumers.IETempChangeItemStackConsum
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
+import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -45,6 +49,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
@@ -183,6 +188,21 @@ public class AppEngCore implements ICore {
 		this.ionDefinitions.init(registry);
 
 		guiHandler = new CoreGuiHandler();
+
+		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, TickablesImpl::new);
 
 		initHandler.preInit();
 		proxy.preInit(event);

@@ -52,21 +52,6 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	@Override
 	public void preInit(){
-		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
-				return null;
-			}
-
-			@Override
-			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
-
-			}
-
-		}, TickablesImpl::new);
-
 		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
 
 			@Nullable

@@ -13,8 +13,6 @@ import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
 import appeng.core.core.api.crafting.ion.Ion;
-import appeng.core.core.api.crafting.ion.IonEnvironment;
-import appeng.core.core.api.crafting.ion.IonProvider;
 import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import appeng.core.core.api.material.Material;
 import appeng.core.core.api.tick.Tickables;
@@ -188,8 +186,6 @@ public class AppEngCore implements ICore {
 		this.materialDefinitions.init(registry);
 		this.ionDefinitions.init(registry);
 
-		guiHandler = new CoreGuiHandler();
-
 		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
 
 			@Nullable
@@ -204,6 +200,8 @@ public class AppEngCore implements ICore {
 			}
 
 		}, TickablesImpl::new);
+
+		guiHandler = new CoreGuiHandler();
 
 		initHandler.preInit();
 		proxy.preInit(event);

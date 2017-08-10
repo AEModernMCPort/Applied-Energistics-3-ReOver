@@ -34,7 +34,7 @@ import java.util.Optional;
 
 public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
 
-	private static final boolean USENBT = true;
+	private static final boolean USENBT = false;
 	private static final String MATERIAL = "material";
 
 	public static final ForgeRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();

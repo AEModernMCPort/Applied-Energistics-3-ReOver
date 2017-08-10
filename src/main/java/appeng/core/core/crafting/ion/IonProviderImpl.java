@@ -50,6 +50,12 @@ public class IonProviderImpl implements IonProvider {
 			this.fluids = fluids;
 		}
 
+		public Reactive(Collection<Pair<Ion, Integer>> ions, boolean def, Set<Fluid> fluids){
+			super(ions);
+			this.def = def;
+			this.fluids = fluids;
+		}
+
 		@Override
 		public boolean isReactive(Fluid fluid){
 			return def != fluids.contains(fluid);

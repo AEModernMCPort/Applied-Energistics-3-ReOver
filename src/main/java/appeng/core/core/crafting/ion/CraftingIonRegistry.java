@@ -14,8 +14,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
@@ -29,7 +27,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.commons.lang3.mutable.MutableObject;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.reflect.InheritanceUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -81,14 +79,9 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	}
 
 	@SubscribeEvent
-	public void attachProviderCapsToVanilla(AttachCapabilitiesEvent<ItemStack> event){
-		Item item = event.getObject().getItem();
-		MutableObject<IonProvider> ionProvider = new MutableObject<>();
-		if(item == Items.QUARTZ) ionDefinitions().quartz().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.REDSTONE) ionDefinitions().redstone().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.GUNPOWDER) ionDefinitions().sulfur().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		else if(item == Items.ENDER_PEARL) ionDefinitions().ender().maybe().ifPresent(ion -> ionProvider.setValue(new IonProviderImpl(ion, 1)));
-		if(ionProvider.getValue() != null) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, ionProvider.getValue()));
+	public void attachProviderByOreDict(AttachCapabilitiesEvent<ItemStack> event){
+		List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDictToIonsM::get).flatMap(Collection::stream).collect(Collectors.toList());
+		if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, new IonProviderImpl(ions)));
 	}
 
 	public BiMap<Fluid, Fluid> normal2ionized = HashBiMap.create();

@@ -10,16 +10,16 @@ public class CoreConfig implements ConfigCompilable, InitializationComponent.Ini
 
 	@Override
 	public void compile(){
-
+		ionCraftingConfig.compile();
 	}
 
 	@Override
 	public void init(){
-
+		ionCraftingConfig.init();
 	}
 
 	@Override
 	public void decompile(){
-
+		ionCraftingConfig.decompile();
 	}
 }

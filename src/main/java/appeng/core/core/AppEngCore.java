@@ -139,7 +139,7 @@ public class AppEngCore implements ICore {
 		} catch(IOException e){
 			logger.error("Caught exception loading configuration", e);
 		}
-		config = configLoader.configuration();
+		initHandler.accept(config = configLoader.configuration());
 
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new CoreItemDefinitions(registry);

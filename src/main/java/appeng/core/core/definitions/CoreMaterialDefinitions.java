@@ -1,24 +1,15 @@
 package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.core.core.AppEngCore;
-import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.definition.IMaterialDefinition;
 import appeng.core.AppEng;
 import appeng.core.core.api.bootstrap.IMaterialBuilder;
-import appeng.core.core.api.definitions.ICoreIonDefinitions;
 import appeng.core.core.api.definitions.ICoreMaterialDefinitions;
 import appeng.core.core.api.material.Material;
-import appeng.core.core.bootstrap.component.IonMaterialSetProviderComponent;
 import appeng.core.core.bootstrap.component.RegisterToOredictComponent;
-import appeng.core.core.crafting.ion.IonProviderImpl;
 import appeng.core.core.material.IonMaterial;
 import appeng.core.lib.definitions.Definitions;
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.Collections;
 
 public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 

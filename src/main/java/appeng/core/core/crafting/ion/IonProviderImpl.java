@@ -6,10 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.fluids.Fluid;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class IonProviderImpl implements IonProvider {
 
@@ -32,7 +29,7 @@ public class IonProviderImpl implements IonProvider {
 	}
 
 	@Override
-	public ImmutableMap<Ion, Integer> getIons(){
+	public ImmutableMap<Ion, Integer> getIons(Random random){
 		return ions;
 	}
 

@@ -117,7 +117,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	protected void enterIonEnv(World world, BlockPos pos, EntityItem item, IonProvider ionProvider){
 		IonEnvironment environment = world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null);
-		for(int i = 0; i < item.getItem().getCount(); i++) ionProvider.getIons().forEach(environment::addIons);
+		for(int i = 0; i < item.getItem().getCount(); i++) ionProvider.getIons(world.rand).forEach(environment::addIons);
 		world.markBlockRangeForRenderUpdate(pos, pos);
 		item.setDead();
 	}

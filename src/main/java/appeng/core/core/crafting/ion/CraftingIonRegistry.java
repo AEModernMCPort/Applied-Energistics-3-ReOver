@@ -81,7 +81,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	@SubscribeEvent
 	public void attachProviderByOreDict(AttachCapabilitiesEvent<ItemStack> event){
 		if(!event.getObject().isEmpty()){
-			List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDictToIonsM::get).flatMap(Collection::stream).collect(Collectors.toList());
+			List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDict2IonsC::get).flatMap(Collection::stream).collect(Collectors.toList());
 			if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, new IonProviderImpl(ions)));
 		}
 	}

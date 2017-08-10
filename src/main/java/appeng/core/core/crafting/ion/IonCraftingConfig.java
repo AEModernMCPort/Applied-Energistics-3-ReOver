@@ -5,10 +5,7 @@ import appeng.api.config.ConfigCompilable;
 import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.Ion;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -66,37 +63,37 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 	public static class Reactivity {
 
 		public boolean def = false;
-		public List<String> fluids = new ArrayList<>();
+		public Set<String> fluids = new HashSet<>();
 
 		public Reactivity(){
 
 		}
 
-		public Reactivity(boolean def, List<String> fluids){
+		public Reactivity(boolean def, Set<String> fluids){
 			this.def = def;
 			this.fluids = fluids;
 		}
 
 		Compiled compile(){
-			return new Compiled(def, Lists.transform(fluids, FluidRegistry::getFluid));
+			return new Compiled(def, fluids.stream().map(FluidRegistry::getFluid).collect(Collectors.toSet()));
 		}
 
 		public static class Compiled {
 
 			public boolean def = false;
-			public List<Fluid> fluids = new ArrayList<>();
+			public Set<Fluid> fluids = new HashSet<>();
 
 			public Compiled(){
 
 			}
 
-			public Compiled(boolean def, List<Fluid> fluids){
+			public Compiled(boolean def, Set<Fluid> fluids){
 				this.def = def;
 				this.fluids = fluids;
 			}
 
 			Reactivity decompile(){
-				return new Reactivity(def, Lists.transform(fluids, Fluid::getName));
+				return new Reactivity(def, fluids.stream().map(Fluid::getName).collect(Collectors.toSet()));
 			}
 
 		}

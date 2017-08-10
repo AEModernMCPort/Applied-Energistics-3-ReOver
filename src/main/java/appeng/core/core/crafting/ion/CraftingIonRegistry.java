@@ -80,8 +80,10 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	@SubscribeEvent
 	public void attachProviderByOreDict(AttachCapabilitiesEvent<ItemStack> event){
-		List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDictToIonsM::get).flatMap(Collection::stream).collect(Collectors.toList());
-		if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, new IonProviderImpl(ions)));
+		if(!event.getObject().isEmpty()){
+			List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDictToIonsM::get).flatMap(Collection::stream).collect(Collectors.toList());
+			if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, new IonProviderImpl(ions)));
+		}
 	}
 
 	public BiMap<Fluid, Fluid> normal2ionized = HashBiMap.create();

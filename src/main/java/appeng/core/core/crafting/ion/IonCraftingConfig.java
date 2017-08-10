@@ -30,6 +30,11 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDictToIons.put("gunpowder", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
 		oreDictToIons.put("dustSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
 		oreDictToIons.put("enderpearl", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)));
+
+		oreDictToIons.put("certusQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 3)));
+		oreDictToIons.put("certusRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone"), 3)));
+		oreDictToIons.put("certusSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 2)));
+		oreDictToIons.put("incertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)));
 	}
 
 	@Override

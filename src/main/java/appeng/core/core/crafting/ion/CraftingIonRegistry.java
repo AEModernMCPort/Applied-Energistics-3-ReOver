@@ -9,6 +9,7 @@ import appeng.core.core.api.definitions.ICoreIonDefinitions;
 import appeng.core.core.crafting.ion.temp.InWorldIonEnvTemperatureListener;
 import appeng.core.lib.capability.DelegateCapabilityStorage;
 import appeng.core.lib.capability.SingleCapabilityProvider;
+import appeng.core.lib.oredict.OreDictHelper;
 import code.elix_x.excomms.color.RGBA;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -81,8 +82,8 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	@SubscribeEvent
 	public void attachProviderByOreDict(AttachCapabilitiesEvent<ItemStack> event){
 		if(!event.getObject().isEmpty()){
-			List<Pair<Ion, Integer>> ions = Arrays.stream(OreDictionary.getOreIDs(event.getObject())).mapToObj(OreDictionary::getOreName).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDict2IonsC::get).flatMap(Collection::stream).collect(Collectors.toList());
-			if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, new IonProviderImpl(ions)));
+			List<Pair<Ion, Integer>> ions = OreDictHelper.getOres(event.getObject()).map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDict2IonsC::get).flatMap(Collection::stream).collect(Collectors.toList());
+			if(!ions.isEmpty()) event.addCapability(new ResourceLocation(AppEng.MODID, "ion_provider"), new SingleCapabilityProvider<>(ionProviderCapability, OreDictHelper.getOres(event.getObject()).filter(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDict2ReactivityC::containsKey).findFirst().map(AppEngCore.INSTANCE.config.ionCraftingConfig.oreDict2ReactivityC::get).<IonProvider>map(reactivity -> new IonProviderImpl.Reactive(ions, reactivity.def, reactivity.fluids)).orElse(new IonProviderImpl(ions))));
 		}
 	}
 

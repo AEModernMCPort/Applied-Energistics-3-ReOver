@@ -4,7 +4,9 @@ import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.crafting.ion.IonProvider;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.fluids.Fluid;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +25,10 @@ public class IonProviderImpl implements IonProvider {
 
 	public IonProviderImpl(){
 		this(Collections.EMPTY_MAP);
+	}
+
+	public IonProviderImpl(Collection<Pair<Ion, Integer>> ions){
+		this.ions = ImmutableMap.copyOf(ions);
 	}
 
 	@Override

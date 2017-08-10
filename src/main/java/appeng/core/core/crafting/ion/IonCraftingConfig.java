@@ -9,6 +9,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,15 +21,15 @@ import java.util.stream.Collectors;
 
 public class IonCraftingConfig implements ConfigCompilable, InitializationComponent.Init  {
 
-	private Map<String, List<ResourceLocation>> oreDictToIons = new HashMap<>();
-	public transient Multimap<String, Ion> oreDictToIonsM;
+	private Map<String, List<MutablePair<ResourceLocation, Integer>>> oreDictToIons = new HashMap<>();
+	public transient Multimap<String, Pair<Ion, Integer>> oreDictToIonsM;
 
 	public IonCraftingConfig(){
-		oreDictToIons.put("gemQuartz", Lists.newArrayList(new ResourceLocation(AppEng.MODID, "quartz")));
-		oreDictToIons.put("dustRedstone", Lists.newArrayList(new ResourceLocation(AppEng.MODID, "redstone")));
-		oreDictToIons.put("gunpowder", Lists.newArrayList(new ResourceLocation(AppEng.MODID, "sulfur")));
-		oreDictToIons.put("dustSulfur", Lists.newArrayList(new ResourceLocation(AppEng.MODID, "sulfur")));
-		oreDictToIons.put("enderpearl", Lists.newArrayList(new ResourceLocation(AppEng.MODID, "ender")));
+		oreDictToIons.put("gemQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 1)));
+		oreDictToIons.put("dustRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone"), 1)));
+		oreDictToIons.put("gunpowder", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
+		oreDictToIons.put("dustSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
+		oreDictToIons.put("enderpearl", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)));
 	}
 
 	@Override
@@ -37,13 +40,13 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 	@Override
 	public void init(){
 		oreDictToIonsM = HashMultimap.create();
-		oreDictToIons.forEach((ore, ions) -> ions.forEach(ionr -> Optional.ofNullable(AppEngCore.INSTANCE.getIonRegistry().getValue(ionr)).ifPresent(ion -> oreDictToIonsM.put(ore, ion))));
+		oreDictToIons.forEach((ore, ions) -> ions.forEach(ionr -> Optional.ofNullable(AppEngCore.INSTANCE.getIonRegistry().getValue(ionr.getKey())).ifPresent(ion -> oreDictToIonsM.put(ore, new ImmutablePair<>(ion, ionr.getRight())))));
 	}
 
 	@Override
 	public void decompile(){
 		oreDictToIons.clear();
-		oreDictToIonsM.keySet().forEach(ore -> oreDictToIons.put(ore, oreDictToIonsM.get(ore).stream().map(Ion::getRegistryName).collect(Collectors.toList())));
+		oreDictToIonsM.keySet().forEach(ore -> oreDictToIons.put(ore, oreDictToIonsM.get(ore).stream().map(ion -> new MutablePair<>(ion.getLeft().getRegistryName(), ion.getRight())).collect(Collectors.toList())));
 	}
 
 }

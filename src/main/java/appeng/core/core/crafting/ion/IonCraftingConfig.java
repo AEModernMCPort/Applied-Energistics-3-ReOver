@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class IonCraftingConfig implements ConfigCompilable, InitializationComponent.Init  {
 
 	private Map<String, List<MutablePair<ResourceLocation, Integer>>> oreDictToIons = new HashMap<>();
-	public transient Multimap<String, Pair<Ion, Integer>> oreDictToIonsM;
+	public transient Multimap<String, Pair<Ion, Integer>> oreDictToIonsM = HashMultimap.create();
 
 	public IonCraftingConfig(){
 		oreDictToIons.put("gemQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 1)));
@@ -44,7 +44,7 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 	@Override
 	public void init(){
-		oreDictToIonsM = HashMultimap.create();
+		oreDictToIonsM.clear();
 		oreDictToIons.forEach((ore, ions) -> ions.forEach(ionr -> Optional.ofNullable(AppEngCore.INSTANCE.getIonRegistry().getValue(ionr.getKey())).ifPresent(ion -> oreDictToIonsM.put(ore, new ImmutablePair<>(ion, ionr.getRight())))));
 	}
 

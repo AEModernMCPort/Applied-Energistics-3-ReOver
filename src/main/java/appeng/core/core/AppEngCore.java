@@ -66,6 +66,7 @@ public class AppEngCore implements ICore {
 	@CapabilityInject(Tickables.class)
 	public static Capability<Tickables> tickablesCapability;
 
+	private ConfigurationLoader<CoreConfig> configLoader;
 	public CoreConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
@@ -158,7 +159,7 @@ public class AppEngCore implements ICore {
 		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
 		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
-		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
+		configLoader = event.configurationLoader();
 		try{
 			configLoader.load(CoreConfig.class);
 		} catch(IOException e){
@@ -206,12 +207,6 @@ public class AppEngCore implements ICore {
 
 		initHandler.preInit();
 		proxy.preInit(event);
-
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			logger.error("Caught exception saving configuration", e);
-		}
 	}
 
 	@ModuleEventHandler
@@ -226,6 +221,12 @@ public class AppEngCore implements ICore {
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

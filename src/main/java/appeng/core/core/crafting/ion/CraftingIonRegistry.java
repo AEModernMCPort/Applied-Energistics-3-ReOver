@@ -105,20 +105,21 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 			Fluid ionized = normal2ionized.get(fluid);
 			world.setBlockToAir(pos);
 			FluidUtil.tryPlaceFluid(null, world, pos, new FluidTank(ionized, Fluid.BUCKET_VOLUME, Fluid.BUCKET_VOLUME), new FluidStack(ionized, Fluid.BUCKET_VOLUME));
-			world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null).addIons(ionProvider);
-			world.markBlockRangeForRenderUpdate(pos, pos);
-			item.setDead();
+			enterIonEnv(world, pos, item, ionProvider);
 		}
 	}
 
 	public void onIonEntityItemEnterEnvironment(World world, BlockPos pos, EntityItem item, IonProvider ionProvider){
 		IBlockState block = world.getBlockState(pos);
 		Fluid fluid = FluidRegistry.lookupFluidForBlock(block.getBlock());
-		if(ionized2normal.containsKey(fluid)){
-			world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null).addIons(ionProvider);
-			world.markBlockRangeForRenderUpdate(pos, pos);
-			item.setDead();
-		}
+		if(ionized2normal.containsKey(fluid)) enterIonEnv(world, pos, item, ionProvider);
+	}
+
+	protected void enterIonEnv(World world, BlockPos pos, EntityItem item, IonProvider ionProvider){
+		IonEnvironment environment = world.getTileEntity(pos).getCapability(ionEnvironmentCapability, null);
+		for(int i = 0; i < item.getItem().getCount(); i++) ionProvider.getIons().forEach(environment::addIons);
+		world.markBlockRangeForRenderUpdate(pos, pos);
+		item.setDead();
 	}
 
 	public RGBA getColor(IonEnvironment environment, RGBA original){

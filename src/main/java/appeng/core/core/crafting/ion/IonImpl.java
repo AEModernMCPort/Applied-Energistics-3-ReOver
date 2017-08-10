@@ -20,4 +20,8 @@ public class IonImpl extends IForgeRegistryEntry.Impl<Ion> implements Ion {
 		return colorModifier;
 	}
 
+	@Override
+	public String toString(){
+		return "Ion{" + getRegistryName() + "}";
+	}
 }

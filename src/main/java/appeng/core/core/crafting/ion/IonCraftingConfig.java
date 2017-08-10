@@ -35,6 +35,12 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDict2Ions.put("certusRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)));
 		oreDict2Ions.put("certusSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)));
 		oreDict2Ions.put("incertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)));
+
+
+		oreDict2Reactivity.put("certusQuartz", new Reactivity(false, Sets.newHashSet("water")));
+		oreDict2Reactivity.put("certusRedstone", new Reactivity(false, Sets.newHashSet("water")));
+		oreDict2Reactivity.put("certusSulfur", new Reactivity(false, Sets.newHashSet("water")));
+		oreDict2Reactivity.put("incertus", new Reactivity(false, Sets.newHashSet("water")));
 	}
 
 	@Override

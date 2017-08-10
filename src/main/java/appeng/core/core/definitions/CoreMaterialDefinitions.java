@@ -18,12 +18,16 @@ public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefi
 	private final IMaterialDefinition certusSulfur;
 	private final IMaterialDefinition incertus;
 
+	private final IMaterialDefinition supersolidCertus;
+
 	public CoreMaterialDefinitions(DefinitionFactory registry){
 		IMaterialDefinition<Material> m = registry.<Material, IMaterialDefinition<Material>, IMaterialBuilder<Material, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "invalid"), ih(new Material())).setFeature(null).build();
 		certusQuartz = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_quartz"), ih(new IonMaterial())).initializationComponent(null, new RegisterToOredictComponent.Material<>("certusQuartz")).build();
 		certusRedstone = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_redstone"), ih(new IonMaterial())).initializationComponent(null, new RegisterToOredictComponent.Material<>("certusRedstone")).build();
 		certusSulfur = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_sulfur"), ih(new IonMaterial())).initializationComponent(null, new RegisterToOredictComponent.Material<>("certusSulfur")).build();
 		incertus = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "incertus"), ih(new IonMaterial())).initializationComponent(null, new RegisterToOredictComponent.Material<>("incertus")).build();
+
+		supersolidCertus = registry.<IonMaterial, IMaterialDefinition<IonMaterial>, IMaterialBuilder<IonMaterial, ?>, Material>definitionBuilder(new ResourceLocation(AppEng.MODID, "supersolid_certus"), ih(new IonMaterial())).initializationComponent(null, new RegisterToOredictComponent.Material<>("supersolidCertus")).build();;
 	}
 
 	private DefinitionFactory.InputHandler<Material, Material> ih(Material material){

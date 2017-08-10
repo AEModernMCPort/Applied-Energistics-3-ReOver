@@ -24,4 +24,8 @@ public interface ICoreMaterialDefinitions extends IDefinitions<Material, IMateri
 		return get(new ResourceLocation(AEModInfo.MODID, "incertus"));
 	}
 
+	default IMaterialDefinition<Material> supersolidCertus(){
+		return get(new ResourceLocation(AEModInfo.MODID, "supersolid_certus"));
+	}
+
 }

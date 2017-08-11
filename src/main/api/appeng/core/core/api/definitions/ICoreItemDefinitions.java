@@ -6,8 +6,4 @@ import net.minecraft.item.Item;
 
 public interface ICoreItemDefinitions extends IDefinitions<Item, IItemDefinition<Item>> {
 
-	default IItemDefinition<Item> material(){
-		return get("material");
-	}
-
 }

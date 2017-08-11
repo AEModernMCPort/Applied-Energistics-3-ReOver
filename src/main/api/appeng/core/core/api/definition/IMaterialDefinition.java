@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Optional;
 
+@Deprecated
 public interface IMaterialDefinition<M extends Material> extends IDefinition<M> {
 
 	<S extends IStateItemState<I>, I extends Item & IItemMaterial<I>, D extends IItemSubDefinition<S, I>> Optional<D> maybeAsSubDefinition();

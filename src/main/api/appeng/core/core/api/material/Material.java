@@ -41,6 +41,10 @@ public class Material extends IForgeRegistryEntry.Impl<Material> {
 	private ResourceLocation model;
 	private String unlocalizedName;
 
+	public Material(){
+		throw new RuntimeException("Materials are deprecated! Move to items!");
+	}
+
 	/**
 	 * Sets the default model location.
 	 *

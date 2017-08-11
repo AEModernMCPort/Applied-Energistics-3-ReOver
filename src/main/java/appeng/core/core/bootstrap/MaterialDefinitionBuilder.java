@@ -17,6 +17,7 @@ public class MaterialDefinitionBuilder<M extends Material> extends DefinitionBui
 
 	public MaterialDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, M material){
 		super(factory, registryName, material, "material");
+		throw new RuntimeException("Materials are deprecated! Move to items!");
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package appeng.core.core.client.render.color;
 
 import appeng.core.core.AppEngCore;
+import appeng.core.core.crafting.ion.CraftingIonRegistry;
 import code.elix_x.excomms.color.RGBA;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.IBlockColor;
@@ -20,6 +21,6 @@ public class IonEnvironmentFluidBlockColor implements IBlockColor {
 
 	@Override
 	public int colorMultiplier(IBlockState state, @Nullable IBlockAccess world, @Nullable BlockPos pos, int tintIndex){
-		return AppEngCore.INSTANCE.getCraftingIonRegistry().getColor(world.getTileEntity(pos).getCapability(AppEngCore.ionEnvironmentCapability, null), new RGBA(1f, 1f, 1f)).argb();
+		return AppEngCore.INSTANCE.getCraftingIonRegistry().getColor(world.getTileEntity(pos).getCapability(CraftingIonRegistry.ionEnvironmentCapability, null), new RGBA(1f, 1f, 1f)).argb();
 	}
 }

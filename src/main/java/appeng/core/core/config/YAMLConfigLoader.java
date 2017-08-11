@@ -1,5 +1,6 @@
 package appeng.core.core.config;
 
+import appeng.api.config.ConfigCompilable;
 import appeng.core.lib.config.ConfigLoader;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import com.esotericsoftware.yamlbeans.YamlConfig;
@@ -36,12 +37,14 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 		YamlReader configReader = new YamlReader(new FileReader(configFile()), CONFIGCONFIG);
 		config = configReader.read(clas);
 		configReader.close();
-		if(config == null)
-			config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).compile();
 	}
 
 	@Override
 	public void save() throws IOException{
+		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).decompile();
+
 		YamlWriter featuresWriter = new YamlWriter(new FileWriter(featuresFile()), FEATURESCONFIG);
 		featuresWriter.write(managerToHierarchical());
 		featuresWriter.close();

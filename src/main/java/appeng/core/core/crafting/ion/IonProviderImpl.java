@@ -4,10 +4,9 @@ import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.crafting.ion.IonProvider;
 import com.google.common.collect.ImmutableMap;
 import net.minecraftforge.fluids.Fluid;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class IonProviderImpl implements IonProvider {
 
@@ -25,8 +24,12 @@ public class IonProviderImpl implements IonProvider {
 		this(Collections.EMPTY_MAP);
 	}
 
+	public IonProviderImpl(Collection<Pair<Ion, Integer>> ions){
+		this.ions = ImmutableMap.copyOf(ions);
+	}
+
 	@Override
-	public ImmutableMap<Ion, Integer> getIons(){
+	public ImmutableMap<Ion, Integer> getIons(Random random){
 		return ions;
 	}
 
@@ -43,6 +46,12 @@ public class IonProviderImpl implements IonProvider {
 
 		public Reactive(Ion ion, int amount, boolean def, Set<Fluid> fluids){
 			super(ion, amount);
+			this.def = def;
+			this.fluids = fluids;
+		}
+
+		public Reactive(Collection<Pair<Ion, Integer>> ions, boolean def, Set<Fluid> fluids){
+			super(ions);
 			this.def = def;
 			this.fluids = fluids;
 		}

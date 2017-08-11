@@ -20,6 +20,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,12 +30,16 @@ import net.minecraftforge.registries.ForgeRegistry;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 
 public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
 
+	private static final boolean USENBT = false;
+	private static final String MATERIAL = "material";
+
 	public static final ForgeRegistry<Material> REGISTRY = AppEngCore.INSTANCE.getMaterialRegistry();
 
-	public static enum MaterialProperty implements IStateItemState.Property<Material> {
+	public enum MaterialProperty implements IStateItemState.Property<Material> {
 
 		INSTANCE;
 
@@ -66,17 +71,23 @@ public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, I
 
 	@Override
 	public IStateItemState<ItemMaterial> getState(ItemStack itemstack){
-		return new IStateItemState<>(this).withProperty(ItemMaterial.MaterialProperty.INSTANCE, REGISTRY.getValue(itemstack.getMetadata()));
+		return new IStateItemState<>(this).withProperty(MaterialProperty.INSTANCE, USENBT ? Optional.ofNullable(itemstack.getTagCompound()).map(tag -> tag.getString(MATERIAL)).map(ResourceLocation::new).map(REGISTRY::getValue).orElse(REGISTRY.getValue(0)): REGISTRY.getValue(itemstack.getMetadata()));
 	}
 
 	@Override
 	public IStateItemState<ItemMaterial> getDefaultState(){
-		return new IStateItemState<ItemMaterial>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getValue(0));
+		return new IStateItemState<>(this).withProperty(MaterialProperty.INSTANCE, REGISTRY.getValue(0));
 	}
 
 	@Override
 	public ItemStack getItemStack(IStateItemState<ItemMaterial> state, int amount){
-		return new ItemStack(this, amount, REGISTRY.getID(state.getValue(ItemMaterial.MaterialProperty.INSTANCE)));
+		if(USENBT){
+			ItemStack stack = new ItemStack(this, amount);
+			NBTTagCompound tag = stack.getTagCompound() != null ? stack.getTagCompound() : new NBTTagCompound();
+			tag.setString(MATERIAL, state.getValue(MaterialProperty.INSTANCE).getRegistryName().toString());
+			stack.setTagCompound(tag);
+			return stack;
+		} else return new ItemStack(this, amount, REGISTRY.getID(state.getValue(MaterialProperty.INSTANCE)));
 	}
 
 	@Override

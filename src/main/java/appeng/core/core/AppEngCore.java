@@ -13,23 +13,23 @@ import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
 import appeng.core.core.api.crafting.ion.Ion;
-import appeng.core.core.api.crafting.ion.IonEnvironment;
-import appeng.core.core.api.crafting.ion.IonProvider;
+import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import appeng.core.core.api.material.Material;
+import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.crafting.ion.CraftingIonRegistry;
-import appeng.core.core.crafting.ion.IonProviderImpl;
+import appeng.core.core.crafting.ion.changeconsumers.IETempChangeItemStackConsumer;
 import appeng.core.core.definitions.*;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
+import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
@@ -49,8 +49,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 
 @Module(value = ICore.NAME, dependencies = "hard-before:module-*")
 public class AppEngCore implements ICore {
@@ -63,12 +61,10 @@ public class AppEngCore implements ICore {
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.core.proxy.CoreClientProxy", serverSide = "appeng.core.core.proxy.CoreServerProxy")
 	public static CoreProxy proxy;
 
-	@CapabilityInject(IonEnvironment.class)
-	public static Capability<IonEnvironment> ionEnvironmentCapability;
+	@CapabilityInject(Tickables.class)
+	public static Capability<Tickables> tickablesCapability;
 
-	@CapabilityInject(IonProvider.class)
-	public static Capability<IonProvider> ionProviderCapability;
-
+	private ConfigurationLoader<CoreConfig> configLoader;
 	public CoreConfig config;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
@@ -158,20 +154,20 @@ public class AppEngCore implements ICore {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
-		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).create();
-		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).disableSaving().create();
+		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).setMaxID(Integer.MAX_VALUE - 1).create();
 
-		ConfigurationLoader<CoreConfig> configLoader = event.configurationLoader();
+		configLoader = event.configurationLoader();
 		try{
 			configLoader.load(CoreConfig.class);
 		} catch(IOException e){
 			logger.error("Caught exception loading configuration", e);
 		}
-		config = configLoader.configuration();
+		initHandler.accept(config = configLoader.configuration());
 
 		registry = event.factory(initHandler, proxy);
 
-		craftingIonRegistry = new CraftingIonRegistry();
+		initHandler.accept(craftingIonRegistry = new CraftingIonRegistry());
 		craftingIonRegistry.registerEnvironmentFluid(FluidRegistry.WATER);
 
 		this.itemDefinitions = new CoreItemDefinitions(registry);
@@ -190,50 +186,31 @@ public class AppEngCore implements ICore {
 		this.materialDefinitions.init(registry);
 		this.ionDefinitions.init(registry);
 
-		CapabilityManager.INSTANCE.register(IonEnvironment.class, new Capability.IStorage<IonEnvironment>() {
+		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
 
 			@Nullable
 			@Override
-			public NBTBase writeNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side){
-				return instance.serializeNBT();
-			}
-
-			@Override
-			public void readNBT(Capability<IonEnvironment> capability, IonEnvironment instance, EnumFacing side, NBTBase nbt){
-				instance.deserializeNBT((NBTTagCompound) nbt);
-			}
-
-		}, appeng.core.core.crafting.ion.IonEnvironment::new);
-
-		CapabilityManager.INSTANCE.register(IonProvider.class, new Capability.IStorage<IonProvider>() {
-
-			@Nullable
-			@Override
-			public NBTBase writeNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side){
+			public NBTBase writeNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side){
 				return null;
 			}
 
 			@Override
-			public void readNBT(Capability<IonProvider> capability, IonProvider instance, EnumFacing side, NBTBase nbt){
+			public void readNBT(Capability<Tickables> capability, Tickables instance, EnumFacing side, NBTBase nbt){
 
 			}
 
-		}, IonProviderImpl::new);
+		}, TickablesImpl::new);
 
 		guiHandler = new CoreGuiHandler();
 
 		initHandler.preInit();
 		proxy.preInit(event);
-
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			logger.error("Caught exception saving configuration", e);
-		}
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
+		craftingIonRegistry.registerProductConsumer(ItemStack.class, new IETempChangeItemStackConsumer(), NativeEnvironmentChange.HEATING, NativeEnvironmentChange.COOLING);
+
 		initHandler.init();
 		proxy.init(event);
 	}
@@ -242,6 +219,12 @@ public class AppEngCore implements ICore {
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

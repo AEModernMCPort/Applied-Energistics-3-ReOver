@@ -10,6 +10,7 @@ import appeng.core.core.definition.MaterialDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 
+@Deprecated
 public class MaterialDefinitionBuilder<M extends Material> extends DefinitionBuilder<M, M, IMaterialDefinition<M>, MaterialDefinitionBuilder<M>> implements IMaterialBuilder<M, MaterialDefinitionBuilder<M>> {
 
 	private ResourceLocation model;

@@ -12,7 +12,6 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
-import appeng.core.core.api.material.Material;
 import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
@@ -35,7 +34,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +62,6 @@ public class AppEngCore implements ICore {
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private IForgeRegistry recipeRegistryRegistry;
-	private ForgeRegistry<Material> materialRegistry;
 
 	private DefinitionFactory registry;
 
@@ -105,10 +102,6 @@ public class AppEngCore implements ICore {
 		return guiHandler;
 	}
 
-	public ForgeRegistry<Material> getMaterialRegistry(){
-		return materialRegistry;
-	}
-
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerConfigurationLoaderProvider("JSON", JSONConfigLoader::new);
@@ -126,7 +119,6 @@ public class AppEngCore implements ICore {
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
-		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).disableSaving().create();
 
 		configLoader = event.configurationLoader();
 		try{

@@ -35,6 +35,7 @@ import java.util.List;
  *
  * @author Elix_x
  */
+@Deprecated
 public class Material extends IForgeRegistryEntry.Impl<Material> {
 
 	private ResourceLocation model;

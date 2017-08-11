@@ -4,7 +4,9 @@
 
 # Applied Energistics 3
 
-This repository is a WIP on Applied Energistics 3 - ReOver.
+This repository is a WIP on Applied Energistics 3 - ReOver -Static Fire.
+This is a testing repo.
+This should newer merged to master. 
 
 ## All contributions are welcome
 

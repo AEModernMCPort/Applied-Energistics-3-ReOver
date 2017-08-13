@@ -6,11 +6,8 @@ import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.core.bootstrap.ItemDefinitionBuilder;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.staticfire.api.definitions.IStaticFireItemDefinitions;
-import appeng.core.staticfire.item.CarbonCopy;
-import appeng.core.staticfire.item.ItemTest;
+import appeng.core.staticfire.item.*;
 import appeng.core.staticfire.block.QuantumPillarBase;
-import appeng.core.staticfire.item.SkyStoneIngot;
-import appeng.core.staticfire.item.StaticFireItemBase;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
@@ -23,6 +20,7 @@ public class StaticFireItemDefinitions extends  Definitions<Item, IItemDefinitio
         Reg(registry, new ItemTest());
         Reg(registry, new CarbonCopy());
         Reg(registry, new SkyStoneIngot());
+        Reg(registry, new DebugElement());
         //init(registry);
         System.out.println("Stuff");
     }

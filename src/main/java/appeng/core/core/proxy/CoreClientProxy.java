@@ -1,7 +1,7 @@
 package appeng.core.core.proxy;
 
 import appeng.api.module.AEStateEvent;
-import appeng.core.api.material.Material;
+import appeng.core.core.api.material.Material;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.client.render.model.ModelRegManagerHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

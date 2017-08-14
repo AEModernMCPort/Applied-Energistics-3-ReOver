@@ -4,7 +4,7 @@ import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;

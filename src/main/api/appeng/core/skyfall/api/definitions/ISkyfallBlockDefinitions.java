@@ -1,8 +1,8 @@
 package appeng.core.skyfall.api.definitions;
 
 import appeng.api.AEModInfo;
-import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IDefinitions;
+import appeng.core.core.api.definition.IBlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.util.ResourceLocation;
 

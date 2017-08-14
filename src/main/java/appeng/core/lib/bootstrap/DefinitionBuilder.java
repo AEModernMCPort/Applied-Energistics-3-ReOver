@@ -3,7 +3,7 @@ package appeng.core.lib.bootstrap;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
 import appeng.api.bootstrap.InitializationComponent;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.core.AppEng;
 import appeng.core.lib.config.GlobalFeaturesManager;
 import com.google.common.collect.HashMultimap;
@@ -68,11 +68,11 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 
 	@Override
 	public final D build(){
-		if(!GlobalFeaturesManager.INSTANCE.isEnabled(feature, enabledByDefault)) return def(null);
+		if(instance == null || !GlobalFeaturesManager.INSTANCE.isEnabled(feature, enabledByDefault)) return def(null);
 
 		D definition = def(setRegistryName(instance));
 
-		this.<DefinitionInitializationComponent.PreInit<T, D>>initializationComponent(null, t -> register((t).maybe().get()));
+		this.<DefinitionInitializationComponent.PreInit<T, D>>initializationComponent(null, t -> register(t.maybe().get()));
 		initComponents.entries().forEach((entry) -> factory.initializationHandler(entry.getKey()).accept(new InitComponentPass<>(definition, entry.getValue())));
 
 		buildCallbacks.forEach(consumer -> consumer.accept(definition));

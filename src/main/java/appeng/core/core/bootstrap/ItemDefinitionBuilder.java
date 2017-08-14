@@ -2,12 +2,13 @@ package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.api.item.IStateItem;
-import appeng.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.api.bootstrap.IItemBuilder;
 import appeng.core.core.AppEngCore;
+import appeng.core.core.definition.ItemSubDefinition;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.ItemDefinition;
+import appeng.core.core.definition.ItemDefinition;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
@@ -39,16 +40,16 @@ public class ItemDefinitionBuilder<I extends Item> extends DefinitionBuilder<I, 
 
 	@Override
 	public IItemDefinition<I> def(I item){
+		if(item == null) return new ItemDefinition<>(registryName, null);
 		/*if(Platform.isClient()){
 			itemRendering.apply(factory, item);
 		}*/
 
 		if(item.getUnlocalizedName().equals("item.null")) item.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
 
-		ItemDefinition definition = new ItemDefinition(registryName, item);
+		ItemDefinition<I> definition = new ItemDefinition<>(registryName, item);
 
-		if(item instanceof IStateItem)
-			definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
+		if(item instanceof IStateItem) definition.setSubDefinition(() -> new ItemSubDefinition(((IStateItem) item).getDefaultState(), definition));
 
 		return definition;
 	}

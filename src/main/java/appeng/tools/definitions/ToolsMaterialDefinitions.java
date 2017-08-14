@@ -1,8 +1,8 @@
 package appeng.tools.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IMaterialDefinition;
-import appeng.core.api.material.Material;
+import appeng.core.core.api.definition.IMaterialDefinition;
+import appeng.core.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
 import appeng.tools.api.definitions.IToolsMaterialDefinitions;
 

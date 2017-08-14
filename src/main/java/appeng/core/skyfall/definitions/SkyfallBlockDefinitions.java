@@ -1,27 +1,23 @@
 package appeng.core.skyfall.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.BlockItemCustomizer;
-import appeng.core.api.bootstrap.IBlockBuilder;
-import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.api.definitions.ICoreBlockDefinitions;
+import appeng.core.core.api.bootstrap.BlockItemCustomizer;
+import appeng.core.core.api.bootstrap.IBlockBuilder;
+import appeng.core.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
-import appeng.core.core.client.bootstrap.StateMapperComponent;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
+import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.client.CertusInfusedBlockModelComponent;
 import appeng.core.skyfall.item.CertusInfusedBlockItem;
-import appeng.core.skyfall.block.CertusInfusedBlock;
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 
 public class SkyfallBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ISkyfallBlockDefinitions {
 

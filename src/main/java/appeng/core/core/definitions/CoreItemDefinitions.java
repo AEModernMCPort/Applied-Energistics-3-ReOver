@@ -1,10 +1,10 @@
 package appeng.core.core.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.AppEng;
-import appeng.core.api.bootstrap.IItemBuilder;
-import appeng.core.api.definitions.ICoreItemDefinitions;
+import appeng.core.core.api.bootstrap.IItemBuilder;
+import appeng.core.core.api.definitions.ICoreItemDefinitions;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
 import appeng.core.item.ItemMaterial;
 import appeng.core.lib.definitions.Definitions;

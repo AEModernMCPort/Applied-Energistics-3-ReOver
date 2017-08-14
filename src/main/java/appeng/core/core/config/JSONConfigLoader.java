@@ -1,5 +1,6 @@
 package appeng.core.core.config;
 
+import appeng.api.config.ConfigCompilable;
 import appeng.core.lib.config.ConfigLoader;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import com.google.gson.ExclusionStrategy;
@@ -36,12 +37,14 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 		super.load(clas);
 		hierarchicalToManager(GSON.fromJson(new FileReader(featuresFile()), HierarchicalFeatures.class));
 		config = GSON.fromJson(new FileReader(configFile()), clas);
-		if(config == null)
-			config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).compile();
 	}
 
 	@Override
 	public void save() throws IOException{
+		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).decompile();
+
 		FileUtils.write(featuresFile(), GSON.toJson(managerToHierarchical()));
 		FileUtils.write(configFile(), GSON.toJson(config));
 	}

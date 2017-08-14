@@ -1,20 +1,12 @@
 package appeng.core.skyfall.config;
 
 import appeng.core.AppEng;
-import appeng.core.api.definitions.ICoreBlockDefinitions;
-import appeng.core.core.AppEngCore;
-import appeng.core.core.block.SkystoneBlock;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
-import appeng.core.skyfall.block.CertusInfusedBlock;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.ObjectComparators;
-import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistry;
 

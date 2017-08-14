@@ -6,7 +6,7 @@ import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.bootstrap.SidedICHProxy;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.module.AEStateEvent;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.DefinitionFactory;
@@ -43,7 +43,7 @@ public class AEStateEventImpl implements AEStateEvent {
 		}
 
 		@Override
-		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder<T, D, B>, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier){
+		public <T, D extends IDefinition<T>, B extends IDefinitionBuilder, I> void registerDefinitionBuilderSupplier(Class<T> defType, Class<I> inputType, DefinitionBuilderSupplier<T, D, B, I> builderSupplier){
 			definitionBuilderSuppliers.put(new ImmutablePair<>(defType, inputType), builderSupplier);
 		}
 

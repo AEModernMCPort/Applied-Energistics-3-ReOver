@@ -1,7 +1,7 @@
 package appeng.core.me.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IItemDefinition;
+import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.me.api.definitions.IMEItemDefinitions;
 import net.minecraft.item.Item;

@@ -3,7 +3,7 @@ package appeng.core.skyfall;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;

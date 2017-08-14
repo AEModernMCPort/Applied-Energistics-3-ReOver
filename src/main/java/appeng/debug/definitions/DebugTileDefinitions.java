@@ -1,7 +1,7 @@
 package appeng.debug.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.ITileDefinition;
+import appeng.core.core.api.definition.ITileDefinition;
 import appeng.api.entry.TileRegistryEntry;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.tileentity.TileEntity;

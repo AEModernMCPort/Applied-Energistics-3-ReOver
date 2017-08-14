@@ -1,7 +1,7 @@
 package appeng.core.skyfall.client;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.core.client.render.model.ModelRegManagerHelper;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.block.CertusInfusedBlock;
@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.*;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 

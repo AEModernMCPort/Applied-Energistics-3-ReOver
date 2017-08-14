@@ -1,10 +1,10 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IDimensionTypeDefinition;
-import appeng.core.api.bootstrap.IDimensionTypeBuilder;
+import appeng.core.core.api.definition.IDimensionTypeDefinition;
+import appeng.core.core.api.bootstrap.IDimensionTypeBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.DimensionTypeDefinition;
+import appeng.core.core.definition.DimensionTypeDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
@@ -52,7 +52,9 @@ public class DimensionTypeDefinitionBuilder<D extends DimensionType> extends Def
 
 	@Override
 	public IDimensionTypeDefinition<D> def(Integer id){
-		return new DimensionTypeDefinition(registryName, DimensionType.register(name, suffix, id, clazz, shouldLoadSpawn));
+		if(id == null) return new DimensionTypeDefinition<>(registryName, null);
+
+		return new DimensionTypeDefinition<>(registryName, (D) DimensionType.register(name, suffix, id, clazz, shouldLoadSpawn));
 	}
 
 }

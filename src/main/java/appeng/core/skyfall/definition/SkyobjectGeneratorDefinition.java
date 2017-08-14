@@ -1,6 +1,6 @@
 package appeng.core.skyfall.definition;
 
-import appeng.core.lib.definitions.Definition;
+import appeng.core.lib.definition.Definition;
 import appeng.core.skyfall.api.definition.ISkyobjectGeneratorDefinition;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import net.minecraft.util.ResourceLocation;

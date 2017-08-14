@@ -10,6 +10,7 @@ import appeng.core.core.AppEngCore;
 import appeng.core.core.definitions.CoreItemDefinitions;
 import appeng.core.lib.definition.Definition;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
@@ -34,13 +35,16 @@ public class MaterialDefinition<M extends Material> extends Definition<M> implem
 
 	@Override
 	public boolean isSameAs(Object other){
-		// TODO 1.11.2-CD:A - Add checks
-		return super.isSameAs(other);
+		if(super.isSameAs(other)) return true;
+		else {
+			if(other instanceof ItemStack) return maybeAsSubDefinition().flatMap(IItemSubDefinition::maybe).map(state -> state.toItemStack(((ItemStack) other).getCount())).map(stack -> ItemStack.areItemStacksEqual(stack, (ItemStack) other)).orElse(false);
+			return false;
+		}
 	}
 
 	@Override
 	public <S extends IStateItemState<I>, I extends Item & IItemMaterial<I>, D extends IItemSubDefinition<S, I>> Optional<D> maybeAsSubDefinition(){
-		return (Optional<D>) maybe().map(material -> MaterialDefinition.<I>itemMaterialDefinition().<S, I, IItemSubDefinition<S, I>>maybeSubDefinition().get().withProperty("material", null));
+		return (Optional<D>) maybe().map(material -> MaterialDefinition.<I>itemMaterialDefinition().<S, I, IItemSubDefinition<S, I>>maybeSubDefinition().get().withProperty("material", material));
 	}
 
 }

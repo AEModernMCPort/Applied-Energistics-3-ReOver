@@ -22,6 +22,7 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 		FEATURESCONFIG.setClassTag("feature", HierarchicalFeatures.class);
 		CONFIGCONFIG.writeConfig.setWriteRootTags(false);
 		CONFIGCONFIG.setPrivateFields(true);
+		//FIXME Dynamic defaults breaks deserealized types for whatever reason (int -> string)
 		CONFIGCONFIG.writeConfig.setWriteDefaultValues(!dynamicDefaults);
 		CONFIGCONFIG.readConfig.setIgnoreUnknownProperties(true);
 	}

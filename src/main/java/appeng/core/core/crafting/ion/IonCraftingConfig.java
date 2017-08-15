@@ -123,38 +123,38 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 	public static class Recipe {
 
-		public List<MutablePair<ResourceLocation, Integer>> ions = new ArrayList<>();
+		public List<MutablePair<String, Integer>> ions = new ArrayList<>();
 		public List<Result> results = new ArrayList<>();
 
 		public Recipe(){
 		}
 
-		public Recipe(List<MutablePair<ResourceLocation, Integer>> ions, List<Result> results){
+		public Recipe(List<MutablePair<String, Integer>> ions, List<Result> results){
 			this.ions = ions;
 			this.results = results;
 		}
 
 		public Recipe.Compiled compile(){
-			return new Compiled(Lists.transform(ions, pair -> new ImmutablePair<>(AppEngCore.INSTANCE.getIonRegistry().getValue(pair.getLeft()), pair.getRight())), Lists.transform(results, Result::compile));
+			return new Compiled(Lists.transform(ions, pair -> new ImmutablePair<>(AppEngCore.INSTANCE.getIonRegistry().getValue(new ResourceLocation(pair.getLeft())), pair.getRight())), Lists.transform(results, Result::compile));
 		}
 
 		public static class Result {
 
-			public ResourceLocation type;
-			public ResourceLocation result;
+			public String type;
+			public String result;
 			public int amount;
 
 			public Result(){
 			}
 
-			public Result(ResourceLocation type, ResourceLocation result, int amount){
+			public Result(String type, String result, int amount){
 				this.type = type;
 				this.result = result;
 				this.amount = amount;
 			}
 
 			public <T> Result.Compiled<T> compile(){
-				return new Compiled<>(type, AppEngCore.INSTANCE.getCraftingIonRegistry().deserializeResult(type, result), amount);
+				return new Compiled<>(new ResourceLocation(type), AppEngCore.INSTANCE.getCraftingIonRegistry().deserializeResult(new ResourceLocation(type), new ResourceLocation(result)), amount);
 			}
 
 			public static class Compiled<T> {
@@ -170,7 +170,7 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 				}
 
 				public Result decompile(){
-					return new Result(type, AppEngCore.INSTANCE.getCraftingIonRegistry().serializeResult(type, result), amount);
+					return new Result(type.toString(), AppEngCore.INSTANCE.getCraftingIonRegistry().serializeResult(type, result).toString(), amount);
 				}
 
 			}
@@ -188,7 +188,7 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 			}
 
 			public Recipe decompile(){
-				return new Recipe(Lists.transform(ions, pair -> new MutablePair<>(pair.getLeft().getRegistryName(), pair.getRight())), Lists.transform(results, Result.Compiled::decompile));
+				return new Recipe(Lists.transform(ions, pair -> new MutablePair<>(pair.getLeft().getRegistryName().toString(), pair.getRight())), Lists.transform(results, Result.Compiled::decompile));
 			}
 
 		}

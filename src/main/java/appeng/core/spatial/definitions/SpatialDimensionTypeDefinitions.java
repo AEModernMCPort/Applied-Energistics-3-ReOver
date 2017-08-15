@@ -1,7 +1,7 @@
 package appeng.core.spatial.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IDimensionTypeDefinition;
+import appeng.core.core.api.definition.IDimensionTypeDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.core.spatial.api.definitions.ISpatialDimensionTypeDefinitions;
 import net.minecraft.world.DimensionType;

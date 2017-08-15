@@ -1,10 +1,10 @@
 package appeng.core.core.bootstrap;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IEntityDefinition;
-import appeng.core.api.bootstrap.IEntityBuilder;
+import appeng.core.core.api.definition.IEntityDefinition;
+import appeng.core.core.api.bootstrap.IEntityBuilder;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
-import appeng.core.lib.definitions.EntityDefinition;
+import appeng.core.core.definition.EntityDefinition;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 
@@ -16,6 +16,8 @@ public class EntityDefinitionBuilder<E extends EntityEntry> extends DefinitionBu
 
 	@Override
 	protected IEntityDefinition<E> def(E entity){
-		return new EntityDefinition<E>(registryName, entity);
+		if(entity == null) return new EntityDefinition<>(registryName, null);
+
+		return new EntityDefinition<>(registryName, entity);
 	}
 }

@@ -1,11 +1,10 @@
 package appeng.core.core.client.bootstrap;
 
 import appeng.api.bootstrap.IDefinitionBuilder;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.IBlockColor;
-import scala.collection.parallel.ParIterableLike;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -13,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * @author Fredi100
  */
-public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitializationComponent<Block, IBlockDefinition<Block>> {
+public class BlockColorComponent<B extends Block> implements IDefinitionBuilder.DefinitionInitializationComponent<B, IBlockDefinition<B>> {
 
 	private final Supplier<Optional<IBlockColor>> blockColor;
 
@@ -22,7 +21,7 @@ public class BlockColorComponent implements IDefinitionBuilder.DefinitionInitial
 	}
 
 	@Override
-	public void init(IBlockDefinition<Block> def){
+	public void init(IBlockDefinition<B> def){
 		blockColor.get().ifPresent(color -> Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(color, def.maybe().get()));
 	}
 }

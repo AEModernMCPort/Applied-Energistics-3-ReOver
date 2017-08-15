@@ -1,7 +1,10 @@
 language: java
+
+sudo: required
+
 jdk:
   - oraclejdk8
-  
+
 env:
   global:
     - GITWEBPAGES_USER="#REPLACE#"
@@ -11,15 +14,16 @@ env:
     - CURSEFORGE_PROJECTID="#REPLACE#"
 
 before_install:
+  - sudo apt-get update && sudo apt-get install oracle-java8-installer
+  - java -version
+  - chmod +x gradlew
   - chmod +x install.sh
   - chmod +x githubreleases.sh
   - chmod +x gitwebpages.sh
   - chmod +x curseforge.sh
-  - export GRADLE_HOME=$(./install.sh "https://downloads.gradle.org/distributions/" "gradle-3.2.1-bin.zip" "gradle-3.2.1")
-  - export PATH=$GRADLE_HOME/bin:$PATH
   - export GROOVY_HOME=$(./install.sh "https://dl.bintray.com/groovy/maven/" "apache-groovy-binary-2.4.7.zip" "groovy-2.4.7")
   - export PATH=$GROOVY_HOME/bin:$PATH
-  - gradle setupCIWorkspace
+  - ./gradlew setupCIWorkspace
   
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

@@ -3,23 +3,23 @@ package appeng.core.me;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.api.material.Material;
-import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
 import appeng.core.me.config.MEConfig;
-import appeng.core.me.definitions.*;
+import appeng.core.me.definitions.MEBlockDefinitions;
+import appeng.core.me.definitions.MEEntityDefinitions;
+import appeng.core.me.definitions.MEItemDefinitions;
+import appeng.core.me.definitions.METileDefinitions;
 import appeng.core.me.proxy.MEProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import org.apache.logging.log4j.LogManager;
@@ -47,7 +47,6 @@ public class AppEngME implements IME {
 	private MEItemDefinitions itemDefinitions;
 	private MEBlockDefinitions blockDefinitions;
 	private METileDefinitions tileDefinitions;
-	private MEMaterialDefinitions materialDefinitions;
 	private MEEntityDefinitions entityDefinitions;
 
 	@Override
@@ -60,9 +59,6 @@ public class AppEngME implements IME {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
@@ -85,13 +81,11 @@ public class AppEngME implements IME {
 		this.blockDefinitions = new MEBlockDefinitions(registry);
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
-		this.materialDefinitions = new MEMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

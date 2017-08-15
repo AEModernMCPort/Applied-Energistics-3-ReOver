@@ -1,7 +1,7 @@
 package appeng.miscellaneous.definitions;
 
 import appeng.api.bootstrap.DefinitionFactory;
-import appeng.api.definitions.IBlockDefinition;
+import appeng.core.core.api.definition.IBlockDefinition;
 import appeng.core.lib.definitions.Definitions;
 import appeng.miscellaneous.api.definitions.IMiscellaneousBlockDefinitions;
 import net.minecraft.block.Block;

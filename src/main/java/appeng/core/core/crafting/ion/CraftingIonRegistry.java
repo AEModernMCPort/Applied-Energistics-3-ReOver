@@ -195,15 +195,17 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	@SubscribeEvent
 	public void applyRecipesOnContextChange(IonEnvironmentContextChangeEvent event){
-		Collection<IonCraftingConfig.Recipe.Compiled> recipes = AppEngCore.INSTANCE.config.ionCraftingConfig.recipesC.get(event.getChange());
-		if(recipes != null){
-			boolean hasFound = true;
-			while(hasFound){
-				hasFound = false;
-				for(IonCraftingConfig.Recipe.Compiled recipe : recipes){
-					if(hasEverything(recipe, event.getEnvironment())){
-						hasFound = true;
-						consumeAndSpawn(recipe, event.getEnvironment(), event::consume);
+		if(!event.getContext().isRemote()){
+			Collection<IonCraftingConfig.Recipe.Compiled> recipes = AppEngCore.INSTANCE.config.ionCraftingConfig.recipesC.get(event.getChange());
+			if(recipes != null){
+				boolean hasFound = true;
+				while(hasFound){
+					hasFound = false;
+					for(IonCraftingConfig.Recipe.Compiled recipe : recipes){
+						if(hasEverything(recipe, event.getEnvironment())){
+							hasFound = true;
+							consumeAndSpawn(recipe, event.getEnvironment(), event::consume);
+						}
 					}
 				}
 			}

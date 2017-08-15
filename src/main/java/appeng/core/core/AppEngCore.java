@@ -72,7 +72,6 @@ public class AppEngCore implements ICore {
 	private CoreBlockDefinitions blockDefinitions;
 	private CoreTileDefinitions tileDefinitions;
 	private CoreFluidDefinitions fluidDefinitions;
-	private CoreMaterialDefinitions materialDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
 	private CoreGuiHandler guiHandler;
@@ -94,9 +93,6 @@ public class AppEngCore implements ICore {
 		}
 		if(clas == Fluid.class){
 			return (D) fluidDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
@@ -125,8 +121,6 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(Fluid.class, Fluid.class, FluidDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
-
-		event.registerDefinitionBuilderSupplier(Material.class, Material.class, MaterialDefinitionBuilder::new);
 	}
 
 	@ModuleEventHandler
@@ -148,14 +142,12 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.fluidDefinitions = new CoreFluidDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
-		this.materialDefinitions = new CoreMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.fluidDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 
 		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
 

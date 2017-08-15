@@ -20,6 +20,7 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 		super(module, "yml");
 		FEATURESCONFIG.writeConfig.setWriteRootTags(false);
 		FEATURESCONFIG.setClassTag("feature", HierarchicalFeatures.class);
+		//FIXME Write primitive types, or bad things happen (int -> string)
 		CONFIGCONFIG.writeConfig.setWriteRootTags(false);
 		CONFIGCONFIG.setPrivateFields(true);
 		CONFIGCONFIG.writeConfig.setWriteDefaultValues(!dynamicDefaults);

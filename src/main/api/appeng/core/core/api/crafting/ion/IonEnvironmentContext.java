@@ -24,6 +24,8 @@ public interface IonEnvironmentContext {
 		return context.world().isPresent() && context.pos().isPresent() && context.capabilities().isPresent();
 	}
 
+	boolean isRemote();
+
 	/**
 	 * Maybe the world of the environment
 	 * @return the world of the environment

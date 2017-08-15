@@ -188,14 +188,18 @@ public class AppEngCore implements ICore {
 
 		guiHandler = new CoreGuiHandler();
 
+		for(NativeEnvironmentChange change : NativeEnvironmentChange.values()) craftingIonRegistry.registerChange(new ResourceLocation(AppEng.MODID, change.name().toLowerCase()), change);
+
+		craftingIonRegistry.<ItemStack>registerResultDeserializer(new ResourceLocation("minecraft:item"), name -> new ItemStack(Item.REGISTRY.getObject(name)), stack -> stack.getItem().getRegistryName());
+
+		craftingIonRegistry.registerProductConsumer(ItemStack.class, new IETempChangeItemStackConsumer(), NativeEnvironmentChange.HEATING, NativeEnvironmentChange.COOLING);
+
 		initHandler.preInit();
 		proxy.preInit(event);
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
-		craftingIonRegistry.registerProductConsumer(ItemStack.class, new IETempChangeItemStackConsumer(), NativeEnvironmentChange.HEATING, NativeEnvironmentChange.COOLING);
-
 		initHandler.init();
 		proxy.init(event);
 	}

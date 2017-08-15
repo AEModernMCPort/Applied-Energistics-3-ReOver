@@ -5,10 +5,14 @@ import appeng.api.config.ConfigCompilable;
 import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.Ion;
+import appeng.core.core.api.crafting.ion.IonEnvironmentContext;
 import com.google.common.collect.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryManager;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,6 +27,9 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 	private Map<String, Reactivity> oreDict2Reactivity = new HashMap<>();
 	public transient Map<String, Reactivity.Compiled> oreDict2ReactivityC = new HashMap<>();
+
+	private Map<ResourceLocation, List<Recipe>> recipes = new HashMap<>();
+	public transient Multimap<IonEnvironmentContext.Change, Recipe.Compiled> recipesC = HashMultimap.create();
 
 	public IonCraftingConfig(){
 		oreDict2Ions.put("gemQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 1)));
@@ -57,6 +64,9 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 		oreDict2ReactivityC.clear();
 		oreDict2ReactivityC.putAll(Maps.transformValues(oreDict2Reactivity, Reactivity::compile));
+
+		recipesC.clear();
+		recipes.forEach((change, srecipes) -> recipesC.putAll(AppEngCore.INSTANCE.getCraftingIonRegistry().getChange(change), Lists.transform(srecipes, Recipe::compile)));
 	}
 
 	@Override
@@ -66,6 +76,9 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 		oreDict2Reactivity.clear();
 		oreDict2Reactivity.putAll(Maps.transformValues(oreDict2ReactivityC, Reactivity.Compiled::decompile));
+
+		recipes.clear();
+		recipesC.keySet().forEach(change -> recipes.put(AppEngCore.INSTANCE.getCraftingIonRegistry().getChangeName(change), recipesC.get(change).stream().map(Recipe.Compiled::decompile).collect(Collectors.toList())));
 	}
 
 	public static class Reactivity {
@@ -102,6 +115,80 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 			Reactivity decompile(){
 				return new Reactivity(def, fluids.stream().map(Fluid::getName).collect(Collectors.toSet()));
+			}
+
+		}
+
+	}
+
+	public static class Recipe {
+
+		public List<MutablePair<ResourceLocation, Integer>> ions = new ArrayList<>();
+		public List<Result> results = new ArrayList<>();
+
+		public Recipe(){
+		}
+
+		public Recipe(List<MutablePair<ResourceLocation, Integer>> ions, List<Result> results){
+			this.ions = ions;
+			this.results = results;
+		}
+
+		public Recipe.Compiled compile(){
+			return new Compiled(Lists.transform(ions, pair -> new ImmutablePair<>(AppEngCore.INSTANCE.getIonRegistry().getValue(pair.getLeft()), pair.getRight())), Lists.transform(results, Result::compile));
+		}
+
+		public static class Result {
+
+			public ResourceLocation type;
+			public ResourceLocation result;
+			public int amount;
+
+			public Result(){
+			}
+
+			public Result(ResourceLocation type, ResourceLocation result, int amount){
+				this.type = type;
+				this.result = result;
+				this.amount = amount;
+			}
+
+			public <T> Result.Compiled<T> compile(){
+				return new Compiled<>(type, AppEngCore.INSTANCE.getCraftingIonRegistry().deserializeResult(type, result), amount);
+			}
+
+			public static class Compiled<T> {
+
+				public ResourceLocation type;
+				public T result;
+				public int amount;
+
+				public Compiled(ResourceLocation type, T result, int amount){
+					this.type = type;
+					this.result = result;
+					this.amount = amount;
+				}
+
+				public Result decompile(){
+					return new Result(type, AppEngCore.INSTANCE.getCraftingIonRegistry().serializeResult(type, result), amount);
+				}
+
+			}
+
+		}
+
+		public static class Compiled {
+
+			public List<Pair<Ion, Integer>> ions = new ArrayList<>();
+			public List<Result.Compiled> results = new ArrayList<>();
+
+			public Compiled(List<Pair<Ion, Integer>> ions, List<Result.Compiled> results){
+				this.ions = ions;
+				this.results = results;
+			}
+
+			public Recipe decompile(){
+				return new Recipe(Lists.transform(ions, pair -> new MutablePair<>(pair.getLeft().getRegistryName(), pair.getRight())), Lists.transform(results, Result.Compiled::decompile));
 			}
 
 		}

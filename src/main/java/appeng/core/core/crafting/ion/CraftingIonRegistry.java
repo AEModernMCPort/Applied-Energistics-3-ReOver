@@ -134,27 +134,35 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 		item.setDead();
 	}
 
-	public RGBA getColor(IonEnvironment environment, RGBA original){
-		/*MutableObject<RGBA> color = new MutableObject<>(original);
-		environment.getIons().forEach(ion -> color.setValue(blend(color.getValue(), ion.getColorModifier(), amount2mul(environment.getAmount(ion)))));
-		return color.getValue();*/
-		Set<RGBA> colors = new HashSet<>();
-		float aSum = 0.1f + (float) environment.getIons().values().stream().mapToDouble(this::amount2mul).sum();
-		colors.add(new RGBA(original.getRF(), original.getGF(), original.getBF(), 0.1f * original.getAF() / aSum));
-		environment.getIons().forEach((ion, amount) -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(amount) / aSum)));
-		return blend(colors);
+	private BiMap<ResourceLocation, IonEnvironmentContext.Change> changes = HashBiMap.create();
+
+	public void registerChange(ResourceLocation name, IonEnvironmentContext.Change change){
+		changes.put(name, change);
 	}
 
-	public RGBA blend(Set<RGBA> colors){
-		double r = colors.stream().mapToDouble(color -> color.getRF() * color.getAF()).sum();
-		double g = colors.stream().mapToDouble(color -> color.getGF() * color.getAF()).sum();
-		double b = colors.stream().mapToDouble(color -> color.getBF() * color.getAF()).sum();
-		return new RGBA((float) r, (float) g, (float) b, 1f);
+	public IonEnvironmentContext.Change getChange(ResourceLocation name){
+		return changes.get(name);
 	}
 
-	public float amount2mul(int amount){
-		return -1f/(2*amount) + 1f;
+	public ResourceLocation getChangeName(IonEnvironmentContext.Change change){
+		return changes.inverse().get(change);
 	}
+
+	private Map<ResourceLocation, Pair<Function, Function<Object, ResourceLocation>>> resultsDeserializers = new HashMap<>();
+
+	public <T> void registerResultDeserializer(ResourceLocation type, Function<ResourceLocation, T> id2t, Function<T, ResourceLocation> t2id){
+		resultsDeserializers.put(type, new ImmutablePair(id2t, t2id));
+	}
+
+	public <T> T deserializeResult(ResourceLocation type, ResourceLocation id){
+		return (T) resultsDeserializers.get(type).getLeft().apply(id);
+	}
+
+	public <T> ResourceLocation serializeResult(ResourceLocation type, T t){
+		return resultsDeserializers.get(type).getRight().apply(t);
+	}
+
+	//
 
 	public Map<IonEnvironmentContext.Change, Map<Class, IonEnvironmentProductConsumer>> consumers = new HashMap<>();
 
@@ -180,6 +188,30 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	public Consumer compileProductConsumersC(IonEnvironmentContext context, IonEnvironmentContext.Change change){
 		Function<Class, Optional<Consumer>> consumers = compileProductConsumersF(context, change);
 		return product -> consumers.apply(product.getClass()).ifPresent(consumer -> consumer.accept(product));
+	}
+
+	//
+
+	public RGBA getColor(IonEnvironment environment, RGBA original){
+		/*MutableObject<RGBA> color = new MutableObject<>(original);
+		environment.getIons().forEach(ion -> color.setValue(blend(color.getValue(), ion.getColorModifier(), amount2mul(environment.getAmount(ion)))));
+		return color.getValue();*/
+		Set<RGBA> colors = new HashSet<>();
+		float aSum = 0.1f + (float) environment.getIons().values().stream().mapToDouble(this::amount2mul).sum();
+		colors.add(new RGBA(original.getRF(), original.getGF(), original.getBF(), 0.1f * original.getAF() / aSum));
+		environment.getIons().forEach((ion, amount) -> colors.add(new RGBA(ion.getColorModifier().getRF(), ion.getColorModifier().getGF(), ion.getColorModifier().getBF(), amount2mul(amount) / aSum)));
+		return blend(colors);
+	}
+
+	public RGBA blend(Set<RGBA> colors){
+		double r = colors.stream().mapToDouble(color -> color.getRF() * color.getAF()).sum();
+		double g = colors.stream().mapToDouble(color -> color.getGF() * color.getAF()).sum();
+		double b = colors.stream().mapToDouble(color -> color.getBF() * color.getAF()).sum();
+		return new RGBA((float) r, (float) g, (float) b, 1f);
+	}
+
+	public float amount2mul(int amount){
+		return -1f/(2*amount) + 1f;
 	}
 
 }

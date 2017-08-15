@@ -28,7 +28,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.reflect.InheritanceUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -87,6 +87,11 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 		}
 	}
 
+	@SubscribeEvent
+	public void updateIonProviders(TickEvent.WorldTickEvent event){
+		if(event.phase == TickEvent.Phase.END) event.world.loadedEntityList.stream().filter(entity -> entity instanceof EntityItem).map(entity -> (EntityItem) entity).filter(item -> item.getItem().hasCapability(ionProviderCapability, null)).forEach(this::onIonEntityItemTick);
+	}
+
 	public BiMap<Fluid, Fluid> normal2ionized = HashBiMap.create();
 	public BiMap<Fluid, Fluid> ionized2normal = normal2ionized.inverse();
 
@@ -96,6 +101,10 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 
 	public void registerIonVariant(Fluid original, Fluid ionized){
 		normal2ionized.put(original, ionized);
+	}
+
+	public void onIonEntityItemTick(EntityItem item){
+		onIonEntityItemTick(item, item.getItem().getCapability(ionProviderCapability, null));
 	}
 
 	public void onIonEntityItemTick(EntityItem item, IonProvider ionProvider){
@@ -109,7 +118,7 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 			world.setBlockToAir(pos);
 			FluidUtil.tryPlaceFluid(null, world, pos, new FluidTank(ionized, Fluid.BUCKET_VOLUME, Fluid.BUCKET_VOLUME), new FluidStack(ionized, Fluid.BUCKET_VOLUME));
 			enterIonEnv(world, pos, item, ionProvider);
-		}
+		} else if(ionized2normal.containsKey(fluid)) enterIonEnv(world, pos, item, ionProvider);
 	}
 
 	public void onIonEntityItemEnterEnvironment(World world, BlockPos pos, EntityItem item, IonProvider ionProvider){

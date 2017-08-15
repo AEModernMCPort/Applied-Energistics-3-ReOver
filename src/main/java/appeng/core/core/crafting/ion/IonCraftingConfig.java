@@ -53,7 +53,10 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDict2Reactivity.put("supersolidCertus", new Reactivity(true, Sets.newHashSet()));
 
 		recipes.put(new ResourceLocation(AppEng.MODID, NativeEnvironmentChange.HEATING.name().toLowerCase()), Lists.newArrayList(
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_quartz").toString(), 1)))
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_quartz").toString(), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_redstone").toString(), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_sulfur").toString(), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "incertus").toString(), 1)))
 		));
 	}
 

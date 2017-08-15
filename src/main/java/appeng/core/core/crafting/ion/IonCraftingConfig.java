@@ -6,6 +6,7 @@ import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.Ion;
 import appeng.core.core.api.crafting.ion.IonEnvironmentContext;
+import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
 import com.google.common.collect.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
@@ -50,6 +51,10 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDict2Reactivity.put("certusSulfur", new Reactivity(false, Sets.newHashSet("water")));
 		oreDict2Reactivity.put("incertus", new Reactivity(false, Sets.newHashSet("water")));
 		oreDict2Reactivity.put("supersolidCertus", new Reactivity(true, Sets.newHashSet()));
+
+		recipes.put(new ResourceLocation(AppEng.MODID, NativeEnvironmentChange.HEATING.name().toLowerCase()), Lists.newArrayList(
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_quartz").toString(), 1)))
+		));
 	}
 
 	@Override

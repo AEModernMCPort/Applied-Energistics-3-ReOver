@@ -220,8 +220,6 @@ public final class AppEng {
 		config.load();
 		BiFunction<String, Boolean, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "YAML", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
 		boolean dynamicDefaults = config.getBoolean("Dynamic Defaults", "CONFIG", true, "Do not write default values to config & feature files (excluding this one)");
-		//TODO FIXME Not a single loader works correctly with dynamic defaults currently. Force disabled until at least one works.
-		dynamicDefaults = false;
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();

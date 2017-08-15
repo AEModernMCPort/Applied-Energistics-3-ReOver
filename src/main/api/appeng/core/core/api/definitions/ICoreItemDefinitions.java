@@ -3,8 +3,6 @@ package appeng.core.core.api.definitions;
 import appeng.api.AEModInfo;
 import appeng.api.definitions.IDefinitions;
 import appeng.core.core.api.definition.IItemDefinition;
-import appeng.core.core.api.definition.IMaterialDefinition;
-import appeng.core.core.api.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 

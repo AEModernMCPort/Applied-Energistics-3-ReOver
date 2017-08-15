@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public class ItemMaterial extends Item implements IItemMaterial<ItemMaterial>, IStateItem<ItemMaterial> {
 
 	private static final boolean USENBT = false;

@@ -6,6 +6,7 @@ import appeng.core.core.api.definition.IMaterialDefinition;
 import appeng.core.core.api.material.Material;
 import net.minecraft.util.ResourceLocation;
 
+@Deprecated
 public interface ICoreMaterialDefinitions extends IDefinitions<Material, IMaterialDefinition<Material>> {
 
 	default IMaterialDefinition<Material> certusQuartz(){

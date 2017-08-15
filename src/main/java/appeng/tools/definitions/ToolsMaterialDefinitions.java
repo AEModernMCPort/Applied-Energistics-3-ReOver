@@ -6,6 +6,7 @@ import appeng.core.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
 import appeng.tools.api.definitions.IToolsMaterialDefinitions;
 
+@Deprecated
 public class ToolsMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements IToolsMaterialDefinitions {
 
 	private static final String MATERIALSMODELSLOCATION = "material/";

@@ -6,6 +6,7 @@ import appeng.core.core.api.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+@Deprecated
 public interface IItemMaterial<I extends Item & IItemMaterial<I>> extends IStateItem<I> {
 
 	Material getMaterial(IStateItemState<I> state);

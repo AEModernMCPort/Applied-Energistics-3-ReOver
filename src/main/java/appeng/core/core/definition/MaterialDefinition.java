@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.Optional;
 
+@Deprecated
 public class MaterialDefinition<M extends Material> extends Definition<M> implements IMaterialDefinition<M> {
 
 	private static IItemDefinition itemMaterialDefinition;

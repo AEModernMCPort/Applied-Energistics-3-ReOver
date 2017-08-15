@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class JSONConfigLoader<C> extends ConfigLoader<C> {
 
@@ -46,8 +47,8 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 	public void save() throws IOException{
 		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).decompile();
 
-		FileUtils.write(featuresFile(), GSON.toJson(managerToHierarchical()));
-		FileUtils.write(configFile(), GSON.toJson(config));
+		FileUtils.write(featuresFile(), GSON.toJson(managerToHierarchical()), Charset.defaultCharset());
+		FileUtils.write(configFile(), GSON.toJson(config), Charset.defaultCharset());
 	}
 
 }

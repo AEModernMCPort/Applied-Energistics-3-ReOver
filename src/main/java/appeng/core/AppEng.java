@@ -1,7 +1,7 @@
 package appeng.core;
 
+import appeng.api.AEModInfo;
 import appeng.api.bootstrap.DefinitionBuilderSupplier;
-import appeng.api.bootstrap.DefinitionFactory.InputHandler;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
@@ -13,7 +13,6 @@ import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
 import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
-import net.minecraft.block.Block;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Loader;
@@ -43,14 +42,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
 
-	public static final String MODID = "appliedenergistics3";
-	public static final String NAME = "Applied Energistics 3";
-	public static final String VERSION = "${version}";
+	public static final String MODID = AEModInfo.MODID;
+	public static final String NAME = AEModInfo.NAME;
+	public static final String VERSION = AEModInfo.VERSION;
 
 	public static final String ASSETS = MODID + ":";
 
@@ -67,7 +65,6 @@ public final class AppEng {
 	private ImmutableBiMap<String, ?> modules;
 	private ImmutableMap<Class<?>, ?> classModule;
 	private ImmutableList<String> moduleOrder;
-	private ImmutableMap<?, Boolean> internal;
 	private Object current;
 
 	private File configDirectory;
@@ -114,21 +111,19 @@ public final class AppEng {
 		}
 	}
 
-	private <M> void fireModuleEvent(M module, final AEStateEvent event){
-		if(module instanceof String){
-			module = getModule((String) module);
-		}
-		if(module instanceof Class){
-			module = getModule((Class<M>) module);
-		}
+	private <M> void fireModuleEvent(M m, final AEStateEvent event){
+		M module;
+		if(m instanceof String) module = getModule((String) m);
+		else if(m instanceof Class) module = getModule((Class<M>) m);
+		else module = m;
 		if(module != null){
-			for(AMethod<M, ?> method : new AClass<M>((Class<M>) module.getClass()).getDeclaredMethods()){
+			new AClass<M>((Class<M>) module.getClass()).getDeclaredMethods().forEach(method -> {
 				if(method.get().getParameterTypes().length == 1 && method.get().getParameterTypes()[0].isAssignableFrom(event.getClass()) && method.get().getDeclaredAnnotation(Module.ModuleEventHandler.class) != null){
 					current = module;
 					method.invoke(module, event);
 					current = null;
 				}
-			}
+			});
 		}
 	}
 
@@ -187,25 +182,18 @@ public final class AppEng {
 		}
 		ImmutableBiMap.Builder<String, Object> modulesBuilder = ImmutableBiMap.builder();
 		ImmutableMap.Builder<Class<?>, Object> classModuleBuilder = ImmutableMap.builder();
-		ImmutableMap.Builder<Object, Boolean> internalBuilder = ImmutableMap.builder();
 		ImmutableList.Builder<String> orderBuilder = ImmutableList.builder();
 
 		for(String name : moduleLoadingOrder){
 			try{
 				Class<?> moduleClass = modules.get(name);
-				boolean mod = moduleClass.isAnnotationPresent(Mod.class);
 				MutableObject<Object> moduleHolder = new MutableObject<>();
-				if(mod){
-					Loader.instance().getModObjectList().entrySet().stream().filter(entry -> entry.getValue().getClass() == moduleClass).findFirst().ifPresent(instance -> moduleHolder.setValue(instance.getValue()));
-				}
-				if(moduleHolder.getValue() == null){
-					moduleHolder.setValue(moduleClass.newInstance());
-				}
+				if(moduleClass.isAnnotationPresent(Mod.class)) Loader.instance().getModObjectList().entrySet().stream().filter(entry -> entry.getValue().getClass() == moduleClass).findFirst().ifPresent(instance -> moduleHolder.setValue(instance.getValue()));
+				if(moduleHolder.getValue() == null) moduleHolder.setValue(moduleClass.newInstance());
 				Object module = moduleHolder.getValue();
 				orderBuilder.add(name);
 				modulesBuilder.put(name, module);
 				classModuleBuilder.put(moduleClass, module);
-				internalBuilder.put(module, !mod);
 			} catch(ReflectiveOperationException e){
 				event.getModLog().error("Error while trying to setup the module " + name);
 				e.printStackTrace();
@@ -215,7 +203,6 @@ public final class AppEng {
 		this.moduleOrder = orderBuilder.build();
 		this.modules = modulesBuilder.build();
 		this.classModule = classModuleBuilder.build();
-		this.internal = internalBuilder.build();
 
 		populateInstances(annotations);
 

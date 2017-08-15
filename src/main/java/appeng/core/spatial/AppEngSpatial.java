@@ -3,15 +3,13 @@ package appeng.core.spatial;
 import appeng.api.bootstrap.DefinitionFactory;
 import appeng.api.bootstrap.InitializationComponentsHandler;
 import appeng.api.config.ConfigurationLoader;
-import appeng.api.definitions.IDefinition;
+import appeng.api.definition.IDefinition;
 import appeng.api.definitions.IDefinitions;
 import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.api.material.Material;
-import appeng.core.core.CoreConfig;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.spatial.api.ISpatial;
 import appeng.core.spatial.config.SpatialConfig;
@@ -19,7 +17,6 @@ import appeng.core.spatial.definitions.*;
 import appeng.core.spatial.proxy.SpatialProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -48,7 +45,6 @@ public class AppEngSpatial implements ISpatial {
 	private SpatialItemDefinitions itemDefinitions;
 	private SpatialBlockDefinitions blockDefinitions;
 	private SpatialTileDefinitions tileDefinitions;
-	private SpatialMaterialDefinitions materialDefinitions;
 	private SpatialBiomeDefinitions biomeDefinitions;
 	private SpatialDimensionTypeDefinitions dimensionTypeDefinitions;
 
@@ -62,9 +58,6 @@ public class AppEngSpatial implements ISpatial {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		if(clas == Biome.class){
 			return (D) biomeDefinitions;
@@ -91,14 +84,12 @@ public class AppEngSpatial implements ISpatial {
 		this.tileDefinitions = new SpatialTileDefinitions(registry);
 		this.biomeDefinitions = new SpatialBiomeDefinitions(registry);
 		this.dimensionTypeDefinitions = new SpatialDimensionTypeDefinitions(registry);
-		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.biomeDefinitions.init(registry);
 		this.dimensionTypeDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

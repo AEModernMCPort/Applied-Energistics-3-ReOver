@@ -9,6 +9,7 @@ import appeng.core.core.api.material.Material;
 import appeng.core.lib.definitions.Definitions;
 import net.minecraft.util.ResourceLocation;
 
+@Deprecated
 public class CoreMaterialDefinitions extends Definitions<Material, IMaterialDefinition<Material>> implements ICoreMaterialDefinitions {
 
 	public CoreMaterialDefinitions(DefinitionFactory registry){

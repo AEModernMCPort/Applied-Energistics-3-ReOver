@@ -5,6 +5,7 @@ import appeng.core.AppEng;
 import appeng.core.core.AppEngCore;
 import appeng.core.core.api.crafting.ion.*;
 import appeng.core.core.api.crafting.ion.IonEnvironment;
+import appeng.core.core.api.crafting.ion.IonEnvironmentContextChangeEvent;
 import appeng.core.core.api.definitions.ICoreIonDefinitions;
 import appeng.core.core.crafting.ion.temp.InWorldIonEnvTemperatureListener;
 import appeng.core.lib.capability.DelegateCapabilityStorage;
@@ -188,6 +189,38 @@ public class CraftingIonRegistry implements InitializationComponent.PreInit {
 	public Consumer compileProductConsumersC(IonEnvironmentContext context, IonEnvironmentContext.Change change){
 		Function<Class, Optional<Consumer>> consumers = compileProductConsumersF(context, change);
 		return product -> consumers.apply(product.getClass()).ifPresent(consumer -> consumer.accept(product));
+	}
+
+	//
+
+	@SubscribeEvent
+	public void applyRecipesOnContextChange(IonEnvironmentContextChangeEvent event){
+		Collection<IonCraftingConfig.Recipe.Compiled> recipes = AppEngCore.INSTANCE.config.ionCraftingConfig.recipesC.get(event.getChange());
+		if(recipes != null){
+			boolean hasFound = true;
+			while(hasFound){
+				hasFound = false;
+				for(IonCraftingConfig.Recipe.Compiled recipe : recipes){
+					if(hasEverything(recipe, event.getEnvironment())){
+						hasFound = true;
+						consumeAndSpawn(recipe, event.getEnvironment(), event::consume);
+					}
+				}
+			}
+		}
+	}
+
+	protected boolean hasEverything(IonCraftingConfig.Recipe.Compiled recipe, IonEnvironment environment){
+		if(recipe.ions.isEmpty()) return false;
+		for(Pair<Ion, Integer> ion : recipe.ions)
+			if(!environment.getIons().containsKey(ion.getLeft()) || environment.getIons().get(ion.getLeft()) < ion.getRight())
+				return false;
+		return true;
+	}
+
+	protected void consumeAndSpawn(IonCraftingConfig.Recipe.Compiled recipe, IonEnvironment environment, Consumer consumer){
+		recipe.ions.forEach(ion -> environment.addIons(ion.getLeft(), -ion.getRight()));
+		recipe.results.forEach(result -> {for(int i = 0; i < result.amount; i++) consumer.accept(result.result);});
 	}
 
 	//

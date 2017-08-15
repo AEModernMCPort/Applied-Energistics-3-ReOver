@@ -10,7 +10,6 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.core.api.material.Material;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.spatial.api.ISpatial;
 import appeng.core.spatial.config.SpatialConfig;
@@ -46,7 +45,6 @@ public class AppEngSpatial implements ISpatial {
 	private SpatialItemDefinitions itemDefinitions;
 	private SpatialBlockDefinitions blockDefinitions;
 	private SpatialTileDefinitions tileDefinitions;
-	private SpatialMaterialDefinitions materialDefinitions;
 	private SpatialBiomeDefinitions biomeDefinitions;
 	private SpatialDimensionTypeDefinitions dimensionTypeDefinitions;
 
@@ -60,9 +58,6 @@ public class AppEngSpatial implements ISpatial {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		if(clas == Biome.class){
 			return (D) biomeDefinitions;
@@ -89,14 +84,12 @@ public class AppEngSpatial implements ISpatial {
 		this.tileDefinitions = new SpatialTileDefinitions(registry);
 		this.biomeDefinitions = new SpatialBiomeDefinitions(registry);
 		this.dimensionTypeDefinitions = new SpatialDimensionTypeDefinitions(registry);
-		this.materialDefinitions = new SpatialMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.biomeDefinitions.init(registry);
 		this.dimensionTypeDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

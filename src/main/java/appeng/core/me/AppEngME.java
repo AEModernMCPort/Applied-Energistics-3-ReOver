@@ -10,7 +10,6 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.core.api.material.Material;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
 import appeng.core.me.api.parts.container.IPartsContainer;
@@ -61,7 +60,6 @@ public class AppEngME implements IME {
 	private MEItemDefinitions itemDefinitions;
 	private MEBlockDefinitions blockDefinitions;
 	private METileDefinitions tileDefinitions;
-	private MEMaterialDefinitions materialDefinitions;
 	private MEEntityDefinitions entityDefinitions;
 	private MEPartDefinitions partDefinitions;
 
@@ -77,9 +75,6 @@ public class AppEngME implements IME {
 		}
 		if(clas == TileRegistryEntry.class){
 			return (D) tileDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
@@ -125,14 +120,12 @@ public class AppEngME implements IME {
 		this.blockDefinitions = new MEBlockDefinitions(registry);
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
-		this.materialDefinitions = new MEMaterialDefinitions(registry);
 		this.partDefinitions = new MEPartDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 		this.partDefinitions.init(registry);
 
 		initHandler.accept(partsHelper = new PartsHelper());

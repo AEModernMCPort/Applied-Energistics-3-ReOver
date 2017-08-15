@@ -16,13 +16,13 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 	public final YamlConfig FEATURESCONFIG = new YamlConfig();
 	public final YamlConfig CONFIGCONFIG = new YamlConfig();
 
-	public YAMLConfigLoader(String module){
+	public YAMLConfigLoader(String module, boolean dynamicDefaults){
 		super(module, "yml");
 		FEATURESCONFIG.writeConfig.setWriteRootTags(false);
 		FEATURESCONFIG.setClassTag("feature", HierarchicalFeatures.class);
 		CONFIGCONFIG.writeConfig.setWriteRootTags(false);
 		CONFIGCONFIG.setPrivateFields(true);
-		CONFIGCONFIG.writeConfig.setWriteDefaultValues(true);
+		CONFIGCONFIG.writeConfig.setWriteDefaultValues(!dynamicDefaults);
 		CONFIGCONFIG.readConfig.setIgnoreUnknownProperties(true);
 	}
 

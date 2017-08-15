@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
@@ -211,19 +212,20 @@ public final class AppEng {
 		configDirectory = new File(event.getModConfigurationDirectory(), NAME);
 		configDirectory.mkdirs();
 
-		Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
+		Map<String, BiFunction<String, Boolean, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
 		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
 		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(configurationLoaderProviders, definitionBuilderSuppliers));
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();
-		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
+		BiFunction<String, Boolean, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
+		boolean dynamicDefaults = config.getBoolean("Dynamic Defaults", "CONFIG", true, "Do not write default values to config & feature files (excluding this one)");
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(configurationLoaderProvider, definitionBuilderSuppliers));
+		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(configurationLoaderProvider, dynamicDefaults, definitionBuilderSuppliers));
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}

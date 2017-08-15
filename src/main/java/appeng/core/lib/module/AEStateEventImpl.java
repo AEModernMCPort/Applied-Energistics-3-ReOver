@@ -17,7 +17,9 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -29,16 +31,16 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEBootstrapEventImpl extends AEStateEventImpl implements AEStateEvent.AEBootstrapEvent {
 
-		private Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders;
+		private Map<String, BiFunction<String, Boolean, ConfigurationLoader>> configurationLoaderProviders;
 		private Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers;
 
-		public AEBootstrapEventImpl(Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders, Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
+		public AEBootstrapEventImpl(Map<String, BiFunction<String, Boolean, ConfigurationLoader>> configurationLoaderProviders, Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
 			this.configurationLoaderProviders = configurationLoaderProviders;
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
 		}
 
 		@Override
-		public void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider){
+		public void registerConfigurationLoaderProvider(@Nonnull String format, @Nonnull BiFunction<String, Boolean, ConfigurationLoader> clProvider){
 			configurationLoaderProviders.put(format, clProvider);
 		}
 
@@ -51,17 +53,19 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	public static class AEPreInitializationEventImpl extends AEStateEventImpl implements AEPreInitializationEvent {
 
-		private Function<String, ConfigurationLoader> configurationLoaderProvider;
+		private BiFunction<String, Boolean, ConfigurationLoader> configurationLoaderProvider;
+		private boolean dynamicDefaults;
 		private Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers;
 
-		public AEPreInitializationEventImpl(Function<String, ConfigurationLoader> configurationLoaderProvider, Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
+		public AEPreInitializationEventImpl(BiFunction<String, Boolean, ConfigurationLoader> configurationLoaderProvider, boolean dynamicDefaults, Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers){
 			this.configurationLoaderProvider = configurationLoaderProvider;
+			this.dynamicDefaults = dynamicDefaults;
 			this.definitionBuilderSuppliers = definitionBuilderSuppliers;
 		}
 
 		@Override
 		public <C> ConfigurationLoader<C> configurationLoader(){
-			return configurationLoaderProvider.apply(AppEng.instance().getCurrentName());
+			return configurationLoaderProvider.apply(AppEng.instance().getCurrentName(), dynamicDefaults);
 		}
 
 		@Override

@@ -6,6 +6,8 @@ import appeng.api.config.FeaturesManager;
 import appeng.api.definition.IDefinition;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
+import javax.annotation.Nonnull;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -21,9 +23,9 @@ public interface AEStateEvent {
 		 * Registers configuration loader provider for the given format.
 		 *
 		 * @param format     a format (just an identifier to differentiate different loaders)
-		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name, all calls with the same module name should return the same {@linkplain ConfigurationLoader} instance
+		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name and dynamic defaults setting (do not serialize default values if enabled), all calls with the same module name should return the same {@linkplain ConfigurationLoader} instance
 		 */
-		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
+		void registerConfigurationLoaderProvider(@Nonnull String format, @Nonnull BiFunction<String, Boolean, ConfigurationLoader> clProvider);
 
 		/**
 		 * Registers definition builder supplier for new input/definition type pair.

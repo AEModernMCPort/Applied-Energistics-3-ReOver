@@ -28,7 +28,8 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 
 	}).enableComplexMapKeySerialization().setPrettyPrinting().create();
 
-	public JSONConfigLoader(String module){
+	//TODO Implement dynamic defaults
+	public JSONConfigLoader(String module, boolean dynamicDefaults){
 		super(module, "json");
 	}
 

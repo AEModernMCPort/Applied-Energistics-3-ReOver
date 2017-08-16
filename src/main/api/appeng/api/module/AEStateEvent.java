@@ -4,9 +4,11 @@ import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
 import appeng.api.definition.IDefinition;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
-import java.util.function.Function;
+import javax.annotation.Nonnull;
+import java.util.function.BiFunction;
 
 /**
  * Parent class of all AE events sent to modules
@@ -15,15 +17,15 @@ import java.util.function.Function;
  */
 public interface AEStateEvent {
 
-	public interface AEBootstrapEvent {
+	interface AEBootstrapEvent {
 
 		/**
 		 * Registers configuration loader provider for the given format.
 		 *
 		 * @param format     a format (just an identifier to differentiate different loaders)
-		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name, all calls with the same module name should return the same {@linkplain ConfigurationLoader} instance
+		 * @param clProvider provides {@linkplain ConfigurationLoader} based on module's name and dynamic defaults setting (do not serialize default values if enabled)
 		 */
-		void registerConfigurationLoaderProvider(String format, Function<String, ConfigurationLoader> clProvider);
+		void registerConfigurationLoaderProvider(@Nonnull String format, @Nonnull BiFunction<String, Boolean, ConfigurationLoader> clProvider);
 
 		/**
 		 * Registers definition builder supplier for new input/definition type pair.
@@ -40,7 +42,7 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEPreInitializationEvent {
+	interface AEPreInitializationEvent {
 
 		<C> ConfigurationLoader<C> configurationLoader();
 
@@ -54,15 +56,35 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEInitializationEvent {
+	interface AEInitializationEvent {
 
 	}
 
-	public interface AEPostInitializationEvent {
+	interface AEPostInitializationEvent {
 
 	}
 
-	public interface AELoadCompleteEvent {
+	interface AELoadCompleteEvent {
+
+	}
+
+	interface AEServerAboutToStartEvent {
+
+	}
+
+	interface AEServerStartingEvent {
+
+		void registerServerCommand(ICommand command);
+
+		void registerModuleSubcommand(ICommand command);
+
+	}
+
+	interface AEServerStoppingEvent {
+
+	}
+
+	interface AEServerStoppedEvent {
 
 	}
 
@@ -71,7 +93,7 @@ public interface AEStateEvent {
 	 *
 	 * @author Elix_x
 	 */
-	public interface ModuleIMCMessageEvent {
+	interface ModuleIMCMessageEvent {
 
 		FMLInterModComms.IMCMessage getMessage();
 

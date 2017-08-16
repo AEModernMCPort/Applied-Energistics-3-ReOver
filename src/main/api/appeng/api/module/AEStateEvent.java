@@ -17,7 +17,7 @@ import java.util.function.Function;
  */
 public interface AEStateEvent {
 
-	public interface AEBootstrapEvent {
+	interface AEBootstrapEvent {
 
 		/**
 		 * Registers configuration loader provider for the given format.
@@ -42,7 +42,7 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEPreInitializationEvent {
+	interface AEPreInitializationEvent {
 
 		<C> ConfigurationLoader<C> configurationLoader();
 
@@ -56,15 +56,15 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEInitializationEvent {
+	interface AEInitializationEvent {
 
 	}
 
-	public interface AEPostInitializationEvent {
+	interface AEPostInitializationEvent {
 
 	}
 
-	public interface AELoadCompleteEvent {
+	interface AELoadCompleteEvent {
 
 	}
 
@@ -73,7 +73,7 @@ public interface AEStateEvent {
 	 *
 	 * @author Elix_x
 	 */
-	public interface ModuleIMCMessageEvent {
+	interface ModuleIMCMessageEvent {
 
 		FMLInterModComms.IMCMessage getMessage();
 

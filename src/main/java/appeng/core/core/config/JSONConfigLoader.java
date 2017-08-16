@@ -3,10 +3,10 @@ package appeng.core.core.config;
 import appeng.api.config.ConfigCompilable;
 import appeng.core.lib.config.ConfigLoader;
 import code.elix_x.excomms.reflection.ReflectionHelper;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.io.FileUtils;
 
 import java.io.FileReader;
@@ -25,6 +25,18 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 		@Override
 		public boolean shouldSkipClass(Class<?> clazz){
 			return false;
+		}
+
+	}).registerTypeAdapter(ResourceLocation.class, new TypeAdapter<ResourceLocation>() {
+
+		@Override
+		public void write(JsonWriter out, ResourceLocation value) throws IOException{
+			out.value(value.toString());
+		}
+
+		@Override
+		public ResourceLocation read(JsonReader in) throws IOException{
+			return new ResourceLocation(in.nextString());
 		}
 
 	}).enableComplexMapKeySerialization().setPrettyPrinting().create();

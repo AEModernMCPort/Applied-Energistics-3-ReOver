@@ -4,8 +4,11 @@ import appeng.api.config.ConfigCompilable;
 import appeng.core.lib.config.ConfigLoader;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import com.esotericsoftware.yamlbeans.YamlConfig;
+import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
 import com.esotericsoftware.yamlbeans.YamlWriter;
+import com.esotericsoftware.yamlbeans.scalar.ScalarSerializer;
+import net.minecraft.util.ResourceLocation;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -25,6 +28,19 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 		CONFIGCONFIG.setPrivateFields(true);
 		CONFIGCONFIG.writeConfig.setWriteDefaultValues(!dynamicDefaults);
 		CONFIGCONFIG.readConfig.setIgnoreUnknownProperties(true);
+		CONFIGCONFIG.setScalarSerializer(ResourceLocation.class, new ScalarSerializer<ResourceLocation>() {
+
+			@Override
+			public String write(ResourceLocation object) throws YamlException{
+				return object.toString();
+			}
+
+			@Override
+			public ResourceLocation read(String value) throws YamlException{
+				return new ResourceLocation(value);
+			}
+
+		});
 	}
 
 	@Override

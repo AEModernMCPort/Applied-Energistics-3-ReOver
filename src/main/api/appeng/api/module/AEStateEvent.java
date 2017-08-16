@@ -4,11 +4,11 @@ import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
 import appeng.api.definition.IDefinition;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Parent class of all AE events sent to modules
@@ -73,6 +73,10 @@ public interface AEStateEvent {
 	}
 
 	interface AEServerStartingEvent {
+
+		void registerServerCommand(ICommand command);
+
+		void registerModuleSubcommand(ICommand command);
 
 	}
 

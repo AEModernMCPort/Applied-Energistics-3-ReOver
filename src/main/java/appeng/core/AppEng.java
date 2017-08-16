@@ -5,6 +5,7 @@ import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
+import appeng.core.lib.command.CommandTreeBaseNamed;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import appeng.core.proxy.AppEngProxy;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.server.command.CommandTreeBase;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -388,7 +390,9 @@ public final class AppEng {
 
 	@EventHandler
 	private void serverStarting(final FMLServerStartingEvent event){
-		fireModulesEvent(new AEStateEventImpl.AEServerStartingEventImpl());
+		CommandTreeBase command = new CommandTreeBaseNamed("ae3", "commands.ae3.usage");
+		fireModulesEvent(new AEStateEventImpl.AEServerStartingEventImpl(event::registerServerCommand, command::addSubcommand));
+		event.registerServerCommand(command);
 	}
 
 	@EventHandler

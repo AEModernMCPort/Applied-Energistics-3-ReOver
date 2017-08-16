@@ -102,6 +102,22 @@ public class AEStateEventImpl implements AEStateEvent {
 
 	}
 
+	public static class AEServerAboutToStartEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerAboutToStartEvent {
+
+	}
+
+	public static class AEServerStartingEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStartingEvent {
+
+	}
+
+	public static class AEServerStoppingEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStoppingEvent {
+
+	}
+
+	public static class AEServerStoppedEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStoppedEvent {
+
+	}
+
 	/**
 	 * Implementation of {@linkplain AEStateEvent.ModuleIMCMessageEvent}.
 	 *

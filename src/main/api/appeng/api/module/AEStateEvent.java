@@ -68,6 +68,22 @@ public interface AEStateEvent {
 
 	}
 
+	interface AEServerAboutToStartEvent {
+
+	}
+
+	interface AEServerStartingEvent {
+
+	}
+
+	interface AEServerStoppingEvent {
+
+	}
+
+	interface AEServerStoppedEvent {
+
+	}
+
 	/**
 	 * Fired to the module when {@linkplain FMLInterModComms.IMCMessage} is fired to AE, with {@linkplain FMLInterModComms.IMCMessage#key} representing name of the module.
 	 *

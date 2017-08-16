@@ -10,7 +10,6 @@ import appeng.core.lib.module.Toposorter;
 import appeng.core.proxy.AppEngProxy;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
-import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
 import net.minecraft.util.text.TextFormatting;
@@ -21,11 +20,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -42,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -381,23 +376,24 @@ public final class AppEng {
 		}
 	}
 
-	/*@EventHandler
+	@EventHandler
 	private void serverAboutToStart(final FMLServerAboutToStartEvent event){
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEServerAboutToStartEventImpl());
 	}
 
 	@EventHandler
 	private void serverStarting(final FMLServerStartingEvent event){
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEServerStartingEventImpl());
 	}
 
 	@EventHandler
 	private void serverStopping(final FMLServerStoppingEvent event){
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEServerStoppingEventImpl());
 	}
 
 	@EventHandler
 	private void serverStopped(final FMLServerStoppedEvent event){
-		fireModulesEvent(event);
-	}*/
+		fireModulesEvent(new AEStateEventImpl.AEServerStoppedEventImpl());
+	}
+
 }

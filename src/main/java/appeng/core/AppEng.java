@@ -370,6 +370,11 @@ public final class AppEng {
 	}
 
 	@EventHandler
+	private void loadComplete(FMLLoadCompleteEvent event){
+		fireModulesEvent(new AEStateEventImpl.AELoadCompleteEventImpl());
+	}
+
+	@EventHandler
 	private void handleIMCEvent(final FMLInterModComms.IMCEvent event){
 		for(IMCMessage message : event.getMessages()){
 			fireModuleEvent(message.key, new AEStateEventImpl.ModuleIMCMessageEventImpl(message));

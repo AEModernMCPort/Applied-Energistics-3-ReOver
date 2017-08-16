@@ -1,19 +1,21 @@
 package appeng.core.skyfall.config;
 
+import appeng.api.bootstrap.InitializationComponent;
+import appeng.api.config.ConfigCompilable;
 import appeng.core.AppEng;
 import appeng.core.lib.util.BlockState2String;
+import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.generator.SkyobjectGenerator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SkyfallConfig {
+public class SkyfallConfig implements ConfigCompilable, InitializationComponent.Init {
 
 	private Map<ResourceLocation, Float> weights = new HashMap<>();
 
@@ -23,13 +25,24 @@ public class SkyfallConfig {
 
 	}
 
-	public float getWeight(ResourceLocation gen){
-		return weights.get(gen);
+	@Override
+	public void compile(){
+
 	}
 
-	public void initPostLoad(IForgeRegistry<SkyobjectGenerator> registry){
-		for(SkyobjectGenerator generator : registry) if(!weights.containsKey(generator.getRegistryName())) weights.put(generator.getRegistryName(), generator.getDefaultWeight());
-		meteorite.initPostLoad();
+	@Override
+	public void init(){
+		for(SkyobjectGenerator generator : AppEngSkyfall.INSTANCE.getSkyobjectGeneratorsRegistry()) if(!weights.containsKey(generator.getRegistryName())) weights.put(generator.getRegistryName(), generator.getDefaultWeight());
+		meteorite.init();
+	}
+
+	@Override
+	public void decompile(){
+		meteorite.decompile();
+	}
+
+	public float getWeight(ResourceLocation gen){
+		return weights.get(gen);
 	}
 
 	public static class Meteorite {
@@ -43,13 +56,17 @@ public class SkyfallConfig {
 
 		}
 
-		public void initPostLoad(){
+		public void init(){
 			minRadius = Math.min(minRadius, maxRadius);
 			maxRadius = Math.max(minRadius, maxRadius);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
 			allowedBlocks = allowedBlocks.stream().sorted().limit(16).collect(Collectors.toList());
-			allowedBlockStates = ImmutableList.copyOf(allowedBlocks.stream().map(s -> BlockState2String.fromStringSafe(s)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
+			allowedBlockStates = ImmutableList.copyOf(allowedBlocks.stream().map(BlockState2String::fromStringSafe).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList()));
+		}
+
+		private void decompile(){
+
 		}
 
 		public List<IBlockState> getAllowedBlockStates(){

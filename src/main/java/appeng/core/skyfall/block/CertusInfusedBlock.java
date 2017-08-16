@@ -28,7 +28,7 @@ public class CertusInfusedBlock extends Block {
 	}
 
 	public static boolean isValid(int variant){
-		return variant < getConfig().size();
+		return true;
 	}
 
 	public static boolean isValid(IBlockState state){

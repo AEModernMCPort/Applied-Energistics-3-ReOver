@@ -66,6 +66,10 @@ public class AppEngSkyfall implements ISkyfall {
 		return null;
 	}
 
+	public IForgeRegistry<SkyobjectGenerator> getSkyobjectGeneratorsRegistry(){
+		return skyobjectGeneratorsRegistry;
+	}
+
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerDefinitionBuilderSupplier(SkyobjectGenerator.class, SkyobjectGenerator.class, (factory, registryName, skyobjectGenerator) -> new SkyobjectGeneratorDefinitionBuilder<>(factory,registryName, skyobjectGenerator));
@@ -94,22 +98,12 @@ public class AppEngSkyfall implements ISkyfall {
 
 		initHandler.preInit();
 		proxy.preInit(event);
-
-		MinecraftForge.EVENT_BUS.register(this);
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void postRegisterBlocks(RegistryEvent.Register<Block> event){
-		config.initPostLoad(skyobjectGeneratorsRegistry);
-		try{
-			configLoader.save();
-		} catch(IOException e){
-			logger.error("Caught exception saving configuration", e);
-		}
 	}
 
 	@ModuleEventHandler
 	public void init(AEStateEvent.AEInitializationEvent event){
+		config.init();
+
 		initHandler.init();
 		proxy.init(event);
 	}
@@ -118,6 +112,12 @@ public class AppEngSkyfall implements ISkyfall {
 	public void postInit(AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
+
+		try{
+			configLoader.save();
+		} catch(IOException e){
+			logger.error("Caught exception saving configuration", e);
+		}
 	}
 
 	@ModuleEventHandler

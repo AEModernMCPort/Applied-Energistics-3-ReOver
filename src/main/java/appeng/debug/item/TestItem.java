@@ -1,15 +1,12 @@
 package appeng.debug.item;
 
-import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
-import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
 import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.config.SkyfallConfig;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
 import code.elix_x.excore.utils.world.MutableBlockAccessWorldDelegate;
 import code.elix_x.excore.utils.world.OriginTransformingMutableBlockAccess;
 import code.elix_x.excore.utils.world.TransformingMutableBlockAccess;
-import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.DefaultFractalNoiseGenerator3D;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
@@ -24,7 +21,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.RandomUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -38,7 +34,7 @@ public class TestItem extends Item {
 		MutableBlockAccess wworld = new MutableBlockAccessWorldDelegate(oldworld);
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random();
-		float radius = RandomUtils.nextFloat(config.minRadius, /*config.maxRadius*/ 35);
+		float radius = config.fractToRadius(random.nextDouble());
 		List<IBlockState> allowed = config.allowedBlocks.stream().map(Block.REGISTRY::getObject).map(Block::getDefaultState).collect(Collectors.toList());
 		Collections.shuffle(allowed, random);
 		int count = RandomUtils.nextInt(Math.min(allowed.size(), 2), allowed.size() + 1);

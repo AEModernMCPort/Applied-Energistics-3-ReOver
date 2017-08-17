@@ -48,17 +48,33 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 		public float minRadius = 5;
 		public float maxRadius = 110;
+		public double distributionExponent = 1.25;
+		//Caching these values to maybe improve performance
+		public transient float radiusDelta = minRadius - maxRadius;
+		public transient double eToDisExp = Math.exp(distributionExponent);
 		public List<ResourceLocation> allowedBlocks = Lists.newArrayList(new ResourceLocation(AppEng.MODID,"skystone"), new ResourceLocation("minecraft:stone"), new ResourceLocation("minecraft:cobblestone"), new ResourceLocation("minecraft:ice"), new ResourceLocation("minecraft:obsidian"));
 
 		public Meteorite(){
 
 		}
 
-		public void init(){
+		public float fractToRadius(double fract){
+			return (float) (minRadius + (Math.exp(fract*distributionExponent)-1) * radiusDelta/(eToDisExp-1));
+		}
+
+		private void compile(){
 			minRadius = Math.min(minRadius, maxRadius);
 			maxRadius = Math.max(minRadius, maxRadius);
 			minRadius = Math.max(minRadius, 1);
 			maxRadius = Math.min(maxRadius, 110);
+
+			distributionExponent = Math.max(distributionExponent, 0.001);
+
+			radiusDelta = minRadius-maxRadius;
+			eToDisExp = Math.exp(distributionExponent);
+		}
+
+		public void init(){
 			allowedBlocks = allowedBlocks.stream().filter(BlockState2String::isValidBlock).collect(Collectors.toList());
 		}
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class IonCraftingConfig implements ConfigCompilable, InitializationComponent.Init  {
 
-	private Map<String, List<MutablePair<String, Integer>>> oreDict2Ions = new HashMap<>();
+	private Map<String, List<MutablePair<ResourceLocation, Integer>>> oreDict2Ions = new HashMap<>();
 	public transient Multimap<String, Pair<Ion, Integer>> oreDict2IonsC = HashMultimap.create();
 
 	private Map<String, Reactivity> oreDict2Reactivity = new HashMap<>();
@@ -33,17 +33,17 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 	public transient Multimap<IonEnvironmentContext.Change, Recipe.Compiled> recipesC = HashMultimap.create();
 
 	public IonCraftingConfig(){
-		oreDict2Ions.put("gemQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 1)));
-		oreDict2Ions.put("dustRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 1)));
-		oreDict2Ions.put("gunpowder", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 1)));
-		oreDict2Ions.put("dustSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 1)));
-		oreDict2Ions.put("enderpearl", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)));
+		oreDict2Ions.put("gemQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 1)));
+		oreDict2Ions.put("dustRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone"), 1)));
+		oreDict2Ions.put("gunpowder", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
+		oreDict2Ions.put("dustSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 1)));
+		oreDict2Ions.put("enderpearl", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)));
 
-		oreDict2Ions.put("certusQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)));
-		oreDict2Ions.put("certusRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)));
-		oreDict2Ions.put("certusSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)));
-		oreDict2Ions.put("certusEnderium", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)));
-		oreDict2Ions.put("supersolidCertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 11)));
+		oreDict2Ions.put("certusQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 3)));
+		oreDict2Ions.put("certusRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone"), 3)));
+		oreDict2Ions.put("certusSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 2)));
+		oreDict2Ions.put("certusEnderium", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)));
+		oreDict2Ions.put("supersolidCertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 11)));
 
 
 		oreDict2Reactivity.put("certusQuartz", new Reactivity(false, Sets.newHashSet("water")));
@@ -53,10 +53,10 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDict2Reactivity.put("supersolidCertus", new Reactivity(true, Sets.newHashSet()));
 
 		recipes.put(new ResourceLocation(AppEng.MODID, NativeEnvironmentChange.HEATING.name().toLowerCase()), Lists.newArrayList(
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_quartz").toString(), 1))),
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_redstone").toString(), 1))),
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_sulfur").toString(), 1))),
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_enderium").toString(), 1)))
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz"), 3)), Lists.newArrayList(new Recipe.Result(new ResourceLocation("minecraft:item"), new ResourceLocation(AppEng.MODID, "certus_quartz"), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone"), 3)), Lists.newArrayList(new Recipe.Result(new ResourceLocation("minecraft:item"), new ResourceLocation(AppEng.MODID, "certus_redstone"), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur"), 2)), Lists.newArrayList(new Recipe.Result(new ResourceLocation("minecraft:item"), new ResourceLocation(AppEng.MODID, "certus_sulfur"), 1))),
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus"), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender"), 1)), Lists.newArrayList(new Recipe.Result(new ResourceLocation("minecraft:item"), new ResourceLocation(AppEng.MODID, "certus_enderium"), 1)))
 		));
 	}
 
@@ -68,7 +68,7 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 	@Override
 	public void init(){
 		oreDict2IonsC.clear();
-		oreDict2Ions.forEach((ore, ions) -> ions.forEach(ionr -> Optional.ofNullable(AppEngCore.INSTANCE.getIonRegistry().getValue(new ResourceLocation(ionr.getKey()))).ifPresent(ion -> oreDict2IonsC.put(ore, new ImmutablePair<>(ion, ionr.getRight())))));
+		oreDict2Ions.forEach((ore, ions) -> ions.forEach(ionr -> Optional.ofNullable(AppEngCore.INSTANCE.getIonRegistry().getValue(ionr.getKey())).ifPresent(ion -> oreDict2IonsC.put(ore, new ImmutablePair<>(ion, ionr.getRight())))));
 
 		oreDict2ReactivityC.clear();
 		oreDict2ReactivityC.putAll(Maps.transformValues(oreDict2Reactivity, Reactivity::compile));
@@ -80,7 +80,7 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 	@Override
 	public void decompile(){
 		oreDict2Ions.clear();
-		oreDict2IonsC.keySet().forEach(ore -> oreDict2Ions.put(ore, oreDict2IonsC.get(ore).stream().map(ion -> new MutablePair<>(ion.getLeft().getRegistryName().toString(), ion.getRight())).collect(Collectors.toList())));
+		oreDict2IonsC.keySet().forEach(ore -> oreDict2Ions.put(ore, oreDict2IonsC.get(ore).stream().map(ion -> new MutablePair<>(ion.getLeft().getRegistryName(), ion.getRight())).collect(Collectors.toList())));
 
 		oreDict2Reactivity.clear();
 		oreDict2Reactivity.putAll(Maps.transformValues(oreDict2ReactivityC, Reactivity.Compiled::decompile));

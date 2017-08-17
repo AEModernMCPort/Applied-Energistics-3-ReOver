@@ -8,14 +8,13 @@ import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
 import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.client.CertusInfusedBlockModelComponent;
-import appeng.core.skyfall.item.CertusInfusedBlockItem;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class SkyfallBlockDefinitions extends Definitions<Block, IBlockDefinition<Block>> implements ISkyfallBlockDefinitions {
 
 	public SkyfallBlockDefinitions(DefinitionFactory registry){
-		AppEngSkyfall.INSTANCE.config.meteorite.allowedBlocks.forEach(blockState -> registry.<CertusInfusedBlock, IBlockDefinition<CertusInfusedBlock>, IBlockBuilder<CertusInfusedBlock, ?>, Block>definitionBuilder(CertusInfusedBlock.formatToInfused(blockState), ih(new CertusInfusedBlock(blockState))).createItem(block -> new CertusInfusedBlockItem(block.maybe().get())).initializationComponent(Side.CLIENT, new CertusInfusedBlockModelComponent<>()).build());
+		AppEngSkyfall.INSTANCE.config.meteorite.allowedBlocks.forEach(blockState -> registry.<CertusInfusedBlock, IBlockDefinition<CertusInfusedBlock>, IBlockBuilder<CertusInfusedBlock, ?>, Block>definitionBuilder(CertusInfusedBlock.formatToInfused(blockState), ih(new CertusInfusedBlock(blockState))).createDefaultItem().initializationComponent(Side.CLIENT, new CertusInfusedBlockModelComponent<>()).build());
 	}
 
 	private DefinitionFactory.InputHandler<Block, Block> ih(Block block){

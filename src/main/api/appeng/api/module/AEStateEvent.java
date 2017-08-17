@@ -4,11 +4,11 @@ import appeng.api.bootstrap.*;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.config.FeaturesManager;
 import appeng.api.definition.IDefinition;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 
 import javax.annotation.Nonnull;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * Parent class of all AE events sent to modules
@@ -17,7 +17,7 @@ import java.util.function.Function;
  */
 public interface AEStateEvent {
 
-	public interface AEBootstrapEvent {
+	interface AEBootstrapEvent {
 
 		/**
 		 * Registers configuration loader provider for the given format.
@@ -42,7 +42,7 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEPreInitializationEvent {
+	interface AEPreInitializationEvent {
 
 		<C> ConfigurationLoader<C> configurationLoader();
 
@@ -56,15 +56,35 @@ public interface AEStateEvent {
 
 	}
 
-	public interface AEInitializationEvent {
+	interface AEInitializationEvent {
 
 	}
 
-	public interface AEPostInitializationEvent {
+	interface AEPostInitializationEvent {
 
 	}
 
-	public interface AELoadCompleteEvent {
+	interface AELoadCompleteEvent {
+
+	}
+
+	interface AEServerAboutToStartEvent {
+
+	}
+
+	interface AEServerStartingEvent {
+
+		void registerServerCommand(ICommand command);
+
+		void registerModuleSubcommand(ICommand command);
+
+	}
+
+	interface AEServerStoppingEvent {
+
+	}
+
+	interface AEServerStoppedEvent {
 
 	}
 
@@ -73,7 +93,7 @@ public interface AEStateEvent {
 	 *
 	 * @author Elix_x
 	 */
-	public interface ModuleIMCMessageEvent {
+	interface ModuleIMCMessageEvent {
 
 		FMLInterModComms.IMCMessage getMessage();
 

@@ -12,6 +12,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.DefinitionFactory;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.lib.config.GlobalFeaturesManager;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -20,7 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * Implementations of {@linkplain AEStateEvent}s.
@@ -99,6 +100,40 @@ public class AEStateEventImpl implements AEStateEvent {
 	}
 
 	public static class AELoadCompleteEventImpl extends AEStateEventImpl implements AEStateEvent.AELoadCompleteEvent {
+
+	}
+
+	public static class AEServerAboutToStartEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerAboutToStartEvent {
+
+	}
+
+	public static class AEServerStartingEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStartingEvent {
+
+		private Consumer<ICommand> serverCommandConsumer;
+		private Consumer<ICommand> subcommandConsumer;
+
+		public AEServerStartingEventImpl(Consumer<ICommand> serverCommandConsumer, Consumer<ICommand> subcommandConsumer){
+			this.serverCommandConsumer = serverCommandConsumer;
+			this.subcommandConsumer = subcommandConsumer;
+		}
+
+		@Override
+		public void registerServerCommand(ICommand command){
+			serverCommandConsumer.accept(command);
+		}
+
+		@Override
+		public void registerModuleSubcommand(ICommand command){
+			subcommandConsumer.accept(command);
+		}
+
+	}
+
+	public static class AEServerStoppingEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStoppingEvent {
+
+	}
+
+	public static class AEServerStoppedEventImpl extends AEStateEventImpl implements AEStateEvent.AEServerStoppedEvent {
 
 	}
 

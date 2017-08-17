@@ -44,6 +44,24 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		return weights.get(gen);
 	}
 
+	@Override
+	public boolean equals(Object o){
+		if(this == o) return true;
+		if(!(o instanceof SkyfallConfig)) return false;
+
+		SkyfallConfig that = (SkyfallConfig) o;
+
+		if(!weights.equals(that.weights)) return false;
+		return meteorite.equals(that.meteorite);
+	}
+
+	@Override
+	public int hashCode(){
+		int result = weights.hashCode();
+		result = 31 * result + meteorite.hashCode();
+		return result;
+	}
+
 	public static class Meteorite {
 
 		public float minRadius = 5;
@@ -80,6 +98,31 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 		private void decompile(){
 
+		}
+
+		@Override
+		public boolean equals(Object o){
+			if(this == o) return true;
+			if(!(o instanceof Meteorite)) return false;
+
+			Meteorite meteorite = (Meteorite) o;
+
+			if(Float.compare(meteorite.minRadius, minRadius) != 0) return false;
+			if(Float.compare(meteorite.maxRadius, maxRadius) != 0) return false;
+			if(Double.compare(meteorite.distributionExponent, distributionExponent) != 0) return false;
+			return allowedBlocks.equals(meteorite.allowedBlocks);
+		}
+
+		@Override
+		public int hashCode(){
+			int result;
+			long temp;
+			result = (minRadius != +0.0f ? Float.floatToIntBits(minRadius) : 0);
+			result = 31 * result + (maxRadius != +0.0f ? Float.floatToIntBits(maxRadius) : 0);
+			temp = Double.doubleToLongBits(distributionExponent);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			result = 31 * result + allowedBlocks.hashCode();
+			return result;
 		}
 
 	}

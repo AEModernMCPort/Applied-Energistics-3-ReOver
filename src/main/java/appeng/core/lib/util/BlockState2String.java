@@ -6,9 +6,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.InvalidBlockStateException;
 import net.minecraft.command.NumberInvalidException;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +18,17 @@ import java.util.Optional;
 
 public class BlockState2String {
 
-	public static final String FORMAT = "%1$s{%2$s}";
+	public static final String FORMAT = "%1$s[%2$s]";
 	public static final String PROPFORMAT = "%1$s=%2$s";
+
+	public static boolean isValidBlock(ResourceLocation id){
+		return id.equals(Block.REGISTRY.getObject(null).getRegistryName()) || Block.REGISTRY.getObject(id) != Blocks.AIR;
+	}
+
+	@Nullable
+	public static Block getBlockOrNull(ResourceLocation id){
+		return isValidBlock(id) ? Block.REGISTRY.getObject(id) : null;
+	}
 
 	public static String toString(IBlockState state){
 		Block block = state.getBlock();
@@ -43,6 +54,10 @@ public class BlockState2String {
 	public static Optional<IBlockState> fromStringSafe(String s){
 		String state = s.contains("{") ? s.split("\\{")[1].replace("}", "") : "";
 		return Optional.ofNullable(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s.split("\\{")[0]))).map(block -> state.isEmpty() ? block.getDefaultState() : convertArgToBlockStateSafe(block, state));
+	}
+
+	public static boolean isValidBlockState(String s){
+		return fromStringSafe(s).isPresent();
 	}
 
 	private static IBlockState convertArgToBlockStateSafe(Block block, String state){

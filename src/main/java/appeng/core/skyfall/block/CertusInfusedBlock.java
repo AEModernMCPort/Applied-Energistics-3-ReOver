@@ -1,5 +1,7 @@
 package appeng.core.skyfall.block;
 
+import appeng.core.AppEng;
+import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -12,77 +14,42 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CertusInfusedBlock extends Block {
 
-	public static final int MAXVARIANTS = 15;
-
-	public static final PropertyInteger VARIANT = PropertyInteger.create("variant", 0, MAXVARIANTS);
-
-	private static List<IBlockState> getConfig(){
-		return AppEngSkyfall.INSTANCE.config.meteorite.getAllowedBlockStates();
+	public static ResourceLocation formatToInfused(ResourceLocation original){
+		return new ResourceLocation(AppEng.MODID, String.format("certus_infused_%s_%s", original.getResourceDomain(), original.getResourcePath()));
 	}
 
-	public static boolean isValid(int variant){
-		return true;
+	//WE DO NOT SUPPORT STATES NOR META C:P
+	public static Optional<CertusInfusedBlock> getInfused(Block original){
+		return Optional.ofNullable(BlockState2String.getBlockOrNull(formatToInfused(original.getRegistryName()))).map(block -> block instanceof CertusInfusedBlock ? (CertusInfusedBlock) block : null);
 	}
 
-	public static boolean isValid(IBlockState state){
-		return getConfig().contains(state);
-	}
+	protected ResourceLocation original;
 
-	public static IBlockState getVariantState(int variant){
-		return getConfig().get(variant);
-	}
-
-	public static int getStateVariant(IBlockState state){
-		return getConfig().indexOf(state);
-	}
-
-	public CertusInfusedBlock(){
+	public CertusInfusedBlock(ResourceLocation original){
 		super(Material.ROCK);
 		setCreativeTab(CreativeTabs.DECORATIONS);
+		this.original = original;
 	}
 
-	@Override
-	public BlockStateContainer createBlockState(){
-		return new BlockStateContainer(this, VARIANT);
+	public IBlockState getOriginal(){
+		return BlockState2String.fromString(original.toString());
 	}
 
-	@Override
-	public int getMetaFromState(IBlockState state){
-		return state.getValue(VARIANT);
-	}
-
-	@Override
-	public IBlockState getStateFromMeta(int meta){
-		return getDefaultState().withProperty(VARIANT, meta);
-	}
-
-	@Override
-	public int damageDropped(IBlockState state){
-		return getMetaFromState(state);
-	}
-
-	@Override
-	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(int meta = 0; meta <= MAXVARIANTS; meta++) if(isValid(meta)) items.add(new ItemStack(this, 1, meta));
-	}
-
-	public String getDisplayName(int variant, String def){
+	public String getDisplayName(String def){
 		String original;
-		if(isValid(variant)){
-			IBlockState infusedS = getVariantState(variant);
-			Item infusedI = Item.getItemFromBlock(infusedS.getBlock());
-			if(infusedI != Items.AIR) original = new ItemStack(infusedI, 1, infusedS.getBlock().damageDropped(infusedS)).getDisplayName();
-			else original = infusedS.getBlock().getLocalizedName();
-		} else {
-			original = "tile.null.name";
-		}
+		IBlockState infusedS = getOriginal();
+		Item infusedI = Item.getItemFromBlock(infusedS.getBlock());
+		if(infusedI != Items.AIR) original = new ItemStack(infusedI, 1, infusedS.getBlock().damageDropped(infusedS)).getDisplayName();
+		else original = infusedS.getBlock().getLocalizedName();
 		return String.format(def, original);
 	}
 

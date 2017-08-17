@@ -1,5 +1,6 @@
 package appeng.debug.item;
 
+import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.definitions.ISkyfallBlockDefinitions;
 import appeng.core.skyfall.block.CertusInfusedBlock;
@@ -8,6 +9,7 @@ import code.elix_x.excore.utils.world.MutableBlockAccess;
 import code.elix_x.excore.utils.world.MutableBlockAccessWorldDelegate;
 import code.elix_x.excore.utils.world.OriginTransformingMutableBlockAccess;
 import code.elix_x.excore.utils.world.TransformingMutableBlockAccess;
+import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.DefaultFractalNoiseGenerator3D;
 import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class TestItem extends Item {
 
@@ -36,7 +39,7 @@ public class TestItem extends Item {
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random();
 		float radius = RandomUtils.nextFloat(config.minRadius, /*config.maxRadius*/ 35);
-		List<IBlockState> allowed = new ArrayList<>(config.getAllowedBlockStates());
+		List<IBlockState> allowed = config.allowedBlocks.stream().map(Block.REGISTRY::getObject).map(Block::getDefaultState).collect(Collectors.toList());
 		Collections.shuffle(allowed, random);
 		int count = RandomUtils.nextInt(Math.min(allowed.size(), 2), allowed.size() + 1);
 		for(int i = 0; i < count; i++){
@@ -61,7 +64,7 @@ public class TestItem extends Item {
 				}
 			}
 		}
-		AppEngSkyfall.INSTANCE.<Block, ISkyfallBlockDefinitions>definitions(Block.class).certusInfused().maybe().ifPresent(certusInfusedBlock -> {
+//		AppEngSkyfall.INSTANCE.<Block, ISkyfallBlockDefinitions>definitions(Block.class).certusInfused().maybe().ifPresent(certusInfusedBlock -> {
 			Random localRandom = new Random(random.nextLong());
 			DefaultFractalNoiseGenerator3D infusionNoise = new DefaultFractalNoiseGenerator3D(500, 0.3, 0.9, 1, new DefaultRandomNumberGenerator(localRandom.nextLong()));
 			TransformingMutableBlockAccess world = new OriginTransformingMutableBlockAccess(wworld, pos.add(0, radius * 1.5, 0));
@@ -75,12 +78,11 @@ public class TestItem extends Item {
 						BlockPos next = new BlockPos(x, y, z);
 						if(infusionNoise.valueAt(p, x * s, y * s, z * s) >= threshold)
 							if(localRandom.nextFloat() < corruption)
-								if(config.isAllowedState(world.getBlockState(next)))
-									world.setBlockState(next, certusInfusedBlock.getStateFromMeta(CertusInfusedBlock.getStateVariant(world.getBlockState(next))));
+								CertusInfusedBlock.getInfused(world.getBlockState(next).getBlock()).ifPresent(certusInfusedBlock -> world.setBlockState(next, certusInfusedBlock.getDefaultState()));
 					}
 				}
 			}
-		});
+//		});
 		return EnumActionResult.SUCCESS;
 	}
 

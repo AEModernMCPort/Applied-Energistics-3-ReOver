@@ -5,6 +5,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockIce;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -47,6 +48,11 @@ public class CertusInfusedBlock extends Block implements BlockStackDisplayNamePr
 	}
 
 	@Override
+	public Material getMaterial(IBlockState state){
+		return getOriginal().getMaterial();
+	}
+
+	@Override
 	public String getItemStackDisplayName(ItemStack stack, String def){
 		String original;
 		IBlockState infusedS = getOriginal();
@@ -58,7 +64,8 @@ public class CertusInfusedBlock extends Block implements BlockStackDisplayNamePr
 
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer(){
-		return BlockRenderLayer.CUTOUT_MIPPED;
+		BlockRenderLayer original = getOriginal().getBlock().getBlockLayer();
+		return original == BlockRenderLayer.SOLID || original == BlockRenderLayer.CUTOUT ? BlockRenderLayer.CUTOUT_MIPPED : original;
 	}
 
 }

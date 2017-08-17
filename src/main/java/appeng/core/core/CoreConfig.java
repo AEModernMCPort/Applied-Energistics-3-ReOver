@@ -22,4 +22,19 @@ public class CoreConfig implements ConfigCompilable, InitializationComponent.Ini
 	public void decompile(){
 		ionCraftingConfig.decompile();
 	}
+
+	@Override
+	public boolean equals(Object o){
+		if(this == o) return true;
+		if(!(o instanceof CoreConfig)) return false;
+
+		CoreConfig that = (CoreConfig) o;
+
+		return ionCraftingConfig.equals(that.ionCraftingConfig);
+	}
+
+	@Override
+	public int hashCode(){
+		return ionCraftingConfig.hashCode();
+	}
 }

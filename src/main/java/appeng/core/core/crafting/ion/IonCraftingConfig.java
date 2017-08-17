@@ -89,6 +89,26 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		recipesC.keySet().forEach(change -> recipes.put(AppEngCore.INSTANCE.getCraftingIonRegistry().getChangeName(change), recipesC.get(change).stream().map(Recipe.Compiled::decompile).collect(Collectors.toList())));
 	}
 
+	@Override
+	public boolean equals(Object o){
+		if(this == o) return true;
+		if(!(o instanceof IonCraftingConfig)) return false;
+
+		IonCraftingConfig that = (IonCraftingConfig) o;
+
+		if(!oreDict2Ions.equals(that.oreDict2Ions)) return false;
+		if(!oreDict2Reactivity.equals(that.oreDict2Reactivity)) return false;
+		return recipes.equals(that.recipes);
+	}
+
+	@Override
+	public int hashCode(){
+		int result = oreDict2Ions.hashCode();
+		result = 31 * result + oreDict2Reactivity.hashCode();
+		result = 31 * result + recipes.hashCode();
+		return result;
+	}
+
 	public static class Reactivity {
 
 		public boolean def = false;
@@ -105,6 +125,24 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 		Compiled compile(){
 			return new Compiled(def, fluids.stream().map(FluidRegistry::getFluid).collect(Collectors.toSet()));
+		}
+
+		@Override
+		public boolean equals(Object o){
+			if(this == o) return true;
+			if(!(o instanceof Reactivity)) return false;
+
+			Reactivity that = (Reactivity) o;
+
+			if(def != that.def) return false;
+			return fluids.equals(that.fluids);
+		}
+
+		@Override
+		public int hashCode(){
+			int result = (def ? 1 : 0);
+			result = 31 * result + fluids.hashCode();
+			return result;
 		}
 
 		public static class Compiled {
@@ -146,6 +184,24 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 			return new Compiled(Lists.transform(ions, pair -> new ImmutablePair<>(AppEngCore.INSTANCE.getIonRegistry().getValue(pair.getLeft()), pair.getRight())), Lists.transform(results, Result::compile));
 		}
 
+		@Override
+		public boolean equals(Object o){
+			if(this == o) return true;
+			if(!(o instanceof Recipe)) return false;
+
+			Recipe recipe = (Recipe) o;
+
+			if(!ions.equals(recipe.ions)) return false;
+			return results.equals(recipe.results);
+		}
+
+		@Override
+		public int hashCode(){
+			int result = ions.hashCode();
+			result = 31 * result + results.hashCode();
+			return result;
+		}
+
 		public static class Result {
 
 			public ResourceLocation type;
@@ -163,6 +219,26 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 
 			public <T> Result.Compiled<T> compile(){
 				return new Compiled<>(type, AppEngCore.INSTANCE.getCraftingIonRegistry().deserializeResult(type, result), amount);
+			}
+
+			@Override
+			public boolean equals(Object o){
+				if(this == o) return true;
+				if(!(o instanceof Result)) return false;
+
+				Result result1 = (Result) o;
+
+				if(amount != result1.amount) return false;
+				if(!type.equals(result1.type)) return false;
+				return result.equals(result1.result);
+			}
+
+			@Override
+			public int hashCode(){
+				int result1 = type.hashCode();
+				result1 = 31 * result1 + result.hashCode();
+				result1 = 31 * result1 + amount;
+				return result1;
 			}
 
 			public static class Compiled<T> {

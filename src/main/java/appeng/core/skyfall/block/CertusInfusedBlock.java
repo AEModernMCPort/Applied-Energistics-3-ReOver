@@ -1,5 +1,6 @@
 package appeng.core.skyfall.block;
 
+import appeng.api.block.BlockStackDisplayNameProvider;
 import appeng.core.AppEng;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.List;
 import java.util.Optional;
 
-public class CertusInfusedBlock extends Block {
+public class CertusInfusedBlock extends Block implements BlockStackDisplayNameProvider {
 
 	public static ResourceLocation formatToInfused(ResourceLocation original){
 		return new ResourceLocation(AppEng.MODID, String.format("certus_infused_%s_%s", original.getResourceDomain(), original.getResourcePath()));
@@ -38,13 +39,15 @@ public class CertusInfusedBlock extends Block {
 		super(Material.ROCK);
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		this.original = original;
+		setUnlocalizedName(AppEng.MODID + ".certus_infused");
 	}
 
 	public IBlockState getOriginal(){
 		return BlockState2String.fromString(original.toString());
 	}
 
-	public String getDisplayName(String def){
+	@Override
+	public String getItemStackDisplayName(ItemStack stack, String def){
 		String original;
 		IBlockState infusedS = getOriginal();
 		Item infusedI = Item.getItemFromBlock(infusedS.getBlock());

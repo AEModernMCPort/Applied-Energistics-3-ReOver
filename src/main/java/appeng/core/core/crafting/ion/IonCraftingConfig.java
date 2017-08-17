@@ -42,21 +42,21 @@ public class IonCraftingConfig implements ConfigCompilable, InitializationCompon
 		oreDict2Ions.put("certusQuartz", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)));
 		oreDict2Ions.put("certusRedstone", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)));
 		oreDict2Ions.put("certusSulfur", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)));
-		oreDict2Ions.put("incertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)));
+		oreDict2Ions.put("certusEnderium", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)));
 		oreDict2Ions.put("supersolidCertus", Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 11)));
 
 
 		oreDict2Reactivity.put("certusQuartz", new Reactivity(false, Sets.newHashSet("water")));
 		oreDict2Reactivity.put("certusRedstone", new Reactivity(false, Sets.newHashSet("water")));
 		oreDict2Reactivity.put("certusSulfur", new Reactivity(false, Sets.newHashSet("water")));
-		oreDict2Reactivity.put("incertus", new Reactivity(false, Sets.newHashSet("water")));
+		oreDict2Reactivity.put("certusEnderium", new Reactivity(false, Sets.newHashSet("water")));
 		oreDict2Reactivity.put("supersolidCertus", new Reactivity(true, Sets.newHashSet()));
 
 		recipes.put(new ResourceLocation(AppEng.MODID, NativeEnvironmentChange.HEATING.name().toLowerCase()), Lists.newArrayList(
 			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "quartz").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_quartz").toString(), 1))),
 			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "redstone").toString(), 3)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_redstone").toString(), 1))),
 			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "sulfur").toString(), 2)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_sulfur").toString(), 1))),
-			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "incertus").toString(), 1)))
+			new Recipe(Lists.newArrayList(new MutablePair<>(new ResourceLocation(AppEng.MODID, "certus").toString(), 1), new MutablePair<>(new ResourceLocation(AppEng.MODID, "ender").toString(), 1)), Lists.newArrayList(new Recipe.Result("minecraft:item", new ResourceLocation(AppEng.MODID, "certus_enderium").toString(), 1)))
 		));
 	}
 

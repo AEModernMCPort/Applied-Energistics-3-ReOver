@@ -24,6 +24,12 @@ public interface ICoreItemDefinitions extends IDefinitions<Item, IItemDefinition
 		return get(new ResourceLocation(AEModInfo.MODID, "certus_sulfur"));
 	}
 
+	default IItemDefinition<Item> certusEnderium(){
+		return get(new ResourceLocation(AEModInfo.MODID, "certus_enderium"));
+	}
+
+
+
 	default IItemDefinition<Item> incertus(){
 		return get(new ResourceLocation(AEModInfo.MODID, "incertus"));
 	}

@@ -15,16 +15,19 @@ public class CoreItemDefinitions extends Definitions<Item, IItemDefinition<Item>
 	private final IItemDefinition certusQuartz;
 	private final IItemDefinition certusRedstone;
 	private final IItemDefinition certusSulfur;
-	private final IItemDefinition incertus;
+	private final IItemDefinition certusEnderium;
 
+	private final IItemDefinition incertus;
 	private final IItemDefinition supersolidCertus;
 
 	public CoreItemDefinitions(DefinitionFactory registry){
 		certusQuartz = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_quartz"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("certusQuartz")).build();
 		certusRedstone = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_redstone"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("certusRedstone")).build();
 		certusSulfur = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_sulfur"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("certusSulfur")).build();
-		incertus = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "incertus"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("incertus")).build();
+		certusEnderium = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "certus_enderium"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("certusEnderium")).build();
 
+
+		incertus = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "incertus"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("incertus")).build();
 		supersolidCertus = registry.<Item, IItemDefinition<Item>, IItemBuilder<Item, ?>, Item>definitionBuilder(new ResourceLocation(AppEng.MODID, "supersolid_certus"), ih(new Item())).initializationComponent(null, new RegisterToOredictComponent<>("supersolidCertus")).build();
 	}
 

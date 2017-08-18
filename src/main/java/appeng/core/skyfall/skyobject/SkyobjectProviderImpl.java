@@ -1,10 +1,11 @@
 package appeng.core.skyfall.skyobject;
 
+import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Function;
 
-public abstract class SkyobjectProviderImpl<S extends SkyobjectImpl<S, P>, P extends SkyobjectProviderImpl<S, P>> extends IForgeRegistryEntry.Impl<P> implements appeng.core.skyfall.api.skyobject.SkyobjectProvider<S, P> {
+public abstract class SkyobjectProviderImpl<S extends SkyobjectImpl<S, P>, P extends SkyobjectProviderImpl<S, P>> extends IForgeRegistryEntry.Impl<P> implements SkyobjectProvider<S, P> {
 
 	protected Function<P, S> skyobjectSupplier;
 	protected int defaultWeight;

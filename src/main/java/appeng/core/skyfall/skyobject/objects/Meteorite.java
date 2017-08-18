@@ -8,4 +8,9 @@ public class Meteorite extends SkyobjectImpl<Meteorite, MeteoriteProvider> {
 		super(provider);
 	}
 
+	@Override
+	public void update(){
+
+	}
+
 }

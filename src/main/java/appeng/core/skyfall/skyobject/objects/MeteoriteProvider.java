@@ -3,8 +3,6 @@ package appeng.core.skyfall.skyobject.objects;
 import appeng.core.skyfall.skyobject.SkyobjectProviderImpl;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
 
-import java.util.Random;
-
 public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, MeteoriteProvider> {
 
 	public MeteoriteProvider(int defaultWeight){
@@ -12,7 +10,7 @@ public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, Meteorit
 	}
 
 	@Override
-	public void generate(MutableBlockAccess world, Random random){
+	public void generate(MutableBlockAccess world, long seed){
 
 	}
 }

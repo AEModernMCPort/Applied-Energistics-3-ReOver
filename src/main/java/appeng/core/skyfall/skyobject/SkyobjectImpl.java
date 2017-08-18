@@ -1,6 +1,8 @@
 package appeng.core.skyfall.skyobject;
 
-public class SkyobjectImpl<S extends SkyobjectImpl<S, P>, P extends SkyobjectProvider<S, P>> implements appeng.core.skyfall.api.skyobject.Skyobject<S, P> {
+import appeng.core.skyfall.api.skyobject.Skyobject;
+
+public class SkyobjectImpl<S extends SkyobjectImpl<S, P>, P extends SkyobjectProviderImpl<S, P>> implements Skyobject<S, P> {
 
 	protected final P provider;
 

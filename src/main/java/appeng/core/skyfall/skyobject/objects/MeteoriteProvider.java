@@ -1,11 +1,11 @@
 package appeng.core.skyfall.skyobject.objects;
 
-import appeng.core.skyfall.skyobject.SkyobjectProvider;
+import appeng.core.skyfall.skyobject.SkyobjectProviderImpl;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
 
 import java.util.Random;
 
-public class MeteoriteProvider extends SkyobjectProvider<Meteorite, MeteoriteProvider> {
+public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, MeteoriteProvider> {
 
 	public MeteoriteProvider(int defaultWeight){
 		super(Meteorite::new, defaultWeight);

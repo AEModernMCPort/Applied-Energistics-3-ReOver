@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="PerlinNoiseTesting">
+  <grid id="27dc6" binding="root" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="823" height="561"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="7256e" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="724a5" layout-manager="GridBagLayout">
+            <constraints/>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="b3946" class="javax.swing.JCheckBox" binding="twoD">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties>
+                  <text value="2D/3D"/>
+                </properties>
+              </component>
+              <grid id="2558" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="f8b82" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Xd / sec"/>
+                    </properties>
+                  </component>
+                  <component id="25ad" class="javax.swing.JSpinner" binding="xPS">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </grid>
+              <grid id="dcf55" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="0.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="ea8c" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Y Exponent"/>
+                    </properties>
+                  </component>
+                  <component id="76b18" class="javax.swing.JSlider" binding="yExp">
+                    <constraints/>
+                    <properties>
+                      <maximum value="5000"/>
+                      <value value="500"/>
+                      <valueIsAdjusting value="true"/>
+                    </properties>
+                  </component>
+                  <component id="66891" class="javax.swing.JTextPane" binding="yExpVal">
+                    <constraints/>
+                    <properties>
+                      <editable value="false"/>
+                      <text value="YExp"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
+          <grid id="4980f" layout-manager="GridBagLayout">
+            <constraints/>
+            <properties>
+              <enabled value="true"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <grid id="3bf2c" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="4c2b5" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Scale Multiplier"/>
+                    </properties>
+                  </component>
+                  <component id="6bc47" class="javax.swing.JSlider" binding="scaleMul">
+                    <constraints/>
+                    <properties>
+                      <maximum value="1000"/>
+                      <snapToTicks value="false"/>
+                      <value value="500"/>
+                      <valueIsAdjusting value="false"/>
+                    </properties>
+                  </component>
+                  <component id="596a3" class="javax.swing.JTextPane" binding="scaleMulVal">
+                    <constraints/>
+                    <properties>
+                      <editable value="false"/>
+                      <text value="ScaleMul"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="67135" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="88dcd" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Magnitude Multiplier"/>
+                    </properties>
+                  </component>
+                  <component id="77b50" class="javax.swing.JSlider" binding="magMul">
+                    <constraints/>
+                    <properties>
+                      <maximum value="1000"/>
+                      <value value="500"/>
+                    </properties>
+                  </component>
+                  <component id="1cd" class="javax.swing.JTextPane" binding="magMulVal">
+                    <constraints/>
+                    <properties>
+                      <editable value="false"/>
+                      <text value="MagMul"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="177a1" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="f5caf" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Initial Magnitude"/>
+                    </properties>
+                  </component>
+                  <component id="d9d37" class="javax.swing.JSlider" binding="initMag">
+                    <constraints/>
+                    <properties>
+                      <maximum value="10000"/>
+                      <value value="500"/>
+                    </properties>
+                  </component>
+                  <component id="d58b1" class="javax.swing.JTextPane" binding="initMagVal">
+                    <constraints/>
+                    <properties>
+                      <editable value="false"/>
+                      <text value="InitMag"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="9c837" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <gridbag weightx="1.0" weighty="0.0"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="b9e63" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text value="Inital Scale"/>
+                    </properties>
+                  </component>
+                  <component id="d9e00" class="javax.swing.JSlider" binding="initScale">
+                    <constraints/>
+                    <properties>
+                      <inverted value="false"/>
+                      <maximum value="1000"/>
+                      <value value="500"/>
+                    </properties>
+                  </component>
+                  <component id="d655d" class="javax.swing.JTextPane" binding="initScaleVal">
+                    <constraints/>
+                    <properties>
+                      <editable value="false"/>
+                      <text value="InitScale"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="63d2d" binding="imagePanel" custom-create="true" layout-manager="GridBagLayout">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
+    </children>
+  </grid>
+</form>

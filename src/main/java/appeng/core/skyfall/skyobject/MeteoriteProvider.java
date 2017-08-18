@@ -1,12 +1,12 @@
-package appeng.core.skyfall.generator;
+package appeng.core.skyfall.skyobject;
 
 import code.elix_x.excore.utils.world.MutableBlockAccess;
 
 import java.util.Random;
 
-public class MeteoriteGenerator extends SkyobjectGenerator {
+public class MeteoriteProvider extends SkyobjectProvider {
 
-	public MeteoriteGenerator(float defaultWeight){
+	public MeteoriteProvider(float defaultWeight){
 		super(defaultWeight);
 	}
 

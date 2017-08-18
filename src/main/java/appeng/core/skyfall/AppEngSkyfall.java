@@ -11,21 +11,18 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.skyfall.api.ISkyfall;
-import appeng.core.skyfall.api.generator.SkyobjectGenerator;
+import appeng.core.skyfall.api.skyobject.Skyobject;
+import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
-import appeng.core.skyfall.definitions.SkyfallSkyobjectGeneratorDefinitions;
+import appeng.core.skyfall.definitions.SkyfallSkyobjectProviderDefinitions;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -48,13 +45,13 @@ public class AppEngSkyfall implements ISkyfall {
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
-	private IForgeRegistry<SkyobjectGenerator> skyobjectGeneratorsRegistry;
+	private IForgeRegistry skyobjectProvidersRegistry;
 
 	private DefinitionFactory registry;
 
 	private SkyfallBlockDefinitions blockDefinitions;
 	private SkyfallItemDefinitions itemDefinitions;
-	private SkyfallSkyobjectGeneratorDefinitions skyobjectGeneratorDefinitions;
+	private SkyfallSkyobjectProviderDefinitions skyobjectProviderDefinitions;
 
 	private ConfigurationLoader<SkyfallConfig> configLoader;
 
@@ -62,22 +59,22 @@ public class AppEngSkyfall implements ISkyfall {
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
 		if(clas == Item.class) return (D) itemDefinitions;
 		if(clas == Block.class) return (D) blockDefinitions;
-		if(clas == SkyobjectGenerator.class) return (D) skyobjectGeneratorDefinitions;
+		if(clas == SkyobjectProvider.class) return (D) skyobjectProviderDefinitions;
 		return null;
 	}
 
-	public IForgeRegistry<SkyobjectGenerator> getSkyobjectGeneratorsRegistry(){
-		return skyobjectGeneratorsRegistry;
+	public <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> IForgeRegistry<P> getSkyobjectProvidersRegistry(){
+		return skyobjectProvidersRegistry;
 	}
 
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
-		event.registerDefinitionBuilderSupplier(SkyobjectGenerator.class, SkyobjectGenerator.class, (factory, registryName, skyobjectGenerator) -> new SkyobjectGeneratorDefinitionBuilder<>(factory,registryName, skyobjectGenerator));
+		event.registerDefinitionBuilderSupplier(SkyobjectProvider.class, SkyobjectProvider.class, (factory, registryName, skyobjectGenerator) -> new SkyobjectGeneratorDefinitionBuilder<>(factory,registryName, skyobjectGenerator));
 	}
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		skyobjectGeneratorsRegistry = new RegistryBuilder<SkyobjectGenerator>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectGenerator.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+		skyobjectProvidersRegistry = new RegistryBuilder<SkyobjectProvider>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectProvider.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
 		configLoader = event.configurationLoader();
 		try{
@@ -90,11 +87,11 @@ public class AppEngSkyfall implements ISkyfall {
 		registry = event.factory(initHandler, proxy);
 		this.blockDefinitions = new SkyfallBlockDefinitions(registry);
 		this.itemDefinitions = new SkyfallItemDefinitions(registry);
-		this.skyobjectGeneratorDefinitions = new SkyfallSkyobjectGeneratorDefinitions(registry);
+		this.skyobjectProviderDefinitions = new SkyfallSkyobjectProviderDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
-		this.skyobjectGeneratorDefinitions.init(registry);
+		this.skyobjectProviderDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

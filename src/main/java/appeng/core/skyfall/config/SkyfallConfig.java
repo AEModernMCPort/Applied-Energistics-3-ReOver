@@ -5,7 +5,7 @@ import appeng.api.config.ConfigCompilable;
 import appeng.core.AppEng;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
-import appeng.core.skyfall.api.generator.SkyobjectGenerator;
+import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import com.google.common.collect.Lists;
 import net.minecraft.util.ResourceLocation;
 
@@ -31,7 +31,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	@Override
 	public void init(){
-		for(SkyobjectGenerator generator : AppEngSkyfall.INSTANCE.getSkyobjectGeneratorsRegistry()) if(!weights.containsKey(generator.getRegistryName())) weights.put(generator.getRegistryName(), generator.getDefaultWeight());
+		for(SkyobjectProvider generator : AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry()) if(!weights.containsKey(generator.getRegistryName())) weights.put(generator.getRegistryName(), generator.getDefaultWeight());
 		meteorite.init();
 	}
 

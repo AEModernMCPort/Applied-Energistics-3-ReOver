@@ -26,8 +26,8 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	private Map<ResourceLocation, Integer> weights = new HashMap<>();
 
-	public SpawnNoise day = new SpawnNoise(0.866, 0.269, 0.909, 0.763, 1.183);
-	public SpawnNoise tick = new SpawnNoise(0.091, 0.86, 0.054, 0.065, 5);
+	public SpawnNoise.Day day = new SpawnNoise.Day();
+	public SpawnNoise.Tick tick = new SpawnNoise.Tick();
 
 	public Meteorite meteorite = new Meteorite();
 
@@ -143,6 +143,22 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 			temp = Double.doubleToLongBits(exponent);
 			result = 31 * result + (int) (temp ^ (temp >>> 32));
 			return result;
+		}
+
+		public static class Day extends SpawnNoise {
+
+			public Day(){
+				super(0.866, 0.269, 0.909, 0.763, 1.183);
+			}
+
+		}
+
+		public static class Tick extends SpawnNoise {
+
+			public Tick(){
+				super(0.091, 0.86, 0.054, 0.065, 5);
+			}
+
 		}
 
 	}

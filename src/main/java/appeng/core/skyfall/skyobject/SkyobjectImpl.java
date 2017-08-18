@@ -8,6 +8,8 @@ public abstract class SkyobjectImpl<S extends SkyobjectImpl<S, P>, P extends Sky
 
 	protected boolean dead;
 
+	long seed;
+
 	public SkyobjectImpl(P provider){
 		this.provider = provider;
 	}

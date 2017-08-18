@@ -1,6 +1,7 @@
 package appeng.core.skyfall.skyobject;
 
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Function;
@@ -23,5 +24,19 @@ public abstract class SkyobjectProviderImpl<S extends SkyobjectImpl<S, P>, P ext
 	@Override
 	public int getDefaultWeight(){
 		return defaultWeight;
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT(S skyobject){
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setLong("seed", skyobject.seed);
+		return nbt;
+	}
+
+	@Override
+	public S deserializeNBT(NBTTagCompound nbt){
+		S skyobject = get();
+		skyobject.seed = nbt.getLong("seed");
+		return skyobject;
 	}
 }

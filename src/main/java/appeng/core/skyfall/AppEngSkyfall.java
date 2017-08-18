@@ -10,18 +10,24 @@ import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.core.lib.capability.DelegateCapabilityStorage;
 import appeng.core.skyfall.api.ISkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
+import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectProviderDefinitions;
 import appeng.core.skyfall.proxy.SkyfallProxy;
+import appeng.core.skyfall.skyobject.SkyobjectsManagerImpl;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
@@ -40,6 +46,9 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@SidedProxy(modId = AppEng.MODID, clientSide = "appeng.core.skyfall.proxy.SkyfallClientProxy", serverSide = "appeng.core.skyfall.proxy.SkyfallServerProxy")
 	public static SkyfallProxy proxy;
+
+	@CapabilityInject(SkyobjectsManager.class)
+	public static Capability<SkyobjectsManager> skyobjectsManagerCapability;
 
 	public SkyfallConfig config;
 
@@ -74,7 +83,7 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		skyobjectProvidersRegistry = new RegistryBuilder<SkyobjectProvider>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType(SkyobjectProvider.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+		skyobjectProvidersRegistry = new RegistryBuilder<>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType((Class) SkyobjectProvider.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
 		configLoader = event.configurationLoader();
 		try{
@@ -92,6 +101,8 @@ public class AppEngSkyfall implements ISkyfall {
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.skyobjectProviderDefinitions.init(registry);
+
+		CapabilityManager.INSTANCE.register(SkyobjectsManager.class, new DelegateCapabilityStorage<>(), SkyobjectsManagerImpl::new);
 
 		initHandler.preInit();
 		proxy.preInit(event);

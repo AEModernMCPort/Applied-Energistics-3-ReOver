@@ -4,7 +4,7 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Function;
 
-public abstract class SkyobjectProvider<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry.Impl<P> implements appeng.core.skyfall.api.skyobject.SkyobjectProvider<S, P> {
+public abstract class SkyobjectProvider<S extends SkyobjectImpl<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry.Impl<P> implements appeng.core.skyfall.api.skyobject.SkyobjectProvider<S, P> {
 
 	protected Function<P, S> skyobjectSupplier;
 	protected int defaultWeight;

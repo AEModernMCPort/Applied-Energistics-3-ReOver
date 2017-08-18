@@ -4,14 +4,12 @@ import code.elix_x.excore.utils.world.MutableBlockAccess;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
-public interface SkyobjectProvider<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry<P> {
+public interface SkyobjectProvider<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry<P>, Supplier<S> {
 
 	float getDefaultWeight();
 
-
-
-	S newSkyobjectInstance();
 
 	void generate(MutableBlockAccess world, Random random);
 

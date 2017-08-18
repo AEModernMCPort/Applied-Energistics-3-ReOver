@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,17 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		event.addCapability(new ResourceLocation(AppEng.MODID, "skyobjects_manager"), new SingleCapabilityProvider<>(AppEngSkyfall.skyobjectsManagerCapability, new SkyobjectsManagerImpl()));
 	}
 
+	@SubscribeEvent
+	public static void tickSkyobjects(TickEvent.WorldTickEvent event){
+		if(event.phase == TickEvent.Phase.END) event.world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).tick(event.world);
+	}
+
 	protected List<Skyobject> skyobjects = new ArrayList<>();
+
+	@Override
+	public void tick(World world){
+		skyobjects.forEach(skyobject -> skyobject.tick(world));
+	}
 
 	@Override
 	public NBTTagCompound serializeNBT(){

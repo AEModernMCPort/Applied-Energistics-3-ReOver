@@ -1,6 +1,7 @@
 package appeng.core.skyfall.skyobject.objects;
 
 import appeng.core.skyfall.skyobject.SkyobjectImpl;
+import net.minecraft.world.World;
 
 public class Meteorite extends SkyobjectImpl<Meteorite, MeteoriteProvider> {
 
@@ -9,7 +10,7 @@ public class Meteorite extends SkyobjectImpl<Meteorite, MeteoriteProvider> {
 	}
 
 	@Override
-	public void update(){
+	public void tick(World world){
 
 	}
 

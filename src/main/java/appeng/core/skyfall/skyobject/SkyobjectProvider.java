@@ -3,14 +3,13 @@ package appeng.core.skyfall.skyobject;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public abstract class SkyobjectProvider<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry.Impl<P> implements appeng.core.skyfall.api.skyobject.SkyobjectProvider<S, P> {
 
 	protected Function<P, S> skyobjectSupplier;
-	protected float defaultWeight;
+	protected int defaultWeight;
 
-	public SkyobjectProvider(Function<P, S> skyobjectSupplier, float defaultWeight){
+	public SkyobjectProvider(Function<P, S> skyobjectSupplier, int defaultWeight){
 		this.skyobjectSupplier = skyobjectSupplier;
 		this.defaultWeight = defaultWeight;
 	}
@@ -21,7 +20,7 @@ public abstract class SkyobjectProvider<S extends Skyobject<S, P>, P extends Sky
 	}
 
 	@Override
-	public float getDefaultWeight(){
+	public int getDefaultWeight(){
 		return defaultWeight;
 	}
 }

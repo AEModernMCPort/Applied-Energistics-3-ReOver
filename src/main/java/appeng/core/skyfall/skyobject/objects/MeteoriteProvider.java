@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class MeteoriteProvider extends SkyobjectProvider<Meteorite, MeteoriteProvider> {
 
-	public MeteoriteProvider(float defaultWeight){
+	public MeteoriteProvider(int defaultWeight){
 		super(Meteorite::new, defaultWeight);
 	}
 

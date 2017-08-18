@@ -5,23 +5,26 @@ import appeng.api.config.ConfigCompilable;
 import appeng.core.AppEng;
 import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
+import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import com.google.common.collect.Lists;
 import hall.collin.christopher.math.noise.DefaultFractalNoiseGenerator2D;
 import hall.collin.christopher.math.noise.FractalNoiseGenerator2D;
 import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SkyfallConfig implements ConfigCompilable, InitializationComponent.Init {
 
-	private Map<ResourceLocation, Float> weights = new HashMap<>();
+	private Map<ResourceLocation, Integer> weights = new HashMap<>();
 
 	public SpawnNoise day = new SpawnNoise(0.866, 0.269, 0.909, 0.763, 1.183);
 	public SpawnNoise tick = new SpawnNoise(0.091, 0.86, 0.054, 0.065, 5);
@@ -56,6 +59,10 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		FractalNoiseGenerator2D day = this.day.getNoise(world.getSeed());
 		FractalNoiseGenerator2D tick = this.tick.getNoise(world.getSeed());
 		return () -> day.valueAt(0.1, (double) Math.floorDiv(world.getTotalWorldTime(), 24000), 0) * tick.valueAt(0.1, (double) world.getTotalWorldTime(), 0);
+	}
+
+	public <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> P getNextWeightedSkyobjectProvider(Random random){
+		return WeightedRandom.getRandomItem(random, weights.entrySet().stream().map(WeightedSkyobject::new).collect(Collectors.toList())).asSkyobjectProvider();
 	}
 
 	@Override
@@ -166,6 +173,21 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 			result = 31 * result + (int) (temp ^ (temp >>> 32));
 			result = 31 * result + allowedBlocks.hashCode();
 			return result;
+		}
+
+	}
+
+	public static class WeightedSkyobject extends WeightedRandom.Item {
+
+		public ResourceLocation id;
+
+		public WeightedSkyobject(Map.Entry<ResourceLocation, Integer> entry){
+			super(entry.getValue());
+			this.id = entry.getKey();
+		}
+
+		public <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> P asSkyobjectProvider(){
+			return AppEngSkyfall.INSTANCE.<S, P>getSkyobjectProvidersRegistry().getValue(id);
 		}
 
 	}

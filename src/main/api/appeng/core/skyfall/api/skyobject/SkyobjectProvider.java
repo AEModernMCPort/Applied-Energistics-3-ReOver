@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public interface SkyobjectProvider<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> extends IForgeRegistryEntry<P>, Supplier<S> {
 
-	float getDefaultWeight();
+	int getDefaultWeight();
 
 
 	void generate(MutableBlockAccess world, Random random);

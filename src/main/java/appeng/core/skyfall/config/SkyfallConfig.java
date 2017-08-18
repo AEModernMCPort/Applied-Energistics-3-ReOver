@@ -73,12 +73,16 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		SkyfallConfig that = (SkyfallConfig) o;
 
 		if(!weights.equals(that.weights)) return false;
+		if(!day.equals(that.day)) return false;
+		if(!tick.equals(that.tick)) return false;
 		return meteorite.equals(that.meteorite);
 	}
 
 	@Override
 	public int hashCode(){
 		int result = weights.hashCode();
+		result = 31 * result + day.hashCode();
+		result = 31 * result + tick.hashCode();
 		result = 31 * result + meteorite.hashCode();
 		return result;
 	}
@@ -108,6 +112,37 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 		public FractalNoiseGenerator2D getNoise(long seed){
 			return new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed));
+		}
+
+		@Override
+		public boolean equals(Object o){
+			if(this == o) return true;
+			if(!(o instanceof SpawnNoise)) return false;
+
+			SpawnNoise that = (SpawnNoise) o;
+
+			if(Double.compare(that.initialScale, initialScale) != 0) return false;
+			if(Double.compare(that.initialMagnitude, initialMagnitude) != 0) return false;
+			if(Double.compare(that.scaleMultiplier, scaleMultiplier) != 0) return false;
+			if(Double.compare(that.magnitudeMultiplier, magnitudeMultiplier) != 0) return false;
+			return Double.compare(that.exponent, exponent) == 0;
+		}
+
+		@Override
+		public int hashCode(){
+			int result;
+			long temp;
+			temp = Double.doubleToLongBits(initialScale);
+			result = (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(initialMagnitude);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(scaleMultiplier);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(magnitudeMultiplier);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			temp = Double.doubleToLongBits(exponent);
+			result = 31 * result + (int) (temp ^ (temp >>> 32));
+			return result;
 		}
 
 	}

@@ -7,16 +7,24 @@ import appeng.core.lib.util.BlockState2String;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import com.google.common.collect.Lists;
+import hall.collin.christopher.math.noise.DefaultFractalNoiseGenerator2D;
+import hall.collin.christopher.math.noise.FractalNoiseGenerator2D;
+import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class SkyfallConfig implements ConfigCompilable, InitializationComponent.Init {
 
 	private Map<ResourceLocation, Float> weights = new HashMap<>();
+
+	public SpawnNoise day = new SpawnNoise(0.866, 0.269, 0.909, 0.763, 1.183);
+	public SpawnNoise tick = new SpawnNoise(0.091, 0.86, 0.054, 0.065, 5);
 
 	public Meteorite meteorite = new Meteorite();
 
@@ -44,6 +52,12 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		return weights.get(gen);
 	}
 
+	public Supplier<Double> skyobjectFallingSupplierForWorld(World world){
+		FractalNoiseGenerator2D day = this.day.getNoise(world.getSeed());
+		FractalNoiseGenerator2D tick = this.tick.getNoise(world.getSeed());
+		return () -> day.valueAt(0.1, (double) Math.floorDiv(world.getTotalWorldTime(), 24000), 0) * tick.valueAt(0.1, (double) world.getTotalWorldTime(), 0);
+	}
+
 	@Override
 	public boolean equals(Object o){
 		if(this == o) return true;
@@ -60,6 +74,35 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		int result = weights.hashCode();
 		result = 31 * result + meteorite.hashCode();
 		return result;
+	}
+
+	public static class SpawnNoise {
+
+		public double initialScale = 1;
+		public double initialMagnitude = 1;
+		public double scaleMultiplier = 0.5;
+		public double magnitudeMultiplier = 0.5;
+		public double exponent = 1;
+
+		public SpawnNoise(){
+		}
+
+		public SpawnNoise(double initialScale, double initialMagnitude, double scaleMultiplier, double magnitudeMultiplier, double exponent){
+			this.initialScale = initialScale;
+			this.initialMagnitude = initialMagnitude;
+			this.scaleMultiplier = scaleMultiplier;
+			this.magnitudeMultiplier = magnitudeMultiplier;
+			this.exponent = exponent;
+		}
+
+		public void compile(){
+			scaleMultiplier = Math.min(Math.max(scaleMultiplier, 0), 1);
+		}
+
+		public FractalNoiseGenerator2D getNoise(long seed){
+			return new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed));
+		}
+
 	}
 
 	public static class Meteorite {

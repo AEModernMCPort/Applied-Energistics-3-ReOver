@@ -1,13 +1,13 @@
 package appeng.core.skyfall.skyobject;
 
 import appeng.core.AppEng;
-import appeng.core.core.AppEngCore;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -15,8 +15,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
@@ -34,7 +35,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	protected World world;
 	protected Supplier<Double> spawner;
-	protected List<Skyobject> skyobjects = new ArrayList<>();
+	protected Map<UUID, Skyobject> skyobjects = new HashMap<>();
 
 	@Override
 	public void tick(World world){
@@ -43,15 +44,15 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 			this.spawner = AppEngSkyfall.INSTANCE.config.skyobjectFallingSupplierForWorld(world);
 		}
 
-		skyobjects.forEach(skyobject -> skyobject.tick(world));
+		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
 
 		if(!world.isRemote){
 			if(world.rand.nextDouble() < spawner.get()){
 				Skyobject skyobject = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong());
 				skyobject.onSpawn(world);
-				skyobjects.add(skyobject);
+				skyobjects.put(UUID.randomUUID(), skyobject);
 			}
-			skyobjects.removeIf(Skyobject::isDead);
+			skyobjects.values().removeIf(Skyobject::isDead);
 		}
 	}
 
@@ -59,8 +60,9 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		NBTTagList skyobjects = new NBTTagList();
-		this.skyobjects.forEach(skyobject -> {
+		this.skyobjects.forEach((uuid, skyobject) -> {
 			NBTTagCompound tag = new NBTTagCompound();
+			tag.setTag("uuid", NBTUtil.createUUIDTag(uuid));
 			tag.setString("id", skyobject.getProvider().getRegistryName().toString());
 			tag.setTag("data", skyobject.getProvider().serializeNBT(skyobject));
 			skyobjects.appendTag(tag);
@@ -72,7 +74,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		NBTTagList skyobjects = nbt.getTagList("skyobjects", 10);
-		skyobjects.forEach(tag -> this.skyobjects.add(AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry().getValue(new ResourceLocation(((NBTTagCompound) tag).getString("id"))).deserializeNBT(((NBTTagCompound) tag).getCompoundTag("data"))));
+		skyobjects.forEach(tag -> this.skyobjects.put(NBTUtil.getUUIDFromTag(((NBTTagCompound) tag).getCompoundTag("uuid")), AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry().getValue(new ResourceLocation(((NBTTagCompound) tag).getString("id"))).deserializeNBT(((NBTTagCompound) tag).getCompoundTag("data"))));
 	}
 
 }

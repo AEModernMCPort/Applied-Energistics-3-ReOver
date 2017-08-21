@@ -26,11 +26,13 @@ public class SkyfallClientProxy extends SkyfallProxy {
 		WTWRenderer.Phase.STENCILDEPTHREADWRITE.render(() -> {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableTexture2D();
+			GlStateManager.disableCull();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder buffer = tessellator.getBuffer();
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> drawBox(buffer, skyobject.getRendererBoundingBox()));
 			tessellator.draw();
+			GlStateManager.enableCull();
 			GlStateManager.enableTexture2D();
 			GlStateManager.popMatrix();
 		}, () -> Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> skyobject.render(event.getPartialTicks())));

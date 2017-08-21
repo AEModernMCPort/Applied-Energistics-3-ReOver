@@ -12,18 +12,19 @@ public class SkyobjectsCommand extends CommandTreeBaseNamed {
 	public SkyobjectsCommand(){
 		super("skyobjects", "command.ae3.skyobjects.name");
 		addSubcommand(new KillAll());
+		addSubcommand(new Spawn());
 	}
 
 	class KillAll extends CommandBase {
 
 		@Override
 		public String getName(){
-			return "command.ae3.skyobjects.killall.name";
+			return "killall";
 		}
 
 		@Override
 		public String getUsage(ICommandSender sender){
-			return null;
+			return "command.ae3.skyobjects.killall.name";
 		}
 
 		@Override

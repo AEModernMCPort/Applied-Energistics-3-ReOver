@@ -1,5 +1,6 @@
 package appeng.core.skyfall.proxy;
 
+import appeng.api.module.AEStateEvent;
 import appeng.core.skyfall.AppEngSkyfall;
 import code.elix_x.excore.utils.client.render.wtw.WTWRenderer;
 import net.minecraft.client.Minecraft;
@@ -10,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.GL11;
@@ -18,6 +20,13 @@ public class SkyfallClientProxy extends SkyfallProxy {
 
 	public SkyfallClientProxy(){
 		super(Side.CLIENT);
+	}
+
+	@Override
+	public void preInit(AEStateEvent.AEPreInitializationEvent event){
+		MinecraftForge.EVENT_BUS.register(this);
+
+		super.preInit(event);
 	}
 
 	@SubscribeEvent

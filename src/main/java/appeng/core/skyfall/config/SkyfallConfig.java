@@ -169,7 +169,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public float maxRadius = 110;
 		public double distributionExponent = 1.25;
 		//Caching these values to maybe improve performance
-		public transient float radiusDelta = minRadius - maxRadius;
+		public transient float radiusDelta = maxRadius - minRadius;
 		public transient double eToDisExp = Math.exp(distributionExponent);
 		public List<ResourceLocation> allowedBlocks = Lists.newArrayList(new ResourceLocation(AppEng.MODID,"skystone"), new ResourceLocation("minecraft:stone"), new ResourceLocation("minecraft:cobblestone"), new ResourceLocation("minecraft:ice"), new ResourceLocation("minecraft:obsidian"));
 

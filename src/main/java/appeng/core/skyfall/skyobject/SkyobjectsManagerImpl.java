@@ -71,6 +71,8 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	@Override
 	public void killall(){
 		this.skyobjects.clear();
+		syncAll();
+		AppEngSkyfall.logger.info("Killed all skyobjects");
 	}
 
 	@Override

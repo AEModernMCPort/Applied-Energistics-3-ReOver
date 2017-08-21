@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 public class SkyfallSkyobjectProviderDefinitions extends Definitions<SkyobjectProvider, ISkyobjectProviderDefinition<SkyobjectProvider>> implements ISkyfallSkyobjectProviderDefinitions {
 
 	private final ISkyobjectProviderDefinition meteorite;
-	
+
 	public SkyfallSkyobjectProviderDefinitions(DefinitionFactory registry){
 		meteorite = registry.<MeteoriteProvider, ISkyobjectProviderDefinition<MeteoriteProvider>, ISkyobjectGeneratorBuilder<MeteoriteProvider, ?>, MeteoriteProvider>definitionBuilder(new ResourceLocation(AppEng.MODID, "meteorite"), ih(new MeteoriteProvider(23))).build();
 	}

@@ -1,6 +1,5 @@
 package appeng.core.skyfall.api.skyobject;
 
-import code.elix_x.excore.utils.world.MutableBlockAccess;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -11,7 +10,7 @@ public interface SkyobjectProvider<S extends Skyobject<S, P>, P extends Skyobjec
 	int getDefaultWeight();
 
 
-	void generate(MutableBlockAccess world, long seed);
+	S generate(long seed);
 
 
 	NBTTagCompound serializeNBT(S skyobject);

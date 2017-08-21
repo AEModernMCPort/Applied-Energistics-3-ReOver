@@ -1,6 +1,7 @@
 package appeng.core.skyfall.skyobject;
 
 import appeng.core.AppEng;
+import appeng.core.core.AppEngCore;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
 public class SkyobjectsManagerImpl implements SkyobjectsManager {
@@ -30,11 +32,20 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		if(event.phase == TickEvent.Phase.END) event.world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).tick(event.world);
 	}
 
+	protected World world;
+	protected Supplier<Double> spawner;
 	protected List<Skyobject> skyobjects = new ArrayList<>();
 
 	@Override
 	public void tick(World world){
+		if(this.world == null){
+			this.world = world;
+			this.spawner = AppEngSkyfall.INSTANCE.config.skyobjectFallingSupplierForWorld(world);
+		}
+
 		skyobjects.forEach(skyobject -> skyobject.tick(world));
+		if(world.rand.nextDouble() < spawner.get()) skyobjects.add(AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong()));
+		skyobjects.removeIf(Skyobject::isDead);
 	}
 
 	@Override

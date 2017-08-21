@@ -9,6 +9,6 @@ public interface SkyobjectPhysics {
 
 	Vec3d getRotation();
 
-	void tick(World world);
+	boolean tick(World world);
 
 }

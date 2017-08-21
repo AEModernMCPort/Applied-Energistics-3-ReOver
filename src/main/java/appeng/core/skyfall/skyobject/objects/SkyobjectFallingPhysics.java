@@ -27,8 +27,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	}
 
 	@Override
-	public void tick(World world){
-
+	public boolean tick(World world){
+		return false;
 	}
 
 }

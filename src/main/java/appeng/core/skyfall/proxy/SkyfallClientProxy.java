@@ -37,7 +37,7 @@ public class SkyfallClientProxy extends SkyfallProxy {
 	}
 
 	protected void drawBox(BufferBuilder buffer, AxisAlignedBB box){
-		RenderGlobal.addChainedFilledBoxVertices(buffer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1, 1, 1, 1);
+		if(box != null) RenderGlobal.addChainedFilledBoxVertices(buffer, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, 1, 1, 1, 1);
 	}
 
 }

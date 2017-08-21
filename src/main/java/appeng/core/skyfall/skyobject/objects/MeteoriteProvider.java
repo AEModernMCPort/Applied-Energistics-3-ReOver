@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, MeteoriteProvider> {
+public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, MeteoriteProvider> {
 
 	public MeteoriteProvider(int defaultWeight){
 		super(Meteorite::new, defaultWeight);
@@ -78,17 +78,4 @@ public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, Meteorit
 		return meteorite;
 	}
 
-	@Override
-	public NBTTagCompound serializeNBT(Meteorite meteorite){
-		NBTTagCompound nbt = super.serializeNBT(meteorite);
-		nbt.setTag("world", meteorite.world.serializeNBT());
-		return nbt;
-	}
-
-	@Override
-	public Meteorite deserializeNBT(NBTTagCompound nbt){
-		Meteorite meteorite = super.deserializeNBT(nbt);
-		(meteorite.world = new ExpandleMutableBlockAccess()).deserializeNBT(nbt.getCompoundTag("world"));
-		return meteorite;
-	}
 }

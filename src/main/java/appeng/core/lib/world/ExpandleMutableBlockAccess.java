@@ -8,12 +8,14 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.*;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -71,6 +73,18 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		Chunk chunk = getChunk(chunkPos);
 		if(chunk == null) chunks.put(chunkPos, chunk = createNewChunk(chunkPos));
 		return chunk;
+	}
+
+	/*
+	 * Util
+	 */
+
+	public AxisAlignedBB getBlockAccessBoundingBox(){
+		return chunks.values().stream().findAny().map(chunk -> {
+			MutableObject<AxisAlignedBB> box = new MutableObject<>(chunk.getBoundingBox());
+			chunks.values().forEach(next -> box.setValue(box.getValue().union(next.getBoundingBox())));
+			return box.getValue();
+		}).orElse(null);
 	}
 
 	/*
@@ -200,6 +214,14 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 
 		public BlockPos toGlobalBlockPos(BlockPos localBlockPos){
 			return localBlockPos.add(getChunkOriginBlockPos());
+		}
+
+		/*
+		 * Util
+		 */
+
+		public AxisAlignedBB getBoundingBox(){
+			return new AxisAlignedBB(pos, pos.add(chunkSize));
 		}
 
 		/*

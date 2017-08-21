@@ -20,15 +20,20 @@ import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectProviderDefinitions;
+import appeng.core.skyfall.net.SkyobjectSpawnMessage;
+import appeng.core.skyfall.net.SkyobjectsSyncMessage;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import appeng.core.skyfall.skyobject.SkyobjectsManagerImpl;
+import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -51,6 +56,8 @@ public class AppEngSkyfall implements ISkyfall {
 	public static Capability<SkyobjectsManager> skyobjectsManagerCapability;
 
 	public SkyfallConfig config;
+
+	public SmartNetworkWrapper net;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -103,6 +110,11 @@ public class AppEngSkyfall implements ISkyfall {
 		this.skyobjectProviderDefinitions.init(registry);
 
 		CapabilityManager.INSTANCE.register(SkyobjectsManager.class, new DelegateCapabilityStorage<>(), SkyobjectsManagerImpl::new);
+
+		net = new SmartNetworkWrapper(AppEng.NAME + "|"+ NAME);
+
+		net.registerMessage3(message -> () -> Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null).deserializeNBT(message.nbt), SkyobjectsSyncMessage.class, Side.CLIENT);
+		net.registerMessage3(message -> () -> ((SkyobjectsManagerImpl) Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).receiveClientSkyobject(message.uuid, message.skyobject), SkyobjectSpawnMessage.class, Side.CLIENT);
 
 		initHandler.preInit();
 		proxy.preInit(event);

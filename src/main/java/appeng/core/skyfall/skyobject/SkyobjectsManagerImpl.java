@@ -6,6 +6,8 @@ import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
+import appeng.core.skyfall.net.SkyobjectSpawnMessage;
+import appeng.core.skyfall.net.SkyobjectsSyncMessage;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
@@ -53,10 +55,17 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 			if(world.rand.nextDouble() < spawner.get()){
 				Skyobject skyobject = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong());
 				skyobject.onSpawn(world);
-				skyobjects.put(UUID.randomUUID(), skyobject);
+				UUID uuid = UUID.randomUUID();
+				skyobjects.put(uuid, skyobject);
+				AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage<>(uuid, skyobject), world.provider.getDimension());
 			}
-			skyobjects.values().removeIf(Skyobject::isDead);
+			//FIXME During skyrains, this will cause massive lag!
+			if(skyobjects.values().removeIf(Skyobject::isDead)) AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
 		}
+	}
+
+	public void receiveClientSkyobject(UUID uuid, Skyobject skyobject){
+		skyobjects.put(uuid, skyobject);
 	}
 
 	@Override

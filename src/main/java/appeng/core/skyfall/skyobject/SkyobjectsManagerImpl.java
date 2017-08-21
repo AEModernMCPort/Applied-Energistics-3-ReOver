@@ -53,7 +53,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
 
 		if(!world.isRemote){
-			if(world.rand.nextDouble() < spawner.get()) spawn();
+			//if(world.rand.nextDouble() < spawner.get()) spawn();
 			//FIXME During skyrains, this will cause massive lag!
 			if(skyobjects.values().removeIf(Skyobject::isDead)) syncAll();
 		}

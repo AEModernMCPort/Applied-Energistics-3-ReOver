@@ -6,6 +6,8 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 
 	P getProvider();
 
+	void onSpawn(World world);
+
 	void tick(World world);
 
 	boolean isDead();

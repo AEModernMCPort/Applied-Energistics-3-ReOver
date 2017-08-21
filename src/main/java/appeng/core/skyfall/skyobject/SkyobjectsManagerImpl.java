@@ -53,15 +53,9 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
 
 		if(!world.isRemote){
-			if(world.rand.nextDouble() < spawner.get()){
-				Skyobject skyobject = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong());
-				skyobject.onSpawn(world);
-				UUID uuid = UUID.randomUUID();
-				skyobjects.put(uuid, skyobject);
-				AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage<>(uuid, skyobject), world.provider.getDimension());
-			}
+			if(world.rand.nextDouble() < spawner.get()) spawn();
 			//FIXME During skyrains, this will cause massive lag!
-			if(skyobjects.values().removeIf(Skyobject::isDead)) AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
+			if(skyobjects.values().removeIf(Skyobject::isDead)) syncAll();
 		}
 	}
 
@@ -73,6 +67,36 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	public void receiveClientSkyobject(UUID uuid, Skyobject skyobject){
 		skyobjects.put(uuid, skyobject);
 	}
+
+	@Override
+	public void killall(){
+		this.skyobjects.clear();
+	}
+
+	@Override
+	public void spawn(){
+		Skyobject skyobject = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong());
+		skyobject.onSpawn(world);
+		UUID uuid = UUID.randomUUID();
+		skyobjects.put(uuid, skyobject);
+		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage<>(uuid, skyobject), world.provider.getDimension());
+	}
+
+	/*
+	 * Sync
+	 */
+
+	protected void syncAll(){
+		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
+	}
+
+	protected void syncSpawn(){
+
+	}
+
+	/*
+	 * NBT
+	 */
 
 	@Override
 	public NBTTagCompound serializeNBT(){

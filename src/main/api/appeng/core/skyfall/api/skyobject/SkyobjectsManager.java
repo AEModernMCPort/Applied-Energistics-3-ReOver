@@ -12,4 +12,10 @@ public interface SkyobjectsManager extends INBTSerializable<NBTTagCompound> {
 
 	Stream<Skyobject> getAllSkyobjects();
 
+	//Commands
+
+	void killall();
+
+	void spawn();
+
 }

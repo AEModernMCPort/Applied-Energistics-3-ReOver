@@ -58,7 +58,6 @@ public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, Meteorit
 				}
 			}
 		}
-		//		AppEngSkyfall.INSTANCE.<Block, ISkyfallBlockDefinitions>definitions(Block.class).certusInfused().maybe().ifPresent(certusInfusedBlock -> {
 		Random localRandom = new Random(random.nextLong());
 		DefaultFractalNoiseGenerator3D infusionNoise = new DefaultFractalNoiseGenerator3D(500, 0.3, 0.9, 1, new DefaultRandomNumberGenerator(localRandom.nextLong()));
 		final double p = 0.02;

@@ -16,6 +16,7 @@ import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import appeng.core.skyfall.bootstrap.SkyobjectGeneratorDefinitionBuilder;
+import appeng.core.skyfall.command.SkyobjectsCommand;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
@@ -143,6 +144,11 @@ public class AppEngSkyfall implements ISkyfall {
 	@ModuleEventHandler
 	public void handleIMCEvent(AEStateEvent.ModuleIMCMessageEvent event){
 
+	}
+
+	@ModuleEventHandler
+	public void serverStarting(AEStateEvent.AEServerStartingEvent event){
+		event.registerModuleSubcommand(new SkyobjectsCommand());
 	}
 
 	/*@ModuleEventHandler

@@ -44,8 +44,11 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		}
 
 		skyobjects.forEach(skyobject -> skyobject.tick(world));
-		if(world.rand.nextDouble() < spawner.get()) skyobjects.add(AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong()));
-		skyobjects.removeIf(Skyobject::isDead);
+
+		if(!world.isRemote){
+			if(world.rand.nextDouble() < spawner.get()) skyobjects.add(AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong()));
+			skyobjects.removeIf(Skyobject::isDead);
+		}
 	}
 
 	@Override

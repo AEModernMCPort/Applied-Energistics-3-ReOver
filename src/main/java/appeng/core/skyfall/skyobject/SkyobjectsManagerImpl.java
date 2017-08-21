@@ -4,6 +4,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
+import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -14,6 +15,8 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,13 +63,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		NBTTagList skyobjects = new NBTTagList();
-		this.skyobjects.forEach((uuid, skyobject) -> {
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setTag("uuid", NBTUtil.createUUIDTag(uuid));
-			tag.setString("id", skyobject.getProvider().getRegistryName().toString());
-			tag.setTag("data", skyobject.getProvider().serializeNBT(skyobject));
-			skyobjects.appendTag(tag);
-		});
+		this.skyobjects.forEach((uuid, skyobject) -> skyobjects.appendTag(serializeSkyobject(uuid, skyobject)));
 		nbt.setTag("skyobjects", skyobjects);
 		return nbt;
 	}
@@ -74,7 +71,22 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		NBTTagList skyobjects = nbt.getTagList("skyobjects", 10);
-		skyobjects.forEach(tag -> this.skyobjects.put(NBTUtil.getUUIDFromTag(((NBTTagCompound) tag).getCompoundTag("uuid")), AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry().getValue(new ResourceLocation(((NBTTagCompound) tag).getString("id"))).deserializeNBT(((NBTTagCompound) tag).getCompoundTag("data"))));
+		skyobjects.forEach(tag -> {
+			Pair<UUID, Skyobject> skyobject = (Pair<UUID, Skyobject>) deserializeSkyobject((NBTTagCompound) tag);
+			this.skyobjects.put(skyobject.getKey(), skyobject.getValue());
+		});
+	}
+
+	public static <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> NBTTagCompound serializeSkyobject(UUID uuid, S skyobject){
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setTag("uuid", NBTUtil.createUUIDTag(uuid));
+		tag.setString("id", skyobject.getProvider().getRegistryName().toString());
+		tag.setTag("data", skyobject.getProvider().serializeNBT(skyobject));
+		return tag;
+	}
+
+	public static <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> Pair<UUID, S> deserializeSkyobject(NBTTagCompound tag){
+		return new ImmutablePair<>(NBTUtil.getUUIDFromTag(tag.getCompoundTag("uuid")), AppEngSkyfall.INSTANCE.<S, P>getSkyobjectProvidersRegistry().getValue(new ResourceLocation(tag.getString("id"))).deserializeNBT(tag.getCompoundTag("data")));
 	}
 
 }

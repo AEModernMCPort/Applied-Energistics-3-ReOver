@@ -79,7 +79,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		skyobject.onSpawn(world);
 		UUID uuid = UUID.randomUUID();
 		skyobjects.put(uuid, skyobject);
-		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage<>(uuid, skyobject), world.provider.getDimension());
+		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage(uuid, skyobject), world.provider.getDimension());
 	}
 
 	/*
@@ -111,12 +111,12 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	public void deserializeNBT(NBTTagCompound nbt){
 		NBTTagList skyobjects = nbt.getTagList("skyobjects", 10);
 		skyobjects.forEach(tag -> {
-			Pair<UUID, Skyobject> skyobject = (Pair<UUID, Skyobject>) deserializeSkyobject((NBTTagCompound) tag);
+			Pair<UUID, Skyobject> skyobject = (Pair) deserializeSkyobject((NBTTagCompound) tag);
 			this.skyobjects.put(skyobject.getKey(), skyobject.getValue());
 		});
 	}
 
-	public static <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> NBTTagCompound serializeSkyobject(UUID uuid, S skyobject){
+	public static NBTTagCompound serializeSkyobject(UUID uuid, Skyobject skyobject){
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setTag("uuid", NBTUtil.createUUIDTag(uuid));
 		tag.setString("id", skyobject.getProvider().getRegistryName().toString());

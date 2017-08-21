@@ -91,7 +91,7 @@ public class AppEngSkyfall implements ISkyfall {
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
-		skyobjectProvidersRegistry = new RegistryBuilder<>().setName(new ResourceLocation(AppEng.MODID, "skyobject_generator")).setType((Class) SkyobjectProvider.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
+		skyobjectProvidersRegistry = new RegistryBuilder<>().setName(new ResourceLocation(AppEng.MODID, "skyobject_provider")).setType((Class) SkyobjectProvider.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
 
 		configLoader = event.configurationLoader();
 		try{

@@ -9,6 +9,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+import java.util.Optional;
+
 public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P extends SkyobjectFallingProvider<S, P>> extends SkyobjectImpl<S, P> {
 
 	protected ExpandleMutableBlockAccess world = new ExpandleMutableBlockAccess();
@@ -25,7 +27,7 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 	@Override
 	public AxisAlignedBB getRendererBoundingBox(){
-		return world.getBlockAccessBoundingBox().offset(physics.getPos());
+		return Optional.ofNullable(world.getBlockAccessBoundingBox()).map(box -> box.offset(physics.getPos())).orElse(null);
 	}
 
 	protected MutableObject<MultiChunkBlockAccessRenderer> renderer;

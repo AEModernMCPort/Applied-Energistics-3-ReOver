@@ -9,8 +9,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	protected final Skyobject skyobject;
 
-	protected Vec3d pos;
-	protected Vec3d rot;
+	protected Vec3d pos = new Vec3d(0, 0, 0);
+	protected Vec3d rot = new Vec3d(0, 0, 0);
 
 	public SkyobjectFallingPhysics(Skyobject skyobject){
 		this.skyobject = skyobject;

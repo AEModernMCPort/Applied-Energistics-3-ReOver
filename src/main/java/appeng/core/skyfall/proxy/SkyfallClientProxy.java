@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -36,6 +37,13 @@ public class SkyfallClientProxy extends SkyfallProxy {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableTexture2D();
 			GlStateManager.disableCull();
+
+			Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
+			double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
+			double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.getPartialTicks();
+			double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.getPartialTicks();
+			GlStateManager.translate(-x, -y, -z);
+
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder buffer = tessellator.getBuffer();
 			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -44,7 +52,18 @@ public class SkyfallClientProxy extends SkyfallProxy {
 			GlStateManager.enableCull();
 			GlStateManager.enableTexture2D();
 			GlStateManager.popMatrix();
-		}, () -> Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> skyobject.render(event.getPartialTicks())));
+		}, () -> {
+			GlStateManager.pushMatrix();
+
+			Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
+			double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
+			double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.getPartialTicks();
+			double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.getPartialTicks();
+			GlStateManager.translate(-x, -y, -z);
+
+			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> skyobject.render(event.getPartialTicks()));
+			GlStateManager.popMatrix();
+		});
 	}
 
 	protected void drawBox(BufferBuilder buffer, AxisAlignedBB box){

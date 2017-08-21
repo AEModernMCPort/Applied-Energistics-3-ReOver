@@ -84,7 +84,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 			MutableObject<AxisAlignedBB> box = new MutableObject<>(chunk.getBoundingBox());
 			chunks.values().forEach(next -> box.setValue(box.getValue().union(next.getBoundingBox())));
 			return box.getValue();
-		}).orElse(null);
+		}).orElse(new AxisAlignedBB(0, 0, 0, 0, 0, 0));
 	}
 
 	/*
@@ -180,7 +180,9 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		chunks.forEach(base -> {
 			NBTTagCompound tag = (NBTTagCompound) base;
 			BlockPos pos = NBTUtil.getPosFromTag(tag.getCompoundTag("pos"));
-			this.chunks.put(pos, createNewChunk(pos));
+			Chunk chunk = createNewChunk(pos);
+			chunk.deserializeNBT(tag.getCompoundTag("chunk"));
+			this.chunks.put(pos, chunk);
 		});
 	}
 
@@ -197,7 +199,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		}
 
 		public Chunk(BlockPos pos){
-			this(pos, new ChunkStorage<IBlockState, NBTTagInt>(chunkSize, new ChunkStorage.ChunkStorageSerializer.ContinuousChunkStorageSerializer(), state -> new NBTTagInt(Block.getStateId(state)), id -> Block.getStateById(id.getInt())));
+			this(pos, new ChunkStorage<IBlockState, NBTTagInt>(chunkSize, new ChunkStorage.ChunkStorageSerializer.ContinuousChunkStorageSerializer(), state -> new NBTTagInt(state == null ? -1 : Block.getStateId(state)), id -> id.getInt() == -1 ? null : Block.getStateById(id.getInt())));
 		}
 
 		public BlockPos getChunkPos(){
@@ -283,7 +285,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt){
-			blockStorage.deserializeNBT(nbt.getCompoundTag("blocks"));
+			blockStorage.deserializeNBT(nbt.getTag("blocks"));
 			this.tiles.clear();
 			NBTTagList tiles = nbt.getTagList("tiles", 10);
 			tiles.forEach(base -> {

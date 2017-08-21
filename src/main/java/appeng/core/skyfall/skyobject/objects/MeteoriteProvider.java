@@ -32,9 +32,11 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random(seed);
 		float radius = config.fractToRadius(random.nextDouble());
+		AppEngSkyfall.logger.info("Meteorite radius - " + radius);
 		List<IBlockState> allowed = config.allowedBlocks.stream().map(Block.REGISTRY::getObject).map(Block::getDefaultState).collect(Collectors.toList());
 		Collections.shuffle(allowed, random);
 		int count = RandomUtils.nextInt(Math.min(allowed.size(), 2), allowed.size() + 1);
+		AppEngSkyfall.logger.info("Meteorite layers - " + count);
 		for(int i = 0; i < count; i++){
 			IBlockState block = allowed.get(i);
 			Random localRandom = new Random(random.nextLong());

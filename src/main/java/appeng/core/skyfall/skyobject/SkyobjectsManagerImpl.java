@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
 public class SkyobjectsManagerImpl implements SkyobjectsManager {
@@ -62,6 +63,11 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 			//FIXME During skyrains, this will cause massive lag!
 			if(skyobjects.values().removeIf(Skyobject::isDead)) AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
 		}
+	}
+
+	@Override
+	public Stream<Skyobject> getAllSkyobjects(){
+		return skyobjects.values().stream();
 	}
 
 	public void receiveClientSkyobject(UUID uuid, Skyobject skyobject){

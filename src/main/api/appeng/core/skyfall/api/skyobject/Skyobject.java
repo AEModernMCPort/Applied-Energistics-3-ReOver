@@ -1,5 +1,6 @@
 package appeng.core.skyfall.api.skyobject;
 
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> {
@@ -11,5 +12,12 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 	void tick(World world);
 
 	boolean isDead();
+
+
+	//Client only
+
+	AxisAlignedBB getRendererBoundingBox();
+
+	void render(float partialTicks);
 
 }

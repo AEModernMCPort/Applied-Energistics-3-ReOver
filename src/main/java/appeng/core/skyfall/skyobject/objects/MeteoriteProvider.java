@@ -11,6 +11,7 @@ import hall.collin.christopher.math.noise.SphericalSurfaceFractalNoiseGenerator;
 import hall.collin.christopher.math.random.DefaultRandomNumberGenerator;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.RandomUtils;
 
@@ -75,6 +76,20 @@ public class MeteoriteProvider extends SkyobjectProviderImpl<Meteorite, Meteorit
 			}
 		}
 
+		return meteorite;
+	}
+
+	@Override
+	public NBTTagCompound serializeNBT(Meteorite meteorite){
+		NBTTagCompound nbt = super.serializeNBT(meteorite);
+		nbt.setTag("world", meteorite.world.serializeNBT());
+		return nbt;
+	}
+
+	@Override
+	public Meteorite deserializeNBT(NBTTagCompound nbt){
+		Meteorite meteorite = super.deserializeNBT(nbt);
+		(meteorite.world = new ExpandleMutableBlockAccess()).deserializeNBT(nbt.getCompoundTag("world"));
 		return meteorite;
 	}
 }

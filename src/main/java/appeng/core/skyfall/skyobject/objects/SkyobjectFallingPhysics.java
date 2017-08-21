@@ -21,9 +21,17 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		return pos;
 	}
 
+	public void setPos(Vec3d pos){
+		this.pos = pos;
+	}
+
 	@Override
 	public Vec3d getRotation(){
 		return rot;
+	}
+
+	public void setRot(Vec3d rot){
+		this.rot = rot;
 	}
 
 	@Override

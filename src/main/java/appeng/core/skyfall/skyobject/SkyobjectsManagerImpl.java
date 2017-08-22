@@ -71,7 +71,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 
 			removeSkyobjects(Skyobject::isDead);
 
-			skyobjects.entrySet().stream().filter(skyobject -> skyobject.getValue() instanceof Skyobject.Syncable).map(skyobject -> (Map.Entry<UUID, Skyobject.Syncable<?, ?>>) (Map.Entry) skyobject).filter(skyobject -> skyobject.getValue().isDirty()).forEach(skyobject -> sendAddOrChange(skyobject.getKey(), skyobject.getValue(), Optional.empty()));
+			skyobjects.entrySet().stream().filter(skyobject -> skyobject.getValue() instanceof Skyobject.Syncable).map(skyobject -> (Map.Entry<UUID, Skyobject.Syncable<?, ?>>) (Map.Entry) skyobject).filter(skyobject -> skyobject.getValue().isDirty()).forEach(skyobject -> sendAddOrChange(skyobject.getKey(), skyobject.getValue(), false, Optional.empty()));
 
 			while(toSpawn.peek() != null) addSkyobject(UUID.randomUUID(), toSpawn.poll());
 		}
@@ -80,7 +80,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 	protected void addSkyobject(UUID uuid, Skyobject skyobject){
 		skyobjects.put(uuid, skyobject);
 		skyobject.onSpawn(world);
-		if(!world.isRemote) sendAddOrChange(uuid, skyobject, Optional.empty());
+		if(!world.isRemote) sendAddOrChange(uuid, skyobject, true, Optional.empty());
 	}
 
 	protected void removeSkyobject(UUID uuid){
@@ -120,8 +120,8 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 	 * Sync
 	 */
 
-	protected void sendAddOrChange(UUID uuid, Skyobject skyobject, Optional<EntityPlayerMP> target){
-		if(skyobject instanceof Skyobject.Syncable) ((Skyobject.Syncable<?, ?>) skyobject).getSyncCompounds().forEach(nbt -> sendMessage(new SkyobjectMessage.AddOrChange(uuid, skyobject.getProvider().getRegistryName(), nbt), target));
+	protected void sendAddOrChange(UUID uuid, Skyobject skyobject, boolean add, Optional<EntityPlayerMP> target){
+		if(skyobject instanceof Skyobject.Syncable) ((Skyobject.Syncable<?, ?>) skyobject).getSyncCompounds(add).forEach(nbt -> sendMessage(new SkyobjectMessage.AddOrChange(uuid, skyobject.getProvider().getRegistryName(), nbt), target));
 		else sendMessage(new SkyobjectMessage.AddOrChange(uuid, skyobject.getProvider().getRegistryName(), skyobject.getProvider().serializeNBT(skyobject)), target);
 	}
 
@@ -145,7 +145,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 			}
 			skyobjects.put(uuid, existing);
 		}
-		if(id instanceof Skyobject.Syncable) ((Skyobject.Syncable) id).readNextSyncCompound(nbt);
+		if(existing instanceof Skyobject.Syncable) ((Skyobject.Syncable) existing).readNextSyncCompound(nbt);
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 
 	@Override
 	public void sendAll(EntityPlayerMP target){
-		skyobjects.forEach((uuid, skyobject) -> sendAddOrChange(uuid, skyobject, Optional.of(target)));
+		skyobjects.forEach((uuid, skyobject) -> sendAddOrChange(uuid, skyobject, true, Optional.of(target)));
 	}
 
 	/*

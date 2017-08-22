@@ -64,16 +64,16 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	}
 
 	@Override
-	public Stream<NBTTagCompound> getSyncCompounds(){
+	public Stream<NBTTagCompound> getSyncCompounds(boolean sendEverything){
 		Stream stream = Stream.empty();
-		if(physics.isDirty()){
+		if(sendEverything || physics.isDirty()){
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setString("type", "physics");
 			nbt.setTag("value", physics.serializeNBT());
 			stream = Stream.concat(stream, Stream.of(nbt));
 			physics.setDirty(false);
 		}
-		if(world.isDirty()) stream = Stream.concat(stream, world.getDirtyChunks().map(chunk -> {
+		if(sendEverything || world.isDirty()) stream = Stream.concat(stream, (sendEverything ? world.getAllChunks() : world.getDirtyChunks()).map(chunk -> {
 			chunk.setDirty(false);
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setString("type", "chunk");

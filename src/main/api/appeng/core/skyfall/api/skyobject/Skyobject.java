@@ -27,7 +27,7 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 
 		boolean isDirty();
 
-		Stream<NBTTagCompound> getSyncCompounds();
+		Stream<NBTTagCompound> getSyncCompounds(boolean sendEverything);
 
 		void readNextSyncCompound(NBTTagCompound nbt);
 

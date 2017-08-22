@@ -86,6 +86,10 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		return chunk;
 	}
 
+	public Stream<Chunk> getAllChunks(){
+		return chunks.values().stream();
+	}
+
 	/*
 	 * Util
 	 */
@@ -99,7 +103,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 	}
 
 	public Stream<Chunk> getDirtyChunks(){
-		return chunks.values().stream().filter(Chunk::isDirty);
+		return getAllChunks().filter(Chunk::isDirty);
 	}
 
 	/*

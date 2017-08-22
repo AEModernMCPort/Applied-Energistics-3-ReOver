@@ -8,12 +8,15 @@ import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import appeng.core.skyfall.net.SkyobjectSpawnMessage;
 import appeng.core.skyfall.net.SkyobjectsSyncMessage;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -37,6 +40,11 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	@SubscribeEvent
 	public static void tickSkyobjects(TickEvent.WorldTickEvent event){
 		if(event.phase == TickEvent.Phase.END) event.world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).tick(event.world);
+	}
+
+	@SubscribeEvent
+	public static void syncWithNewPlayer(EntityJoinWorldEvent event){
+		if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) ((SkyobjectsManagerImpl) event.getWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null)).syncAllWith((EntityPlayerMP) event.getEntity());
 	}
 
 	protected World world;
@@ -90,6 +98,10 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	protected void syncAll(){
 		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
+	}
+
+	protected void syncAllWith(EntityPlayerMP player){
+		AppEngSkyfall.INSTANCE.net.sendTo(new SkyobjectsSyncMessage(serializeNBT()), player);
 	}
 
 	protected void syncSpawn(){

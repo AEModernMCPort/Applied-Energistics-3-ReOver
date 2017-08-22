@@ -27,7 +27,7 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 	@Override
 	public Meteorite generate(long seed){
 		Meteorite meteorite = get();
-		MutableBlockAccess world = meteorite.world = new ExpandleMutableBlockAccess();
+		MutableBlockAccess world = meteorite.world;
 
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random(seed);

@@ -112,7 +112,7 @@ public class AppEngSkyfall implements ISkyfall {
 
 		CapabilityManager.INSTANCE.register(SkyobjectsManager.class, new DelegateCapabilityStorage<>(), SkyobjectsManagerImpl::new);
 
-		net = new SmartNetworkWrapper(AppEng.NAME + "|"+ NAME);
+		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
 
 		net.registerMessage3(message -> () -> Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null).deserializeNBT(message.nbt), SkyobjectsSyncMessage.class, Side.CLIENT);
 		net.registerMessage3(message -> () -> ((SkyobjectsManagerImpl) Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).receiveClientSkyobject(message.uuid, message.skyobject), SkyobjectSpawnMessage.class, Side.CLIENT);

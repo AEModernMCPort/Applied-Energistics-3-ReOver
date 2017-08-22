@@ -150,7 +150,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public static class Day extends SpawnNoise {
 
 			public Day(){
-				super(0.866, 0.269, 0.909, 0.763, 1.183);
+				super(0.866, 0.269, 0.909, 0.763, 2.366);
 			}
 
 		}
@@ -158,7 +158,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public static class Tick extends SpawnNoise {
 
 			public Tick(){
-				super(0.091, 0.86, 0.054, 0.065, 5);
+				super(0.091, 0.86, 0.054, 0.065, 7.5);
 			}
 
 		}

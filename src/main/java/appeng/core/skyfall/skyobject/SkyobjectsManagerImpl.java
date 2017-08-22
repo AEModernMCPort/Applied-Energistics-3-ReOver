@@ -14,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -24,10 +25,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -66,7 +65,8 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
 
 		if(!world.isRemote){
-			//if(world.rand.nextDouble() < spawner.get()) spawn();
+			double chance = spawner.get();
+			if(world.rand.nextDouble() < chance) world.getMinecraftServer().sendMessage(new TextComponentString("Natural spawn now! - " + chance));
 			//FIXME During skyrains, this will cause massive lag!
 			if(skyobjects.values().removeIf(Skyobject::isDead)) syncAll();
 			while(toSpawn.peek() != null){

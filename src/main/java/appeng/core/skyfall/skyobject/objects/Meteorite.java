@@ -13,7 +13,8 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 
 	@Override
 	public void onSpawn(World world){
-		EntityPlayer player = world.playerEntities.get(0);
-		physics.setPos(new Vec3d(player.posX, player.posY + 25, player.posZ));
+		/*EntityPlayer player = world.playerEntities.get(0);
+		physics.setPos(new Vec3d(player.posX, player.posY + 25, player.posZ));*/
+		physics.setPos(new Vec3d(750, 1000, -500));
 	}
 }

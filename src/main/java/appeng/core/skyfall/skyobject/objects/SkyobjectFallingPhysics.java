@@ -58,7 +58,9 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	@Override
 	public boolean tick(World world){
-		return false;
+//		setPos(new Vec3d(1000, 1000, -1000));
+		setPos(pos.addVector(-100, -23, 0));
+		return getPos().y < 0;
 	}
 
 	@Override

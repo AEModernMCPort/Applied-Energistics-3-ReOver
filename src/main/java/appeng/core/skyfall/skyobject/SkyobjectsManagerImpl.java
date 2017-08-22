@@ -23,14 +23,18 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
 public class SkyobjectsManagerImpl implements SkyobjectsManager {
+
+	protected static final ExecutorService GENERATORSERVICE = Executors.newCachedThreadPool();
 
 	@SubscribeEvent
 	public static void attachToWorld(AttachCapabilitiesEvent<World> event){
@@ -50,6 +54,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	protected World world;
 	protected Supplier<Double> spawner;
 	protected Map<UUID, Skyobject> skyobjects = new HashMap<>();
+	protected Queue<Skyobject> toSpawn = new LinkedList<>();
 
 	@Override
 	public void tick(World world){
@@ -64,6 +69,13 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 			//if(world.rand.nextDouble() < spawner.get()) spawn();
 			//FIXME During skyrains, this will cause massive lag!
 			if(skyobjects.values().removeIf(Skyobject::isDead)) syncAll();
+			while(toSpawn.peek() != null){
+				Skyobject skyobject = toSpawn.poll();
+				skyobject.onSpawn(world);
+				UUID uuid = UUID.randomUUID();
+				skyobjects.put(uuid, skyobject);
+				AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage(uuid, skyobject), world.provider.getDimension());
+			}
 		}
 	}
 
@@ -85,11 +97,8 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	@Override
 	public void spawn(){
-		Skyobject skyobject = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand).generate(world.rand.nextLong());
-		skyobject.onSpawn(world);
-		UUID uuid = UUID.randomUUID();
-		skyobjects.put(uuid, skyobject);
-		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage(uuid, skyobject), world.provider.getDimension());
+		SkyobjectProvider provider = AppEngSkyfall.INSTANCE.config.getNextWeightedSkyobjectProvider(world.rand);
+		GENERATORSERVICE.submit(() -> toSpawn.add(provider.generate(world.rand.nextLong())));
 	}
 
 	/*

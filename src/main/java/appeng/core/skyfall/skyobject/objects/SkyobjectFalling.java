@@ -1,14 +1,15 @@
 package appeng.core.skyfall.skyobject.objects;
 
 import appeng.core.lib.world.ExpandleMutableBlockAccess;
+import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.skyobject.SkyobjectImpl;
 import code.elix_x.excore.utils.client.render.world.MultiChunkBlockAccessRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -16,8 +17,9 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
-public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P extends SkyobjectFallingProvider<S, P>> extends SkyobjectImpl<S, P> {
+public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P extends SkyobjectFallingProvider<S, P>> extends SkyobjectImpl<S, P> implements Skyobject.Syncable<S, P> {
 
 	protected ExpandleMutableBlockAccess world = new ExpandleMutableBlockAccess(){
 
@@ -54,5 +56,43 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		GlStateManager.translate((box.minX - box.maxX)/2, (box.minY - box.maxY)/2, (box.minZ - box.maxZ)/2);
 		renderer.getValue().render();
 		GlStateManager.popMatrix();
+	}
+
+	@Override
+	public boolean isDirty(){
+		return physics.isDirty() || world.isDirty();
+	}
+
+	@Override
+	public Stream<NBTTagCompound> getSyncCompounds(){
+		Stream stream = Stream.empty();
+		if(physics.isDirty()){
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setString("type", "physics");
+			nbt.setTag("value", physics.serializeNBT());
+			stream = Stream.concat(stream, Stream.of(nbt));
+			physics.setDirty(false);
+		}
+		if(world.isDirty()) stream = Stream.concat(stream, world.getDirtyChunks().map(chunk -> {
+			chunk.setDirty(false);
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setString("type", "chunk");
+			nbt.setTag("pos", NBTUtil.createPosTag(chunk.getChunkPos()));
+			nbt.setTag("data", chunk.serializeNBT());
+			return nbt;
+		}));
+		return stream;
+	}
+
+	@Override
+	public void readNextSyncCompound(NBTTagCompound nbt){
+		switch(nbt.getString("type")){
+			case "physics":
+				physics.deserializeNBT(nbt.getCompoundTag("value"));
+				break;
+			case "chunk":
+				world.getOrCreateChunk(NBTUtil.getPosFromTag(nbt.getCompoundTag("pos"))).deserializeNBT(nbt.getCompoundTag("data"));
+				break;
+		}
 	}
 }

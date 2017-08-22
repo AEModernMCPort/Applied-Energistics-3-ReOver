@@ -20,11 +20,14 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSerializable<NBTTagCompound> {
 
 	protected final Vec3i chunkSize;
 	protected Vec3i worldSize;
+
+	protected boolean dirty;
 
 	protected IBlockState defaultState = Blocks.AIR.getDefaultState();
 	protected Biome biome = Biomes.PLAINS;
@@ -54,6 +57,14 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 	}
 
 	/*
+	 * Dirty
+	 */
+
+	public boolean isDirty(){
+		return chunks.values().stream().anyMatch(Chunk::isDirty);
+	}
+
+	/*
 	 * Chunk access
 	 */
 
@@ -69,7 +80,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		return new Chunk(chunkPos);
 	}
 
-	protected Chunk getOrCreateChunk(BlockPos chunkPos){
+	public Chunk getOrCreateChunk(BlockPos chunkPos){
 		Chunk chunk = getChunk(chunkPos);
 		if(chunk == null) chunks.put(chunkPos, chunk = createNewChunk(chunkPos));
 		return chunk;
@@ -85,6 +96,10 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 			chunks.values().forEach(next -> box.setValue(box.getValue().union(next.getBoundingBox())));
 			return box.getValue();
 		}).orElse(new AxisAlignedBB(0, 0, 0, 0, 0, 0));
+	}
+
+	public Stream<Chunk> getDirtyChunks(){
+		return chunks.values().stream().filter(Chunk::isDirty);
 	}
 
 	/*
@@ -190,6 +205,8 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 
 		protected final BlockPos pos;
 
+		protected boolean dirty;
+
 		protected ChunkStorage<IBlockState, ?> blockStorage;
 		protected Map<BlockPos, TileEntity> tiles = new HashMap<>();
 
@@ -219,6 +236,18 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		}
 
 		/*
+		 * Dirty
+		 */
+
+		public boolean isDirty(){
+			return dirty;
+		}
+
+		public void setDirty(boolean dirty){
+			this.dirty = dirty;
+		}
+
+		/*
 		 * Util
 		 */
 
@@ -240,6 +269,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 
 		public void setBlockStateL(BlockPos lpos, IBlockState state){
 			blockStorage.set(lpos, state);
+			setDirty(true);
 		}
 
 		public void setBlockStateG(BlockPos gpos, IBlockState state){
@@ -258,6 +288,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 
 		public void setTileEntityL(BlockPos lpos, TileEntity tile){
 			tiles.put(lpos, tile);
+			setDirty(true);
 		}
 
 		public void setTileEntityG(BlockPos gpos, TileEntity tile){

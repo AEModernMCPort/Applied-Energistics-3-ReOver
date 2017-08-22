@@ -11,12 +11,30 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	protected final Skyobject skyobject;
 
+	protected boolean dirty = false;
+
 	protected Vec3d pos = new Vec3d(0, 0, 0);
 	protected Vec3d rot = new Vec3d(0, 0, 0);
 
 	public SkyobjectFallingPhysics(Skyobject skyobject){
 		this.skyobject = skyobject;
 	}
+
+	/*
+	 * Dirty
+	 */
+
+	public boolean isDirty(){
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty){
+		this.dirty = dirty;
+	}
+
+	/*
+	 * Get-set
+	 */
 
 	@Override
 	public Vec3d getPos(){
@@ -25,6 +43,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	public void setPos(Vec3d pos){
 		this.pos = pos;
+		setDirty(true);
 	}
 
 	@Override
@@ -34,6 +53,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	public void setRot(Vec3d rot){
 		this.rot = rot;
+		setDirty(true);
 	}
 
 	@Override

@@ -223,7 +223,7 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		 */
 
 		public AxisAlignedBB getBoundingBox(){
-			return new AxisAlignedBB(pos, pos.add(chunkSize));
+			return new AxisAlignedBB(getChunkOriginBlockPos(), getChunkOriginBlockPos().add(chunkSize));
 		}
 
 		/*

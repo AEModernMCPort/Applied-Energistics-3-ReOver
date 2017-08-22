@@ -31,7 +31,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	@SubscribeEvent
 	public static void attachToWorld(AttachCapabilitiesEvent<World> event){
-		event.addCapability(new ResourceLocation(AppEng.MODID, "skyobjects_manager"), new SingleCapabilityProvider<>(AppEngSkyfall.skyobjectsManagerCapability, new SkyobjectsManagerImpl()));
+		event.addCapability(new ResourceLocation(AppEng.MODID, "skyobjects_manager"), new SingleCapabilityProvider.Serializeable<>(AppEngSkyfall.skyobjectsManagerCapability, new SkyobjectsManagerImpl()));
 	}
 
 	@SubscribeEvent

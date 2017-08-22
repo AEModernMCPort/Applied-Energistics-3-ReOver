@@ -52,6 +52,9 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		if(renderer == null) renderer = new MutableObject<>(new MultiChunkBlockAccessRenderer(world, world.getBlockAccessBoundingBox(), new Vec3d(0, 0, 0)));
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(physics.getPos().x, physics.getPos().y, physics.getPos().z);
+		GlStateManager.rotate((float) physics.getRotation().x, 1, 0, 0);
+		GlStateManager.rotate((float) physics.getRotation().y, 0, 1, 0);
+		GlStateManager.rotate((float) physics.getRotation().z, 0, 0, 1);
 		AxisAlignedBB box = world.getBlockAccessBoundingBox();
 		GlStateManager.translate((box.minX - box.maxX)/2, (box.minY - box.maxY)/2, (box.minZ - box.maxZ)/2);
 		renderer.getValue().render();

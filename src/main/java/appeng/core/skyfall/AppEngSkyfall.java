@@ -21,8 +21,7 @@ import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.definitions.SkyfallBlockDefinitions;
 import appeng.core.skyfall.definitions.SkyfallItemDefinitions;
 import appeng.core.skyfall.definitions.SkyfallSkyobjectProviderDefinitions;
-import appeng.core.skyfall.net.SkyobjectSpawnMessage;
-import appeng.core.skyfall.net.SkyobjectsSyncMessage;
+import appeng.core.skyfall.net.SkyobjectMessage;
 import appeng.core.skyfall.proxy.SkyfallProxy;
 import appeng.core.skyfall.skyobject.SkyobjectsManagerImpl;
 import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
@@ -41,6 +40,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Module(ISkyfall.NAME)
 public class AppEngSkyfall implements ISkyfall {
@@ -114,8 +114,8 @@ public class AppEngSkyfall implements ISkyfall {
 
 		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
 
-		net.registerMessage3(message -> () -> Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null).deserializeNBT(message.nbt), SkyobjectsSyncMessage.class, Side.CLIENT);
-		net.registerMessage3(message -> () -> ((SkyobjectsManagerImpl) Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).receiveClientSkyobject(message.uuid, message.skyobject), SkyobjectSpawnMessage.class, Side.CLIENT);
+		net.registerMessage3(message -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.receiveAddOrChange(message.uuid, message.id, message.nbt)), SkyobjectMessage.AddOrChange.class, Side.CLIENT);
+		net.registerMessage3(message -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.receiveRemove(message.uuid)), SkyobjectMessage.Remove.class, Side.CLIENT);
 
 		initHandler.preInit();
 		proxy.preInit(event);

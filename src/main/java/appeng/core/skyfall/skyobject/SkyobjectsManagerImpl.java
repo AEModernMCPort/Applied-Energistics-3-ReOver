@@ -6,8 +6,8 @@ import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
-import appeng.core.skyfall.net.SkyobjectSpawnMessage;
-import appeng.core.skyfall.net.SkyobjectsSyncMessage;
+import appeng.core.skyfall.net.SkyobjectMessage;
+import com.google.common.base.Predicates;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -27,11 +27,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
-public class SkyobjectsManagerImpl implements SkyobjectsManager {
+public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManager.WithDefaultSyncSupport {
 
 	protected static final ExecutorService GENERATORSERVICE = Executors.newCachedThreadPool();
 
@@ -47,7 +48,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	@SubscribeEvent
 	public static void syncWithNewPlayer(EntityJoinWorldEvent event){
-		if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) ((SkyobjectsManagerImpl) event.getWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null)).syncAllWith((EntityPlayerMP) event.getEntity());
+		if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) Optional.ofNullable(event.getWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.sendAll((EntityPlayerMP) event.getEntity()));
 	}
 
 	protected World world;
@@ -67,14 +68,33 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		if(!world.isRemote){
 			double chance = spawner.get();
 			if(world.rand.nextDouble() < chance) world.getMinecraftServer().sendMessage(new TextComponentString("Natural spawn now! - " + chance));
-			//FIXME During skyrains, this will cause massive lag!
-			if(skyobjects.values().removeIf(Skyobject::isDead)) syncAll();
-			while(toSpawn.peek() != null){
-				Skyobject skyobject = toSpawn.poll();
-				skyobject.onSpawn(world);
-				UUID uuid = UUID.randomUUID();
-				skyobjects.put(uuid, skyobject);
-				AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectSpawnMessage(uuid, skyobject), world.provider.getDimension());
+
+			removeSkyobjects(Skyobject::isDead);
+
+			skyobjects.entrySet().stream().filter(skyobject -> skyobject.getValue() instanceof Skyobject.Syncable).map(skyobject -> (Map.Entry<UUID, Skyobject.Syncable<?, ?>>) (Map.Entry) skyobject).filter(skyobject -> skyobject.getValue().isDirty()).forEach(skyobject -> sendAddOrChange(skyobject.getKey(), skyobject.getValue(), Optional.empty()));
+
+			while(toSpawn.peek() != null) addSkyobject(UUID.randomUUID(), toSpawn.poll());
+		}
+	}
+
+	protected void addSkyobject(UUID uuid, Skyobject skyobject){
+		skyobjects.put(uuid, skyobject);
+		skyobject.onSpawn(world);
+		if(!world.isRemote) sendAddOrChange(uuid, skyobject, Optional.empty());
+	}
+
+	protected void removeSkyobject(UUID uuid){
+		skyobjects.remove(uuid);
+		if(!world.isRemote) sendRemove(uuid, Optional.empty());
+	}
+
+	protected void removeSkyobjects(Predicate<Skyobject> predicate){
+		Iterator<Map.Entry<UUID, Skyobject>> iterator = skyobjects.entrySet().iterator();
+		while(iterator.hasNext()){
+			Map.Entry<UUID, Skyobject> next = iterator.next();
+			if(predicate.test(next.getValue())){
+				iterator.remove();
+				if(!world.isRemote) sendRemove(next.getKey(), Optional.empty());
 			}
 		}
 	}
@@ -84,14 +104,9 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 		return skyobjects.values().stream();
 	}
 
-	public void receiveClientSkyobject(UUID uuid, Skyobject skyobject){
-		skyobjects.put(uuid, skyobject);
-	}
-
 	@Override
 	public void killall(){
-		this.skyobjects.clear();
-		syncAll();
+		removeSkyobjects(Predicates.alwaysTrue());
 		AppEngSkyfall.logger.info("Killed all skyobjects");
 	}
 
@@ -105,16 +120,42 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 	 * Sync
 	 */
 
-	protected void syncAll(){
-		AppEngSkyfall.INSTANCE.net.sendToDimension(new SkyobjectsSyncMessage(serializeNBT()), world.provider.getDimension());
+	protected void sendAddOrChange(UUID uuid, Skyobject skyobject, Optional<EntityPlayerMP> target){
+		if(skyobject instanceof Skyobject.Syncable) ((Skyobject.Syncable<?, ?>) skyobject).getSyncCompounds().forEach(nbt -> sendMessage(new SkyobjectMessage.AddOrChange(uuid, skyobject.getProvider().getRegistryName(), nbt), target));
+		else sendMessage(new SkyobjectMessage.AddOrChange(uuid, skyobject.getProvider().getRegistryName(), skyobject.getProvider().serializeNBT(skyobject)), target);
 	}
 
-	protected void syncAllWith(EntityPlayerMP player){
-		AppEngSkyfall.INSTANCE.net.sendTo(new SkyobjectsSyncMessage(serializeNBT()), player);
+	protected void sendRemove(UUID uuid, Optional<EntityPlayerMP> target){
+		sendMessage(new SkyobjectMessage.Remove(uuid), target);
 	}
 
-	protected void syncSpawn(){
+	protected void sendMessage(SkyobjectMessage message, Optional<EntityPlayerMP> target){
+		if(target.isPresent()) AppEngSkyfall.INSTANCE.net.sendTo(message, target.get());
+		else AppEngSkyfall.INSTANCE.net.sendToDimension(message, world.provider.getDimension());
+	}
 
+	@Override
+	public void receiveAddOrChange(UUID uuid, ResourceLocation id, NBTTagCompound nbt){
+		Skyobject existing = skyobjects.get(uuid);
+		if(existing == null){
+			existing = AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry().getValue(id).get();
+			if(!(existing instanceof Skyobject.Syncable)){
+				skyobjects.put(uuid, AppEngSkyfall.INSTANCE.getSkyobjectProvidersRegistry().getValue(id).deserializeNBT(nbt));
+				return;
+			}
+			skyobjects.put(uuid, existing);
+		}
+		if(id instanceof Skyobject.Syncable) ((Skyobject.Syncable) id).readNextSyncCompound(nbt);
+	}
+
+	@Override
+	public void receiveRemove(UUID uuid){
+		skyobjects.remove(uuid);
+	}
+
+	@Override
+	public void sendAll(EntityPlayerMP target){
+		skyobjects.forEach((uuid, skyobject) -> sendAddOrChange(uuid, skyobject, Optional.of(target)));
 	}
 
 	/*

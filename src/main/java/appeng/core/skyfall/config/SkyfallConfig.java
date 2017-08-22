@@ -166,7 +166,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 	public static class Meteorite {
 
 		public float minRadius = 5;
-		public float maxRadius = 110;
+		public float maxRadius = 25;
 		public double distributionExponent = 1.25;
 		//Caching these values to maybe improve performance
 		public transient float radiusDelta = maxRadius - minRadius;
@@ -185,7 +185,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 			minRadius = Math.min(minRadius, maxRadius);
 			maxRadius = Math.max(minRadius, maxRadius);
 			minRadius = Math.max(minRadius, 1);
-			maxRadius = Math.min(maxRadius, 110);
+			maxRadius = Math.min(maxRadius, 25);
 
 			distributionExponent = Math.max(distributionExponent, 0.001);
 

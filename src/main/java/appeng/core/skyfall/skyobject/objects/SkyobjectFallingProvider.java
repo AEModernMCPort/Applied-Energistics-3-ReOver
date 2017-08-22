@@ -1,6 +1,5 @@
 package appeng.core.skyfall.skyobject.objects;
 
-import appeng.core.lib.world.ExpandleMutableBlockAccess;
 import appeng.core.skyfall.skyobject.SkyobjectProviderImpl;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -16,13 +15,15 @@ public abstract class SkyobjectFallingProvider<S extends SkyobjectFalling<S, P>,
 	public NBTTagCompound serializeNBT(S skyobject){
 		NBTTagCompound nbt = super.serializeNBT(skyobject);
 		nbt.setTag("world", skyobject.world.serializeNBT());
+		nbt.setTag("physics", skyobject.physics.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public S deserializeNBT(NBTTagCompound nbt){
 		S skyobject = super.deserializeNBT(nbt);
-		(skyobject.world = new ExpandleMutableBlockAccess()).deserializeNBT(nbt.getCompoundTag("world"));
+		skyobject.world.deserializeNBT(nbt.getCompoundTag("world"));
+		skyobject.physics.deserializeNBT(nbt.getCompoundTag("physics"));
 		return skyobject;
 	}
 

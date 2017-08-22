@@ -65,6 +65,7 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 			AppEngSkyfall.logger.info("Layer took " + (System.currentTimeMillis() - ltime) + " ms");
 		}
 
+		//FIXME So accodring to repeated profiling i executed, the infusion may take 10 times (!!!) as much time as generation!
 		long itime = System.currentTimeMillis();
 
 		Random localRandom = new Random(random.nextLong());

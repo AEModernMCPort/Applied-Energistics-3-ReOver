@@ -2,6 +2,9 @@ package appeng.core.skyfall.proxy;
 
 import appeng.api.module.AEStateEvent;
 import appeng.core.skyfall.AppEngSkyfall;
+import code.elix_x.excore.utils.client.render.OpenGLHelper;
+import code.elix_x.excore.utils.client.render.perspective.PerspectiveHelper;
+import code.elix_x.excore.utils.client.render.vbo.VertexBufferSingleVBO;
 import code.elix_x.excore.utils.client.render.wtw.WTWRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -30,13 +33,27 @@ public class SkyfallClientProxy extends SkyfallProxy {
 		super.preInit(event);
 	}
 
+	@Override
+	public void postInit(AEStateEvent.AEPostInitializationEvent event){
+		Minecraft.getMinecraft().getFramebuffer().enableStencil();
+
+		super.postInit(event);
+	}
+
+	private VertexBufferSingleVBO skySphere;
+
 	@SubscribeEvent
 	public void renderSkyobjects(RenderWorldLastEvent event){
-		//FIXME Frustum culling
+		//FIXME Frustum culling???
 		WTWRenderer.Phase.STENCILDEPTHREADWRITE.render(() -> {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableTexture2D();
 			GlStateManager.disableCull();
+
+			GlStateManager.matrixMode(GL11.GL_PROJECTION);
+			GlStateManager.pushMatrix();
+			OpenGLHelper.projectionMatrix(PerspectiveHelper.getFOVModifier(event.getPartialTicks()), PerspectiveHelper.getAspectRatio(), PerspectiveHelper.zNear, 1000000);
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
 			Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
 			double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
@@ -46,14 +63,24 @@ public class SkyfallClientProxy extends SkyfallProxy {
 
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder buffer = tessellator.getBuffer();
-			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+			buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
 			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> drawBox(buffer, skyobject.getRendererBoundingBox()));
 			tessellator.draw();
+
+			GlStateManager.matrixMode(GL11.GL_PROJECTION);
+			GlStateManager.popMatrix();
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+
 			GlStateManager.enableCull();
 			GlStateManager.enableTexture2D();
 			GlStateManager.popMatrix();
 		}, () -> {
 			GlStateManager.pushMatrix();
+
+			GlStateManager.matrixMode(GL11.GL_PROJECTION);
+			GlStateManager.pushMatrix();
+			OpenGLHelper.projectionMatrix(PerspectiveHelper.getFOVModifier(event.getPartialTicks()), PerspectiveHelper.getAspectRatio(), PerspectiveHelper.zNear, 1000000);
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
 
 			Entity entity = Minecraft.getMinecraft().getRenderViewEntity();
 			double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.getPartialTicks();
@@ -62,6 +89,11 @@ public class SkyfallClientProxy extends SkyfallProxy {
 			GlStateManager.translate(-x, -y, -z);
 
 			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> skyobject.render(event.getPartialTicks()));
+
+			GlStateManager.matrixMode(GL11.GL_PROJECTION);
+			GlStateManager.popMatrix();
+			GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+
 			GlStateManager.popMatrix();
 		});
 	}

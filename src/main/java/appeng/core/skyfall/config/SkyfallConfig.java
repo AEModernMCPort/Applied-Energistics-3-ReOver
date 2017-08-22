@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -56,9 +57,9 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 	}
 
 	public Supplier<Double> skyobjectFallingSupplierForWorld(World world){
-		FractalNoiseGenerator2D day = this.day.getNoise(world.getSeed());
-		FractalNoiseGenerator2D tick = this.tick.getNoise(world.getSeed());
-		return () -> day.valueAt(0.1, (double) Math.floorDiv(world.getTotalWorldTime(), 24000), 0) * tick.valueAt(0.1, (double) world.getTotalWorldTime(), 0);
+		Function<Double, Double> day = this.day.getNoise(world.getSeed());
+		Function<Double, Double> tick = this.tick.getNoise(world.getSeed());
+		return () -> day.apply((double) Math.floorDiv(world.getTotalWorldTime(), 24000)) * tick.apply((double) world.getTotalWorldTime());
 	}
 
 	public <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> P getNextWeightedSkyobjectProvider(Random random){
@@ -110,8 +111,9 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 			scaleMultiplier = Math.min(Math.max(scaleMultiplier, 0), 1);
 		}
 
-		public FractalNoiseGenerator2D getNoise(long seed){
-			return new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed));
+		public Function<Double, Double> getNoise(long seed){
+			FractalNoiseGenerator2D noise = new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed));
+			return time -> Math.pow(Math.abs(noise.valueAt(0.1, time, 0)), exponent);
 		}
 
 		@Override

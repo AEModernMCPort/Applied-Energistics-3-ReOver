@@ -123,6 +123,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager {
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
+		this.skyobjects.clear();
 		NBTTagList skyobjects = nbt.getTagList("skyobjects", 10);
 		skyobjects.forEach(tag -> {
 			Pair<UUID, Skyobject> skyobject = (Pair) deserializeSkyobject((NBTTagCompound) tag);

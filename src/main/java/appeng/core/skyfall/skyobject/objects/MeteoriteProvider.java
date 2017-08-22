@@ -39,6 +39,10 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 		AppEngSkyfall.logger.info("Meteorite layers - " + count);
 		for(int i = 0; i < count; i++){
 			IBlockState block = allowed.get(i);
+
+			AppEngSkyfall.logger.info("Layer - " + block.getBlock());
+			long ltime = System.currentTimeMillis();
+
 			Random localRandom = new Random(random.nextLong());
 			float localRadius = RandomUtils.nextFloat(radius * 0.75f, radius * 1.25f);
 			float radiusX = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
@@ -57,7 +61,12 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 					}
 				}
 			}
+
+			AppEngSkyfall.logger.info("Layer took " + (System.currentTimeMillis() - ltime) + " ms");
 		}
+
+		long itime = System.currentTimeMillis();
+
 		Random localRandom = new Random(random.nextLong());
 		DefaultFractalNoiseGenerator3D infusionNoise = new DefaultFractalNoiseGenerator3D(500, 0.3, 0.9, 1, new DefaultRandomNumberGenerator(localRandom.nextLong()));
 		final double p = 0.02;
@@ -74,6 +83,8 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 				}
 			}
 		}
+
+		AppEngSkyfall.logger.info("Infusion took " + (System.currentTimeMillis() - itime) + " ms");
 
 		return meteorite;
 	}

@@ -96,15 +96,18 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public double magnitudeMultiplier = 0.5;
 		public double exponent = 1;
 
+		public transient Function<Long, Long> seed2seed;
+
 		public SpawnNoise(){
 		}
 
-		public SpawnNoise(double initialScale, double initialMagnitude, double scaleMultiplier, double magnitudeMultiplier, double exponent){
+		public SpawnNoise(double initialScale, double initialMagnitude, double scaleMultiplier, double magnitudeMultiplier, double exponent, Function<Long, Long> seed2seed){
 			this.initialScale = initialScale;
 			this.initialMagnitude = initialMagnitude;
 			this.scaleMultiplier = scaleMultiplier;
 			this.magnitudeMultiplier = magnitudeMultiplier;
 			this.exponent = exponent;
+			this.seed2seed = seed2seed;
 		}
 
 		public void compile(){
@@ -112,7 +115,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		}
 
 		public Function<Double, Double> getNoise(long seed){
-			FractalNoiseGenerator2D noise = new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed));
+			FractalNoiseGenerator2D noise = new DefaultFractalNoiseGenerator2D(initialScale, initialMagnitude, scaleMultiplier, magnitudeMultiplier, new DefaultRandomNumberGenerator(seed2seed.apply(seed)));
 			return time -> Math.pow(Math.abs(noise.valueAt(0.1, time, 0)), exponent);
 		}
 
@@ -150,7 +153,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public static class Day extends SpawnNoise {
 
 			public Day(){
-				super(0.866, 0.269, 0.909, 0.763, 2.366);
+				super(0.866, 0.269, 0.909, 0.763, 2.366, seed -> seed);
 			}
 
 		}
@@ -158,7 +161,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public static class Tick extends SpawnNoise {
 
 			public Tick(){
-				super(0.091, 0.86, 0.054, 0.065, 7.5);
+				super(0.091, 0.86, 0.054, 0.065, 7.5, seed -> ~seed);
 			}
 
 		}

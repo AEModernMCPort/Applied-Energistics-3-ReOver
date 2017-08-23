@@ -184,7 +184,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 		protected double getMass(IBlockState block){
 			//TODO This may very well throw excep
-			return Math.log(block.getBlockHardness(null, null) * block.getBlock().getExplosionResistance(null));
+			return /*Math.log(block.getBlockHardness(null, null) * block.getBlock().getExplosionResistance(null))*/ 1;
 		}
 
 	}

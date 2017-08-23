@@ -37,7 +37,7 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		}
 
 	};
-	protected SkyobjectFallingPhysics physics = new SkyobjectFallingPhysics(this);
+	protected SkyobjectFallingPhysics physics = new SkyobjectFallingPhysics.WorldDriven(this, world, world.getBlockAccessBoundingBox());
 
 	public SkyobjectFalling(P provider){
 		super(provider);
@@ -57,24 +57,26 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 	@Override
 	public void onSpawn(World world){
-		Pair<Vec3d, Vec3d> posForce = calcSpawnPosForce();
+		Pair<Vec3d, Vec3d> posForce = calcSpawnPosForce(world);
 		physics.setPos(posForce.getLeft());
+		physics.prevTickPos = posForce.getLeft();
 		physics.setForce(posForce.getRight());
-		Pair<Vec3d, Vec3d> rotTorque = calcSpawnRotTorque();
+		Pair<Vec3d, Vec3d> rotTorque = calcSpawnRotTorque(world);
 		physics.setRot(rotTorque.getLeft());
+		physics.prevTickRot = rotTorque.getLeft();
 		physics.setTorque(rotTorque.getRight());
 	}
 
-	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(){
+	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(World world){
 		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
 	}
 
-	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(){
+	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(World world){
 		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
 	}
 
 	protected Vec3d triangulateTargetToStart(Vec3d landingTarget, double phi, double theta, double startY){
-		Vector4f res = new Vector4f((float)((startY - landingTarget.y) / Math.sin(theta)), 0, 0, 0).mul(new Matrix4f().rotateZ((float) theta).rotateY((float) phi + (float) Math.PI));
+		Vector4f res = new Vector4f((float)((startY - landingTarget.y) / Math.sin(theta)), 0, 0, 0).mul(new Matrix4f().rotateY((float) phi + (float) Math.PI).rotateZ((float) theta));
 		return new Vec3d(res.x, res.y, res.z);
 	}
 

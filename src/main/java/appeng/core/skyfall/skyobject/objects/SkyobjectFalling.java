@@ -48,12 +48,7 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		return physics;
 	}
 
-	@Override
-	public AxisAlignedBB getRendererBoundingBox(){
-		return Optional.ofNullable(world.getBlockAccessBoundingBox()).map(box -> box.offset(physics.getPos()).offset(-box.getCenter().x, -box.getCenter().y, -box.getCenter().z)).orElse(null);
-	}
-
-	protected MutableObject<MultiChunkBlockAccessRenderer> renderer;
+	//Spawn
 
 	@Override
 	public void onSpawn(World world){
@@ -72,6 +67,15 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(){
 		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
 	}
+
+	//Rendering
+
+	@Override
+	public AxisAlignedBB getRendererBoundingBox(){
+		return Optional.ofNullable(world.getBlockAccessBoundingBox()).map(box -> box.offset(physics.getPos()).offset(-box.getCenter().x, -box.getCenter().y, -box.getCenter().z)).orElse(null);
+	}
+
+	protected MutableObject<MultiChunkBlockAccessRenderer> renderer;
 
 	@Override
 	public void render(float partialTicks){

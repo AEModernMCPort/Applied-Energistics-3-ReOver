@@ -1,5 +1,6 @@
 package appeng.core.skyfall.skyobject.objects;
 
+import appeng.core.lib.util.Interpolation;
 import appeng.core.lib.world.ExpandleMutableBlockAccess;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
@@ -15,9 +16,11 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.animation.ModelBlockAnimation;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Interpolationf;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -86,8 +89,8 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	//Rendering
 
 	@Override
-	public AxisAlignedBB getRendererBoundingBox(){
-		return Optional.ofNullable(world.getBlockAccessBoundingBox()).map(box -> box.offset(physics.getPos()).offset(-box.getCenter().x, -box.getCenter().y, -box.getCenter().z)).orElse(null);
+	public AxisAlignedBB getRendererBoundingBox(float partialTicks){
+		return Optional.ofNullable(world.getBlockAccessBoundingBox()).map(box -> box.offset(Interpolation.LINEAR.interpolateVec3d(physics.getPrevTickPos(), physics.getPos(), partialTicks)).offset(-box.getCenter().x, -box.getCenter().y, -box.getCenter().z)).orElse(null);
 	}
 
 	protected MutableObject<MultiChunkBlockAccessRenderer> renderer;
@@ -96,10 +99,12 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	public void render(float partialTicks){
 		if(renderer == null) renderer = new MutableObject<>(new MultiChunkBlockAccessRenderer(world, world.getBlockAccessBoundingBox(), new Vec3d(0, 0, 0)));
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(physics.getPos().x, physics.getPos().y, physics.getPos().z);
-		GlStateManager.rotate((float) physics.getRotation().x, 1, 0, 0);
-		GlStateManager.rotate((float) physics.getRotation().y, 0, 1, 0);
-		GlStateManager.rotate((float) physics.getRotation().z, 0, 0, 1);
+		Vec3d pos = Interpolation.LINEAR.interpolateVec3d(physics.getPrevTickPos(), physics.getPos(), partialTicks);
+		GlStateManager.translate(pos.x, pos.y, pos.z);
+		Vec3d rot = Interpolation.LINEAR.interpolateVec3d(physics.getPrevTickRot(), physics.getRotation(), partialTicks);
+		GlStateManager.rotate((float) rot.x, 1, 0, 0);
+		GlStateManager.rotate((float) rot.y, 0, 1, 0);
+		GlStateManager.rotate((float) rot.z, 0, 0, 1);
 		AxisAlignedBB box = world.getBlockAccessBoundingBox();
 		GlStateManager.translate((box.minX - box.maxX)/2, (box.minY - box.maxY)/2, (box.minZ - box.maxZ)/2);
 		renderer.getValue().render();

@@ -19,7 +19,7 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 
 	//Client only
 
-	AxisAlignedBB getRendererBoundingBox();
+	AxisAlignedBB getRendererBoundingBox(float partialTicks);
 
 	void render(float partialTicks);
 

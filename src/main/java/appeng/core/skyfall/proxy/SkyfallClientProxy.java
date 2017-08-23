@@ -64,7 +64,7 @@ public class SkyfallClientProxy extends SkyfallProxy {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder buffer = tessellator.getBuffer();
 			buffer.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> drawBox(buffer, skyobject.getRendererBoundingBox()));
+			Minecraft.getMinecraft().world.getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).getAllSkyobjects().forEach(skyobject -> drawBox(buffer, skyobject.getRendererBoundingBox(event.getPartialTicks())));
 			tessellator.draw();
 
 			GlStateManager.matrixMode(GL11.GL_PROJECTION);

@@ -2,6 +2,7 @@ package appeng.core.skyfall.skyobject.objects;
 
 import appeng.core.lib.world.ExpandleMutableBlockAccess;
 import appeng.core.skyfall.api.skyobject.Skyobject;
+import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import appeng.core.skyfall.skyobject.SkyobjectImpl;
 import code.elix_x.excore.utils.client.render.world.MultiChunkBlockAccessRenderer;
 import net.minecraft.block.Block;
@@ -19,7 +20,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P extends SkyobjectFallingProvider<S, P>> extends SkyobjectImpl<S, P> implements Skyobject.Syncable<S, P> {
+public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P extends SkyobjectFallingProvider<S, P>> extends SkyobjectImpl<S, P> implements Skyobject.PhysicsDriven<S, P>, Skyobject.Syncable<S, P> {
 
 	protected ExpandleMutableBlockAccess world = new ExpandleMutableBlockAccess(){
 
@@ -38,6 +39,11 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	@Override
 	public void tick(World world){
 		dead = physics.tick(world);
+	}
+
+	@Override
+	public SkyobjectPhysics getPhysics(){
+		return physics;
 	}
 
 	@Override

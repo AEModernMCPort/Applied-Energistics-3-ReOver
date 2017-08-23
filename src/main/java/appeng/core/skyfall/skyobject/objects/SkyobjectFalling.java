@@ -16,6 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -52,6 +54,24 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	}
 
 	protected MutableObject<MultiChunkBlockAccessRenderer> renderer;
+
+	@Override
+	public void onSpawn(World world){
+		Pair<Vec3d, Vec3d> posForce = calcSpawnPosForce();
+		physics.setPos(posForce.getLeft());
+		physics.setForce(posForce.getRight());
+		Pair<Vec3d, Vec3d> rotTorque = calcSpawnRotTorque();
+		physics.setRot(rotTorque.getLeft());
+		physics.setTorque(rotTorque.getRight());
+	}
+
+	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(){
+		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
+	}
+
+	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(){
+		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
+	}
 
 	@Override
 	public void render(float partialTicks){

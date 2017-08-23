@@ -33,4 +33,10 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 
 	}
 
+	interface PhysicsDriven<S extends Skyobject.PhysicsDriven<S, P>, P extends SkyobjectProvider<S, P>> extends Skyobject<S, P> {
+
+		SkyobjectPhysics getPhysics();
+
+	}
+
 }

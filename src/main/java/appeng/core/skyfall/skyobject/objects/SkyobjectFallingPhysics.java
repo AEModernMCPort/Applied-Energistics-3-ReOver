@@ -27,6 +27,9 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	protected Vec3d pos = Vec3d.ZERO;
 	protected Vec3d rot = Vec3d.ZERO;
 
+	protected Vec3d prevTickPos = Vec3d.ZERO;
+	protected Vec3d prevTickRot = Vec3d.ZERO;
+
 	protected Vec3d force = Vec3d.ZERO;
 	protected Vec3d torque = Vec3d.ZERO;
 
@@ -80,6 +83,14 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		setRot(getRotation().add(rot));
 	}
 
+	public Vec3d getPrevTickPos(){
+		return prevTickPos;
+	}
+
+	public Vec3d getPrevTickRot(){
+		return prevTickRot;
+	}
+
 	public double getMass(){
 		return mass;
 	}
@@ -106,6 +117,9 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	@Override
 	public boolean tick(World world){
+		prevTickPos = pos;
+		prevTickRot = rot;
+
 		List<Vec3d> forces = new ArrayList<>();
 		List<Vec3d> torques = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.post(new GatherForcesEvent(skyobject, forces, torques));
@@ -113,6 +127,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		if(!torques.isEmpty()) torque = torque.add(sumVecs(torques));
 		if(force.lengthSquared() != 0) addPos(force.scale(1/getMass()));
 		if(torque.lengthSquared() != 0) addRot(torque.scale(1/getMass()));
+
 		return getPos().y < 0;
 	}
 

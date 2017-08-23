@@ -32,6 +32,8 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	public Meteorite meteorite = new Meteorite();
 
+	public double gravity = -0.49;
+
 	public SkyfallConfig(){
 
 	}

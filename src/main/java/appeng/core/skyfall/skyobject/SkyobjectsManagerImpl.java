@@ -4,6 +4,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
+import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import appeng.core.skyfall.net.SkyobjectMessage;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -49,6 +51,11 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 	@SubscribeEvent
 	public static void syncWithNewPlayer(EntityJoinWorldEvent event){
 		if(!event.getWorld().isRemote && event.getEntity() instanceof EntityPlayer) Optional.ofNullable(event.getWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.sendAll((EntityPlayerMP) event.getEntity()));
+	}
+
+	@SubscribeEvent
+	public static void applyGravity(SkyobjectPhysics.GatherForcesEvent event){
+		event.addForce(new Vec3d(0, AppEngSkyfall.INSTANCE.config.gravity, 0));
 	}
 
 	protected World world;

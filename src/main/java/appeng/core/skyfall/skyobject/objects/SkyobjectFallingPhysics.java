@@ -142,6 +142,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("pos", NbtUtils.serializeVec3d(pos));
 		nbt.setTag("rot", NbtUtils.serializeVec3d(rot));
+		nbt.setTag("prevPos", NbtUtils.serializeVec3d(prevTickPos));
+		nbt.setTag("prevRot", NbtUtils.serializeVec3d(prevTickRot));
+		nbt.setTag("force", NbtUtils.serializeVec3d(force));
+		nbt.setTag("torque", NbtUtils.serializeVec3d(torque));
 		return nbt;
 	}
 
@@ -149,6 +153,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	public void deserializeNBT(NBTTagCompound nbt){
 		pos = NbtUtils.deserializeVec3d(nbt.getCompoundTag("pos"));
 		rot = NbtUtils.deserializeVec3d(nbt.getCompoundTag("rot"));
+		prevTickPos = NbtUtils.deserializeVec3d(nbt.getCompoundTag("prevPos"));
+		prevTickRot = NbtUtils.deserializeVec3d(nbt.getCompoundTag("prevRot"));
+		force = NbtUtils.deserializeVec3d(nbt.getCompoundTag("force"));
+		torque = NbtUtils.deserializeVec3d(nbt.getCompoundTag("torque"));
 	}
 
 	public static class WorldDriven extends SkyobjectFallingPhysics implements LocalBlockAccessDriven {

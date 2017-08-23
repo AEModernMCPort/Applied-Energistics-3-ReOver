@@ -18,6 +18,8 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -66,6 +68,19 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(){
 		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
+	}
+
+	protected Vec3d triangulateTargetToStart(Vec3d landingTarget, double phi, double theta, double startY){
+		Vector4f res = new Vector4f((float)((startY - landingTarget.y) / Math.sin(theta)), 0, 0, 0).mul(new Matrix4f().rotateZ((float) theta).rotateY((float) phi + (float) Math.PI));
+		return new Vec3d(res.x, res.y, res.z);
+	}
+
+	protected Vec3d triangulateStartPos(Vec3d landingTarget, double phi, double theta, double startY){
+		return landingTarget.add(triangulateTargetToStart(landingTarget, phi, theta, startY));
+	}
+
+	protected Vec3d triangulateStartingForce(Vec3d landingTarget, double phi, double theta, double startY, double force){
+		return triangulateTargetToStart(landingTarget, phi, theta, startY).normalize().scale(-force);
 	}
 
 	//Rendering

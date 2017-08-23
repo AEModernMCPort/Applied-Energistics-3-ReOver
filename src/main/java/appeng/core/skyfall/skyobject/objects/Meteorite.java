@@ -1,9 +1,8 @@
 package appeng.core.skyfall.skyobject.objects;
 
-import appeng.core.lib.world.ExpandleMutableBlockAccess;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 
@@ -12,9 +11,9 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 	}
 
 	@Override
-	public void onSpawn(World world){
-		/*EntityPlayer player = world.playerEntities.get(0);
-		physics.setPos(new Vec3d(player.posX, player.posY + 25, player.posZ));*/
-		physics.setPos(new Vec3d(750, 1000, -500));
+	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(){
+		Vec3d pos = triangulateStartPos(new Vec3d(5000, 64, 5000), 0, 35, 7500);
+		Vec3d force = triangulateStartingForce(new Vec3d(5000, 64, 5000), 0, 35, 7500, physics.getMass() * 250);
+		return new ImmutablePair<>(pos, force);
 	}
 }

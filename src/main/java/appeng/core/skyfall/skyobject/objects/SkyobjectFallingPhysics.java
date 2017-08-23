@@ -4,10 +4,14 @@ import appeng.core.lib.util.NbtUtils;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import java.util.ArrayList;
@@ -119,15 +123,29 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	public static class WorldDriven extends SkyobjectFallingPhysics implements LocalBlockAccessDriven {
 
 		protected final MutableBlockAccess localBlockAccess;
+		protected final AxisAlignedBB blockAccessBox;
 
-		public WorldDriven(Skyobject skyobject, MutableBlockAccess localBlockAccess){
+		public WorldDriven(Skyobject skyobject, MutableBlockAccess localBlockAccess, AxisAlignedBB blockAccessBox){
 			super(skyobject);
 			this.localBlockAccess = localBlockAccess;
+			this.blockAccessBox = blockAccessBox;
+			recalcMass();
 		}
 
 		@Override
 		public MutableBlockAccess getLocalBlockAccess(){
 			return localBlockAccess;
+		}
+
+		public void recalcMass(){
+			MutableDouble mass = new MutableDouble();
+			BlockPos.getAllInBox(new BlockPos(blockAccessBox.minX, blockAccessBox.minY, blockAccessBox.minZ), new BlockPos(blockAccessBox.maxX, blockAccessBox.maxY, blockAccessBox.maxZ)).forEach(pos -> mass.add(getMass(localBlockAccess.getBlockState(pos))));
+			setMass(mass.getValue());
+		}
+
+		protected double getMass(IBlockState block){
+			//TODO This may very well throw excep
+			return Math.log(block.getBlockHardness(null, null) * block.getBlock().getExplosionResistance(null));
 		}
 
 	}

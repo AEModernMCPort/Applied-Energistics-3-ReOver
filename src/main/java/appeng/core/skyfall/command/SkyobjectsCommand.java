@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 public class SkyobjectsCommand extends CommandTreeBaseNamed {
 
 	public SkyobjectsCommand(){
-		super("skyobjects", "command.ae3.skyobjects.name");
+		super("skyobjects", "command.ae3.skyobjects.name", 2);
 		addSubcommand(new KillAll());
 		addSubcommand(new Spawn());
 	}
@@ -32,6 +32,11 @@ public class SkyobjectsCommand extends CommandTreeBaseNamed {
 			sender.getEntityWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).killall();
 		}
 
+		@Override
+		public int getRequiredPermissionLevel(){
+			return 2;
+		}
+
 	}
 
 	class Spawn extends CommandBase {
@@ -50,6 +55,12 @@ public class SkyobjectsCommand extends CommandTreeBaseNamed {
 		public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException{
 			sender.getEntityWorld().getCapability(AppEngSkyfall.skyobjectsManagerCapability, null).spawn();
 		}
+
+		@Override
+		public int getRequiredPermissionLevel(){
+			return 2;
+		}
+
 	}
 
 }

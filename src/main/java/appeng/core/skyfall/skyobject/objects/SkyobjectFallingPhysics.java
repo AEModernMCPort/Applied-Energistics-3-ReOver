@@ -3,6 +3,7 @@ package appeng.core.skyfall.skyobject.objects;
 import appeng.core.lib.util.NbtUtils;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
+import code.elix_x.excore.utils.world.MutableBlockAccess;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -100,5 +101,21 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	public void deserializeNBT(NBTTagCompound nbt){
 		pos = NbtUtils.deserializeVec3d(nbt.getCompoundTag("pos"));
 		rot = NbtUtils.deserializeVec3d(nbt.getCompoundTag("rot"));
+	}
+
+	public static class WorldDriven extends SkyobjectFallingPhysics implements LocalBlockAccessDriven {
+
+		protected final MutableBlockAccess localBlockAccess;
+
+		public WorldDriven(Skyobject skyobject, MutableBlockAccess localBlockAccess){
+			super(skyobject);
+			this.localBlockAccess = localBlockAccess;
+		}
+
+		@Override
+		public MutableBlockAccess getLocalBlockAccess(){
+			return localBlockAccess;
+		}
+
 	}
 }

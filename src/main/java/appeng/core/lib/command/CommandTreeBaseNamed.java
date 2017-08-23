@@ -7,6 +7,7 @@ public class CommandTreeBaseNamed extends CommandTreeBase {
 
 	protected final String name;
 	protected String usage;
+	protected int permissionLevel = 4;
 
 	public CommandTreeBaseNamed(String name){
 		this.name = name;
@@ -17,6 +18,11 @@ public class CommandTreeBaseNamed extends CommandTreeBase {
 		this.usage = usage;
 	}
 
+	public CommandTreeBaseNamed(String name, String usage, int permissionLevel){
+		this(name, usage);
+		this.permissionLevel = permissionLevel;
+	}
+
 	@Override
 	public String getName(){
 		return name;
@@ -25,6 +31,11 @@ public class CommandTreeBaseNamed extends CommandTreeBase {
 	@Override
 	public String getUsage(ICommandSender sender){
 		return usage;
+	}
+
+	@Override
+	public int getRequiredPermissionLevel(){
+		return permissionLevel;
 	}
 
 }

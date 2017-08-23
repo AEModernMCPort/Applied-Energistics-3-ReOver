@@ -390,7 +390,7 @@ public final class AppEng {
 
 	@EventHandler
 	private void serverStarting(final FMLServerStartingEvent event){
-		CommandTreeBase command = new CommandTreeBaseNamed("ae3", "commands.ae3.usage");
+		CommandTreeBase command = new CommandTreeBaseNamed("ae3", "commands.ae3.usage", 2);
 		fireModulesEvent(new AEStateEventImpl.AEServerStartingEventImpl(event::registerServerCommand, command::addSubcommand));
 		event.registerServerCommand(command);
 	}

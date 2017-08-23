@@ -88,6 +88,22 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		this.mass = mass;
 	}
 
+	public Vec3d getForce(){
+		return force;
+	}
+
+	public void setForce(Vec3d force){
+		this.force = force;
+	}
+
+	public Vec3d getTorque(){
+		return torque;
+	}
+
+	public void setTorque(Vec3d torque){
+		this.torque = torque;
+	}
+
 	@Override
 	public boolean tick(World world){
 		List<Vec3d> forces = new ArrayList<>();

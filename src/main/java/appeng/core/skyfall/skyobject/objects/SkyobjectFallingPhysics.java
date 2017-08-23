@@ -20,8 +20,11 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	protected boolean dirty = false;
 
-	protected Vec3d pos = new Vec3d(0, 0, 0);
-	protected Vec3d rot = new Vec3d(0, 0, 0);
+	protected Vec3d pos = Vec3d.ZERO;
+	protected Vec3d rot = Vec3d.ZERO;
+
+	protected Vec3d force = Vec3d.ZERO;
+	protected Vec3d torque = Vec3d.ZERO;
 
 	protected double mass;
 
@@ -55,6 +58,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		setDirty(true);
 	}
 
+	public void addPos(Vec3d pos){
+		setPos(getPos().add(pos));
+	}
+
 	@Override
 	public Vec3d getRotation(){
 		return rot;
@@ -63,6 +70,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	public void setRot(Vec3d rot){
 		this.rot = rot;
 		setDirty(true);
+	}
+
+	public void addRot(Vec3d rot){
+		setRot(getRotation().add(rot));
 	}
 
 	public double getMass(){
@@ -78,8 +89,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		List<Vec3d> forces = new ArrayList<>();
 		List<Vec3d> torques = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.post(new GatherForcesEvent(skyobject, forces, torques));
-		if(!forces.isEmpty()) setPos(getPos().add(sumVecs(forces).scale(1/getMass())));
-		if(!torques.isEmpty()) setRot(getRotation().add(sumVecs(torques).scale(1/getMass())));
+		if(!forces.isEmpty()) force = force.add(sumVecs(forces));
+		if(!torques.isEmpty()) torque = torque.add(sumVecs(torques));
+		if(force.lengthSquared() != 0) addPos(force.scale(1/getMass()));
+		if(torque.lengthSquared() != 0) addRot(torque.scale(1/getMass()));
 		return getPos().y < 0;
 	}
 

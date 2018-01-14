@@ -108,8 +108,9 @@ public class PartsContainer implements IPartsContainer {
 	@Override
 	@Nullable
 	public VoxelPosition get(@Nonnull BlockPos voxel){
-		int uid = getUid(voxel);
-		return hasPart(uid) ? getPart(uid).add(getGlobalOriginVoxelPosition()) : null;
+		/*int uid = getUid(voxel);
+		return hasPart(uid) ? getPart(uid).add(getGlobalOriginVoxelPosition()) : null;*/
+		return Optional.ofNullable(getPart(getUid(voxel))).map(part -> part.add(getGlobalOriginVoxelPosition())).orElse(null);
 	}
 
 	@Override
@@ -186,7 +187,7 @@ public class PartsContainer implements IPartsContainer {
 	@Nonnull
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(@Nonnull VoxelPosition position){
 		S state = (S) ownedPartsPositions.get(position.getLocalPosition());
-		return Optional.of(new ImmutablePair<>(state, getPartInfo(state)));
+		return Optional.ofNullable(state).map(s -> new ImmutablePair<>(s, getPartInfo(s)));
 	}
 
 	public PartPositionRotation getPartInfo(Part.State part){

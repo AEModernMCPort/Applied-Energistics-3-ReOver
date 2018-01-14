@@ -5,7 +5,6 @@ import appeng.core.AppEng;
 import appeng.core.core.api.bootstrap.IItemBuilder;
 import appeng.core.core.api.definition.IItemDefinition;
 import appeng.core.core.client.bootstrap.ItemMeshDefinitionComponent;
-import appeng.core.item.ItemMaterial;
 import appeng.core.lib.bootstrap.DefinitionBuilder;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.bootstrap.IPartBuilder;

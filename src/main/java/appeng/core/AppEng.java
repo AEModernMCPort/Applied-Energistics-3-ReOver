@@ -5,12 +5,12 @@ import appeng.api.bootstrap.DefinitionBuilderSupplier;
 import appeng.api.config.ConfigurationLoader;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
+import appeng.core.lib.command.CommandTreeBaseNamed;
 import appeng.core.lib.module.AEStateEventImpl;
 import appeng.core.lib.module.Toposorter;
 import appeng.core.proxy.AppEngProxy;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import code.elix_x.excomms.reflection.ReflectionHelper.AClass;
-import code.elix_x.excomms.reflection.ReflectionHelper.AMethod;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.*;
 import net.minecraft.util.text.TextFormatting;
@@ -21,12 +21,10 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.event.FMLInterModComms.IMCMessage;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.server.command.CommandTreeBase;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -41,7 +39,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 @Mod(modid = AppEng.MODID, name = AppEng.NAME, version = AppEng.VERSION, dependencies = AppEng.DEPENDENCIES)
 public final class AppEng {
@@ -211,19 +209,20 @@ public final class AppEng {
 		configDirectory = new File(event.getModConfigurationDirectory(), NAME);
 		configDirectory.mkdirs();
 
-		Map<String, Function<String, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
+		Map<String, BiFunction<String, Boolean, ConfigurationLoader>> configurationLoaderProviders = new HashMap<>();
 		Map<Pair<Class, Class>, DefinitionBuilderSupplier> definitionBuilderSuppliers = new HashMap<>();
 		fireModulesEvent(new AEStateEventImpl.AEBootstrapEventImpl(configurationLoaderProviders, definitionBuilderSuppliers));
 
 		Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), NAME + ".cfg"));
 		config.load();
-		Function<String, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
+		BiFunction<String, Boolean, ConfigurationLoader> configurationLoaderProvider = configurationLoaderProviders.get(config.getString("Configuration Loader Provider", "CONFIG", "JSON", "Configuration loader provider to use for configuration loading.\nOne of: " + String.join(", ", configurationLoaderProviders.keySet()), configurationLoaderProviders.keySet().toArray(new String[0])));
+		boolean dynamicDefaults = config.getBoolean("Dynamic Defaults", "CONFIG", true, "Do not write default values to config & feature files (excluding this one)");
 		config.save();
 
 		final Stopwatch watch = Stopwatch.createStarted();
 		logger.info("Pre Initialization ( started )");
 
-		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(configurationLoaderProvider, definitionBuilderSuppliers));
+		fireModulesEvent(new AEStateEventImpl.AEPreInitializationEventImpl(configurationLoaderProvider, dynamicDefaults, definitionBuilderSuppliers));
 
 		logger.info("Pre Initialization ( ended after " + watch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
@@ -373,29 +372,37 @@ public final class AppEng {
 	}
 
 	@EventHandler
+	private void loadComplete(FMLLoadCompleteEvent event){
+		fireModulesEvent(new AEStateEventImpl.AELoadCompleteEventImpl());
+	}
+
+	@EventHandler
 	private void handleIMCEvent(final FMLInterModComms.IMCEvent event){
 		for(IMCMessage message : event.getMessages()){
 			fireModuleEvent(message.key, new AEStateEventImpl.ModuleIMCMessageEventImpl(message));
 		}
 	}
 
-	/*@EventHandler
+	@EventHandler
 	private void serverAboutToStart(final FMLServerAboutToStartEvent event){
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEServerAboutToStartEventImpl());
 	}
 
 	@EventHandler
 	private void serverStarting(final FMLServerStartingEvent event){
-		fireModulesEvent(event);
+		CommandTreeBase command = new CommandTreeBaseNamed("ae3", "commands.ae3.usage");
+		fireModulesEvent(new AEStateEventImpl.AEServerStartingEventImpl(event::registerServerCommand, command::addSubcommand));
+		event.registerServerCommand(command);
 	}
 
 	@EventHandler
 	private void serverStopping(final FMLServerStoppingEvent event){
-		fireModulesEvent(event);
+		fireModulesEvent(new AEStateEventImpl.AEServerStoppingEventImpl());
 	}
 
 	@EventHandler
 	private void serverStopped(final FMLServerStoppedEvent event){
-		fireModulesEvent(event);
-	}*/
+		fireModulesEvent(new AEStateEventImpl.AEServerStoppedEventImpl());
+	}
+
 }

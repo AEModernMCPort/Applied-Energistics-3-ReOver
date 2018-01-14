@@ -2,6 +2,7 @@ package appeng.core.me.api.parts;
 
 import code.elix_x.excomms.color.RGBA;
 import code.elix_x.excomms.reflection.ReflectionHelper;
+import net.minecraftforge.common.util.EnumHelper;
 
 import java.util.function.Predicate;
 
@@ -42,7 +43,9 @@ public enum PartColor {
 	 * @return created color
 	 */
 	public static PartColor createNewColor(String name, RGBA refColor, Predicate<PartColor> compatibility){
-		return ENUM.addEnum(name, refColor, compatibility);
+		//TODO Migrate back to EXComms once #advanced-reflective-operations is merged
+//		return ENUM.addEnum(name, refColor, compatibility);
+		return EnumHelper.addEnum(PartColor.class, name, new Class[]{RGBA.class, Predicate.class}, refColor, compatibility);
 	}
 
 	/**

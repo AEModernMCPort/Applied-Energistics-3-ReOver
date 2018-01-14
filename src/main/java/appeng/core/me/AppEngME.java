@@ -114,6 +114,7 @@ public class AppEngME implements IME {
 			logger.error("Caught exception loading configuration", e);
 		}
 		config = configLoader.configuration();
+		config.registerColors();
 
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new MEItemDefinitions(registry);

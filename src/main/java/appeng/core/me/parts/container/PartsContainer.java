@@ -101,30 +101,31 @@ public class PartsContainer implements IPartsContainer {
 	}
 
 	@Override
-	public boolean hasPart(BlockPos voxel){
+	public boolean hasPart(@Nonnull BlockPos voxel){
 		return hasPart(getUid(voxel));
 	}
 
 	@Override
-	public VoxelPosition get(BlockPos voxel){
+	@Nullable
+	public VoxelPosition get(@Nonnull BlockPos voxel){
 		int uid = getUid(voxel);
 		return hasPart(uid) ? getPart(uid).add(getGlobalOriginVoxelPosition()) : null;
 	}
 
 	@Override
-	public boolean canPlace(VoxelPosition part, Stream<BlockPos> voxels){
+	public boolean canPlace(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
 		return voxels.allMatch(this::isEmpty);
 	}
 
 	@Override
-	public void set(VoxelPosition part, Stream<BlockPos> voxels){
+	public void set(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
 		final int uid = nextUid();
 		setPart(uid, part.asRelativeTo(getGlobalOriginVoxelPosition()));
 		voxels.forEach(voxel -> setUid(voxel, uid));
 	}
 
 	@Override
-	public void remove(VoxelPosition part, Stream<BlockPos> voxels){
+	public void remove(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
 		final int uid = getUid(part.asRelativeTo(getGlobalOriginVoxelPosition()));
 		setPart(uid, null);
 		voxels.forEach(this::removeUid);
@@ -138,19 +139,21 @@ public class PartsContainer implements IPartsContainer {
 	//Delegate to world
 
 	@Override
-	public boolean canPlace(PartPositionRotation positionRotation, Part part){
+	public boolean canPlace(@Nonnull PartPositionRotation positionRotation, @Nonnull Part part){
 		return getWorldPartsAccess().canPlace(positionRotation, part);
 	}
 
 	@Override
-	public Optional<VoxelPosition> getPartAtVoxel(VoxelPosition position){
+	@Nonnull
+	public Optional<VoxelPosition> getPartAtVoxel(@Nonnull VoxelPosition position){
 		return getWorldPartsAccess().getPartAtVoxel(position);
 	}
 
 	//Ray trace
 
 	@Override
-	public RayTraceResult rayTrace(Vec3d start, Vec3d end){
+	@Nullable
+	public RayTraceResult rayTrace(@Nonnull Vec3d start, @Nonnull Vec3d end){
 		Vec3d globalPosition = new Vec3d(this.globalPosition);
 		Vec3d lstart = start.subtract(globalPosition);
 		Vec3d lend = end.subtract(globalPosition);
@@ -180,7 +183,8 @@ public class PartsContainer implements IPartsContainer {
 	protected Map<Part.State, PartPositionRotation> ownedPartsInfos = new HashMap<>();
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(VoxelPosition position){
+	@Nonnull
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(@Nonnull VoxelPosition position){
 		S state = (S) ownedPartsPositions.get(position.getLocalPosition());
 		return Optional.of(new ImmutablePair<>(state, getPartInfo(state)));
 	}
@@ -190,19 +194,21 @@ public class PartsContainer implements IPartsContainer {
 	}
 
 	@Override
-	public void setPart(PartPositionRotation positionRotation, @Nonnull Part.State part){
+	public void setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull Part.State part){
 		ownedPartsPositions.put(positionRotation.getPosition().getLocalPosition(), part);
 		ownedPartsInfos.put(part, positionRotation.posAsRelativeTo(getGlobalOriginVoxelPosition()));
 	}
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(VoxelPosition position){
+	@Nonnull
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(@Nonnull VoxelPosition position){
 		S state = (S) ownedPartsPositions.remove(position.getLocalPosition());
 		if(state == null) return Optional.empty();
 		else return Optional.of(new ImmutablePair<>(state, ownedPartsInfos.remove(state).addPos(getGlobalOriginVoxelPosition())));
 	}
 
 	@Override
+	@Nonnull
 	public Map<Part.State, PartPositionRotation> getOwnedParts(){
 		return Collections.unmodifiableMap(ownedPartsInfos);
 	}

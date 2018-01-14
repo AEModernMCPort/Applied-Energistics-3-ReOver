@@ -10,6 +10,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -25,33 +27,37 @@ public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<N
 	void setWorld(World world);
 	void setGlobalPosition(BlockPos pos);
 
+	@Nonnull
 	default VoxelPosition getGlobalOriginVoxelPosition(){
 		return new VoxelPosition(getGlobalPosition(), BlockPos.ORIGIN);
 	}
 
+	@Nonnull
 	default VoxelPosition getGlobalCenterVoxelPosition(){
 		return new VoxelPosition(getGlobalPosition(), new BlockPos(VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2));
 	}
 
 	//Owned parts
 
+	@Nonnull
 	Map<Part.State, PartPositionRotation> getOwnedParts();
 
 	//Voxel information
 
-	boolean hasPart(BlockPos voxel);
-	default boolean isEmpty(BlockPos voxel){
+	boolean hasPart(@Nonnull BlockPos voxel);
+	default boolean isEmpty(@Nonnull BlockPos voxel){
 		return !hasPart(voxel);
 	}
-	VoxelPosition get(BlockPos voxel);
-	boolean canPlace(VoxelPosition part, Stream<BlockPos> voxels);
-	void set(VoxelPosition part, Stream<BlockPos> voxels);
-	void remove(VoxelPosition part, Stream<BlockPos> voxels);
+	@Nullable VoxelPosition get(@Nonnull BlockPos voxel);
+	boolean canPlace(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels);
+	void set(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels);
+	void remove(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels);
 
 	boolean isEmpty();
 
 	//Ray tracing
 
-	RayTraceResult rayTrace(Vec3d start, Vec3d end);
+	@Nullable
+	RayTraceResult rayTrace(@Nonnull Vec3d start, @Nonnull Vec3d end);
 
 }

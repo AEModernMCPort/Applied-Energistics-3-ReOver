@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -47,7 +48,8 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	}
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(VoxelPosition position){
+	@Nonnull
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(@Nonnull VoxelPosition position){
 		return getContainer(position.getGlobalPosition()).flatMap(container -> container.<P, S>getPart(position));
 	}
 
@@ -56,7 +58,7 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	}
 
 	@Override
-	public boolean canPlace(PartPositionRotation positionRotation, Part part){
+	public boolean canPlace(@Nonnull PartPositionRotation positionRotation, @Nonnull Part part){
 		return getAffectedContainers(part, positionRotation).allMatch(pos -> canPlace(pos, part, positionRotation));
 	}
 
@@ -65,7 +67,7 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	}
 
 	@Override
-	public void setPart(PartPositionRotation positionRotation, Part.State part){
+	public void setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull Part.State part){
 		getAffectedContainers(part.getPart(), positionRotation).forEach(pos -> {
 			Optional<IPartsContainer> container = getContainer(pos);
 			if(!container.isPresent()) container = createContainer(pos);
@@ -81,7 +83,8 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	}
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(VoxelPosition position){
+	@Nonnull
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(@Nonnull VoxelPosition position){
 		Optional<Pair<S, PartPositionRotation>> opart = getContainer(position.getGlobalPosition()).get().removePart(position);
 		opart.ifPresent(part -> getAffectedContainers(part.getLeft().getPart(), part.getRight()).forEach(pos -> {
 			IPartsContainer container = getContainer(pos).get();
@@ -99,7 +102,8 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	//Voxel info
 
 	@Override
-	public Optional<VoxelPosition> getPartAtVoxel(VoxelPosition position){
+	@Nonnull
+	public Optional<VoxelPosition> getPartAtVoxel(@Nonnull VoxelPosition position){
 		return getContainer(position.getGlobalPosition()).map(partsContainerCapability -> partsContainerCapability.get(position.getLocalPosition()));
 	}
 

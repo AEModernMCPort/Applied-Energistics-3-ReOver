@@ -55,7 +55,7 @@ public class PartsContainer implements IPartsContainer {
 		this.globalPosition = globalPosition;
 	}
 
-	public IWorldPartsAccess getWorldPartsAccess(){
+	public PartsAccess.Mutable getWorldPartsAccess(){
 		return world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 	}
 

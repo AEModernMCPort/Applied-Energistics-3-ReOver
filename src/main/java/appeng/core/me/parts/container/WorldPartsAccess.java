@@ -2,9 +2,9 @@ package appeng.core.me.parts.container;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.container.IWorldPartsAccess;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.parts.part.PartsHelper;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class WorldPartsAccess implements IWorldPartsAccess {
+public class WorldPartsAccess implements PartsAccess.Mutable {
 
 	private static Block defContainerBlock;
 

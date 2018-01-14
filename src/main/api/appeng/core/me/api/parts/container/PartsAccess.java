@@ -7,15 +7,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Optional;
 
-public interface IWorldPartsAccess {
+public interface PartsAccess {
 
 	<P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(VoxelPosition position);
-
-	boolean canPlace(PartPositionRotation positionRotation, Part part);
-
-	void setPart(PartPositionRotation positionRotation, Part.State part);
-
-	<P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(VoxelPosition position);
 
 	//Voxel info
 
@@ -27,4 +21,13 @@ public interface IWorldPartsAccess {
 		return getPartAtVoxel(position).flatMap(this::getPart);
 	}
 
+	interface Mutable extends PartsAccess {
+
+		boolean canPlace(PartPositionRotation positionRotation, Part part);
+
+		void setPart(PartPositionRotation positionRotation, Part.State part);
+
+		<P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(VoxelPosition position);
+
+	}
 }

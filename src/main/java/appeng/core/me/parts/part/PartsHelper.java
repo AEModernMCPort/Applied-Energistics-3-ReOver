@@ -7,9 +7,9 @@ import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartRotation;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.container.IWorldPartsAccess;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.parts.container.WorldPartsAccess;
@@ -59,7 +59,7 @@ public class PartsHelper implements InitializationComponent {
 	@CapabilityInject(IPartsContainer.class)
 	public static Capability<IPartsContainer> partsContainerCapability;
 
-	@CapabilityInject(IWorldPartsAccess.class)
+	@CapabilityInject(PartsAccess.Mutable.class)
 	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
 	public static ResourceLocation getFullRootMeshLocation(Part part){
@@ -117,7 +117,7 @@ public class PartsHelper implements InitializationComponent {
 	public void tryBreakBlock(BlockEvent.BreakEvent event){
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
-			IWorldPartsAccess worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 			if(rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition())) worldPartsAccess.getPartAtVoxel((VoxelPosition) rayTrace.hitInfo).ifPresent(voxel -> worldPartsAccess.removePart(voxel));
 			event.setCanceled(true);
 		});

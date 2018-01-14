@@ -6,7 +6,7 @@ import appeng.core.me.api.client.part.PartRenderingHandler;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.container.IWorldPartsAccess;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.item.PartPlacerItem;
@@ -116,7 +116,7 @@ public class ClientPartHelper {
 			VoxelPosition targetVoxel = null;
 			if(event.getTarget().hitInfo instanceof VoxelPosition){
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
-				IWorldPartsAccess worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 				worldPartsAccess.getAPartAtVoxel(targetVoxel).map(stateInfo -> partsHelper().getGlobalBBox(stateInfo.getLeft().getPart(), stateInfo.getRight())).ifPresent(box -> drawSelectionBox(box, event.getPlayer(), event.getPartialTicks()));
 
 				//TODO Remove this debug stuff???
@@ -130,7 +130,7 @@ public class ClientPartHelper {
 				PartPlacerItem partPlacerItem = (PartPlacerItem) (event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof PartPlacerItem ? event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() : event.getPlayer().getHeldItem(EnumHand.OFF_HAND).getItem());
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
 
-				IWorldPartsAccess worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 				PartPositionRotation positionRotation = partPlacerItem.getPartPlacementLogic().getPlacementPosition(event.getPlayer(), event.getTarget());
 				AxisAlignedBB selectionBBox = partsHelper().getGlobalBBox(partPlacerItem.getPPart(), positionRotation);
 				if(worldPartsAccess.canPlace(positionRotation, partPlacerItem.getPPart())) drawSelectionBox(selectionBBox, event.getPlayer(), event.getPartialTicks(), new RGBA(0, 1f, 0, 0.5f), Mode.INLINE);

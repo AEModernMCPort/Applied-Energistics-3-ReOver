@@ -13,7 +13,7 @@ import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
 import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.container.IWorldPartsAccess;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
@@ -131,7 +131,7 @@ public class AppEngME implements IME {
 
 		initHandler.accept(partsHelper = new PartsHelper());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
-		CapabilityManager.INSTANCE.register(IWorldPartsAccess.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
+		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
 		MinecraftForge.EVENT_BUS.register(this);
 

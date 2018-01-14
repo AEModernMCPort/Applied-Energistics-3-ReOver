@@ -225,7 +225,7 @@ public class PartsHelper implements InitializationComponent {
 				this.vbbox = new AxisAlignedBB(Math.floor(bbox.getValue().minX * VOXELSPERBLOCKAXISD), Math.floor(bbox.getValue().minY * VOXELSPERBLOCKAXISD), Math.floor(bbox.getValue().minZ * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxX * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxY * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxZ * VOXELSPERBLOCKAXISD));
 			} else this.vbbox = new AxisAlignedBB(BlockPos.ORIGIN);
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
-			supportsRotation = vbbox.minX <= -1 && vbbox.minY <= 1 && vbbox.minZ <= 1 && vbbox.maxX >= 1 && vbbox.maxY >= 1 && vbbox.maxZ >= 1;
+			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1 ) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
 			voxels = voxelizer.voxelize(mesh);
 			logger.info("Reloaded " + part.getRegistryName() + " in " + (System.currentTimeMillis() - time));
 		}

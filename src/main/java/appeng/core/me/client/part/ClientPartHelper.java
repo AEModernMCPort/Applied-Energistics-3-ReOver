@@ -1,8 +1,8 @@
 package appeng.core.me.client.part;
 
 import appeng.core.core.client.render.model.ModelRegManagerHelper;
-import appeng.core.lib.client.render.model.pipeline.QuadMatrixTransformer;
 import appeng.core.me.AppEngME;
+import appeng.core.me.api.client.part.PartRenderingHandler;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
@@ -12,10 +12,6 @@ import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.item.PartPlacerItem;
 import appeng.core.me.parts.part.PartsHelper;
 import code.elix_x.excomms.color.RGBA;
-import code.elix_x.excomms.pipeline.Pipeline;
-import code.elix_x.excomms.pipeline.PipelineElement;
-import code.elix_x.excomms.pipeline.list.ListPipelineElement;
-import code.elix_x.excore.utils.client.render.model.UnpackedBakedQuad;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -36,9 +32,7 @@ import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.joml.Vector4d;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
 
@@ -65,6 +59,18 @@ public class ClientPartHelper {
 		lwjgl.m32 = joml.m32();
 		lwjgl.m33 = joml.m33();
 		return lwjgl;
+	}
+
+	protected static final PartRenderingHandler DEFAULTPARTRENDERINGHANDLER = new DefaultPartRenderingHandler();
+
+	protected Map<Part, Optional<PartRenderingHandler>> renderingHandlers = new HashMap<>();
+
+	public PartRenderingHandler getRenderingHandler(Part part){
+		return renderingHandlers.get(part).orElse(DEFAULTPARTRENDERINGHANDLER);
+	}
+
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void setRenderingHandler(P part, Optional<PartRenderingHandler<P, S>> renderingHandler){
+		renderingHandlers.put(part, (Optional) renderingHandler);
 	}
 
 	protected PartsHelper partsHelper(){
@@ -100,7 +106,7 @@ public class ClientPartHelper {
 
 	public List<BakedQuad> bakeQuads(IPartsContainer container){
 		List<BakedQuad> quads = new ArrayList<>();
-		container.getOwnedParts().forEach((state, partPositionRotation) -> quads.addAll(new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(partPositionRotation.getPosition().getLocalPosition().getX() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getY() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getZ() / VOXELSPERBLOCKAXISF).mul(partPositionRotation.getRotation().getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0))));
+		container.getOwnedParts().forEach((state, partPositionRotation) -> quads.addAll(getRenderingHandler(state.getPart()).getQuads(state, partPositionRotation)));
 		return quads;
 	}
 

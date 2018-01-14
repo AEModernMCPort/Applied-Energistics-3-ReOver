@@ -48,7 +48,7 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(VoxelPosition position){
-		return getContainer(position.getGlobalPosition()).map(container -> container.<P, S>getPart(position));
+		return getContainer(position.getGlobalPosition()).flatMap(container -> container.<P, S>getPart(position));
 	}
 
 	protected Stream<BlockPos> getAffectedContainers(Part part, PartPositionRotation positionRotation){

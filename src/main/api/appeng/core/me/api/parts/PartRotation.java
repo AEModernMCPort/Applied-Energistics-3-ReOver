@@ -9,6 +9,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public final class PartRotation implements INBTSerializable<NBTTagCompound> {
 
@@ -105,6 +107,10 @@ public final class PartRotation implements INBTSerializable<NBTTagCompound> {
 		PartRotation rotation = new PartRotation();
 		rotation.deserializeNBT(nbt);
 		return rotation;
+	}
+
+	public static Stream<PartRotation> allPossibleRotations(){
+		return Arrays.stream(EnumFacing.values()).flatMap(front -> Arrays.stream(EnumFacing.values()).filter(up -> front.getAxis() != up.getAxis()).map(up -> new PartRotation(front, up)));
 	}
 
 	@Override

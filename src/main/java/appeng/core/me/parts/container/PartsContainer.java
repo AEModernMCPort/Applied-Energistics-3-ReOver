@@ -135,6 +135,18 @@ public class PartsContainer implements IPartsContainer {
 		return parts.isEmpty() || parts.stream().allMatch(Predicates.isNull());
 	}
 
+	//Delegate to world
+
+	@Override
+	public boolean canPlace(PartPositionRotation positionRotation, Part part){
+		return getWorldPartsAccess().canPlace(positionRotation, part);
+	}
+
+	@Override
+	public Optional<VoxelPosition> getPartAtVoxel(VoxelPosition position){
+		return getWorldPartsAccess().getPartAtVoxel(position);
+	}
+
 	//Ray trace
 
 	@Override
@@ -168,9 +180,9 @@ public class PartsContainer implements IPartsContainer {
 	protected Map<Part.State, PartPositionRotation> ownedPartsInfos = new HashMap<>();
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Pair<S, PartPositionRotation> getPart(VoxelPosition position){
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(VoxelPosition position){
 		S state = (S) ownedPartsPositions.get(position.getLocalPosition());
-		return new ImmutablePair<>(state, getPartInfo(state));
+		return Optional.of(new ImmutablePair<>(state, getPartInfo(state)));
 	}
 
 	public PartPositionRotation getPartInfo(Part.State part){

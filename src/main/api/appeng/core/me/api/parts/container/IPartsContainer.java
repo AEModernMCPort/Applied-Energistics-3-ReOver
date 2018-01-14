@@ -9,17 +9,13 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
+import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSPERBLOCKAXISI;
 
-public interface IPartsContainer extends INBTSerializable<NBTTagCompound> {
+public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<NBTTagCompound> {
 
 	//Link with outside world
 
@@ -38,11 +34,6 @@ public interface IPartsContainer extends INBTSerializable<NBTTagCompound> {
 	}
 
 	//Owned parts
-
-
-	@Nullable <P extends Part<P, S>, S extends Part.State<P, S>> Pair<S, PartPositionRotation> getPart(VoxelPosition position);
-	void setPart(PartPositionRotation positionRotation, @Nonnull Part.State part);
-	<P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(VoxelPosition position);
 
 	Map<Part.State, PartPositionRotation> getOwnedParts();
 

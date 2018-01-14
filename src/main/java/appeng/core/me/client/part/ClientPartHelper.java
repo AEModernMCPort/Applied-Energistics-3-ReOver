@@ -76,9 +76,9 @@ public class ClientPartHelper {
 		if(event.getGenericType() == Part.class){
 			logger.info("Registering client part models");
 			((RegistryEvent.Register<P>) event).getRegistry().forEach(part -> {
-				ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(part.getMesh(), null), PartsHelper.getFullMMeshLocation(part));
+				part.getMeshes().forEach(mesh -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(mesh, null), PartsHelper.getFullStateMeshLocation(mesh)));
 				//TODO FIXME Make this perspective aware
-				ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(part.getMesh(), "inventory"), PartsHelper.getFullMMeshLocation(part), optional -> !optional.isPresent() ? Optional.of(new TRSRTransformation(TRSRTransformation.toVecmath(toLWJGL(computeItemMatrix(part))))) : Optional.empty(), DefaultVertexFormats.ITEM);
+				ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(part.getRootMesh(), "inventory"), PartsHelper.getFullStateMeshLocation(part.getRootMesh()), optional -> !optional.isPresent() ? Optional.of(new TRSRTransformation(TRSRTransformation.toVecmath(toLWJGL(computeItemMatrix(part))))) : Optional.empty(), DefaultVertexFormats.ITEM);
 			});
 		}
 	}
@@ -100,7 +100,7 @@ public class ClientPartHelper {
 
 	public List<BakedQuad> bakeQuads(IPartsContainer container){
 		List<BakedQuad> quads = new ArrayList<>();
-		container.getOwnedParts().forEach((state, partPositionRotation) -> quads.addAll(new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(partPositionRotation.getPosition().getLocalPosition().getX() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getY() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getZ() / VOXELSPERBLOCKAXISF).mul(partPositionRotation.getRotation().getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getPart().getMesh(), null)).getQuads(null, null, 0))));
+		container.getOwnedParts().forEach((state, partPositionRotation) -> quads.addAll(new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(partPositionRotation.getPosition().getLocalPosition().getX() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getY() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getZ() / VOXELSPERBLOCKAXISF).mul(partPositionRotation.getRotation().getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0))));
 		return quads;
 	}
 

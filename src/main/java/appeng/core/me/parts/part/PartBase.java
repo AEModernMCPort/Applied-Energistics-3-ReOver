@@ -2,12 +2,14 @@ package appeng.core.me.parts.part;
 
 import appeng.core.me.api.parts.part.Part;
 import code.elix_x.excomms.reflection.ReflectionHelper;
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.StateBase<P, S>> extends IForgeRegistryEntry.Impl<P> implements Part<P, S> {
 
@@ -15,7 +17,8 @@ public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.Stat
 	private static final TypeToken<Part> partToken = TypeToken.of(Part.class);
 
 	protected String unlocalizedName;
-	protected ResourceLocation mesh;
+	protected ResourceLocation rootMesh;
+	protected List<ResourceLocation> meshes;
 
 	protected boolean supportsRotation = true;
 
@@ -40,12 +43,19 @@ public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.Stat
 
 	@Nonnull
 	@Override
-	public ResourceLocation getMesh(){
-		return mesh;
+	public ResourceLocation getRootMesh(){
+		return rootMesh;
 	}
 
-	public void setMesh(ResourceLocation mesh){
-		this.mesh = mesh;
+	public void setRootMesh(ResourceLocation mesh){
+		this.rootMesh = mesh;
+		this.meshes = Lists.newArrayList(rootMesh);
+	}
+
+	@Nonnull
+	@Override
+	public List<ResourceLocation> getMeshes(){
+		return meshes;
 	}
 
 	@Override

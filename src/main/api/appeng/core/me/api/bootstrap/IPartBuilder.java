@@ -14,6 +14,6 @@ public interface IPartBuilder<P extends Part<P, S>, S extends Part.State<P, S>, 
 
 	PP createDefaultPlacerItem();
 
-	PP mesh(ResourceLocation model);
+	PP rootMesh(ResourceLocation model);
 
 }

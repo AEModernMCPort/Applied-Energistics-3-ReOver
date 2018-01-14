@@ -1,5 +1,6 @@
 package appeng.core.me.api.parts.part;
 
+import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -7,16 +8,26 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends IForgeRegistryEntry<P> {
 
 	/**
-	 * Obj mesh file location for all the things (from rendering to raytracing & collision handling)
-	 * @return Obj mesh location
+	 * Obj root mesh file location for physical interaction
+	 * @return Obj root mesh location
 	 */
-	@Nonnull ResourceLocation getMesh();
+	@Nonnull
+	ResourceLocation getRootMesh();
+	void setRootMesh(ResourceLocation mesh);
 
-	void setMesh(ResourceLocation mesh);
+	/**
+	 * List of all meshes that the part <i>can</i> use for rendering. They <b>must</b> be contained in root mesh's bounds.
+	 * @return all meshes the part needs baked
+	 */
+	@Nonnull
+	default List<ResourceLocation> getMeshes(){
+		return Lists.newArrayList(getRootMesh());
+	}
 
 	/**
 	 * Retrieves unlocalized name of the parts
@@ -39,6 +50,14 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 	interface State<P extends Part<P, S>, S extends State<P, S>> extends INBTSerializable<NBTTagCompound> {
 
 		P getPart();
+
+		/**
+		 * Get the mesh to render for this state
+		 * @return mesh to render
+		 */
+		default ResourceLocation getMesh(){
+			return getPart().getRootMesh();
+		}
 
 	}
 

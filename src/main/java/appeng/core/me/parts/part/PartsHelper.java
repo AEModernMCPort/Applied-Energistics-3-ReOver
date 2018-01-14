@@ -14,11 +14,9 @@ import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import com.google.common.collect.ImmutableSet;
-import com.owens.oobjloader.builder.FaceVertex;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
 import com.owens.oobjloader.parser.OObjMeshLoader;
-import com.sun.javafx.geom.Edge;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -36,13 +34,10 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.commons.math3.distribution.TriangularDistribution;
-import org.apache.commons.math3.geometry.Space;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3dc;
 
@@ -67,12 +62,12 @@ public class PartsHelper implements InitializationComponent {
 	@CapabilityInject(IWorldPartsAccess.class)
 	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
-	public static ResourceLocation getFullMMeshLocation(Part part){
-		return new ResourceLocation(part.getMesh().getResourceDomain(), "part/" + part.getMesh().getResourcePath());
+	public static ResourceLocation getFullRootMeshLocation(Part part){
+		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + part.getRootMesh().getResourcePath());
 	}
 
-	public static ResourceLocation getFullMeshLocation(Part part){
-		return new ResourceLocation(part.getMesh().getResourceDomain(), "models/part/" + part.getMesh().getResourcePath());
+	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
+		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
 	}
 
 	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
@@ -140,7 +135,7 @@ public class PartsHelper implements InitializationComponent {
 		//TODO 1.12-MIPA We only need geometry
 		Mesh mesh = new Mesh();
 		try{
-			new OObjMeshLoader<>(mesh, AppEngME.proxy.getResourceHelper(), getFullMeshLocation(part));
+			new OObjMeshLoader<>(mesh, AppEngME.proxy.getResourceHelper(), getFullRootMeshLocation(part));
 		} catch(IOException e){
 			logger.error("Failed to load mesh for " + part.getRegistryName(), e);
 		}

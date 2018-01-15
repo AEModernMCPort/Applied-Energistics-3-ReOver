@@ -2,14 +2,19 @@ package appeng.core.me.parts.container;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
+import appeng.core.me.api.parts.PartUUID;
 import appeng.core.me.api.parts.VoxelPosition;
-import appeng.core.me.api.parts.container.*;
+import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
+import appeng.core.me.api.parts.container.IPartsContainer;
+import appeng.core.me.api.parts.container.PartInfo;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.base.Predicates;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -42,14 +47,17 @@ public class PartsContainer implements IPartsContainer {
 	public World getWorld(){
 		return world;
 	}
+
 	@Override
 	public BlockPos getGlobalPosition(){
 		return globalPosition;
 	}
+
 	@Override
 	public void setWorld(World world){
 		this.world = world;
 	}
+
 	@Override
 	public void setGlobalPosition(BlockPos globalPosition){
 		this.globalPosition = globalPosition;
@@ -59,10 +67,14 @@ public class PartsContainer implements IPartsContainer {
 		return world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 	}
 
-	//Voxel access view
+	/*
+	 * Voxel access view
+	 */
+
+	//Internal
 
 	protected final int[][][] voxels = new int[VOXELSPERBLOCKAXISI][VOXELSPERBLOCKAXISI][VOXELSPERBLOCKAXISI];
-	protected final List<VoxelPosition> parts = new ArrayList<>();
+	protected final List<LocalPartInfo> parts = new ArrayList<>();
 
 	protected int nextUid(){
 		int next = parts.indexOf(null);
@@ -85,20 +97,74 @@ public class PartsContainer implements IPartsContainer {
 		setUid(voxel, -1);
 	}
 
-
-	protected int getUid(VoxelPosition part){
+	protected int getUid(LocalPartInfo part){
 		return parts.indexOf(part);
 	}
 
-	protected VoxelPosition getPart(int uid){
+	protected LocalPartInfo getPart(int uid){
 		return parts.get(uid);
 	}
 
-	protected void setPart(int uid, VoxelPosition part){
+	protected void setPart(int uid, LocalPartInfo part){
 		if(part == null && uid == parts.size() - 1) parts.remove(uid);
 		else if(uid == parts.size()) parts.add(part);
 		else parts.set(uid, part);
 	}
+
+	protected class LocalPartInfo {
+
+		BlockPos relOwningContainerPos;
+		PartUUID partUUID;
+
+		protected LocalPartInfo(BlockPos relOwningContainerPos, PartUUID partUUID){
+			this.relOwningContainerPos = relOwningContainerPos;
+			this.partUUID = partUUID;
+		}
+
+		protected Pair<BlockPos, PartUUID> toGlobal(){
+			return new ImmutablePair<>(relOwningContainerPos.add(globalPosition), partUUID);
+		}
+
+		protected NBTTagCompound serializeNBT(){
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setTag("pos", NBTUtil.createPosTag(relOwningContainerPos));
+			nbt.setTag("uuid", partUUID.serializeNBT());
+			return nbt;
+		}
+
+		@Override
+		public boolean equals(Object o){
+			if(this == o) return true;
+			if(!(o instanceof LocalPartInfo)) return false;
+			LocalPartInfo that = (LocalPartInfo) o;
+			return Objects.equals(relOwningContainerPos, that.relOwningContainerPos) && Objects.equals(partUUID, that.partUUID);
+		}
+
+		@Override
+		public int hashCode(){
+			return Objects.hash(relOwningContainerPos, partUUID);
+		}
+
+		@Override
+		public String toString(){
+			return "LocalPartInfo{" + "relOwningContainerPos=" + relOwningContainerPos + ", partUUID=" + partUUID + '}';
+		}
+
+	}
+
+	protected LocalPartInfo fromGlobal(BlockPos globalOwningContainerPos, PartUUID partUUID){
+		return new LocalPartInfo(globalOwningContainerPos.subtract(globalPosition), partUUID);
+	}
+
+	protected LocalPartInfo fromGlobal(Pair<BlockPos, PartUUID> globalInfo){
+		return fromGlobal(globalInfo.getLeft(), globalInfo.getRight());
+	}
+
+	protected LocalPartInfo fromNBT(NBTTagCompound nbt){
+		return new LocalPartInfo(NBTUtil.getPosFromTag(nbt.getCompoundTag("pos")), PartUUID.createPartUUID(nbt.getCompoundTag("uuid")));
+	}
+
+	//Impl
 
 	@Override
 	public boolean hasPart(@Nonnull BlockPos voxel){
@@ -107,27 +173,20 @@ public class PartsContainer implements IPartsContainer {
 
 	@Override
 	@Nullable
-	public VoxelPosition get(@Nonnull BlockPos voxel){
-		/*int uid = getUid(voxel);
-		return hasPart(uid) ? getPart(uid).add(getGlobalOriginVoxelPosition()) : null;*/
-		return Optional.ofNullable(getPart(getUid(voxel))).map(part -> part.add(getGlobalOriginVoxelPosition())).orElse(null);
+	public Pair<BlockPos, PartUUID> get(@Nonnull BlockPos voxel){
+		return Optional.ofNullable(getPart(getUid(voxel))).map(LocalPartInfo::toGlobal).orElse(null);
 	}
 
 	@Override
-	public boolean canPlace(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
-		return voxels.allMatch(this::isEmpty);
-	}
-
-	@Override
-	public void set(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
+	public void set(@Nonnull BlockPos owningCPos, @Nonnull PartUUID part, @Nonnull Stream<BlockPos> voxels){
 		final int uid = nextUid();
-		setPart(uid, part.asRelativeTo(getGlobalOriginVoxelPosition()));
+		setPart(uid, fromGlobal(owningCPos, part));
 		voxels.forEach(voxel -> setUid(voxel, uid));
 	}
 
 	@Override
-	public void remove(@Nonnull VoxelPosition part, @Nonnull Stream<BlockPos> voxels){
-		final int uid = getUid(part.asRelativeTo(getGlobalOriginVoxelPosition()));
+	public void remove(@Nonnull BlockPos owningCPos, @Nonnull PartUUID part, @Nonnull Stream<BlockPos> voxels){
+		final int uid = getUid(fromGlobal(owningCPos, part));
 		setPart(uid, null);
 		voxels.forEach(this::removeUid);
 	}
@@ -137,17 +196,53 @@ public class PartsContainer implements IPartsContainer {
 		return parts.isEmpty() || parts.stream().allMatch(Predicates.isNull());
 	}
 
-	//Delegate to world
+	//Owned parts
+
+	protected Map<PartUUID, PartInfo> ownedParts = new HashMap<>();
+
+	@Nonnull
+	@Override
+	public Map<PartUUID, PartInfo> getOwnedParts(){
+		return Collections.unmodifiableMap(ownedParts);
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> getOwnedPart(@Nonnull PartUUID partUUID){
+		return Optional.ofNullable(ownedParts.get(partUUID));
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void setOwnedPart(@Nonnull PartUUID partUUID, @Nonnull PartInfo<P, S> partInfo){
+		ownedParts.put(partUUID, partInfo);
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> removeOwnedPart(@Nonnull PartUUID partUUID){
+		return Optional.ofNullable(ownedParts.remove(partUUID));
+	}
+
+	//Delegate
 
 	@Override
 	public boolean canPlace(@Nonnull PartPositionRotation positionRotation, @Nonnull Part part){
 		return getWorldPartsAccess().canPlace(positionRotation, part);
 	}
 
-	@Override
 	@Nonnull
-	public Optional<VoxelPosition> getPartAtVoxel(@Nonnull VoxelPosition position){
-		return getWorldPartsAccess().getPartAtVoxel(position);
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> getPart(@Nonnull VoxelPosition position){
+		return getWorldPartsAccess().getPart(position);
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartUUID> setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull S part){
+		return getWorldPartsAccess().setPart(positionRotation, part);
+	}
+
+	@Nonnull
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<PartUUID, PartInfo<P, S>>> removePart(@Nonnull VoxelPosition position){
+		return getWorldPartsAccess().removePart(position);
 	}
 
 	//Ray trace
@@ -178,42 +273,6 @@ public class PartsContainer implements IPartsContainer {
 		return null;
 	}
 
-	//Owned parts
-
-	protected Map<BlockPos, Part.State> ownedPartsPositions = new HashMap<>();
-	protected Map<Part.State, PartPositionRotation> ownedPartsInfos = new HashMap<>();
-
-	@Override
-	@Nonnull
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(@Nonnull VoxelPosition position){
-		S state = (S) ownedPartsPositions.get(position.getLocalPosition());
-		return Optional.ofNullable(state).map(s -> new ImmutablePair<>(s, getPartInfo(s)));
-	}
-
-	public PartPositionRotation getPartInfo(Part.State part){
-		return ownedPartsInfos.get(part).addPos(getGlobalOriginVoxelPosition());
-	}
-
-	@Override
-	public void setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull Part.State part){
-		ownedPartsPositions.put(positionRotation.getPosition().getLocalPosition(), part);
-		ownedPartsInfos.put(part, positionRotation.posAsRelativeTo(getGlobalOriginVoxelPosition()));
-	}
-
-	@Override
-	@Nonnull
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(@Nonnull VoxelPosition position){
-		S state = (S) ownedPartsPositions.remove(position.getLocalPosition());
-		if(state == null) return Optional.empty();
-		else return Optional.of(new ImmutablePair<>(state, ownedPartsInfos.remove(state).addPos(getGlobalOriginVoxelPosition())));
-	}
-
-	@Override
-	@Nonnull
-	public Map<Part.State, PartPositionRotation> getOwnedParts(){
-		return Collections.unmodifiableMap(ownedPartsInfos);
-	}
-
 	//IO
 
 	@Override
@@ -223,14 +282,14 @@ public class PartsContainer implements IPartsContainer {
 		this.parts.forEach(part -> parts.appendTag(part == null ? new NBTTagCompound() : part.serializeNBT()));
 		nbt.setTag("parts", parts);
 		nbt.setIntArray("voxels", flatten());
-		NBTTagList states = new NBTTagList();
-		this.ownedPartsInfos.forEach((state, info) -> {
+		NBTTagList owned = new NBTTagList();
+		this.ownedParts.forEach((uuid, info) -> {
 			NBTTagCompound next = new NBTTagCompound();
-			next.setTag("state", partsHelper().serialize(state));
+			next.setTag("uuid", uuid.serializeNBT());
 			next.setTag("info", info.serializeNBT());
-			states.appendTag(next);
+			owned.appendTag(next);
 		});
-		nbt.setTag("states", states);
+		nbt.setTag("owned", owned);
 		return nbt;
 	}
 
@@ -243,16 +302,12 @@ public class PartsContainer implements IPartsContainer {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		parts.clear();
-		nbt.getTagList("parts", 10).forEach(tag -> parts.add(tag.hasNoTags() ? null : VoxelPosition.fromNBT((NBTTagCompound) tag)));
+		nbt.getTagList("parts", 10).forEach(tag -> parts.add(tag.hasNoTags() ? null : fromNBT((NBTTagCompound) tag)));
 		inflate(nbt.getIntArray("voxels"));
-		ownedPartsPositions.clear();
-		ownedPartsInfos.clear();
-		nbt.getTagList("states", 10).forEach(bnext -> {
+		ownedParts.clear();
+		nbt.getTagList("owned", 10).forEach(bnext -> {
 			NBTTagCompound next = (NBTTagCompound) bnext;
-			Part.State state = partsHelper().deserialize(next.getCompoundTag("state"));
-			PartPositionRotation info = PartPositionRotation.fromNBT(next.getCompoundTag("info"));
-			ownedPartsPositions.put(info.getPosition().getLocalPosition(), state);
-			ownedPartsInfos.put(state, info);
+			ownedParts.put(PartUUID.createPartUUID(next.getCompoundTag("uuid")), PartInfoImpl.deserializeNBT(next.getCompoundTag("info")));
 		});
 	}
 

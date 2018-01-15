@@ -16,7 +16,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PartPlacerItem extends Item {
+public class PartPlacerItem<P extends Part<P, S>, S extends Part.State<P, S>> extends Item {
 
 	protected PartPlacementLogic partPlacementLogic;
 
@@ -25,11 +25,11 @@ public class PartPlacerItem extends Item {
 		this.partPlacementLogic = partPlacementLogic;
 	}
 
-	public Part getPPart(){
-		return AppEngME.INSTANCE.getPartRegistry().getValue(getRegistryName());
+	public P getPPart(){
+		return AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(getRegistryName());
 	}
 
-	public Part.State getSPart(){
+	public S getSPart(){
 		return getPPart().createNewState();
 	}
 

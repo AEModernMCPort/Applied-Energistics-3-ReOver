@@ -106,7 +106,7 @@ public class ClientPartHelper {
 
 	public List<BakedQuad> bakeQuads(IPartsContainer container){
 		List<BakedQuad> quads = new ArrayList<>();
-		container.getOwnedParts().forEach((state, partPositionRotation) -> quads.addAll(getRenderingHandler(state.getPart()).getQuads(state, partPositionRotation)));
+		container.getOwnedParts().forEach((uuid, info) -> quads.addAll(getRenderingHandler(info.getPart()).getQuads((Part.State) info.getState().get(), info.getPositionRotation())));
 		return quads;
 	}
 
@@ -117,7 +117,7 @@ public class ClientPartHelper {
 			if(event.getTarget().hitInfo instanceof VoxelPosition){
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
 				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
-				worldPartsAccess.getAPartAtVoxel(targetVoxel).map(stateInfo -> partsHelper().getGlobalBBox(stateInfo.getLeft().getPart(), stateInfo.getRight())).ifPresent(box -> drawSelectionBox(box, event.getPlayer(), event.getPartialTicks()));
+				worldPartsAccess.getPart(targetVoxel).map(info -> partsHelper().getGlobalBBox(info.getPart(), info.getPositionRotation())).ifPresent(box -> drawSelectionBox(box, event.getPlayer(), event.getPartialTicks()));
 
 				//TODO Remove this debug stuff???
 				if(event.getPlayer().isSneaking()){

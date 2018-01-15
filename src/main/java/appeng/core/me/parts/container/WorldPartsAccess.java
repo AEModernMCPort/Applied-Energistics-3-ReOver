@@ -5,8 +5,10 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
 import appeng.core.me.api.parts.PartEvent;
 import appeng.core.me.api.parts.PartPositionRotation;
+import appeng.core.me.api.parts.PartUUID;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
+import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.parts.part.PartsHelper;
@@ -20,6 +22,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -54,8 +57,8 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 
 	@Override
 	@Nonnull
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> getPart(@Nonnull VoxelPosition position){
-		return getContainer(position.getGlobalPosition()).flatMap(container -> container.<P, S>getPart(position));
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> getPart(@Nonnull VoxelPosition position){
+		return getContainer(position.getGlobalPosition()).map(container -> container.get(position.getLocalPosition())).flatMap(relUUID -> getContainer(relUUID.getLeft()).flatMap(container -> container.getOwnedPart(relUUID.getRight())));
 	}
 
 	protected Stream<BlockPos> getAffectedContainers(Part part, PartPositionRotation positionRotation){
@@ -68,12 +71,14 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 	}
 
 	protected boolean canPlace(BlockPos pos, Part part, PartPositionRotation positionRotation){
-		return getContainer(pos).map(container -> container.canPlace(positionRotation.getPosition(), partsHelper().getVoxels(pos, part, positionRotation))).orElse(world.getBlockState(pos).getBlock().isReplaceable(world, pos));
+		return getContainer(pos).map(container -> container.canPlace(partsHelper().getVoxels(pos, part, positionRotation))).orElse(world.getBlockState(pos).getBlock().isReplaceable(world, pos));
 	}
 
 	@Override
-	public void setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull Part.State part){
-		MinecraftForge.EVENT_BUS.post(new PartEvent.Set(this, part.getPart(), positionRotation, part));
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartUUID> setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull S part){
+		PartEvent.Set<P, S> event = new PartEvent.Set(this, part.getPart(), positionRotation, part);
+		MinecraftForge.EVENT_BUS.post(event);
+		return event.getCreated();
 	}
 
 	protected Optional<IPartsContainer> createContainer(BlockPos pos){
@@ -83,7 +88,7 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 
 	@Override
 	@Nonnull
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<S, PartPositionRotation>> removePart(@Nonnull VoxelPosition position){
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<PartUUID, PartInfo<P, S>>> removePart(@Nonnull VoxelPosition position){
 		PartEvent.Remove event = new PartEvent.Remove(this, position);
 		MinecraftForge.EVENT_BUS.post(event);
 		return event.getRemoved();
@@ -91,14 +96,6 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 
 	protected void destroyContainer(BlockPos pos){
 		world.setBlockState(pos, Blocks.AIR.getDefaultState());
-	}
-
-	//Voxel info
-
-	@Override
-	@Nonnull
-	public Optional<VoxelPosition> getPartAtVoxel(@Nonnull VoxelPosition position){
-		return getContainer(position.getGlobalPosition()).map(partsContainerCapability -> partsContainerCapability.get(position.getLocalPosition()));
 	}
 
 	public enum Storage implements Capability.IStorage {
@@ -126,14 +123,15 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 				WorldPartsAccess partsAccess = (WorldPartsAccess) event.getPartsAccess();
 				PartPositionRotation positionRotation = event.getPositionRotation();
 				Part.State part = event.getState();
+				PartUUID partUUID = new PartUUID();
 
 				partsAccess.getAffectedContainers(part.getPart(), positionRotation).forEach(pos -> {
 					Optional<IPartsContainer> container = partsAccess.getContainer(pos);
 					if(!container.isPresent()) container = partsAccess.createContainer(pos);
 					partsAccess.world.markBlockRangeForRenderUpdate(pos, pos);
-					container.get().set(positionRotation.getPosition(), partsAccess.partsHelper().getVoxels(pos, part.getPart(), positionRotation));
+					container.get().set(positionRotation.getPosition().getGlobalPosition(), partUUID, partsAccess.partsHelper().getVoxels(pos, part.getPart(), positionRotation));
 				});
-				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setPart(positionRotation, part);
+				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setOwnedPart(partUUID, new PartInfoImpl(part.getPart(), positionRotation, part));
 			}
 		}
 
@@ -143,14 +141,15 @@ public class WorldPartsAccess implements PartsAccess.Mutable {
 				WorldPartsAccess partsAccess = (WorldPartsAccess) event.getPartsAccess();
 				VoxelPosition position = event.getPosition();
 
-				Optional<Pair<S, PartPositionRotation>> removedPart = partsAccess.getContainer(position.getGlobalPosition()).get().removePart(position);
-				removedPart.ifPresent(part -> partsAccess.getAffectedContainers(part.getLeft().getPart(), part.getRight()).forEach(pos -> {
+				Optional<Pair<BlockPos, PartUUID>> removedUUID = partsAccess.getContainer(position.getGlobalPosition()).map(container -> container.get(position.getLocalPosition()));
+				Optional<PartInfo<P, S>> removedPart = removedUUID.flatMap(relUUID -> partsAccess.getContainer(relUUID.getLeft()).flatMap(container -> container.removeOwnedPart(relUUID.getRight())));
+				removedPart.ifPresent(part -> partsAccess.getAffectedContainers(part.getPart(), part.getPositionRotation()).forEach(pos -> {
 					IPartsContainer container = partsAccess.getContainer(pos).get();
-					container.remove(position, partsAccess.partsHelper().getVoxels(pos, part.getLeft().getPart(), part.getRight()));
+					container.remove(removedUUID.get().getLeft(), removedUUID.get().getRight(), partsAccess.partsHelper().getVoxels(pos, part.getPart(), part.getPositionRotation()));
 					if(container.isEmpty()) partsAccess.destroyContainer(pos);
 					partsAccess.world.markBlockRangeForRenderUpdate(pos, pos);
 				}));
-				event.setRemoved(removedPart);
+				event.setRemoved(new ImmutablePair<>(removedUUID.get().getRight(), removedPart.get()));
 			}
 		}
 

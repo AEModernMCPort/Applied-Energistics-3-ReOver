@@ -6,12 +6,12 @@ import appeng.core.lib.client.resource.ClientResourceHelper;
 import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
+import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.PartRotation;
+import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import com.google.common.collect.ImmutableSet;
 import com.owens.oobjloader.builder.Mesh;
@@ -95,7 +95,7 @@ public class PartsHelper implements InitializationComponent {
 
 	@SubscribeEvent
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event){
-		event.addCapability(new ResourceLocation(AppEng.MODID, "global_parts_pool"), new ICapabilityProvider(){
+		event.addCapability(new ResourceLocation(AppEng.MODID, "global_parts_pool"), new ICapabilityProvider() {
 
 			WorldPartsAccess pool = new WorldPartsAccess(event.getObject());
 
@@ -118,7 +118,8 @@ public class PartsHelper implements InitializationComponent {
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
 			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
-			if(rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition())) worldPartsAccess.getPartAtVoxel((VoxelPosition) rayTrace.hitInfo).ifPresent(voxel -> worldPartsAccess.removePart(voxel));
+			if(rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
+				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo);
 			event.setCanceled(true);
 		});
 	}
@@ -127,7 +128,8 @@ public class PartsHelper implements InitializationComponent {
 		logger.info("Reloading meshes");
 		long time = System.currentTimeMillis();
 		partDataMap.clear();
-		for(Part part : AppEngME.INSTANCE.getPartRegistry()) partDataMap.put(part.getRegistryName(), new PartData(part, voxelizer));
+		for(Part part : AppEngME.INSTANCE.getPartRegistry())
+			partDataMap.put(part.getRegistryName(), new PartData(part, voxelizer));
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
 	}
 
@@ -144,7 +146,10 @@ public class PartsHelper implements InitializationComponent {
 
 	protected static List<VoxelPosition> voxelize(AxisAlignedBB lbbox){
 		List<VoxelPosition> voxels = new ArrayList<>();
-		for(double x = lbbox.minX; x < lbbox.maxX; x += VOXELSIZED) for(double y = lbbox.minY; y < lbbox.maxY; y += VOXELSIZED) for(double z = lbbox.minZ; z < lbbox.maxZ; z += VOXELSIZED) voxels.add(new VoxelPosition(new Vec3d(x, y, z)));
+		for(double x = lbbox.minX; x < lbbox.maxX; x += VOXELSIZED)
+			for(double y = lbbox.minY; y < lbbox.maxY; y += VOXELSIZED)
+				for(double z = lbbox.minZ; z < lbbox.maxZ; z += VOXELSIZED)
+					voxels.add(new VoxelPosition(new Vec3d(x, y, z)));
 		return voxels;
 	}
 
@@ -220,7 +225,7 @@ public class PartsHelper implements InitializationComponent {
 				this.vbbox = new AxisAlignedBB(Math.floor(bbox.getValue().minX * VOXELSPERBLOCKAXISD), Math.floor(bbox.getValue().minY * VOXELSPERBLOCKAXISD), Math.floor(bbox.getValue().minZ * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxX * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxY * VOXELSPERBLOCKAXISD), Math.ceil(bbox.getValue().maxZ * VOXELSPERBLOCKAXISD));
 			} else this.vbbox = new AxisAlignedBB(BlockPos.ORIGIN);
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
-			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1 ) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
+			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
 			voxels = voxelizer.voxelize(mesh);
 			logger.info("Reloaded " + part.getRegistryName() + " in " + (System.currentTimeMillis() - time));
 		}
@@ -335,7 +340,8 @@ public class PartsHelper implements InitializationComponent {
 			}
 
 			Stream<VoxelPosition> getAllVoxels(Voxelization voxelization){
-				if(v1.distance(v2) < VOXELSIZED4 || v2.distance(v3) < VOXELSIZED4 || v3.distance(v1) < VOXELSIZED4) return Stream.empty();
+				if(v1.distance(v2) < VOXELSIZED4 || v2.distance(v3) < VOXELSIZED4 || v3.distance(v1) < VOXELSIZED4)
+					return Stream.empty();
 
 				Plane plane = getPlane();
 				Predicate<VoxelPosition> inThePlane = voxelPosition -> {
@@ -346,12 +352,16 @@ public class PartsHelper implements InitializationComponent {
 					double t;
 					if(!voxelization.AOrB){
 						double angleMin = 1;
-						for(double x = -K; x < 2*K; x += 2*K) for(double y = -K; y < 2*K; y += 2*K) for(double z = -K; z < 2*K; z += 2*K) angleMin = Math.min(angleMin, Math.abs(nC2Pd.angle(new Vector3d(x, y, z))));
+						for(double x = -K; x < 2 * K; x += 2 * K)
+							for(double y = -K; y < 2 * K; y += 2 * K)
+								for(double z = -K; z < 2 * K; z += 2 * K)
+									angleMin = Math.min(angleMin, Math.abs(nC2Pd.angle(new Vector3d(x, y, z))));
 						t = K * Math.cos(angleMin);
 					} else {
 						double angleMin = Math.PI;
-						for(EnumFacing facing : EnumFacing.values()) angleMin = Math.min(angleMin, Math.abs(nC2Pd.angle(new Vector3d(facing.getDirectionVec().getX(), facing.getDirectionVec().getY(), facing.getDirectionVec().getZ()))));
-						t = L/2 * Math.cos(angleMin);
+						for(EnumFacing facing : EnumFacing.values())
+							angleMin = Math.min(angleMin, Math.abs(nC2Pd.angle(new Vector3d(facing.getDirectionVec().getX(), facing.getDirectionVec().getY(), facing.getDirectionVec().getZ()))));
+						t = L / 2 * Math.cos(angleMin);
 					}
 
 					Vector3d vec = voxelPosition.globalCenterVector();
@@ -381,12 +391,11 @@ public class PartsHelper implements InitializationComponent {
 				return VoxelPosition.allVoxelsIn(getBBox(voxelization)).filter(inThePlane).filter(insideTriangle);
 			}
 
-
 		}
 
 		enum Voxelization {
 
-			S6(L/2, true), S26(K, false);
+			S6(L / 2, true), S26(K, false);
 
 			final double Rc;
 			final boolean AOrB;

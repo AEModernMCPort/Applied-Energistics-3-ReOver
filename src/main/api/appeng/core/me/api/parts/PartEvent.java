@@ -1,6 +1,7 @@
 package appeng.core.me.api.parts;
 
 import appeng.api.event.Multiphased;
+import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
@@ -29,6 +30,8 @@ public class PartEvent<P extends Part<P, S>, S extends Part.State<P, S>> extends
 		private final PartPositionRotation positionRotation;
 		private final S state;
 
+		private PartUUID created;
+
 		public Set(PartsAccess.Mutable partsAccess, P part, PartPositionRotation positionRotation, S state){
 			super(partsAccess);
 			this.part = part;
@@ -48,6 +51,14 @@ public class PartEvent<P extends Part<P, S>, S extends Part.State<P, S>> extends
 			return state;
 		}
 
+		public Optional<PartUUID> getCreated(){
+			return Optional.ofNullable(created);
+		}
+
+		public void setCreated(PartUUID created){
+			this.created = created;
+		}
+
 	}
 
 	@Cancelable
@@ -56,7 +67,7 @@ public class PartEvent<P extends Part<P, S>, S extends Part.State<P, S>> extends
 
 		private final VoxelPosition position;
 
-		private Optional<Pair<S, PartPositionRotation>> removed = Optional.empty();
+		private Pair<PartUUID, PartInfo<P, S>> removed;
 
 		public Remove(PartsAccess.Mutable partsAccess, VoxelPosition position){
 			super(partsAccess);
@@ -67,11 +78,11 @@ public class PartEvent<P extends Part<P, S>, S extends Part.State<P, S>> extends
 			return position;
 		}
 
-		public Optional<Pair<S, PartPositionRotation>> getRemoved(){
-			return removed;
+		public Optional<Pair<PartUUID, PartInfo<P, S>>> getRemoved(){
+			return Optional.ofNullable(removed);
 		}
 
-		public void setRemoved(Optional<Pair<S, PartPositionRotation>> removed){
+		public void setRemoved(Pair<PartUUID, PartInfo<P, S>> removed){
 			this.removed = removed;
 		}
 

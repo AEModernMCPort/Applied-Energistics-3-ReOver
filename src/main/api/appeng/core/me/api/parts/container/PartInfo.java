@@ -39,7 +39,7 @@ public interface PartInfo<P extends Part<P, S>, S extends Part.State<P, S>> {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("part", getPart().getRegistryName().toString());
 		nbt.setTag("posRot", getPositionRotation().serializeNBT());
-		getState().ifPresent(state -> nbt.setTag("state", state.serializeNBT()));
+		getState().ifPresent(state -> nbt.setTag("state", Optional.ofNullable(state.serializeNBT()).orElse(new NBTTagCompound())));
 		return nbt;
 	}
 

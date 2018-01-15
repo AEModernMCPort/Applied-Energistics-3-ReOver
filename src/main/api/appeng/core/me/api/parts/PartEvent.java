@@ -2,6 +2,7 @@ package appeng.core.me.api.parts;
 
 import appeng.api.event.Multiphased;
 import appeng.core.me.api.parts.container.PartInfo;
+import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;

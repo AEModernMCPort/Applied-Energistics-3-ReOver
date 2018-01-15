@@ -1,4 +1,4 @@
-package appeng.core.me.api.parts;
+package appeng.core.me.api.parts.container;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;

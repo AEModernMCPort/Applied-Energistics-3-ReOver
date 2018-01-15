@@ -2,7 +2,6 @@ package appeng.core.me.parts.container;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.PartUUID;
 import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.part.Part;
 import net.minecraft.nbt.NBTTagCompound;

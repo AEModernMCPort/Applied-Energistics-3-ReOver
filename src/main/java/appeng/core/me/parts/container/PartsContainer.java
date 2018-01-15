@@ -2,7 +2,7 @@ package appeng.core.me.parts.container;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.PartUUID;
+import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
 import appeng.core.me.api.parts.container.IPartsContainer;

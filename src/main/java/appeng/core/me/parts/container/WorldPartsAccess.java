@@ -5,7 +5,7 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
 import appeng.core.me.api.parts.PartEvent;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.PartUUID;
+import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartInfo;

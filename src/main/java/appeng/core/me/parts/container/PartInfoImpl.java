@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 import java.util.Optional;
 
 @Immutable
@@ -49,6 +50,19 @@ public final class PartInfoImpl<P extends Part<P, S>, S extends Part.State<P, S>
 		S state = null;
 		if(nbt.hasKey("state")) (state = part.createNewState()).deserializeNBT(nbt.getCompoundTag("state"));
 		return new PartInfoImpl<>(part, PartPositionRotation.fromNBT(nbt.getCompoundTag("posRot")), state);
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if(this == o) return true;
+		if(!(o instanceof PartInfo)) return false;
+		PartInfo<?, ?> partInfo = (PartInfo<?, ?>) o;
+		return Objects.equals(getPart(), partInfo.getPart()) && Objects.equals(getPositionRotation(), partInfo.getPositionRotation()) && Objects.equals(getState(), partInfo.getState());
+	}
+
+	@Override
+	public int hashCode(){
+		return Objects.hash(getPart(), getPositionRotation(), getState());
 	}
 
 }

@@ -37,7 +37,7 @@ public final class VoxelPosition implements INBTSerializable<NBTTagCompound> {
 		this(BlockPos.ORIGIN, localPosition);
 	}
 
-	VoxelPosition(){
+	public VoxelPosition(){
 		this(BlockPos.ORIGIN);
 	}
 

@@ -39,7 +39,7 @@ public class DefaultPartPlacementLogic<P extends Part<P, S>, S extends Part.Stat
 		VoxelPosition hit = VoxelRayTraceHelper.getOrApproximateHitVoxel(rayTrace);
 		if(supportsRotation()){
 			PartRotation rotation = new PartRotation(getForwardUp(player, rayTrace.sideHit));
-			AxisAlignedBB rbbox = partsHelper().applyTransforms(bbox, new PartPositionRotation(new VoxelPosition(BlockPos.ORIGIN), rotation));
+			AxisAlignedBB rbbox = partsHelper().applyTransforms(bbox, new PartPositionRotation(new VoxelPosition(), rotation));
 			return new PartPositionRotation(offsetByBBox(hit, rayTrace.sideHit, rbbox), rotation);
 		} else {
 			return new PartPositionRotation(offsetByBBox(hit, rayTrace.sideHit, bbox), PartsHelper.noRotation);

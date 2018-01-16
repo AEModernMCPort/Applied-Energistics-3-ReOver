@@ -101,7 +101,7 @@ public class PartsContainer implements IPartsContainer {
 	}
 
 	protected LocalPartInfo getPart(int uid){
-		return parts.get(uid);
+		return hasPart(uid) ? parts.get(uid) : null;
 	}
 
 	protected void setPart(int uid, LocalPartInfo part){

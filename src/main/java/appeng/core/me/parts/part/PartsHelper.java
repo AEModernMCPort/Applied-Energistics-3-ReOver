@@ -74,6 +74,8 @@ public class PartsHelper implements InitializationComponent {
 
 	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
 
+	private PartGroupsHelper groupsHelper = new PartGroupsHelper(this);
+
 	public Capability<IPartsContainer> getPartsContainerCapability(){
 		return partsContainerCapability;
 	}
@@ -86,11 +88,14 @@ public class PartsHelper implements InitializationComponent {
 	public void preInit(){
 		MinecraftForge.EVENT_BUS.register(this);
 		AppEngME.proxy.client().acceptPreInit(() -> ClientResourceHelper.registerReloadListener(resourceManager -> loadMeshes()));
+
+		groupsHelper.preInit();
 	}
 
 	@Override
 	public void postInit(){
 		loadMeshes();
+		groupsHelper.loadGroups();
 	}
 
 	@SubscribeEvent

@@ -116,7 +116,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 					if(container.isEmpty()) partsAccess.removeContainer(pos);
 					partsAccess.markBlockRangeForUpdate(pos, pos);
 				}));
-				event.setRemoved(new ImmutablePair<>(removedUUID.get().getRight(), removedPart.get()));
+				removedUUID.ifPresent(uuid -> event.setRemoved(new ImmutablePair<>(uuid.getRight(), removedPart.get())));
 			}
 		}
 

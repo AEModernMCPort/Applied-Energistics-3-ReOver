@@ -24,7 +24,7 @@ public class PartsContainerTile extends TileEntity {
 	@Override
 	public void setWorld(World worldIn){
 		super.setWorld(worldIn);
-		container.setWorld(world);
+		container.setGlobalAccess(world.getCapability(PartsHelper.worldPartsAccessCapability, null), world);
 	}
 
 	@Override

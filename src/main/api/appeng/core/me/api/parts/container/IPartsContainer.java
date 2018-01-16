@@ -23,11 +23,16 @@ public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<N
 
 	//Link with outside world
 
-	World getWorld();
+	@Nonnull
+	PartsAccess.Mutable getGlobalAccess();
 
+	@Nonnull
+	Optional<World> getWorld();
+
+	void setGlobalAccess(@Nonnull PartsAccess.Mutable globalAccess, @Nullable World world);
+
+	@Nonnull
 	BlockPos getGlobalPosition();
-
-	void setWorld(World world);
 
 	void setGlobalPosition(BlockPos pos);
 

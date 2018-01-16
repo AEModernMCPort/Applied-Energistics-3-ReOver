@@ -2,12 +2,8 @@ package appeng.core.me.parts.container;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.VoxelPosition;
-import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
-import appeng.core.me.api.parts.container.IPartsContainer;
-import appeng.core.me.api.parts.container.PartInfo;
-import appeng.core.me.api.parts.container.PartsAccess;
+import appeng.core.me.api.parts.container.*;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.base.Predicates;
@@ -40,12 +36,24 @@ public class PartsContainer implements IPartsContainer {
 
 	//Link to outside world
 
+	protected PartsAccess.Mutable globalAccess;
 	protected World world;
 	protected BlockPos globalPosition;
 
 	@Override
-	public World getWorld(){
-		return world;
+	public PartsAccess.Mutable getGlobalAccess(){
+		return globalAccess;
+	}
+
+	@Override
+	public Optional<World> getWorld(){
+		return Optional.ofNullable(world);
+	}
+
+	@Override
+	public void setGlobalAccess(@Nonnull Mutable globalAccess, @Nullable World world){
+		this.globalAccess = globalAccess;
+		this.world = world;
 	}
 
 	@Override
@@ -54,17 +62,8 @@ public class PartsContainer implements IPartsContainer {
 	}
 
 	@Override
-	public void setWorld(World world){
-		this.world = world;
-	}
-
-	@Override
 	public void setGlobalPosition(BlockPos globalPosition){
 		this.globalPosition = globalPosition;
-	}
-
-	public PartsAccess.Mutable getWorldPartsAccess(){
-		return world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 	}
 
 	/*
@@ -225,24 +224,24 @@ public class PartsContainer implements IPartsContainer {
 
 	@Override
 	public boolean canPlace(@Nonnull PartPositionRotation positionRotation, @Nonnull Part part){
-		return getWorldPartsAccess().canPlace(positionRotation, part);
+		return getGlobalAccess().canPlace(positionRotation, part);
 	}
 
 	@Nonnull
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> getPart(@Nonnull VoxelPosition position){
-		return getWorldPartsAccess().getPart(position);
+		return getGlobalAccess().getPart(position);
 	}
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartUUID> setPart(@Nonnull PartPositionRotation positionRotation, @Nonnull S part){
-		return getWorldPartsAccess().setPart(positionRotation, part);
+		return getGlobalAccess().setPart(positionRotation, part);
 	}
 
 	@Nonnull
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<PartUUID, PartInfo<P, S>>> removePart(@Nonnull VoxelPosition position){
-		return getWorldPartsAccess().removePart(position);
+		return getGlobalAccess().removePart(position);
 	}
 
 	//Ray trace

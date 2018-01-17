@@ -2,19 +2,15 @@ package appeng.core.me.parts.part.connected;
 
 import appeng.core.AppEng;
 import appeng.core.me.AppEngME;
-import appeng.core.me.api.definition.IPartDefinition;
 import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.PartRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.PartsAccess;
-import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.part.PartGroup;
 import appeng.core.me.parts.container.SmallDetachedPartAccess;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-
-import java.util.stream.Stream;
 
 public abstract class PartCable<P extends PartCable<P, S>, S extends PartCable.CableState<P, S>> extends PartConnected<P, S> {
 
@@ -47,21 +43,14 @@ public abstract class PartCable<P extends PartCable<P, S>, S extends PartCable.C
 		}
 
 		@Override
-		public Stream<PartRotation> possibleRotations(){
-			return Stream.of(new PartRotation());
-		}
-
-		@Override
 		public PartsAccess compileRequiredParts(PartRotation targetRotation){
 			PartsAccess.Mutable access = new SmallDetachedPartAccess();
-//			access.setPart(new PartPositionRotation(new VoxelPosition(), new PartRotation()), getMicroVariant().createNewState());
-			AppEngME.INSTANCE.getPartsHelper().getVoxels(this, new PartPositionRotation(new VoxelPosition(), new PartRotation())).forEach(voxel -> access.setPart(new PartPositionRotation(voxel, new PartRotation()), getMicroVariant().createNewState()));
+			AppEngME.INSTANCE.getPartsHelper().getVoxels(this, new PartPositionRotation(new VoxelPosition(), targetRotation)).forEach(voxel -> access.setPart(new PartPositionRotation(voxel, new PartRotation()), getMicroVariant().createNewState()));
 			return access;
 		}
 	}
 
-
-	public static class CableState<P extends PartCable<P, S>, S extends CableState<P, S>> extends PartConnected.ConnectedState<P, S>{
+	public static class CableState<P extends PartCable<P, S>, S extends CableState<P, S>> extends PartConnected.ConnectedState<P, S> {
 
 		public CableState(P part){
 			super(part);

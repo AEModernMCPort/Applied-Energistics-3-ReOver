@@ -118,6 +118,11 @@ public class ClientPartHelper {
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
 				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 				worldPartsAccess.getPart(targetVoxel).map(info -> partsHelper().getGlobalBBox(info.getPart(), info.getPositionRotation())).ifPresent(box -> drawSelectionBox(box, event.getPlayer(), event.getPartialTicks()));
+				worldPartsAccess.getPart(targetVoxel).ifPresent(info -> {
+					PartPositionRotation positionRotation = info.getPositionRotation();
+					drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
+					drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
+				});
 
 				//TODO Remove this debug stuff???
 				if(event.getPlayer().isSneaking()){
@@ -133,8 +138,13 @@ public class ClientPartHelper {
 				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 				PartPositionRotation positionRotation = partPlacerItem.getPartPlacementLogic().getPlacementPosition(event.getPlayer(), event.getTarget());
 				AxisAlignedBB selectionBBox = partsHelper().getGlobalBBox(partPlacerItem.getPPart(), positionRotation);
-				if(worldPartsAccess.canPlace(positionRotation, partPlacerItem.getPPart())) drawSelectionBox(selectionBBox, event.getPlayer(), event.getPartialTicks(), new RGBA(0, 1f, 0, 0.5f), Mode.INLINE);
-				else drawSelectionBox(selectionBBox, event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0, 0, 0.5f), Mode.INLINE);
+				if(worldPartsAccess.canPlace(positionRotation, partPlacerItem.getPPart()))
+					drawSelectionBox(selectionBBox, event.getPlayer(), event.getPartialTicks(), new RGBA(0, 1f, 0, 0.5f), Mode.INLINE);
+				else
+					drawSelectionBox(selectionBBox, event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0, 0, 0.5f), Mode.INLINE);
+
+				drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
+				drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
 
 				partsHelper().getVoxels(partPlacerItem.getPPart(), positionRotation).forEach(voxel -> drawSelectionBox(voxel.getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(0, 0, 1f, 0.6f), Mode.NONE));
 			}

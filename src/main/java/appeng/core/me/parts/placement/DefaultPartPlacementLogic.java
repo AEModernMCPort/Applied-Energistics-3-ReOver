@@ -10,10 +10,7 @@ import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.parts.part.PartsHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -37,13 +34,43 @@ public class DefaultPartPlacementLogic<P extends Part<P, S>, S extends Part.Stat
 	public PartPositionRotation getPlacementPosition(EntityPlayer player, RayTraceResult rayTrace){
 		AxisAlignedBB bbox = partsHelper().getPartVoxelBB(part);
 		VoxelPosition hit = VoxelRayTraceHelper.getOrApproximateHitVoxel(rayTrace);
+		PartRotation rotation;
+		VoxelPosition position = hit;
+		AxisAlignedBB offsetBB;
 		if(supportsRotation()){
-			PartRotation rotation = new PartRotation(getForwardUp(player, rayTrace.sideHit));
-			AxisAlignedBB rbbox = partsHelper().applyTransforms(bbox, new PartPositionRotation(new VoxelPosition(), rotation));
-			return new PartPositionRotation(offsetByBBox(hit, rayTrace.sideHit, rbbox), rotation);
+			rotation = new PartRotation(getForwardUp(player, rayTrace.sideHit));
+			offsetBB = partsHelper().applyTransforms(bbox, new PartPositionRotation(new VoxelPosition(), rotation));
 		} else {
-			return new PartPositionRotation(offsetByBBox(hit, rayTrace.sideHit, bbox), PartsHelper.noRotation);
+			rotation = new PartRotation();
+			offsetBB = bbox;
 		}
+
+		Vec3i offsetByBox;
+		switch(rayTrace.sideHit){
+			case DOWN:
+				offsetByBox = new Vec3i(0, 0 - offsetBB.maxY, 0);
+				break;
+			case UP:
+				offsetByBox = new Vec3i(0, 0 - offsetBB.minY + 1, 0);
+				break;
+			case NORTH:
+				offsetByBox = new Vec3i(0, 0, 0 - offsetBB.maxZ);
+				break;
+			case SOUTH:
+				offsetByBox = new Vec3i(0, 0, 0 - offsetBB.minZ + 1);
+				break;
+			case WEST:
+				offsetByBox = new Vec3i(0 - offsetBB.maxX, 0, 0);
+				break;
+			case EAST:
+				offsetByBox = new Vec3i(0 - offsetBB.minX + 1, 0, 0);
+				break;
+			default:
+				offsetByBox = new Vec3i(0, 0, 0);
+		}
+
+		position = position.add(new VoxelPosition(new BlockPos(offsetByBox)));
+		return new PartPositionRotation(position, rotation);
 	}
 
 	protected VoxelPosition offsetByBBox(VoxelPosition voxel, EnumFacing sideHit, AxisAlignedBB voxelBBox){

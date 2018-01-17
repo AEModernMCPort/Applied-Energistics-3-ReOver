@@ -13,6 +13,10 @@ public final class PartPositionRotation implements INBTSerializable<NBTTagCompou
 		this.rotation = rotation;
 	}
 
+	public PartPositionRotation(PartRotation rotation, VoxelPosition rotationCenterPosition){
+		this(rotationCenterPosition.add(rotation.rotate(new VoxelPosition())), rotation);
+	}
+
 	PartPositionRotation(){
 		this(new VoxelPosition(), new PartRotation());
 	}
@@ -23,6 +27,10 @@ public final class PartPositionRotation implements INBTSerializable<NBTTagCompou
 
 	public PartRotation getRotation(){
 		return rotation;
+	}
+
+	public VoxelPosition getRotationCenterPosition(){
+		return position.substract(rotation.rotate(new VoxelPosition()));
 	}
 
 	public PartPositionRotation addPos(VoxelPosition position){

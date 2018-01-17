@@ -24,7 +24,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
@@ -44,7 +43,10 @@ import org.joml.Vector3dc;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -149,15 +151,6 @@ public class PartsHelper implements InitializationComponent {
 		return mesh;
 	}
 
-	protected static List<VoxelPosition> voxelize(AxisAlignedBB lbbox){
-		List<VoxelPosition> voxels = new ArrayList<>();
-		for(double x = lbbox.minX; x < lbbox.maxX; x += VOXELSIZED)
-			for(double y = lbbox.minY; y < lbbox.maxY; y += VOXELSIZED)
-				for(double z = lbbox.minZ; z < lbbox.maxZ; z += VOXELSIZED)
-					voxels.add(new VoxelPosition(new Vec3d(x, y, z)));
-		return voxels;
-	}
-
 	protected PartData getData(Part part){
 		return partDataMap.get(part.getRegistryName());
 	}
@@ -171,7 +164,7 @@ public class PartsHelper implements InitializationComponent {
 	}
 
 	public Stream<VoxelPosition> getVoxels(Part part, PartPositionRotation positionRotation){
-		return getData(part).voxels.stream().map(VoxelPosition::getBB).map(voxel -> applyTransforms(voxel, positionRotation)).map(box -> new VoxelPosition(new Vec3d(box.minX, box.minY, box.minZ)));
+		return getData(part).voxels.stream().map(positionRotation.getRotation()::rotate).map(positionRotation.getRotationCenterPosition()::add);
 	}
 
 	public Stream<BlockPos> getVoxels(BlockPos gHandlerPos, Part part, PartPositionRotation positionRotation){
@@ -193,7 +186,7 @@ public class PartsHelper implements InitializationComponent {
 	}
 
 	public AxisAlignedBB applyTransforms(AxisAlignedBB box, PartPositionRotation positionRotation){
-		return positionRotation.getPosition().translate(positionRotation.getRotation().rotate(box));
+		return positionRotation.getRotationCenterPosition().translate(positionRotation.getRotation().rotate(box));
 	}
 
 	public AxisAlignedBB getGlobalBBox(Part part, PartPositionRotation positionRotation){
@@ -214,7 +207,6 @@ public class PartsHelper implements InitializationComponent {
 		final AxisAlignedBB vbbox;
 		final AxisAlignedBB gbbox;
 		final boolean supportsRotation;
-		//TODO 1.12-MIPA - Actually voxelize the mesh
 		final ImmutableSet<VoxelPosition> voxels;
 
 		public PartData(Part part, Voxelizer voxelizer){

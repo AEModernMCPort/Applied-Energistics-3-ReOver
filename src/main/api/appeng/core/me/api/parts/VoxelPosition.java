@@ -39,8 +39,10 @@ public final class VoxelPosition implements INBTSerializable<NBTTagCompound> {
 				} else {
 					Vec3d prevVec = previousRel.asVec3d();
 					if(prevVec.x < dX) previousRel = previousRel.add(new VoxelPosition(new BlockPos(1, 0, 0)));
-					else if(prevVec.y < dY) previousRel = new VoxelPosition(new Vec3d(0, prevVec.y, prevVec.z)).add(new VoxelPosition(new BlockPos(0, 1, 0)));
-					else if(prevVec.z < dZ) previousRel = new VoxelPosition(new Vec3d(0, 0, prevVec.z)).add(new VoxelPosition(new BlockPos(0, 0, 1)));
+					else if(prevVec.y < dY)
+						previousRel = new VoxelPosition(new Vec3d(0, prevVec.y, prevVec.z)).add(new VoxelPosition(new BlockPos(0, 1, 0)));
+					else if(prevVec.z < dZ)
+						previousRel = new VoxelPosition(new Vec3d(0, 0, prevVec.z)).add(new VoxelPosition(new BlockPos(0, 0, 1)));
 					else return endOfData();
 				}
 				return previousRel.add(min);
@@ -92,10 +94,6 @@ public final class VoxelPosition implements INBTSerializable<NBTTagCompound> {
 	public BlockPos getLocalPosition(){
 		return localPosition;
 	}
-
-	//	public BlockPos getGlobalVoxelLevelPosition(){
-	//		return new BlockPos(globalPosition.getX() * VOXELSPERBLOCKAXISI, globalPosition.getY() * VOXELSPERBLOCKAXISI, globalPosition.getZ() * VOXELSPERBLOCKAXISI).add(localPosition);
-	//	}
 
 	/**
 	 * Global position of origin of this voxel

@@ -4,6 +4,8 @@ import appeng.core.core.client.render.model.ModelRegManagerHelper;
 import appeng.core.lib.client.render.model.pipeline.QuadMatrixTransformer;
 import appeng.core.me.api.client.part.PartRenderingHandler;
 import appeng.core.me.api.parts.PartPositionRotation;
+import appeng.core.me.api.parts.PartRotation;
+import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.part.Part;
 import code.elix_x.excomms.pipeline.Pipeline;
 import code.elix_x.excomms.pipeline.PipelineElement;
@@ -23,7 +25,9 @@ public class DefaultPartRenderingHandler<P extends Part<P, S>, S extends Part.St
 
 	@Override
 	public Collection<BakedQuad> getQuads(S state, PartPositionRotation partPositionRotation){
-		return new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(partPositionRotation.getPosition().getLocalPosition().getX() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getY() / VOXELSPERBLOCKAXISF, partPositionRotation.getPosition().getLocalPosition().getZ() / VOXELSPERBLOCKAXISF).mul(partPositionRotation.getRotation().getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0));
+		PartRotation rotation = partPositionRotation.getRotation();
+		VoxelPosition renderingPosition = partPositionRotation.getRotationCenterPosition();
+		return new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(renderingPosition.getLocalPosition().getX() / VOXELSPERBLOCKAXISF, renderingPosition.getLocalPosition().getY() / VOXELSPERBLOCKAXISF, renderingPosition.getLocalPosition().getZ() / VOXELSPERBLOCKAXISF).mul(rotation.getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0));
 	}
 
 }

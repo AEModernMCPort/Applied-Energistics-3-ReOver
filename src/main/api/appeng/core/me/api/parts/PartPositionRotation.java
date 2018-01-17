@@ -34,7 +34,7 @@ public final class PartPositionRotation implements INBTSerializable<NBTTagCompou
 	}
 
 	public PartPositionRotation posAsRelativeTo(VoxelPosition position){
-		return new PartPositionRotation(this.position.asRelativeTo(position), rotation);
+		return new PartPositionRotation(this.position.substract(position), rotation);
 	}
 
 	public PartPositionRotation posAsRelativeTo(PartPositionRotation positionRotation){

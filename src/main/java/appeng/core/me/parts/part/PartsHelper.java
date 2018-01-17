@@ -193,9 +193,7 @@ public class PartsHelper implements InitializationComponent {
 	}
 
 	public AxisAlignedBB applyTransforms(AxisAlignedBB box, PartPositionRotation positionRotation){
-		Vector3d v1 = positionRotation.getRotation().applyRotation(new Vector3d(box.minX, box.minY, box.minZ));
-		Vector3d v2 = positionRotation.getRotation().applyRotation(new Vector3d(box.maxX, box.maxY, box.maxZ));
-		return positionRotation.getPosition().translate(new AxisAlignedBB(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z));
+		return positionRotation.getPosition().translate(positionRotation.getRotation().rotate(box));
 	}
 
 	public AxisAlignedBB getGlobalBBox(Part part, PartPositionRotation positionRotation){

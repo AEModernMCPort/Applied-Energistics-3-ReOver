@@ -9,6 +9,7 @@ import appeng.api.entry.TileRegistryEntry;
 import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
+import appeng.api.pos.Ref2WorldCap;
 import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
@@ -21,6 +22,7 @@ import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.core.lib.pos.Ref2WorldCapability;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTBase;
@@ -55,6 +57,9 @@ public class AppEngCore implements ICore {
 
 	@CapabilityInject(Tickables.class)
 	public static Capability<Tickables> tickablesCapability;
+
+	@CapabilityInject(Ref2WorldCap.class)
+	public static Capability<Ref2WorldCap> ref2WorldCapCapability;
 
 	private ConfigurationLoader<CoreConfig> configLoader;
 	public CoreConfig config;
@@ -156,6 +161,20 @@ public class AppEngCore implements ICore {
 
 		}, TickablesImpl::new);
 
+		CapabilityManager.INSTANCE.register(Ref2WorldCap.class, new Capability.IStorage<Ref2WorldCap>() {
+
+			@Nullable
+			@Override
+			public NBTBase writeNBT(Capability<Ref2WorldCap> capability, Ref2WorldCap instance, EnumFacing side){
+				return null;
+			}
+
+			@Override
+			public void readNBT(Capability<Ref2WorldCap> capability, Ref2WorldCap instance, EnumFacing side, NBTBase nbt){
+
+			}
+
+		}, Ref2WorldCapability::new);
 
 		guiHandler = new CoreGuiHandler();
 

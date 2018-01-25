@@ -1,5 +1,6 @@
 package appeng.core.me.api.parts.container;
 
+import appeng.api.uuid.AEUUID;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 
@@ -8,12 +9,10 @@ import javax.annotation.concurrent.Immutable;
 import java.util.UUID;
 
 @Immutable
-public final class PartUUID {
-
-	private final UUID uuid;
+public final class PartUUID extends AEUUID {
 
 	private PartUUID(@Nonnull UUID uuid){
-		this.uuid = uuid;
+		super(uuid);
 	}
 
 	public PartUUID(){
@@ -21,30 +20,8 @@ public final class PartUUID {
 	}
 
 	@Nonnull
-	public NBTTagCompound serializeNBT(){
-		return NBTUtil.createUUIDTag(uuid);
-	}
-
-	@Nonnull
 	public static PartUUID createPartUUID(@Nonnull NBTTagCompound nbt){
 		return new PartUUID(NBTUtil.getUUIDFromTag(nbt));
-	}
-
-	@Override
-	public boolean equals(Object o){
-		if(this == o) return true;
-		if(o == null || getClass() != o.getClass()) return false;
-		return uuid.equals(((PartUUID) o).uuid);
-	}
-
-	@Override
-	public int hashCode(){
-		return uuid.hashCode();
-	}
-
-	@Override
-	public String toString(){
-		return "PartUUID{" + uuid + '}';
 	}
 
 }

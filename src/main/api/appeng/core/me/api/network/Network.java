@@ -3,6 +3,7 @@ package appeng.core.me.api.network;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -12,7 +13,7 @@ import java.util.Collection;
 /**
  * Network executing all operations
  */
-public interface Network extends INBTSerializable<NBTTagCompound> {
+public interface Network extends ICapabilityProvider, INBTSerializable<NBTTagCompound> {
 
 	@Nonnull NetworkUUID getUUID();
 

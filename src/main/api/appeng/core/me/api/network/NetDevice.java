@@ -2,6 +2,7 @@ package appeng.core.me.api.network;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -20,7 +21,7 @@ import java.util.Optional;
  *
  * @author Elix_x
  */
-public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends INBTSerializable<NBTTagCompound> {
+public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends ICapabilityProvider, INBTSerializable<NBTTagCompound> {
 
 	@Nonnull DeviceUUID getUUID();
 

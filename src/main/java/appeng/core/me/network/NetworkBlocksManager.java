@@ -6,17 +6,21 @@ import appeng.core.me.api.network.NetBlockUUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkBlocksManager {
 
+	protected Map<NetBlockUUID, NetBlockImpl> netBlocks = new HashMap<>();
+
 	@Nullable
 	public NetBlock getBlock(NetBlockUUID uuid){
-		return null;
+		return netBlocks.get(uuid);
 	}
 
 	@Nonnull
-	public Collection<NetBlock> getBlocks(){
-		return null;
+	public Collection<NetBlockImpl> getBlocks(){
+		return netBlocks.values();
 	}
 
 }

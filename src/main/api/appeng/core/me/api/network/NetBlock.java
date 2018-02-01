@@ -1,6 +1,8 @@
 package appeng.core.me.api.network;
 
 import appeng.core.me.api.network.device.BRINMDevice;
+import appeng.core.me.api.network.event.EventBusOwner;
+import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -15,7 +17,7 @@ import java.util.Optional;
  *
  * @author Elix_x
  */
-public interface NetBlock extends INBTSerializable<NBTTagCompound> {
+public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent>, INBTSerializable<NBTTagCompound> {
 
 	@Nonnull NetBlockUUID getUUID();
 
@@ -32,5 +34,9 @@ public interface NetBlock extends INBTSerializable<NBTTagCompound> {
 	GlobalWorldVoxelPosition getPosition();
 
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();
+
+	interface NetBlockEvent extends NCEventBus.Event<NetBlock, NetBlockEvent> {
+
+	}
 
 }

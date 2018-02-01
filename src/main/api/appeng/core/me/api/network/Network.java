@@ -33,7 +33,7 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	 */
 
 	@Nullable NetBlock getBlock(NetBlockUUID uuid);
-	@Nonnull Collection<NetBlock> getBlocks();
+	@Nonnull Collection<? extends NetBlock> getBlocks();
 
 	interface NetworkThread {
 

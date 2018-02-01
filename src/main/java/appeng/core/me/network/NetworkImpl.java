@@ -1,10 +1,12 @@
 package appeng.core.me.network;
 
-import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.NetBlock;
+import appeng.core.me.api.network.NetBlockUUID;
+import appeng.core.me.api.network.Network;
+import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -65,7 +67,7 @@ public class NetworkImpl implements Network {
 
 	@Nonnull
 	@Override
-	public Collection<NetBlock> getBlocks(){
+	public Collection<? extends NetBlock> getBlocks(){
 		return blocksManager.getBlocks();
 	}
 

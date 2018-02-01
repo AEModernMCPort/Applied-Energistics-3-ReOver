@@ -20,7 +20,7 @@ public final class NetBlockUUID extends AEUUID {
 	}
 
 	@Nonnull
-	public static NetBlockUUID createPartUUID(@Nonnull NBTTagCompound nbt){
+	public static NetBlockUUID fromNBT(@Nonnull NBTTagCompound nbt){
 		return new NetBlockUUID(NBTUtil.getUUIDFromTag(nbt));
 	}
 

@@ -20,7 +20,7 @@ public final class DeviceUUID extends AEUUID {
 	}
 
 	@Nonnull
-	public static DeviceUUID createPartUUID(@Nonnull NBTTagCompound nbt){
+	public static DeviceUUID fromNBT(@Nonnull NBTTagCompound nbt){
 		return new DeviceUUID(NBTUtil.getUUIDFromTag(nbt));
 	}
 

@@ -20,7 +20,7 @@ public final class NetworkUUID extends AEUUID {
 	}
 
 	@Nonnull
-	public static NetworkUUID createPartUUID(@Nonnull NBTTagCompound nbt){
+	public static NetworkUUID fromNBT(@Nonnull NBTTagCompound nbt){
 		return new NetworkUUID(NBTUtil.getUUIDFromTag(nbt));
 	}
 

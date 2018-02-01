@@ -1,6 +1,7 @@
 package appeng.core.me.api.parts;
 
 import appeng.api.pos.WorldReference;
+import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
@@ -22,6 +23,17 @@ public final class GlobalWorldVoxelPosition {
 
 	public VoxelPosition getPosition(){
 		return position;
+	}
+
+	public NBTTagCompound serializeNBT(){
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("world", world.serializeNBT());
+		nbt.setTag("pos", position.serializeNBT());
+		return nbt;
+	}
+
+	public static GlobalWorldVoxelPosition fromNBT(NBTTagCompound nbt){
+		return new GlobalWorldVoxelPosition(WorldReference.fromNBT(nbt.getCompoundTag("world")), VoxelPosition.fromNBT(nbt.getCompoundTag("pos")));
 	}
 
 	@Override

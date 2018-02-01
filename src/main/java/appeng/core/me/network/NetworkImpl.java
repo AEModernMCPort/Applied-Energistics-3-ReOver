@@ -17,7 +17,7 @@ public class NetworkImpl implements Network {
 
 	public NetworkImpl(NetworkUUID uuid){
 		this.uuid = uuid;
-		this.threadsManager = new NetworkThreadsManager();
+		this.threadsManager = new NetworkThreadsManager(this);
 		this.blocksManager = new NetworkBlocksManager();
 	}
 
@@ -41,13 +41,13 @@ public class NetworkImpl implements Network {
 
 	@Nonnull
 	@Override
-	public <N extends NetDevice<N, P> & ITickable, P extends PhysicalDevice<N, P>> NetworkThread getDeviceThread(N device){
-		return threadsManager.getDeviceThread(device);
+	public NetworkThread requestThread(Runnable operation){
+		return threadsManager.requestThread(operation);
 	}
 
 	@Nonnull
 	@Override
-	public Collection<NetworkThread> getThreads(){
+	public Collection<? extends NetworkThread> getThreads(){
 		return threadsManager.getThreads();
 	}
 

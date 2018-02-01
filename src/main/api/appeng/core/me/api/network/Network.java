@@ -3,8 +3,6 @@ package appeng.core.me.api.network;
 import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -17,26 +15,29 @@ import java.util.Collection;
  */
 public interface Network extends ICapabilityProvider, EventBusOwner<Network, Network.NetworkEvent>, INBTSerializable<NBTTagCompound> {
 
+	/*
+	 * UUID
+	 */
+
 	@Nonnull NetworkUUID getUUID();
 
-	@Nonnull <N extends NetDevice<N, P> & ITickable, P extends PhysicalDevice<N, P>> NetworkThread getDeviceThread(N device);
-	@Nonnull Collection<NetworkThread> getThreads();
+	/*
+	 * Threads
+	 */
+
+	@Nonnull NetworkThread requestThread(Runnable operation);
+	@Nonnull Collection<? extends NetworkThread> getThreads();
+
+	/*
+	 * Blocks
+	 */
 
 	@Nullable NetBlock getBlock(NetBlockUUID uuid);
 	@Nonnull Collection<NetBlock> getBlocks();
 
-	interface NetworkThread extends IThreadListener {
+	interface NetworkThread {
 
 		Thread getThread();
-
-		<N extends NetDevice<N, P> & ITickable, P extends PhysicalDevice<N, P>> Collection<N> getManagedDevices();
-
-		//Impl
-
-		@Override
-		default boolean isCallingFromMinecraftThread(){
-			return false;
-		}
 
 	}
 

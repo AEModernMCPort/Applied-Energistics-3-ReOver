@@ -1,9 +1,11 @@
 package appeng.core.me.api.network.storage;
 
+import appeng.core.me.api.network.event.EventBusOwner;
+import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
 
-public interface NetworkStorage<ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> extends INBTSerializable<NBTTagCompound> {
+public interface NetworkStorage<NS extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> extends EventBusOwner<NS, NetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>>, INBTSerializable<NBTTagCompound> {
 
 	/**
 	 * Posts read request to the storage, result returned immediately on the same thread. Asynchronous, thread-safe, does not guarantee accurate reply unless requested from same thread as storage's.
@@ -32,6 +34,10 @@ public interface NetworkStorage<ReadReq extends NetworkStorage.Request<ReadRep>,
 		 * @param reply reply to this request
 		 */
 		default void fullfill(Rep reply){}
+
+	}
+
+	interface NetworkStorageEvent<NS extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> extends NCEventBus.Event<NS, NetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>> {
 
 	}
 

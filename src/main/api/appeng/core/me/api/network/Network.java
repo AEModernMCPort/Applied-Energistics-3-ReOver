@@ -1,5 +1,7 @@
 package appeng.core.me.api.network;
 
+import appeng.core.me.api.network.event.EventBusOwner;
+import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ITickable;
@@ -13,7 +15,7 @@ import java.util.Collection;
 /**
  * Network executing all operations
  */
-public interface Network extends ICapabilityProvider, INBTSerializable<NBTTagCompound> {
+public interface Network extends ICapabilityProvider, EventBusOwner<Network, Network.NetworkEvent>, INBTSerializable<NBTTagCompound> {
 
 	@Nonnull NetworkUUID getUUID();
 
@@ -35,6 +37,10 @@ public interface Network extends ICapabilityProvider, INBTSerializable<NBTTagCom
 		default boolean isCallingFromMinecraftThread(){
 			return false;
 		}
+
+	}
+
+	interface NetworkEvent extends NCEventBus.Event<Network, Network.NetworkEvent> {
 
 	}
 

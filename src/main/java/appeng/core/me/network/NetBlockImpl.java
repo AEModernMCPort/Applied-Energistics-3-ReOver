@@ -15,17 +15,21 @@ import java.util.Optional;
 
 public class NetBlockImpl implements NetBlock {
 
-	public NetBlockImpl(NetBlockUUID uuid, GlobalWorldVoxelPosition position, Network network){
+	protected NetBlockImpl(NetBlockUUID uuid, Network network){
 		this.uuid = uuid;
-		this.position = position;
 		this.network = network;
+	}
+
+	public NetBlockImpl(NetBlockUUID uuid, GlobalWorldVoxelPosition position, Network network){
+		this(uuid, network);
+		this.position = position;
 	}
 
 	/*
 	 * Info
 	 */
 
-	protected NetBlockUUID uuid;
+	protected final NetBlockUUID uuid;
 	protected GlobalWorldVoxelPosition position;
 
 	@Nonnull
@@ -101,12 +105,19 @@ public class NetBlockImpl implements NetBlock {
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("pos", position.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
+		position = GlobalWorldVoxelPosition.fromNBT(nbt.getCompoundTag("pos"));
+	}
 
+	public static NetBlockImpl createFromNBT(@Nonnull NetBlockUUID uuid, @Nullable Network network, @Nonnull NBTTagCompound nbt){
+		NetBlockImpl netBlock = new NetBlockImpl(uuid, network);
+		netBlock.deserializeNBT(nbt);
+		return netBlock;
 	}
 
 }

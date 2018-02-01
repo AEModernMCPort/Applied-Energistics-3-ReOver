@@ -17,10 +17,14 @@ import java.util.Collection;
 
 public class NetworkImpl implements Network {
 
-	public NetworkImpl(NetworkUUID uuid){
-		this.uuid = uuid;
+	protected NetworkImpl(){
 		this.threadsManager = new NetworkThreadsManager(this);
-		this.blocksManager = new NetworkBlocksManager();
+		this.blocksManager = new NetworkBlocksManager(this);
+	}
+
+	public NetworkImpl(NetworkUUID uuid){
+		this();
+		this.uuid = uuid;
 	}
 
 	/*
@@ -111,11 +115,21 @@ public class NetworkImpl implements Network {
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("uuid", uuid.serializeNBT());
+		nbt.setTag("blocks", blocksManager.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
-
+		uuid = NetworkUUID.fromNBT(nbt.getCompoundTag("uuid"));
+		blocksManager.deserializeNBT(nbt.getCompoundTag("blocks"));
 	}
+
+	public static NetworkImpl createFromNBT(@Nonnull NBTTagCompound nbt){
+		NetworkImpl network = new NetworkImpl();
+		network.deserializeNBT(nbt);
+		return network;
+	}
+
 }

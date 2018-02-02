@@ -12,6 +12,9 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
+import appeng.core.me.api.network.Network;
+import appeng.core.me.api.network.NetworkUUID;
+import appeng.core.me.api.network.W2NInterface;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
@@ -19,6 +22,8 @@ import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
+import appeng.core.me.network.GlobalNetworksManager;
+import appeng.core.me.network.NetworkImpl;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.part.PartsHelper;
@@ -26,9 +31,11 @@ import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import appeng.core.me.proxy.MEProxy;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -37,6 +44,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.function.BiFunction;
 
 @Module(IME.NAME)
 public class AppEngME implements IME {
@@ -98,6 +106,16 @@ public class AppEngME implements IME {
 		return new DefaultPartPlacementLogic(part);
 	}
 
+	@Override
+	public <N extends Network> void registerNetworkLoader(ResourceLocation id, BiFunction<NetworkUUID, NBTTagCompound, N> loader){
+		GlobalNetworksManager.registerNetworkLoader(id, loader);
+	}
+
+	@Override
+	public W2NInterface getW2NInterface(){
+		return GlobalNetworksManager.getInstance();
+	}
+
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerDefinitionBuilderSupplier(Part.class, Part.class, (factory, registryName, input) -> new PartDefinitionBuilder(factory, registryName, input));
@@ -129,6 +147,7 @@ public class AppEngME implements IME {
 		this.entityDefinitions.init(registry);
 		this.partDefinitions.init(registry);
 
+		registerNetworkLoader(GlobalNetworksManager.DEFAULTLOADER, NetworkImpl::createFromNBT);
 		initHandler.accept(partsHelper = new PartsHelper());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
@@ -162,24 +181,14 @@ public class AppEngME implements IME {
 
 	}
 
-	/*@ModuleEventHandler
-	public void serverAboutToStart(FMLServerAboutToStartEvent event){
-
+	@ModuleEventHandler
+	public void serverStarting(AEStateEvent.AEServerStartingEvent event){
+		GlobalNetworksManager.serverStarting(FMLCommonHandler.instance().getMinecraftServerInstance());
 	}
 
 	@ModuleEventHandler
-	public void serverStarting(FMLServerStartingEvent event){
-
+	public void serverStopping(AEStateEvent.AEServerStoppingEvent event){
+		GlobalNetworksManager.serverStopping(FMLCommonHandler.instance().getMinecraftServerInstance());
 	}
-
-	@ModuleEventHandler
-	public void serverStopping(FMLServerStoppingEvent event){
-
-	}
-
-	@ModuleEventHandler
-	public void serverStopped(FMLServerStoppedEvent event){
-
-	}*/
 
 }

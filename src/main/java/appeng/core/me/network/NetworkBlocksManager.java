@@ -52,6 +52,7 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
+		this.netBlocks.clear();
 		NBTTagList blocks = (NBTTagList) nbt.getTag("blocks");
 		blocks.forEach(nbtBase -> {
 			NBTTagCompound next = (NBTTagCompound) nbtBase;

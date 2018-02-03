@@ -112,12 +112,14 @@ public class NetworkImpl implements Network {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("blocks", blocksManager.serializeNBT());
+		nbt.setTag("capabilities", capabilities.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		blocksManager.deserializeNBT(nbt.getCompoundTag("blocks"));
+		capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
 	}
 
 	public static NetworkImpl createFromNBT(@Nonnull NetworkUUID uuid, @Nonnull NBTTagCompound nbt){

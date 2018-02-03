@@ -23,6 +23,7 @@ public class NetworkImpl implements Network {
 		this.threadsManager = new NetworkThreadsManager(this);
 		this.blocksManager = new NetworkBlocksManager(this);
 		this.eventBus = new EventBusImpl<>(this);
+		initCapabilities();
 	}
 
 	/*

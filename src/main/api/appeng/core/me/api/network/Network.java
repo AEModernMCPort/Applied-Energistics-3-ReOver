@@ -25,8 +25,11 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	 * Threads
 	 */
 
-	@Nonnull NetworkThread requestThread(Runnable operation);
-	@Nonnull Collection<? extends NetworkThread> getThreads();
+	@Nonnull
+	void requestThread(NetworkThreadInfo thread);
+
+	void startThreads();
+	Runnable suspendThreads();
 
 	/*
 	 * Blocks
@@ -35,9 +38,15 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	@Nullable NetBlock getBlock(NetBlockUUID uuid);
 	@Nonnull Collection<? extends NetBlock> getBlocks();
 
-	interface NetworkThread {
+	interface NetworkThreadInfo extends Runnable {
 
-		Thread getThread();
+		/**
+		 * Called whenever the operation of this thread should be suspended. When the method returns, no operation is performed by the thread and underlying data is safely serializable, until resume is called.<br>
+		 * Returned {@linkplain Runnable runnable} will be called to resume thread operation
+		 *
+		 * @return runnable to resume thread operation
+		 */
+		Runnable suspend();
 
 	}
 

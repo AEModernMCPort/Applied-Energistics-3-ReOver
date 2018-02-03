@@ -16,9 +16,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class GlobalNetworksManager implements W2NInterface {
 
@@ -82,6 +85,7 @@ public class GlobalNetworksManager implements W2NInterface {
 	 */
 
 	private Map<NetworkUUID, Network> networks = new HashMap<>();
+	private boolean startNetworksImmediately = false;
 
 	public GlobalNetworksManager(){
 	}
@@ -99,6 +103,7 @@ public class GlobalNetworksManager implements W2NInterface {
 	@Override
 	public <N extends Network> N networkCreated(N network){
 		networks.put(network.getUUID(), network);
+		if(startNetworksImmediately) network.startThreads();
 		return network;
 	}
 
@@ -116,13 +121,33 @@ public class GlobalNetworksManager implements W2NInterface {
 	 * Life cycle sequences
 	 */
 
-	//TODO 1.12.2-dhcp - Notify networks after start and before shutdown, sync threads, ...
+	void startNetworks(){
+		startNetworksImmediately = true;
+		networks.values().forEach(Network::startThreads);
+	}
+
+	Runnable suspendNetworks(){
+		startNetworksImmediately = false;
+		List<Runnable> resume = networks.values().stream().map(Network::suspendThreads).collect(Collectors.toList());
+		return () -> {
+			startNetworksImmediately = true;
+			resume.forEach(Runnable::run);
+		};
+	}
 
 	void load(NBTTagCompound nbt){
 		if(nbt != null) deserializeNBT(nbt);
+		startNetworks();
+	}
+
+	void pause(Consumer<NBTTagCompound> nbt){
+		Runnable resume = suspendNetworks();
+		nbt.accept(serializeNBT());
+		resume.run();
 	}
 
 	NBTTagCompound shutdown(){
+		suspendNetworks();
 		return serializeNBT();
 	}
 

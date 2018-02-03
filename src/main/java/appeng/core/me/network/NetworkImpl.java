@@ -43,14 +43,18 @@ public class NetworkImpl implements Network {
 
 	@Nonnull
 	@Override
-	public NetworkThread requestThread(Runnable operation){
-		return threadsManager.requestThread(operation);
+	public void requestThread(NetworkThreadInfo operation){
+		threadsManager.requestThread(operation);
 	}
 
-	@Nonnull
 	@Override
-	public Collection<? extends NetworkThread> getThreads(){
-		return threadsManager.getThreads();
+	public void startThreads(){
+		threadsManager.startThreads();
+	}
+
+	@Override
+	public Runnable suspendThreads(){
+		return threadsManager.suspendThreads();
 	}
 
 	/*

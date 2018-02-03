@@ -1,5 +1,6 @@
 package appeng.core.me.api.network;
 
+import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +18,8 @@ import java.util.Optional;
  * Manages <b>all</b> scheduled tasks, as network counterpart is the one managing all scheduled tasks for both counterparts.<br><br>
  * <p>
  * If implements {@link ITickable}, {@linkplain ITickable#update() update()} will be called from (one of) network thread(s) on each update cycle (<u>on inconsistent time intervals</u>). A device must schedule tasks for other devices instead of direct interaction (possible concurrency).
+ * <br><br>
+ * It is not recommended to implement on any already existing structures with other purposes.
  *
  * @param <N> Network counterpart type
  * @param <P> In-world counterpart type
@@ -31,10 +34,19 @@ public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N
 
 	@Nonnull
 	Optional<NetBlock> getNetBlock();
+
 	void switchNetBlock(@Nullable NetBlock block);
 	default boolean hasNetwork(){
 		return getNetBlock().map(NetBlock::hasNetwork).orElse(false);
 	}
+
+	/*
+	 * IO
+	 */
+
+	DeviceRegistryEntry<N, P> getRegistryEntry();
+
+	NBTTagCompound serializeNBT();
 
 	interface NetDeviceEvent<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends NCEventBus.Event<N, NetDevice.NetDeviceEvent<N, P>> {
 

@@ -12,13 +12,13 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.core.me.api.IME;
-import appeng.core.me.api.network.Network;
-import appeng.core.me.api.network.NetworkUUID;
-import appeng.core.me.api.network.W2NInterface;
+import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
+import appeng.core.me.bootstrap.DeviceDefinitionBuilder;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
@@ -62,6 +62,7 @@ public class AppEngME implements IME {
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private IForgeRegistry partRegistry;
+	private IForgeRegistry deviceRegistry;
 
 	private DefinitionFactory registry;
 
@@ -70,6 +71,7 @@ public class AppEngME implements IME {
 	private METileDefinitions tileDefinitions;
 	private MEEntityDefinitions entityDefinitions;
 	private MEPartDefinitions partDefinitions;
+	private MEDeviceDefinitions deviceDefinitions;
 
 	private PartsHelper partsHelper;
 
@@ -90,11 +92,18 @@ public class AppEngME implements IME {
 		if(clas == Part.class){
 			return (D) partDefinitions;
 		}
+		if(clas == DeviceRegistryEntry.class){
+			return (D) deviceDefinitions;
+		}
 		return null;
 	}
 
 	public <P extends Part<P, S>, S extends Part.State<P, S>> IForgeRegistry<P> getPartRegistry(){
 		return partRegistry;
+	}
+
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> IForgeRegistry<DeviceRegistryEntry<N, P>> getDeviceRegistry(){
+		return deviceRegistry;
 	}
 
 	public PartsHelper getPartsHelper(){
@@ -119,11 +128,13 @@ public class AppEngME implements IME {
 	@ModuleEventHandler
 	public void bootstrap(AEStateEvent.AEBootstrapEvent event){
 		event.registerDefinitionBuilderSupplier(Part.class, Part.class, (factory, registryName, input) -> new PartDefinitionBuilder(factory, registryName, input));
+		event.registerDefinitionBuilderSupplier(DeviceRegistryEntry.class, Void.class, ((factory, registryName, input) -> new DeviceDefinitionBuilder(factory, registryName)));
 	}
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		partRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "parts")).setType(Part.class).setMaxID(Integer.MAX_VALUE - 1).create();
+		deviceRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "devices")).setType(DeviceRegistryEntry.class).setMaxID(Integer.MAX_VALUE - 1).create();
 
 		ConfigurationLoader<MEConfig> configLoader = event.configurationLoader();
 		try{
@@ -140,12 +151,14 @@ public class AppEngME implements IME {
 		this.tileDefinitions = new METileDefinitions(registry);
 		this.entityDefinitions = new MEEntityDefinitions(registry);
 		this.partDefinitions = new MEPartDefinitions(registry);
+		this.deviceDefinitions = new MEDeviceDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
 		this.partDefinitions.init(registry);
+		this.deviceDefinitions.init(registry);
 
 		registerNetworkLoader(GlobalNetworksManager.DEFAULTLOADER, NetworkImpl::createFromNBT);
 		initHandler.accept(partsHelper = new PartsHelper());

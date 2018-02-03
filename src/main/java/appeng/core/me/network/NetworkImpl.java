@@ -5,6 +5,7 @@ import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.event.NCEventBus;
+import appeng.core.me.network.event.EventBusImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -21,6 +22,7 @@ public class NetworkImpl implements Network {
 		this.uuid = uuid;
 		this.threadsManager = new NetworkThreadsManager(this);
 		this.blocksManager = new NetworkBlocksManager(this);
+		this.eventBus = new EventBusImpl<>(this);
 	}
 
 	/*
@@ -79,11 +81,12 @@ public class NetworkImpl implements Network {
 	 * Events
 	 */
 
+	protected NCEventBus<Network, NetworkEvent> eventBus;
+
 	@Nonnull
 	@Override
 	public NCEventBus<Network, NetworkEvent> getEventBus(){
-		//TODO Implement events
-		return null;
+		return eventBus;
 	}
 
 	/*

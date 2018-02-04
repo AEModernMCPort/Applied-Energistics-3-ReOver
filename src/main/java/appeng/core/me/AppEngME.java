@@ -22,7 +22,7 @@ import appeng.core.me.bootstrap.DeviceDefinitionBuilder;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
-import appeng.core.me.network.GlobalNetworksManager;
+import appeng.core.me.network.GlobalNBDManagerImpl;
 import appeng.core.me.network.NetworkImpl;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
@@ -117,12 +117,12 @@ public class AppEngME implements IME {
 
 	@Override
 	public <N extends Network> void registerNetworkLoader(ResourceLocation id, BiFunction<NetworkUUID, NBTTagCompound, N> loader){
-		GlobalNetworksManager.registerNetworkLoader(id, loader);
+		GlobalNBDManagerImpl.registerNetworkLoader(id, loader);
 	}
 
 	@Override
-	public W2NInterface getW2NInterface(){
-		return GlobalNetworksManager.getInstance();
+	public GlobalNBDManager getGlobalNBDManager(){
+		return GlobalNBDManagerImpl.getInstance();
 	}
 
 	@ModuleEventHandler
@@ -160,7 +160,7 @@ public class AppEngME implements IME {
 		this.partDefinitions.init(registry);
 		this.deviceDefinitions.init(registry);
 
-		registerNetworkLoader(GlobalNetworksManager.DEFAULTLOADER, NetworkImpl::createFromNBT);
+		registerNetworkLoader(GlobalNBDManagerImpl.DEFAULTLOADER, NetworkImpl::createFromNBT);
 		initHandler.accept(partsHelper = new PartsHelper());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
@@ -196,12 +196,12 @@ public class AppEngME implements IME {
 
 	@ModuleEventHandler
 	public void serverStarting(AEStateEvent.AEServerStartingEvent event){
-		GlobalNetworksManager.serverStarting(FMLCommonHandler.instance().getMinecraftServerInstance());
+		GlobalNBDManagerImpl.serverStarting(FMLCommonHandler.instance().getMinecraftServerInstance());
 	}
 
 	@ModuleEventHandler
 	public void serverStopping(AEStateEvent.AEServerStoppingEvent event){
-		GlobalNetworksManager.serverStopping(FMLCommonHandler.instance().getMinecraftServerInstance());
+		GlobalNBDManagerImpl.serverStopping(FMLCommonHandler.instance().getMinecraftServerInstance());
 	}
 
 }

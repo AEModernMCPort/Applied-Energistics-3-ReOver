@@ -3,7 +3,7 @@ package appeng.core.me.api;
 import appeng.api.definitions.IDefinitionsProvider;
 import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.NetworkUUID;
-import appeng.core.me.api.network.W2NInterface;
+import appeng.core.me.api.network.GlobalNBDManager;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,6 +24,6 @@ public interface IME extends IDefinitionsProvider {
 	 *
 	 * @return current world to networks interface
 	 */
-	W2NInterface getW2NInterface();
+	GlobalNBDManager getGlobalNBDManager();
 
 }

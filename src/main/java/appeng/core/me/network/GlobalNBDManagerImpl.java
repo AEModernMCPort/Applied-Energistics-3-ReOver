@@ -1,9 +1,7 @@
 package appeng.core.me.network;
 
 import appeng.core.AppEng;
-import appeng.core.me.api.network.Network;
-import appeng.core.me.api.network.NetworkUUID;
-import appeng.core.me.api.network.W2NInterface;
+import appeng.core.me.api.network.*;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -23,7 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class GlobalNetworksManager implements W2NInterface {
+public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	public static final ResourceLocation DEFAULTLOADER = new ResourceLocation(AppEng.MODID, "default");
 	private static Map<ResourceLocation, BiFunction<NetworkUUID, NBTTagCompound, ? extends Network>> loaders = new HashMap<>();
@@ -36,17 +34,17 @@ public class GlobalNetworksManager implements W2NInterface {
 		return loaders.get(id != null && loaders.containsKey(id) ? id : DEFAULTLOADER);
 	}
 
-	private static GlobalNetworksManager INSTANCE;
+	private static GlobalNBDManagerImpl INSTANCE;
 
-	public static GlobalNetworksManager getInstance(){
+	public static GlobalNBDManagerImpl getInstance(){
 		return INSTANCE;
 	}
 
 	/*
 	 * IO
 	 */
-	//TODO 1.12.2-dhcp - Save on game paused
-	//TODO 1.12.2-dhcp - Backups
+	//TODO Save on game paused
+	//TODO Backups
 
 	protected static File getDataFile(MinecraftServer server){
 		return server.getFile("ae3 networks.dat");
@@ -60,7 +58,7 @@ public class GlobalNetworksManager implements W2NInterface {
 		} catch(IOException e){
 			//TODO Log?
 		}
-		INSTANCE = new GlobalNetworksManager();
+		INSTANCE = new GlobalNBDManagerImpl();
 		INSTANCE.load(nbt);
 	}
 
@@ -84,15 +82,15 @@ public class GlobalNetworksManager implements W2NInterface {
 	 * Instance
 	 */
 
-	private Map<NetworkUUID, Network> networks = new HashMap<>();
-	private boolean startNetworksImmediately = false;
-
-	public GlobalNetworksManager(){
+	public GlobalNBDManagerImpl(){
 	}
 
 	/*
-	 * Impl
+	 * Networks
 	 */
+
+	protected Map<NetworkUUID, Network> networks = new HashMap<>();
+	protected boolean startNetworksImmediately = false;
 
 	@Nonnull
 	@Override
@@ -115,6 +113,48 @@ public class GlobalNetworksManager implements W2NInterface {
 	@Override
 	public void networkDestroyed(NetworkUUID uuid){
 
+	}
+
+	/*
+	 * Network-Free blocks
+	 */
+
+	protected Map<NetBlockUUID, NetBlock> nfBlocks = new HashMap<>();
+
+	@Override
+	public Optional<NetBlock> getFreeBlock(NetBlockUUID uuid){
+		return Optional.ofNullable(nfBlocks.get(uuid));
+	}
+
+	@Override
+	public void registerFreeBlock(NetBlock block){
+		nfBlocks.put(block.getUUID(), block);
+	}
+
+	@Override
+	public void removeFreeBlock(NetBlock block){
+		nfBlocks.remove(block.getUUID());
+	}
+
+	/*
+	 * Block-Free devices
+	 */
+
+	protected Map<DeviceUUID, NetDevice> bfDevices = new HashMap<>();
+
+	@Override
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getFreeDevice(DeviceUUID uuid){
+		return Optional.ofNullable((N) bfDevices.get(uuid));
+	}
+
+	@Override
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void registerFreeDevice(N device){
+		bfDevices.put(device.getUUID(), device);
+	}
+
+	@Override
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeFreeDevice(N device){
+		bfDevices.remove(device.getUUID());
 	}
 
 	/*
@@ -170,7 +210,7 @@ public class GlobalNetworksManager implements W2NInterface {
 		return nbt;
 	}
 
-	GlobalNetworksManager deserializeNBT(NBTTagCompound nbt){
+	GlobalNBDManagerImpl deserializeNBT(NBTTagCompound nbt){
 		this.networks.clear();
 		NBTTagList networks = (NBTTagList) nbt.getTag("networks");
 		networks.forEach(nbtBase -> {

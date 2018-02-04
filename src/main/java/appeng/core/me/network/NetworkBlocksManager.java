@@ -1,11 +1,13 @@
 package appeng.core.me.network;
 
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.Network;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.INBTSerializable;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -40,12 +42,7 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		NBTTagList blocks = new NBTTagList();
-		this.netBlocks.entrySet().forEach(e -> {
-			NBTTagCompound next = new NBTTagCompound();
-			next.setTag("uuid", e.getKey().serializeNBT());
-			next.setTag("block", e.getValue().serializeNBT());
-			blocks.appendTag(next);
-		});
+		this.netBlocks.values().stream().map(AppEngME.INSTANCE.getNBDIO()::serializeNetBlockWithArgs).forEach(blocks::appendTag);
 		nbt.setTag("blocks", blocks);
 		return nbt;
 	}
@@ -54,10 +51,9 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 	public void deserializeNBT(NBTTagCompound nbt){
 		this.netBlocks.clear();
 		NBTTagList blocks = (NBTTagList) nbt.getTag("blocks");
-		blocks.forEach(nbtBase -> {
-			NBTTagCompound next = (NBTTagCompound) nbtBase;
-			NetBlockUUID uuid = NetBlockUUID.fromNBT(next.getCompoundTag("uuid"));
-			this.netBlocks.put(uuid, NetBlockImpl.createFromNBT(uuid, network, next.getCompoundTag("block")));
+		blocks.forEach(next -> {
+			Pair<NetBlockUUID, NetBlockImpl> uuidBlock = AppEngME.INSTANCE.getNBDIO().deserializeNetBlockWithArgs(network, (NBTTagCompound) next);
+			this.netBlocks.put(uuidBlock.getLeft(), uuidBlock.getRight());
 		});
 	}
 

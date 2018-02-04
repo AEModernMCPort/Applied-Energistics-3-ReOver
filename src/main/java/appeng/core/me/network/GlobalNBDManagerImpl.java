@@ -1,12 +1,12 @@
 package appeng.core.me.network;
 
-import appeng.core.AppEng;
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -17,22 +17,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GlobalNBDManagerImpl implements GlobalNBDManager {
-
-	public static final ResourceLocation DEFAULTLOADER = new ResourceLocation(AppEng.MODID, "default");
-	private static Map<ResourceLocation, BiFunction<NetworkUUID, NBTTagCompound, ? extends Network>> loaders = new HashMap<>();
-
-	public static void registerNetworkLoader(ResourceLocation id, BiFunction<NetworkUUID, NBTTagCompound, ? extends Network> loader){
-		loaders.put(id, loader);
-	}
-
-	public static BiFunction<NetworkUUID, NBTTagCompound, ? extends Network> getNetworkLoader(ResourceLocation id){
-		return loaders.get(id != null && loaders.containsKey(id) ? id : DEFAULTLOADER);
-	}
 
 	private static GlobalNBDManagerImpl INSTANCE;
 
@@ -197,27 +185,44 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+
 		NBTTagList networks = new NBTTagList();
-		this.networks.entrySet().forEach(e -> {
-			NBTTagCompound next = new NBTTagCompound();
-			next.setTag("uuid", e.getKey().serializeNBT());
-			NBTTagCompound netTag = e.getValue().serializeNBT();
-			if(netTag.hasKey("loader")) next.setTag("loader", netTag.getTag("loader"));
-			next.setTag("network", netTag);
-			networks.appendTag(next);
-		});
+		this.networks.values().stream().map(AppEngME.INSTANCE.getNBDIO()::serializeNetworkWithArgs).forEach(networks::appendTag);
 		nbt.setTag("networks", networks);
+
+		NBTTagList blocks = new NBTTagList();
+		this.nfBlocks.values().stream().map(AppEngME.INSTANCE.getNBDIO()::serializeNetBlockWithArgs).forEach(blocks::appendTag);
+		nbt.setTag("blocks", blocks);
+
+		NBTTagList devices = new NBTTagList();
+		this.bfDevices.values().stream().map(AppEngME.INSTANCE.getNBDIO()::serializeDeviceWithArgs).forEach(tag -> devices.appendTag((NBTTagCompound) tag));
+		nbt.setTag("devices", devices);
+
 		return nbt;
 	}
 
 	GlobalNBDManagerImpl deserializeNBT(NBTTagCompound nbt){
 		this.networks.clear();
 		NBTTagList networks = (NBTTagList) nbt.getTag("networks");
-		networks.forEach(nbtBase -> {
-			NBTTagCompound next = (NBTTagCompound) nbtBase;
-			NetworkUUID uuid = NetworkUUID.fromNBT(next.getCompoundTag("uuid"));
-			this.networks.put(uuid, getNetworkLoader(next.hasKey("loader") ? new ResourceLocation(next.getString("loader")) : null).apply(uuid, next.getCompoundTag("network")));
+		networks.forEach(next -> {
+			Pair<NetworkUUID, Network> uuidNetwork = AppEngME.INSTANCE.getNBDIO().deserializeNetworkWithArgs((NBTTagCompound) next);
+			this.networks.put(uuidNetwork.getLeft(), uuidNetwork.getRight());
 		});
+
+		this.nfBlocks.clear();
+		NBTTagList blocks = (NBTTagList) nbt.getTag("blocks");
+		blocks.forEach(next -> {
+			Pair<NetBlockUUID, NetBlock> uuidBlock = AppEngME.INSTANCE.getNBDIO().deserializeNetBlockWithArgs(null, (NBTTagCompound) next);
+			this.nfBlocks.put(uuidBlock.getLeft(), uuidBlock.getRight());
+		});
+
+		this.bfDevices.clear();
+		NBTTagList devices = (NBTTagList) nbt.getTag("devices");
+		devices.forEach(next -> {
+			Pair<DeviceUUID, NetDevice> uuidDevice = (Pair) AppEngME.INSTANCE.getNBDIO().deserializeDeviceWithArgs(null, (NBTTagCompound) next);
+			this.bfDevices.put(uuidDevice.getLeft(), uuidDevice.getRight());
+		});
+
 		return this;
 	}
 

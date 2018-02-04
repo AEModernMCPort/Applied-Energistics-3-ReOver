@@ -3,6 +3,7 @@ package appeng.core.me.api.network;
 import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 
@@ -37,6 +38,14 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 
 	@Nullable NetBlock getBlock(NetBlockUUID uuid);
 	@Nonnull Collection<? extends NetBlock> getBlocks();
+
+	/*
+	 * IO
+	 */
+
+	default ResourceLocation getLoader(){
+		return NBDIO.DEFAULTLOADER;
+	}
 
 	interface NetworkThreadInfo extends Runnable {
 

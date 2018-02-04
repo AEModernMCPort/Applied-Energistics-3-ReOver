@@ -5,6 +5,7 @@ import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -34,6 +35,14 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 	GlobalWorldVoxelPosition getPosition();
 
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();
+
+	/*
+	 * IO
+	 */
+
+	default ResourceLocation getLoader(){
+		return NBDIO.DEFAULTLOADER;
+	}
 
 	interface NetBlockEvent extends NCEventBus.Event<NetBlock, NetBlockEvent> {
 

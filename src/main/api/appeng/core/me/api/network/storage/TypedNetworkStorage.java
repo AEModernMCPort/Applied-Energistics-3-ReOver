@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 public interface TypedNetworkStorage<T, NS extends TypedNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedNetworkStorage.Request<WriteRep>, WriteRep> extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
 	/**
-	 * Posts a {@linkplain Request.GetStoredAmount get stored amount} request to get the amount stored of given object.<br>
+	 * Posts a {@linkplain Request.GetStoredAmount get stored amount} request to get the amount stored of given object.
 	 *
 	 * @param t             {@linkplain Request.GetStoredAmount#query() object to query}
 	 * @return {@linkplain Request.GetStoredAmount.Reply#amountStored() amount stored of given object}

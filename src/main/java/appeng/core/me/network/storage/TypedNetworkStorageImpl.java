@@ -5,15 +5,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedNetworkStorage.Request<WriteRep>, WriteRep> extends NetworkStorageImpl<NS, ReadReq, ReadRep, WriteReq, WriteRep> implements TypedNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
-
-	protected final Function<T, NBTTagCompound> serializer;
-	protected final Function<NBTTagCompound, T> deserializer;
 
 	public TypedNetworkStorageImpl(Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
 		this.serializer = serializer;
@@ -26,17 +24,21 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	protected Map<T, MutableInt> storage = new HashMap<>();
 
+	@Nonnull
 	protected MutableInt get(T t){
-		return storage.get(t);
+		MutableInt stored = storage.get(t);
+		return stored != null ? stored : new MutableInt();
 	}
 
-	protected void set(T t, MutableInt amount){
-		storage.put(t, amount);
+	@Nonnull
+	protected MutableInt getOrPopulate(T t){
+		MutableInt stored = storage.get(t);
+		if(stored == null) set(t, stored = new MutableInt());
+		return stored;
 	}
 
-	protected int getStored(T t){
-		MutableInt stored = get(t);
-		return stored != null ? stored.getValue() : 0;
+	protected void set(T t, MutableInt stored){
+		storage.put(t, stored);
 	}
 
 	/**
@@ -59,7 +61,7 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 	protected <Req extends ReadReq, Rep extends ReadRep> Rep processReadRequest(Req req){
 		if(req instanceof TypedNetworkStorage.Request.GetStoredAmount){
 			TypedNetworkStorage.Request.GetStoredAmount<T> request = (TypedNetworkStorage.Request.GetStoredAmount<T>) req;
-			return (Rep) new GetStoredAmountReply(getStored(request.query()));
+			return (Rep) new GetStoredAmountReply(get(request.query()).intValue());
 		}
 		return null;
 	}
@@ -74,8 +76,7 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 			int min = Math.min(Math.abs(request.minAmount()), Math.abs(request.maxAmount()));
 			int max = Math.max(Math.abs(request.minAmount()), Math.abs(request.maxAmount()));
 
-			MutableInt amount = get(request.query());
-			if(amount == null) set(request.query(), amount = new MutableInt());
+			MutableInt amount = getOrPopulate(request.query());
 
 			int stored;
 			int can = getMaxStore(request.query(), amount, store);
@@ -214,6 +215,9 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 	 * IO
 	 */
 
+	protected final Function<T, NBTTagCompound> serializer;
+	protected final Function<NBTTagCompound, T> deserializer;
+
 	protected NBTTagCompound serializeT(T t){
 		return serializer.apply(t);
 	}
@@ -227,10 +231,12 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 		NBTTagCompound nbt = super.serializeNBT();
 		NBTTagList storage = new NBTTagList();
 		this.storage.forEach((t, amount) -> {
-			NBTTagCompound next = new NBTTagCompound();
-			next.setTag("object", serializeT(t));
-			next.setInteger("amount", amount.intValue());
-			storage.appendTag(next);
+			if(amount.intValue() != 0){
+				NBTTagCompound next = new NBTTagCompound();
+				next.setTag("object", serializeT(t));
+				next.setInteger("amount", amount.intValue());
+				storage.appendTag(next);
+			}
 		});
 		nbt.setTag("storage", storage);
 		return nbt;

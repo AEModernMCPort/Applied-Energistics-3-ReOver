@@ -7,6 +7,8 @@ import appeng.api.item.IStateItemState;
 import appeng.core.lib.definition.Definition;
 import net.minecraft.item.Item;
 
+//FOR DEFINITIVE* REMOVAL IN MC 1.13
+@Deprecated
 public class ItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends Definition<S> implements IItemSubDefinition<S, I> {
 
 	private final ItemDefinition<I> parent;

@@ -7,6 +7,7 @@ import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import appeng.core.skyfall.skyobject.SkyobjectImpl;
 import code.elix_x.excore.utils.client.render.world.MultiChunkBlockAccessRenderer;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -30,7 +31,7 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 		@Override
 		protected Chunk createNewChunk(BlockPos chunkPos){
-			return new Chunk(chunkPos, new ChunkStorage<>(chunkSize, new ChunkStorage.ChunkStorageSerializer.PaletteChunkStorageSerializer(), state -> new NBTTagInt(state == null ? -1 : Block.getStateId(state)), id -> id.getInt() == -1 ? null : Block.getStateById(id.getInt())));
+			return new Chunk(chunkPos, new ChunkStorage<IBlockState, NBTTagInt>(chunkSize, new ChunkStorage.ChunkStorageSerializer.PaletteChunkStorageSerializer(), state -> new NBTTagInt(state == null ? -1 : Block.getStateId(state)), id -> id.getInt() == -1 ? null : Block.getStateById(id.getInt())));
 		}
 
 	};

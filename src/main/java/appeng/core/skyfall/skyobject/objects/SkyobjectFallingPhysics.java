@@ -30,8 +30,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	protected Vec3d prevTickPos = Vec3d.ZERO;
 	protected Vec3d prevTickRot = Vec3d.ZERO;
 
-	protected Vec3d force = Vec3d.ZERO;
-	protected Vec3d torque = Vec3d.ZERO;
+	protected Vec3d momentum = Vec3d.ZERO;
+	protected Vec3d amomentum = Vec3d.ZERO;
 
 	protected double mass;
 
@@ -91,6 +91,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		return prevTickRot;
 	}
 
+	@Override
 	public double getMass(){
 		return mass;
 	}
@@ -99,20 +100,20 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		this.mass = mass;
 	}
 
-	public Vec3d getForce(){
-		return force;
+	public Vec3d getMomentum(){
+		return momentum;
 	}
 
-	public void setForce(Vec3d force){
-		this.force = force;
+	public void setMomentum(Vec3d momentum){
+		this.momentum = momentum;
 	}
 
-	public Vec3d getTorque(){
-		return torque;
+	public Vec3d getAngularMomentum(){
+		return amomentum;
 	}
 
-	public void setTorque(Vec3d torque){
-		this.torque = torque;
+	public void setAngularMomentum(Vec3d amomentum){
+		this.amomentum = amomentum;
 	}
 
 	@Override
@@ -123,10 +124,10 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		List<Vec3d> forces = new ArrayList<>();
 		List<Vec3d> torques = new ArrayList<>();
 		MinecraftForge.EVENT_BUS.post(new GatherForcesEvent(skyobject, forces, torques));
-		if(!forces.isEmpty()) force = force.add(sumVecs(forces));
-		if(!torques.isEmpty()) torque = torque.add(sumVecs(torques));
-		if(force.lengthSquared() != 0) addPos(force.scale(1/getMass()));
-		if(torque.lengthSquared() != 0) addRot(torque.scale(1/getMass()));
+		if(!forces.isEmpty()) momentum = momentum.add(sumVecs(forces).scale(1/20d));
+		if(!torques.isEmpty()) amomentum = amomentum.add(sumVecs(torques).scale(1/20d));
+		if(momentum.lengthSquared() != 0) addPos(momentum.scale(1/getMass()).scale(1/20d));
+		if(amomentum.lengthSquared() != 0) addRot(amomentum.scale(1/getMass()).scale(1/20d));
 
 		return getPos().y < 0;
 	}
@@ -144,8 +145,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		nbt.setTag("rot", NbtUtils.serializeVec3d(rot));
 		nbt.setTag("prevPos", NbtUtils.serializeVec3d(prevTickPos));
 		nbt.setTag("prevRot", NbtUtils.serializeVec3d(prevTickRot));
-		nbt.setTag("force", NbtUtils.serializeVec3d(force));
-		nbt.setTag("torque", NbtUtils.serializeVec3d(torque));
+		nbt.setTag("momentum", NbtUtils.serializeVec3d(momentum));
+		nbt.setTag("amomentum", NbtUtils.serializeVec3d(amomentum));
 		return nbt;
 	}
 
@@ -155,8 +156,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		rot = NbtUtils.deserializeVec3d(nbt.getCompoundTag("rot"));
 		prevTickPos = NbtUtils.deserializeVec3d(nbt.getCompoundTag("prevPos"));
 		prevTickRot = NbtUtils.deserializeVec3d(nbt.getCompoundTag("prevRot"));
-		force = NbtUtils.deserializeVec3d(nbt.getCompoundTag("force"));
-		torque = NbtUtils.deserializeVec3d(nbt.getCompoundTag("torque"));
+		momentum = NbtUtils.deserializeVec3d(nbt.getCompoundTag("momentum"));
+		amomentum = NbtUtils.deserializeVec3d(nbt.getCompoundTag("amomentum"));
 	}
 
 	public static class WorldDriven extends SkyobjectFallingPhysics implements LocalBlockAccessDriven {

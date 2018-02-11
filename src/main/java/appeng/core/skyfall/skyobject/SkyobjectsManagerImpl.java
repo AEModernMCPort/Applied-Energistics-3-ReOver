@@ -7,6 +7,7 @@ import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import appeng.core.skyfall.api.skyobject.SkyobjectProvider;
 import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
+import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.net.SkyobjectMessage;
 import com.google.common.base.Predicates;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,7 +56,11 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 
 	@SubscribeEvent
 	public static void applyGravity(SkyobjectPhysics.GatherForcesEvent event){
-		event.addForce(new Vec3d(0, AppEngSkyfall.INSTANCE.config.gravity, 0));
+		if(event.getSkyobject() instanceof Skyobject.PhysicsDriven){
+			SkyfallConfig config = AppEngSkyfall.INSTANCE.config;
+			SkyobjectPhysics physics = ((Skyobject.PhysicsDriven) event.getSkyobject()).getPhysics();
+			event.addForce(new Vec3d(0, config.gravC * (config.overworldMass * physics.getMass())/(config.overworldD0ToCenter * config.overworldD0ToCenter), 0));
+		}
 	}
 
 	protected World world;

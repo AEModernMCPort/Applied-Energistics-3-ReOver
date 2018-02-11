@@ -7,7 +7,6 @@ import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import appeng.core.skyfall.skyobject.SkyobjectImpl;
 import code.elix_x.excore.utils.client.render.world.MultiChunkBlockAccessRenderer;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -16,11 +15,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.animation.ModelBlockAnimation;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Interpolationf;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -33,7 +30,7 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 		@Override
 		protected Chunk createNewChunk(BlockPos chunkPos){
-			return new Chunk(chunkPos, new ChunkStorage<IBlockState, NBTTagInt>(chunkSize, new ChunkStorage.ChunkStorageSerializer.PaletteChunkStorageSerializer(), state -> new NBTTagInt(state == null ? -1 : Block.getStateId(state)), id -> id.getInt() == -1 ? null : Block.getStateById(id.getInt())));
+			return new Chunk(chunkPos, new ChunkStorage<>(chunkSize, new ChunkStorage.ChunkStorageSerializer.PaletteChunkStorageSerializer(), state -> new NBTTagInt(state == null ? -1 : Block.getStateId(state)), id -> id.getInt() == -1 ? null : Block.getStateById(id.getInt())));
 		}
 
 	};
@@ -57,17 +54,17 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 	@Override
 	public void onSpawn(World world){
-		Pair<Vec3d, Vec3d> posForce = calcSpawnPosForce(world);
+		Pair<Vec3d, Vec3d> posForce = calcSpawnPosMomentum(world);
 		physics.setPos(posForce.getLeft());
 		physics.prevTickPos = posForce.getLeft();
-		physics.setForce(posForce.getRight());
+		physics.setMomentum(posForce.getRight());
 		Pair<Vec3d, Vec3d> rotTorque = calcSpawnRotTorque(world);
 		physics.setRot(rotTorque.getLeft());
 		physics.prevTickRot = rotTorque.getLeft();
-		physics.setTorque(rotTorque.getRight());
+		physics.setAngularMomentum(rotTorque.getRight());
 	}
 
-	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(World world){
+	protected Pair<Vec3d, Vec3d> calcSpawnPosMomentum(World world){
 		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
 	}
 

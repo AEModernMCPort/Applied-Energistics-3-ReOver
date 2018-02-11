@@ -14,7 +14,7 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 	}
 
 	@Override
-	protected Pair<Vec3d, Vec3d> calcSpawnPosForce(World world){
+	protected Pair<Vec3d, Vec3d> calcSpawnPosMomentum(World world){
 		Vec3d lading = landingPos(world);
 		double startY = startY(world);
 		Vector2d piTheta = piTheta(world);

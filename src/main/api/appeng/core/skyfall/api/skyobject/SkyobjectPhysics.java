@@ -12,8 +12,8 @@ import java.util.List;
 public interface SkyobjectPhysics extends INBTSerializable<NBTTagCompound> {
 
 	Vec3d getPos();
-
 	Vec3d getRotation();
+	double getMass();
 
 	boolean tick(World world);
 

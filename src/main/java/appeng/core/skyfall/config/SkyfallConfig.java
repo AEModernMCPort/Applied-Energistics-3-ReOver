@@ -32,7 +32,11 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	public Meteorite meteorite = new Meteorite();
 
-	public double gravity = -0.49;
+	//TODO Relativistic space-time tensors?
+	public double gravC = 6.67408E-11;
+	//TODO Separate for different dims
+	public double overworldMass = 5.9722E24;
+	public double overworldD0ToCenter = 6.371E6 - 64;
 
 	public SkyfallConfig(){
 

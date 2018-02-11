@@ -1,6 +1,5 @@
 package appeng.core.skyfall.skyobject.objects;
 
-import appeng.core.lib.world.ExpandleMutableBlockAccess;
 import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.block.CertusInfusedBlock;
 import appeng.core.skyfall.config.SkyfallConfig;
@@ -32,6 +31,7 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 		SkyfallConfig.Meteorite config = AppEngSkyfall.INSTANCE.config.meteorite;
 		Random random = new Random(seed);
 		float radius = config.fractToRadius(random.nextDouble());
+		double maxRadius = radius;
 		AppEngSkyfall.logger.info("Meteorite radius - " + radius);
 		List<IBlockState> allowed = config.allowedBlocks.stream().map(Block.REGISTRY::getObject).map(Block::getDefaultState).collect(Collectors.toList());
 		Collections.shuffle(allowed, random);
@@ -45,6 +45,7 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 
 			Random localRandom = new Random(random.nextLong());
 			float localRadius = RandomUtils.nextFloat(radius * 0.75f, radius * 1.25f);
+			maxRadius = Math.max(maxRadius, localRadius);
 			float radiusX = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
 			float radiusY = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
 			float radiusZ = localRadius - localRadius * 0.25f + RandomUtils.nextFloat(0, localRadius * 0.5f);
@@ -64,6 +65,8 @@ public class MeteoriteProvider extends SkyobjectFallingProvider<Meteorite, Meteo
 
 			AppEngSkyfall.logger.info("Layer took " + (System.currentTimeMillis() - ltime) + " ms");
 		}
+
+		meteorite.radius = maxRadius;
 
 		//FIXME So accodring to repeated profiling i executed, the infusion may take 10 times (!!!) as much time as generation!
 		long itime = System.currentTimeMillis();

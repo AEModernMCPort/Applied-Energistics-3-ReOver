@@ -55,6 +55,8 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 
 	@Override
 	public void onSpawn(World world){
+		physics.onWorldChanged();
+
 		Pair<Vec3d, Vec3d> posForce = calcSpawnPosMomentum(world);
 		physics.setPos(posForce.getLeft());
 		physics.prevTickPos = posForce.getLeft();

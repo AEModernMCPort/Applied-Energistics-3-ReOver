@@ -11,6 +11,8 @@ import net.minecraft.block.state.IBlockState;
  * @param <B> Block
  * @author Elix_x
  */
+//FOR DEFINITIVE* REMOVAL IN MC 1.13
+@Deprecated
 public interface IBlockSubDefinition<S extends IBlockState, B extends Block> extends ISubDefinition<S, B, IBlockSubDefinition<S, B>> {
 
 }

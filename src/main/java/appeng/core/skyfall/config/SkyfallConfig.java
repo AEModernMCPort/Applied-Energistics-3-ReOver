@@ -44,7 +44,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	@Override
 	public void compile(){
-
+		meteorite.compile();
 	}
 
 	@Override

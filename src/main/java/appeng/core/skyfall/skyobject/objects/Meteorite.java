@@ -10,9 +10,11 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector2d;
+import org.joml.Vector3d;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
@@ -23,11 +25,28 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 		super(provider);
 		physics = new SkyobjectFallingPhysics.WorldDriven(this, this.world, this.world.getBlockAccessBoundingBox()){
 
+			private Stream<BlockPos> colldingBlocks(World world, Vector3d pos, double radius){
+				return StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(pos.x - radius, pos.y - radius, pos.z - radius), new BlockPos(pos.x + radius, pos.y + radius, pos.z + radius)).spliterator(), false).filter(blockPos -> blockPos.distanceSqToCenter(this.pos.x, this.pos.y, this.pos.z) <= radius * radius).filter(canBlockBeAffected(world));
+			}
+
 			@Override
 			protected Map<BlockPos, IBlockState> getCollidingBlocks(World world){
 				Map<BlockPos, IBlockState> affectedBlocks = new HashMap<>();
-				StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(pos.x - radius, pos.y - radius, pos.z - radius), new BlockPos(pos.x + radius, pos.y + radius, pos.z + radius)).spliterator(), false).filter(pos -> pos.distanceSqToCenter(this.pos.x, this.pos.y, this.pos.z) <= radius * radius).forEach(pos -> affectedBlocks.put(pos, world.getBlockState(pos)));
+				colldingBlocks(world, new Vector3d(pos.x, pos.y, pos.z), radius*1.5).forEach(pos -> affectedBlocks.put(pos, world.getBlockState(pos)));
 				return affectedBlocks;
+			}
+
+			@Override
+			protected void affectBlocks(World world, Map<BlockPos, IBlockState> affectedBlocks, Vector3d totalReaction){
+				super.affectBlocks(world, affectedBlocks, totalReaction);
+
+				Vector3d oDir = new Vector3d(momentum.x, momentum.y, momentum.z).mul(-1).normalize();
+				Stream<BlockPos> affected = Stream.empty();
+				for(double rf = 2; rf < 3; rf += 0.25) affected = Stream.concat(affected, colldingBlocks(world, new Vector3d(pos.x, pos.y, pos.z).add(new Vector3d(oDir).mul((rf+0.5) * radius)), rf * radius));
+
+				Map<BlockPos, IBlockState> reflectedBlocks = new HashMap<>();
+				affected.forEach(pos -> reflectedBlocks.put(pos, world.getBlockState(pos)));
+				super.affectBlocks(world, reflectedBlocks, totalReaction);
 			}
 
 			@Override
@@ -63,7 +82,7 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 	}
 
 	protected double startY(World world){
-		return 300;
+		return 2500;
 	}
 
 	protected Vector2d piTheta(World world){
@@ -71,7 +90,7 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 	}
 
 	protected double entrySpeed(World world){
-		return 100;
+		return 1000;
 	}
 
 }

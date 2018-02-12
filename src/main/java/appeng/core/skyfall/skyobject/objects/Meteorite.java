@@ -7,8 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
@@ -65,15 +63,14 @@ public class Meteorite extends SkyobjectFalling<Meteorite, MeteoriteProvider> {
 	}
 
 	@Override
-	protected Pair<Vec3d, Vec3d> calcSpawnPosMomentum(World world){
+	protected Vec3d[] initialConditions(World world){
 		Vec3d lading = landingPos(world);
 		double startY = startY(world);
 		Vector2d piTheta = piTheta(world);
 
 		Vec3d pos = triangulateStartPos(lading, piTheta.x, piTheta.y, startY);
 		Vec3d force = triangulateStartingForce(lading, piTheta.x, piTheta.y, startY, physics.getMass() * entrySpeed(world));
-
-		return new ImmutablePair<>(pos, force);
+		return new Vec3d[]{pos, force, Vec3d.ZERO, Vec3d.ZERO};
 	}
 
 	protected Vec3d landingPos(World world){

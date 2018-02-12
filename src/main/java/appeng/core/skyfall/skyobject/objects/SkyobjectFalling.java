@@ -17,8 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -57,22 +55,18 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 	public void onSpawn(World world){
 		physics.onWorldChanged();
 
-		Pair<Vec3d, Vec3d> posForce = calcSpawnPosMomentum(world);
-		physics.setPos(posForce.getLeft());
-		physics.prevTickPos = posForce.getLeft();
-		physics.setMomentum(posForce.getRight());
-		Pair<Vec3d, Vec3d> rotTorque = calcSpawnRotTorque(world);
-		physics.setRot(rotTorque.getLeft());
-		physics.prevTickRot = rotTorque.getLeft();
-		physics.setAngularMomentum(rotTorque.getRight());
+		Vec3d[] initialConditions = initialConditions(world);
+		physics.setPos(initialConditions[0]);
+		physics.prevTickPos = initialConditions[0];
+		physics.setMomentum(initialConditions[1]);
+		physics.setRot(initialConditions[2]);
+		physics.prevTickRot = initialConditions[2];
+		physics.setAngularMomentum(initialConditions[3]);
 	}
 
-	protected Pair<Vec3d, Vec3d> calcSpawnPosMomentum(World world){
-		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
-	}
-
-	protected Pair<Vec3d, Vec3d> calcSpawnRotTorque(World world){
-		return new ImmutablePair<>(Vec3d.ZERO, Vec3d.ZERO);
+	protected Vec3d[] initialConditions(World world){
+		//					position	momentum	rotation	a momentum
+		return new Vec3d[]{Vec3d.ZERO, Vec3d.ZERO, Vec3d.ZERO, Vec3d.ZERO};
 	}
 
 	protected Vec3d triangulateTargetToStart(Vec3d landingTarget, double phi, double theta, double startY){

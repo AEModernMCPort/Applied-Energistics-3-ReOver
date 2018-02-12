@@ -267,8 +267,8 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		double rPb = totalReaction.length() / affectedBlocks.size();
 		affectedBlocks.forEach((pos, state) -> {
 			double reactionFactor = rPb / (blockMaxReactionForce(world, pos, state) * (0.5 + world.rand.nextDouble()));
-			if(reactionFactor >= 1/9d) world.setBlockToAir(pos);
-			else if(reactionFactor >= 1/16d){
+			if(reactionFactor >= 1/8d) world.setBlockToAir(pos);
+			else if(reactionFactor >= 1/10d){
 				EntityFallingBlock entity = new EntityFallingBlock(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, state);
 				entity.fallTime = 5;
 				TileEntity tile = world.getTileEntity(pos);

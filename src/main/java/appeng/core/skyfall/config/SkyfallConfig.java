@@ -15,10 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -176,12 +173,9 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 	public static class Meteorite {
 
-		public float minRadius = 5;
-		public float maxRadius = 25;
+		public double minRadius = 5;
+		public double maxRadius = 25;
 		public double distributionExponent = 2.5;
-		//Caching these values to maybe improve performance
-		public transient float radiusDelta = maxRadius - minRadius;
-		public transient double eToDisExp = Math.exp(distributionExponent);
 
 		public List<ResourceLocation> allowedBlocks = Lists.newArrayList(new ResourceLocation(AppEng.MODID,"skystone"), new ResourceLocation("minecraft:stone"), new ResourceLocation("minecraft:cobblestone"), new ResourceLocation("minecraft:ice"), new ResourceLocation("minecraft:obsidian"));
 
@@ -192,20 +186,17 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 		}
 
-		public float fractToRadius(double fract){
-			return Math.max(minRadius, Math.min(Math.abs((float) (minRadius + (Math.exp(fract*distributionExponent)-1) * radiusDelta/(eToDisExp-1))), maxRadius));
+		public double fractToRadius(double fract){
+			return Math.max(minRadius, Math.min(Math.abs(minRadius + (maxRadius - minRadius) * (Math.exp(distributionExponent*fract)-1)/(Math.exp(distributionExponent)-1)), maxRadius));
 		}
 
 		private void compile(){
-			float minRadius = Math.min(this.minRadius, this.maxRadius);
-			float maxRadius = Math.max(this.minRadius, this.maxRadius);
+			double minRadius = Math.min(this.minRadius, this.maxRadius);
+			double maxRadius = Math.max(this.minRadius, this.maxRadius);
 			this.minRadius = Math.max(minRadius, 1);
 			this.maxRadius = Math.min(maxRadius, 25);
 
-			distributionExponent = Math.max(distributionExponent, 0.001);
-
-			radiusDelta = this.minRadius-this.maxRadius;
-			eToDisExp = Math.exp(distributionExponent);
+			if(distributionExponent == 0) distributionExponent = 2.5;
 
 			double creaseAngleMin = Math.min(this.creaseAngleMin, this.creaseAngleMax);
 			double creaseAngleMax = Math.max(this.creaseAngleMin, this.creaseAngleMax);
@@ -229,25 +220,13 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public boolean equals(Object o){
 			if(this == o) return true;
 			if(!(o instanceof Meteorite)) return false;
-
 			Meteorite meteorite = (Meteorite) o;
-
-			if(Float.compare(meteorite.minRadius, minRadius) != 0) return false;
-			if(Float.compare(meteorite.maxRadius, maxRadius) != 0) return false;
-			if(Double.compare(meteorite.distributionExponent, distributionExponent) != 0) return false;
-			return allowedBlocks.equals(meteorite.allowedBlocks);
+			return Double.compare(meteorite.minRadius, minRadius) == 0 && Double.compare(meteorite.maxRadius, maxRadius) == 0 && Double.compare(meteorite.distributionExponent, distributionExponent) == 0 && Double.compare(meteorite.creaseAngleMin, creaseAngleMin) == 0 && Double.compare(meteorite.creaseAngleMax, creaseAngleMax) == 0 && Objects.equals(allowedBlocks, meteorite.allowedBlocks);
 		}
 
 		@Override
 		public int hashCode(){
-			int result;
-			long temp;
-			result = (minRadius != +0.0f ? Float.floatToIntBits(minRadius) : 0);
-			result = 31 * result + (maxRadius != +0.0f ? Float.floatToIntBits(maxRadius) : 0);
-			temp = Double.doubleToLongBits(distributionExponent);
-			result = 31 * result + (int) (temp ^ (temp >>> 32));
-			result = 31 * result + allowedBlocks.hashCode();
-			return result;
+			return Objects.hash(minRadius, maxRadius, distributionExponent, allowedBlocks, creaseAngleMin, creaseAngleMax);
 		}
 
 	}

@@ -25,17 +25,17 @@ public interface SkyobjectPhysics extends INBTSerializable<NBTTagCompound> {
 
 	class GatherForcesEvent extends Event {
 
-		private final Skyobject skyobject;
+		private final Skyobject.PhysicsDriven skyobject;
 		private final List<Vec3d> forces;
 		private final List<Vec3d> torques;
 
-		public GatherForcesEvent(Skyobject skyobject, List<Vec3d> forces, List<Vec3d> torques){
+		public GatherForcesEvent(Skyobject.PhysicsDriven skyobject, List<Vec3d> forces, List<Vec3d> torques){
 			this.skyobject = skyobject;
 			this.forces = forces;
 			this.torques = torques;
 		}
 
-		public <S extends Skyobject<S, P>, P extends SkyobjectProvider<S, P>> S getSkyobject(){
+		public <S extends Skyobject.PhysicsDriven<S, P>, P extends SkyobjectProvider<S, P>> S getSkyobject(){
 			return (S) skyobject;
 		}
 

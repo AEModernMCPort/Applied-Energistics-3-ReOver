@@ -31,9 +31,9 @@ import java.util.stream.StreamSupport;
 
 public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
-	protected final Skyobject skyobject;
+	protected final Skyobject.PhysicsDriven skyobject;
 
-	public SkyobjectFallingPhysics(Skyobject skyobject){
+	public SkyobjectFallingPhysics(Skyobject.PhysicsDriven skyobject){
 		this.skyobject = skyobject;
 	}
 
@@ -359,7 +359,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		protected final MutableBlockAccess localBlockAccess;
 		protected AxisAlignedBB blockAccessBox;
 
-		public WorldDriven(Skyobject skyobject, MutableBlockAccess localBlockAccess, AxisAlignedBB blockAccessBox){
+		public WorldDriven(Skyobject.PhysicsDriven skyobject, MutableBlockAccess localBlockAccess, AxisAlignedBB blockAccessBox){
 			super(skyobject);
 			this.localBlockAccess = localBlockAccess;
 			this.blockAccessBox = blockAccessBox;

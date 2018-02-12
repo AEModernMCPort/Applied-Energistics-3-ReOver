@@ -59,7 +59,7 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 		if(event.getSkyobject() instanceof Skyobject.PhysicsDriven){
 			SkyfallConfig config = AppEngSkyfall.INSTANCE.config;
 			SkyobjectPhysics physics = ((Skyobject.PhysicsDriven) event.getSkyobject()).getPhysics();
-			event.addForce(new Vec3d(0, config.gravC * (config.overworldMass * physics.getMass())/Math.pow(config.overworldD0ToCenter + physics.getPos().y, 2), 0));
+			event.addForce(new Vec3d(0, -config.gravC * (config.overworldMass * physics.getMass())/Math.pow(config.overworldD0ToCenter + physics.getPos().y, 2), 0));
 		}
 	}
 

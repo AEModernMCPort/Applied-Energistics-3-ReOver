@@ -3,6 +3,7 @@ package appeng.core.skyfall.skyobject.objects;
 import appeng.core.lib.math.OrientedBox;
 import appeng.core.lib.util.NbtUtils;
 import appeng.core.lib.world.ExpandleMutableBlockAccess;
+import appeng.core.skyfall.AppEngSkyfall;
 import appeng.core.skyfall.api.skyobject.Skyobject;
 import appeng.core.skyfall.api.skyobject.SkyobjectPhysics;
 import code.elix_x.excore.utils.world.MutableBlockAccess;
@@ -23,6 +24,7 @@ import org.joml.Quaterniond;
 import org.joml.Vector3d;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -63,7 +65,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		prevTickRot = rot;
 
 		int steps;
-		if(!world.isRemote) steps = 10;
+		if(!world.isRemote) steps = 25;
 		else steps = 10;
 		double t = 1 / (20d * steps);
 		for(int i = 0; i < steps; i++){
@@ -216,7 +218,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	protected Vector3d handleCollision(World world, double t){
 		AxisAlignedBB gaabb = localToGlobal(getLocalBoundingBox()).getBoundingBoxMC();
 		if(gaabb.minY < 255){
-			if(StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(gaabb.minX, gaabb.minY, gaabb.minZ), new BlockPos(gaabb.maxX, gaabb.maxY, gaabb.maxZ)).spliterator(), true).map(world::isAirBlock).anyMatch(b -> b == false)){
+			if(StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(gaabb.minX, gaabb.minY, gaabb.minZ), new BlockPos(gaabb.maxX, gaabb.maxY, gaabb.maxZ)).spliterator(), false).map(world::isAirBlock).anyMatch(b -> b == false)){
 				long timeStart = System.currentTimeMillis();
 
 				Map<BlockPos, IBlockState> affectedBlocks = getCollidingBlocks(world);
@@ -225,28 +227,16 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 				if(totalReaction.lengthSquared() > 0){
 					Vector3d maxForce = new Vector3d(momentum.x, momentum.y, momentum.z).div(t);
 					double mFPL = Math.abs(maxForce.length() * totalReaction.angleCos(maxForce));
-					Vector3d tr = totalReaction.mul(Math.min(mFPL, totalReaction.length()) / totalReaction.length(), new Vector3d());
-					momentum = momentum.add(new Vec3d(tr.x, tr.y, tr.z).scale(t));
-					double rPb = tr.length() / affectedBlocks.size();
-					affectedBlocks.forEach((pos, state) -> {
-						double reactionFactor = rPb / (blockMaxReactionForce(world, pos, state) * (0.5 + world.rand.nextDouble()));
-						if(reactionFactor >= 1/2) world.setBlockToAir(pos);
-						else if(reactionFactor >= 1/16){
-							EntityFallingBlock entity = new EntityFallingBlock(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, state);
-							TileEntity tile = world.getTileEntity(pos);
-							if(tile != null) entity.tileEntityData = tile.serializeNBT();
-							Vector3d speed = dirPosToCenter(pos).sub(new Vector3d(momentum.x, momentum.y, momentum.z).normalize()).div(reactionFactor).div(blockMass(state));
-							entity.motionX = speed.x;
-							entity.motionY = speed.y;
-							entity.motionZ = speed.z;
-							world.setBlockToAir(pos);
-							world.spawnEntity(entity);
-						}
-					});
+					totalReaction.mul(Math.min(mFPL, totalReaction.length()) / totalReaction.length());
+					double prevM = momentum.lengthVector();
+					double prevMY = momentum.y;
+					if(prevMY > 0) prevMY = -prevMY;
+					momentum = momentum.add(new Vec3d(totalReaction.x, totalReaction.y, totalReaction.z).scale(t));
+					affectBlocks(world, affectedBlocks, totalReaction);
 
 					long dT = System.currentTimeMillis() - timeStart;
 //					AppEngSkyfall.logger.info("Collision took " + dT + "ms");
-					return tr;
+					return totalReaction;
 				}
 			}
 		}
@@ -258,7 +248,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 		AxisAlignedBB gaabb = localToGlobal(getLocalBoundingBox()).getBoundingBoxMC();
 		Set<OrientedBox> skyobjectBoxes = getLocalSurfaceBoundingBoxes().map(OrientedBox::new).map(this::localToGlobal).collect(Collectors.toSet());
-		StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(gaabb.minX, gaabb.minY, gaabb.minZ), new BlockPos(gaabb.maxX, gaabb.maxY, gaabb.maxZ)).spliterator(), false).filter(pos -> !(world.isAirBlock(pos) || world.getBlockState(pos).getMaterial().isLiquid())).forEach(pos -> {
+		StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(gaabb.minX, gaabb.minY, gaabb.minZ), new BlockPos(gaabb.maxX, gaabb.maxY, gaabb.maxZ)).spliterator(), false).filter(canBlockBeAffected(world)).forEach(pos -> {
 			OrientedBox posBox = new OrientedBox(new AxisAlignedBB(pos));
 			for(OrientedBox sBox : skyobjectBoxes) if(posBox.intersects(sBox)){
 				affectedBlocks.put(pos, world.getBlockState(pos));
@@ -267,6 +257,32 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		});
 
 		return affectedBlocks;
+	}
+
+	protected Predicate<BlockPos> canBlockBeAffected(World world){
+		return pos -> !(world.isAirBlock(pos) || world.getBlockState(pos).getMaterial().isLiquid());
+	}
+
+	protected void affectBlocks(World world, Map<BlockPos, IBlockState> affectedBlocks, Vector3d totalReaction){
+		double rPb = totalReaction.length() / affectedBlocks.size();
+		affectedBlocks.forEach((pos, state) -> {
+			double reactionFactor = rPb / (blockMaxReactionForce(world, pos, state) * (0.5 + world.rand.nextDouble()));
+			if(reactionFactor >= 1/9d) world.setBlockToAir(pos);
+			else if(reactionFactor >= 1/16d){
+				EntityFallingBlock entity = new EntityFallingBlock(world, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, state);
+				entity.fallTime = 5;
+				TileEntity tile = world.getTileEntity(pos);
+				if(tile != null) entity.tileEntityData = tile.serializeNBT();
+				Vector3d sDir = dirPosToCenter(pos).cross(new Vector3d(momentum.x, momentum.y, momentum.z)).normalize();
+				if(sDir.y < 0) sDir.mul(-1);
+				Vector3d speed = sDir.mul(5d);
+				entity.motionX = speed.x;
+				entity.motionY = speed.y;
+				entity.motionZ = speed.z;
+				world.setBlockToAir(pos);
+				world.spawnEntity(entity);
+			}
+		});
 	}
 
 	protected Vector3d dirPosToCenter(BlockPos pos){
@@ -286,7 +302,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	 * @return maximum reaction force
 	 */
 	protected double blockMaxReactionForce(World world, BlockPos pos, IBlockState state){
-		return state.getBlockHardness(world, pos) * Math.pow(state.getBlock().getExplosionResistance(null), 2) * 7.5E3;
+		return Math.pow(state.getBlockHardness(world, pos), 0.75) * Math.pow(state.getBlock().getExplosionResistance(null), 2) * 7.5E4;
 	}
 
 	protected double blockMass(IBlockState block){
@@ -300,6 +316,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 	protected boolean stop(World world){
 		if(getPos().y == Double.NaN || getPos().y < 0) return true;
 		if(momentum.scale(1/getMass()).lengthSquared() <= 100){
+			AppEngSkyfall.logger.info("Meteorite landed at " + pos);
 			transpose(world);
 			return true;
 		}

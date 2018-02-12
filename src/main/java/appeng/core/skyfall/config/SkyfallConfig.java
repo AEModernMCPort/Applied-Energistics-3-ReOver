@@ -178,7 +178,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 
 		public float minRadius = 5;
 		public float maxRadius = 25;
-		public double distributionExponent = 1.25;
+		public double distributionExponent = 2.5;
 		//Caching these values to maybe improve performance
 		public transient float radiusDelta = maxRadius - minRadius;
 		public transient double eToDisExp = Math.exp(distributionExponent);
@@ -186,14 +186,14 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 		public List<ResourceLocation> allowedBlocks = Lists.newArrayList(new ResourceLocation(AppEng.MODID,"skystone"), new ResourceLocation("minecraft:stone"), new ResourceLocation("minecraft:cobblestone"), new ResourceLocation("minecraft:ice"), new ResourceLocation("minecraft:obsidian"));
 
 		public double creaseAngleMin = 10;
-		public double creaseAngleMax = 90;
+		public double creaseAngleMax = 87;
 
 		public Meteorite(){
 
 		}
 
 		public float fractToRadius(double fract){
-			return (float) (minRadius + (Math.exp(fract*distributionExponent)-1) * radiusDelta/(eToDisExp-1));
+			return Math.max(minRadius, Math.min(Math.abs((float) (minRadius + (Math.exp(fract*distributionExponent)-1) * radiusDelta/(eToDisExp-1))), maxRadius));
 		}
 
 		private void compile(){
@@ -210,7 +210,7 @@ public class SkyfallConfig implements ConfigCompilable, InitializationComponent.
 			double creaseAngleMin = Math.min(this.creaseAngleMin, this.creaseAngleMax);
 			double creaseAngleMax = Math.max(this.creaseAngleMin, this.creaseAngleMax);
 			this.creaseAngleMin = Math.max(creaseAngleMin, 5);
-			this.creaseAngleMax = Math.min(creaseAngleMax, 90);
+			this.creaseAngleMax = Math.min(creaseAngleMax, 87);
 		}
 
 		public void init(){

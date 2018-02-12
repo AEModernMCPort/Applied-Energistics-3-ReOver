@@ -10,6 +10,8 @@ import appeng.core.skyfall.api.skyobject.SkyobjectsManager;
 import appeng.core.skyfall.config.SkyfallConfig;
 import appeng.core.skyfall.net.SkyobjectMessage;
 import com.google.common.base.Predicates;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,12 +23,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,6 +79,9 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 			this.spawner = AppEngSkyfall.INSTANCE.config.skyobjectFallingSupplierForWorld(world);
 		}
 
+		clientsAwaitingSync.values().removeIf(ref -> ref.get() == null);
+		skyobjectsAwaitingSync.stream().filter(uuid -> !clientsAwaitingSync.containsKey(uuid)).forEach(uuid -> ((Skyobject.Syncable) skyobjects.get(uuid)).allClientsReceived());
+		skyobjectsAwaitingSync.removeIf(uuid -> !clientsAwaitingSync.containsKey(uuid));
 		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
 
 		if(!world.isRemote){
@@ -92,7 +99,13 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 	protected void addSkyobject(UUID uuid, Skyobject skyobject){
 		skyobjects.put(uuid, skyobject);
 		skyobject.onSpawn(world);
-		if(!world.isRemote) sendAddOrChange(uuid, skyobject, true, Optional.empty());
+		if(!world.isRemote){
+			sendAddOrChange(uuid, skyobject, true, Optional.empty());
+			if(skyobject instanceof Skyobject.Syncable){
+				skyobjectsAwaitingSync.add(uuid);
+				clientsAwaitingSync.putAll(uuid, FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayers().stream().map(WeakReference::new)::iterator);
+			}
+		}
 	}
 
 	protected void removeSkyobject(UUID uuid){
@@ -146,6 +159,16 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 		else AppEngSkyfall.INSTANCE.net.sendToDimension(message, world.provider.getDimension());
 	}
 
+	protected List<UUID> skyobjectsAwaitingSync = new ArrayList<>();
+	protected Multimap<UUID, WeakReference<EntityPlayerMP>> clientsAwaitingSync = HashMultimap.create();
+
+	@Override
+	public void receiveHash(EntityPlayerMP client, UUID uuid, long hash){
+		Optional.ofNullable(skyobjects.get(uuid)).map(skyobject -> skyobject instanceof Skyobject.Syncable ? (Skyobject.Syncable) skyobject : null).ifPresent(skyobject -> {
+			if(skyobject.hash() == hash) clientsAwaitingSync.get(uuid).removeIf(ref -> ref.get() == client);
+		});
+	}
+
 	@Override
 	public void receiveAddOrChange(UUID uuid, ResourceLocation id, NBTTagCompound nbt){
 		Skyobject existing = skyobjects.get(uuid);
@@ -157,7 +180,10 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 			}
 			skyobjects.put(uuid, existing);
 		}
-		if(existing instanceof Skyobject.Syncable) ((Skyobject.Syncable) existing).readNextSyncCompound(nbt);
+		if(existing instanceof Skyobject.Syncable){
+			((Skyobject.Syncable) existing).readNextSyncCompound(nbt);
+			AppEngSkyfall.INSTANCE.net.sendToServer(new SkyobjectMessage.HashResponse(uuid, ((Skyobject.Syncable) existing).hash()));
+		}
 	}
 
 	@Override

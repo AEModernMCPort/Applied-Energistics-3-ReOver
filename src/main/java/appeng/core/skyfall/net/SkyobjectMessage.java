@@ -73,4 +73,30 @@ public abstract class SkyobjectMessage implements IMessage {
 
 	}
 
+	public static class HashResponse extends SkyobjectMessage {
+
+		public long hash;
+
+		public HashResponse(){
+		}
+
+		public HashResponse(UUID uuid, long hash){
+			super(uuid);
+			this.hash = hash;
+		}
+
+		@Override
+		public void toBytes(ByteBuf buf){
+			super.toBytes(buf);
+			buf.writeLong(hash);
+		}
+
+		@Override
+		public void fromBytes(ByteBuf buf){
+			super.fromBytes(buf);
+			hash = buf.readLong();
+		}
+
+	}
+
 }

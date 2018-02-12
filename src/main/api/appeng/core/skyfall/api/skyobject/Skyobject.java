@@ -31,6 +31,19 @@ public interface Skyobject<S extends Skyobject<S, P>, P extends SkyobjectProvide
 
 		void readNextSyncCompound(NBTTagCompound nbt);
 
+		/**
+		 * Quick hash of this sky object to inform the server whether or not the sync with this client is complete
+		 * @return hash of this sky object
+		 */
+		long hash();
+
+		/**
+		 * Called, after spawning this object, once it has been successfully synced with all clients
+		 */
+		default void allClientsReceived(){
+
+		}
+
 	}
 
 	interface PhysicsDriven<S extends Skyobject.PhysicsDriven<S, P>, P extends SkyobjectProvider<S, P>> extends Skyobject<S, P> {

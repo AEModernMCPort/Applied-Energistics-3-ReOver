@@ -39,9 +39,11 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		super(provider);
 	}
 
+	protected boolean tick = false;
+
 	@Override
 	public void tick(World world){
-		dead = physics.tick(world);
+		if(tick) dead = physics.tick(world);
 	}
 
 	@Override
@@ -62,6 +64,8 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		physics.setRot(initialConditions[2]);
 		physics.prevTickRot = initialConditions[2];
 		physics.setAngularMomentum(initialConditions[3]);
+
+		recomputeHash();
 	}
 
 	protected Vec3d[] initialConditions(World world){
@@ -107,6 +111,10 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 		GlStateManager.popMatrix();
 	}
 
+	/*
+	 * IO
+	 */
+
 	@Override
 	public boolean isDirty(){
 		return physics.isDirty() || world.isDirty();
@@ -143,5 +151,23 @@ public abstract class SkyobjectFalling<S extends SkyobjectFalling<S, P>, P exten
 				world.getOrCreateChunk(NBTUtil.getPosFromTag(nbt.getCompoundTag("pos"))).deserializeNBT(nbt.getCompoundTag("data"));
 				break;
 		}
+		recomputeHash();
+	}
+
+	protected long hash = 0;
+
+	protected void recomputeHash(){
+		//Because the world is synced chunk by chunk, there is no need to hash the contents of each chunk to make sure that it has indeed been synced
+		hash = (((long) physics.serializeNBT().hashCode()) << 32) | world.getChunksCount();
+	}
+
+	@Override
+	public long hash(){
+		return hash;
+	}
+
+	@Override
+	public void allClientsReceived(){
+		tick = true;
 	}
 }

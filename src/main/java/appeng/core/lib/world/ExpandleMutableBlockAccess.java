@@ -90,6 +90,10 @@ public class ExpandleMutableBlockAccess implements MutableBlockAccess, INBTSeria
 		return chunks.values().stream();
 	}
 
+	public int getChunksCount(){
+		return chunks.size();
+	}
+
 	/*
 	 * Util
 	 */

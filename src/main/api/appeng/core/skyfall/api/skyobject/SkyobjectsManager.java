@@ -25,6 +25,8 @@ public interface SkyobjectsManager extends INBTSerializable<NBTTagCompound> {
 
 		void sendAll(EntityPlayerMP target);
 
+		void receiveHash(EntityPlayerMP client, UUID uuid, long hash);
+
 		void receiveAddOrChange(UUID uuid, ResourceLocation id, NBTTagCompound nbt);
 
 		void receiveRemove(UUID uuid);

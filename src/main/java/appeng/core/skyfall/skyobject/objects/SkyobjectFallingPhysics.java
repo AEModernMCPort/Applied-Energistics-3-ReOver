@@ -64,24 +64,24 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		prevTickPos = pos;
 		prevTickRot = rot;
 
-		int steps;
-		if(!world.isRemote) steps = 25;
-		else steps = 10;
-		double t = 1 / (20d * steps);
-		for(int i = 0; i < steps; i++){
-			List<Vec3d> forces = new ArrayList<>();
-			List<Vec3d> torques = new ArrayList<>();
-			MinecraftForge.EVENT_BUS.post(new GatherForcesEvent(skyobject, forces, torques));
-			Vec3d force = sumVecs(forces);
-			momentum = momentum.add(sumVecs(forces).scale(t));
-			amomentum = amomentum.add(sumVecs(torques).scale(t));
-			if(!world.isRemote) handleCollision(world, t);
-			addPos(momentum.scale(1/getMass()).scale(t));
-			addRot(amomentum.scale(1/getMass()).scale(t));
-			if(stop(world)) return true;
-		}
+		if(!world.isRemote){
+			int steps = 25;
+			double t = 1 / (20d * steps);
+			for(int i = 0; i < steps; i++){
+				List<Vec3d> forces = new ArrayList<>();
+				List<Vec3d> torques = new ArrayList<>();
+				MinecraftForge.EVENT_BUS.post(new GatherForcesEvent(skyobject, forces, torques));
+				Vec3d force = sumVecs(forces);
+				momentum = momentum.add(sumVecs(forces).scale(t));
+				amomentum = amomentum.add(sumVecs(torques).scale(t));
+				handleCollision(world, t);
+				addPos(momentum.scale(1 / getMass()).scale(t));
+				addRot(amomentum.scale(1 / getMass()).scale(t));
+				if(stop(world)) return true;
+			}
 
-		if(!world.isRemote) preLoadChunks(world);
+			preLoadChunks(world);
+		}
 		return false;
 	}
 

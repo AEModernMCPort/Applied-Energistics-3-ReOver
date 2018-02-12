@@ -116,6 +116,7 @@ public class AppEngSkyfall implements ISkyfall {
 
 		net.registerMessage3(message -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.receiveAddOrChange(message.uuid, message.id, message.nbt)), SkyobjectMessage.AddOrChange.class, Side.CLIENT);
 		net.registerMessage3(message -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.receiveRemove(message.uuid)), SkyobjectMessage.Remove.class, Side.CLIENT);
+		net.registerMessage1(messageContext -> () -> Optional.ofNullable(messageContext.getRight().getServerHandler().player.world.getCapability(skyobjectsManagerCapability, null)).map(manager -> manager instanceof SkyobjectsManager.WithDefaultSyncSupport ? (SkyobjectsManager.WithDefaultSyncSupport) manager : null).ifPresent(manager -> manager.receiveHash(messageContext.getRight().getServerHandler().player, messageContext.getLeft().uuid, messageContext.getLeft().hash)), SkyobjectMessage.HashResponse.class, Side.SERVER);
 
 		initHandler.preInit();
 		proxy.preInit(event);

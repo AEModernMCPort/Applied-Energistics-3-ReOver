@@ -65,7 +65,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 		prevTickRot = rot;
 
 		if(!world.isRemote){
-			int steps = 25;
+			int steps = 5;
 			double t = 1 / (20d * steps);
 			for(int i = 0; i < steps; i++){
 				List<Vec3d> forces = new ArrayList<>();

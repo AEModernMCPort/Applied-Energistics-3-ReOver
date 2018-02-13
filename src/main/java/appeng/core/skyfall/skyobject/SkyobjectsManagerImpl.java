@@ -79,11 +79,17 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 			this.spawner = AppEngSkyfall.INSTANCE.config.skyobjectFallingSupplierForWorld(world);
 		}
 
+		world.profiler.startSection("Skyobjects");
+
+		world.profiler.startSection("Client sync status check");
 		clientsAwaitingSync.values().removeIf(ref -> ref.get() == null);
 		skyobjectsAwaitingSync.stream().filter(uuid -> !clientsAwaitingSync.containsKey(uuid)).forEach(uuid -> ((Skyobject.Syncable) skyobjects.get(uuid)).allClientsReceived());
 		skyobjectsAwaitingSync.removeIf(uuid -> !clientsAwaitingSync.containsKey(uuid));
+		world.profiler.endStartSection("Tick");
 		skyobjects.forEach((uuid, skyobject) -> skyobject.tick(world));
+		world.profiler.endSection();
 
+		world.profiler.startSection("Sync & Spawn");
 		if(!world.isRemote){
 			double chance = spawner.get();
 			if(world.rand.nextDouble() < chance) world.getMinecraftServer().sendMessage(new TextComponentString("Natural spawn now! - " + chance));
@@ -94,6 +100,9 @@ public class SkyobjectsManagerImpl implements SkyobjectsManager, SkyobjectsManag
 
 			while(toSpawn.peek() != null) addSkyobject(UUID.randomUUID(), toSpawn.poll());
 		}
+		world.profiler.endSection();
+
+		world.profiler.endSection();
 	}
 
 	protected void addSkyobject(UUID uuid, Skyobject skyobject){

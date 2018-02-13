@@ -217,27 +217,26 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 
 	protected Vector3d handleCollision(World world, double t){
 		AxisAlignedBB gaabb = localToGlobal(getLocalBoundingBox()).getBoundingBoxMC();
-		if(gaabb.minY < 255){
-			if(StreamSupport.stream(BlockPos.getAllInBox(new BlockPos(gaabb.minX, gaabb.minY, gaabb.minZ), new BlockPos(gaabb.maxX, gaabb.maxY, gaabb.maxZ)).spliterator(), false).map(world::isAirBlock).anyMatch(b -> b == false)){
-				long timeStart = System.currentTimeMillis();
+		if(gaabb.minY < 255){ //FIXME Cubic chunks is a thing
+			//FIXME A cheap, but precise enough approximation to avoid calculation of collision, when there is nothing to collide
+			long timeStart = System.currentTimeMillis();
 
-				Map<BlockPos, IBlockState> affectedBlocks = getCollidingBlocks(world);
-				Vector3d totalReaction = new Vector3d(0, 0, 0);
-				affectedBlocks.forEach((pos, state) -> totalReaction.add(dirPosToCenter(pos).mul(blockMaxReactionForce(world, pos, state))));
-				if(totalReaction.lengthSquared() > 0){
-					Vector3d maxForce = new Vector3d(momentum.x, momentum.y, momentum.z).div(t);
-					double mFPL = Math.abs(maxForce.length() * totalReaction.angleCos(maxForce));
-					totalReaction.mul(Math.min(mFPL, totalReaction.length()) / totalReaction.length());
-					double prevM = momentum.lengthVector();
-					double prevMY = momentum.y;
-					if(prevMY > 0) prevMY = -prevMY;
-					momentum = momentum.add(new Vec3d(totalReaction.x, totalReaction.y, totalReaction.z).scale(t));
-					affectBlocks(world, affectedBlocks, totalReaction);
+			Map<BlockPos, IBlockState> affectedBlocks = getCollidingBlocks(world);
+			Vector3d totalReaction = new Vector3d(0, 0, 0);
+			affectedBlocks.forEach((pos, state) -> totalReaction.add(dirPosToCenter(pos).mul(blockMaxReactionForce(world, pos, state))));
+			if(totalReaction.lengthSquared() > 0){
+				Vector3d maxForce = new Vector3d(momentum.x, momentum.y, momentum.z).div(t);
+				double mFPL = Math.abs(maxForce.length() * totalReaction.angleCos(maxForce));
+				totalReaction.mul(Math.min(mFPL, totalReaction.length()) / totalReaction.length());
+				double prevM = momentum.lengthVector();
+				double prevMY = momentum.y;
+				if(prevMY > 0) prevMY = -prevMY;
+				momentum = momentum.add(new Vec3d(totalReaction.x, totalReaction.y, totalReaction.z).scale(t));
+				affectBlocks(world, affectedBlocks, totalReaction);
 
-					long dT = System.currentTimeMillis() - timeStart;
-//					AppEngSkyfall.logger.info("Collision took " + dT + "ms");
-					return totalReaction;
-				}
+				long dT = System.currentTimeMillis() - timeStart;
+				//AppEngSkyfall.logger.info("Collision took " + dT + "ms");
+				return totalReaction;
 			}
 		}
 		return new Vector3d(0, 0, 0);

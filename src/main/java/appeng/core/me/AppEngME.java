@@ -118,6 +118,11 @@ public class AppEngME implements IME {
 	}
 
 	@Override
+	public void registerVoxelConnectivity(ResourceLocation connect){
+		partsHelper.registerVoxelConnectivity(connect);
+	}
+
+	@Override
 	public NBDIO getNBDIO(){
 		return nbdio;
 	}

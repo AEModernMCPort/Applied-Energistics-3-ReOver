@@ -13,7 +13,7 @@ import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.parts.container.WorldPartsAccess;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
 import com.owens.oobjloader.parser.OObjMeshLoader;
@@ -43,10 +43,7 @@ import org.joml.Vector3dc;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -64,13 +61,17 @@ public class PartsHelper implements InitializationComponent {
 	@CapabilityInject(PartsAccess.Mutable.class)
 	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
-	public static ResourceLocation getFullRootMeshLocation(Part part){
-		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + part.getRootMesh().getResourcePath());
+	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
+		String path = part.getRootMesh().getResourcePath();
+		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
+		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
 	}
 
 	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
 		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
 	}
+
+	private Set<ResourceLocation> voxelConnect = new HashSet<>();
 
 	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
 
@@ -98,6 +99,10 @@ public class PartsHelper implements InitializationComponent {
 	public void postInit(){
 		loadMeshes();
 		groupsHelper.loadGroups();
+	}
+
+	public void registerVoxelConnectivity(ResourceLocation connect){
+		voxelConnect.add(connect);
 	}
 
 	@SubscribeEvent
@@ -140,13 +145,13 @@ public class PartsHelper implements InitializationComponent {
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
 	}
 
-	static Mesh loadMesh(Part part){
+	static Mesh loadMesh(Part part, String suffix){
 		//TODO 1.12-MIPA We only need geometry
 		Mesh mesh = new Mesh();
 		try{
-			new OObjMeshLoader<>(mesh, AppEngME.proxy.getResourceHelper(), getFullRootMeshLocation(part));
+			new OObjMeshLoader<>(mesh, AppEngME.proxy.getResourceHelper(), getFullRootMeshLocation(part, suffix));
 		} catch(IOException e){
-			logger.error("Failed to load mesh for " + part.getRegistryName(), e);
+			if(suffix == null) logger.error("Failed to load mesh for " + part.getRegistryName(), e);
 		}
 		return mesh;
 	}
@@ -197,9 +202,9 @@ public class PartsHelper implements InitializationComponent {
 		return applyTransforms(getData(part).vbbox, positionRotation);
 	}
 
-	static class PartData {
+	class PartData {
 
-		private static AxisAlignedBB toBox(VertexGeometric vertex){
+		private AxisAlignedBB toBox(VertexGeometric vertex){
 			return new AxisAlignedBB(vertex.x, vertex.y, vertex.z, vertex.x, vertex.y, vertex.z);
 		}
 
@@ -212,7 +217,7 @@ public class PartsHelper implements InitializationComponent {
 		public PartData(Part part, Voxelizer voxelizer){
 			logger.info("Reloading " + part.getRegistryName());
 			long time = System.currentTimeMillis();
-			mesh = loadMesh(part);
+			mesh = loadMesh(part, null);
 			if(!mesh.verticesG.isEmpty()){
 				VertexGeometric first = mesh.verticesG.get(0);
 				MutableObject<AxisAlignedBB> bbox = new MutableObject<>(toBox(first));
@@ -222,7 +227,29 @@ public class PartsHelper implements InitializationComponent {
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
 			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
 			voxels = voxelizer.voxelize(mesh);
+			connectivity = loadConnectivity(part, voxelizer).build();
 			logger.info("Reloaded " + part.getRegistryName() + " in " + (System.currentTimeMillis() - time));
+		}
+
+		final Map<ResourceLocation, Multimap<VoxelPosition, EnumFacing>> connectivity;
+
+		private ImmutableMap.Builder<ResourceLocation, Multimap<VoxelPosition, EnumFacing>> loadConnectivity(Part part, Voxelizer voxelizer){
+			ImmutableMap.Builder<ResourceLocation, Multimap<VoxelPosition, EnumFacing>> builder = new ImmutableMap.Builder<>();
+			if(!voxels.isEmpty()) voxelConnect.forEach(connectivity -> {
+				Mesh mesh = loadMesh(part, connectivity.toString().replace(":", "-_-"));
+				if(!mesh.verticesG.isEmpty()){
+					ImmutableSet<VoxelPosition> cVoxels = voxelizer.voxelize(mesh);
+					ImmutableMultimap.Builder<VoxelPosition, EnumFacing> cVc = new ImmutableMultimap.Builder<>();
+					cVoxels.stream().filter(voxels::contains).forEach(voxel -> {
+						for(EnumFacing side : EnumFacing.values()){
+							VoxelPosition vO = new VoxelPosition(voxel.getGlobalPosition(), voxel.getLocalPosition().offset(side));
+							if(cVoxels.contains(vO) && !voxels.contains(vO)) cVc.put(voxel, side);
+						}
+					});
+					builder.put(connectivity, cVc.build());
+				}
+			});
+			return builder;
 		}
 
 	}

@@ -105,6 +105,10 @@ public class PartsHelper implements InitializationComponent {
 		voxelConnect.add(connect);
 	}
 
+	public Set<ResourceLocation> getVoxelConnectivities(){
+		return Collections.unmodifiableSet(voxelConnect);
+	}
+
 	@SubscribeEvent
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event){
 		event.addCapability(new ResourceLocation(AppEng.MODID, "global_parts_pool"), new ICapabilityProvider() {
@@ -174,6 +178,14 @@ public class PartsHelper implements InitializationComponent {
 
 	public Stream<BlockPos> getVoxels(BlockPos gHandlerPos, Part part, PartPositionRotation positionRotation){
 		return getVoxels(part, positionRotation).filter(voxel -> gHandlerPos.equals(voxel.getGlobalPosition())).map(VoxelPosition::getLocalPosition);
+	}
+
+	public Optional<Multimap<VoxelPosition, EnumFacing>> getConnections(Part part, PartPositionRotation positionRotation, ResourceLocation connect){
+		return Optional.ofNullable(getData(part).connectivity.get(connect)).map(connections -> {
+			Multimap<VoxelPosition, EnumFacing> rotated = HashMultimap.create();
+			connections.forEach((voxel, side) -> rotated.put(positionRotation.getRotation().rotate(voxel).add(positionRotation.getRotationCenterPosition()), positionRotation.getRotation().rotate(side)));
+			return rotated;
+		});
 	}
 
 	public NBTTagCompound serialize(Part.State part){

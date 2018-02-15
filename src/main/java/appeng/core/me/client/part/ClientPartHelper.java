@@ -122,6 +122,11 @@ public class ClientPartHelper {
 					PartPositionRotation positionRotation = info.getPositionRotation();
 					drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
 					drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
+					partsHelper().getVoxelConnectivities().forEach(connectivity -> partsHelper().getConnections(info.getPart(), info.getPositionRotation(), connectivity).ifPresent(connections -> {
+						RGBA color = new RGBA(connectivity.hashCode());
+						color.setAF(0.75f);
+						connections.forEach((v, s) -> drawFilledBox(v.getBB().intersect(new VoxelPosition(v.getGlobalPosition(), v.getLocalPosition().offset(s)).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE));
+					}));
 				});
 
 				//TODO Remove this debug stuff???
@@ -169,6 +174,23 @@ public class ClientPartHelper {
 		double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
 		double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 		RenderGlobal.drawSelectionBoundingBox(box.grow(mode.mul * 0.0020000000949949026D).offset(-d0, -d1, -d2), color.getRF(), color.getGF(), color.getBF(), color.getAF());
+
+		GlStateManager.depthMask(true);
+		GlStateManager.enableTexture2D();
+		GlStateManager.disableBlend();
+	}
+
+	public void drawFilledBox(AxisAlignedBB box, EntityPlayer player, float partialTicks, RGBA color, Mode mode){
+		GlStateManager.enableBlend();
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.glLineWidth(2.0F);
+		GlStateManager.disableTexture2D();
+		GlStateManager.depthMask(false);
+
+		double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+		double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+		double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+		RenderGlobal.renderFilledBox(box.grow(mode.mul * 0.0020000000949949026D).offset(-d0, -d1, -d2), color.getRF(), color.getGF(), color.getBF(), color.getAF());
 
 		GlStateManager.depthMask(true);
 		GlStateManager.enableTexture2D();

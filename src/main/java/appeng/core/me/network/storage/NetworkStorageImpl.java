@@ -22,7 +22,7 @@ public abstract class NetworkStorageImpl<NS extends NetworkStorage<NS, ReadReq, 
 
 	@Override
 	public <Req extends Request<Rep>, Rep> Rep read(Req request){
-		Rep reply = (Rep) this.processReadRequest((Request) request);
+		Rep reply = (Rep) this.processReadRequest((ReadReq) request);
 		request.accept(reply);
 		return reply;
 	}

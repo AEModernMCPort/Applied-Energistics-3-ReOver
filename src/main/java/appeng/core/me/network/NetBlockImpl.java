@@ -77,7 +77,7 @@ public class NetBlockImpl implements NetBlock {
 	@Nonnull
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices(){
-		return (Collection<N>) devices.values();
+		return (Collection) devices.values();
 	}
 
 	@Nonnull

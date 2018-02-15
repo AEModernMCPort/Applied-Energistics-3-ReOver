@@ -195,7 +195,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 		nbt.setTag("blocks", blocks);
 
 		NBTTagList devices = new NBTTagList();
-		this.bfDevices.values().stream().map(AppEngME.INSTANCE.getNBDIO()::serializeDeviceWithArgs).forEach(tag -> devices.appendTag((NBTTagCompound) tag));
+		this.bfDevices.values().stream().map(AppEngME.INSTANCE.getNBDIO()::<NetDevice, PhysicalDevice>serializeDeviceWithArgs).forEach(tag -> devices.appendTag((NBTTagCompound) tag));
 		nbt.setTag("devices", devices);
 
 		return nbt;

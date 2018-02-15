@@ -34,7 +34,11 @@ public final class PartRotation implements INBTSerializable<NBTTagCompound> {
 	//Transform
 
 	public PartRotation inverse(){
-		return new PartRotation(forward.getOpposite(), up.getOpposite());
+		//TODO I am pretty sure there is a much better way...
+		Matrix4f nm = getRotationF().invertAffine();
+		Vector4f fwd = nm.transform(new Vector4f(0, 0, 1, 0));
+		Vector4f u = nm.transform(new Vector4f(0, 1, 0, 0));
+		return new PartRotation(EnumFacing.getFacingFromVector(fwd.x, fwd.y, fwd.z), EnumFacing.getFacingFromVector(u.x, u.y, u.z));
 	}
 
 	/**

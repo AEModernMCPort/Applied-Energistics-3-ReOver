@@ -180,6 +180,10 @@ public class PartsHelper implements InitializationComponent {
 		return getVoxels(part, positionRotation).filter(voxel -> gHandlerPos.equals(voxel.getGlobalPosition())).map(VoxelPosition::getLocalPosition);
 	}
 
+	public boolean canConnect(Part part, PartPositionRotation positionRotation, ResourceLocation connection, VoxelPosition voxel, EnumFacing sideFrom){
+		return Optional.ofNullable(getData(part).connectivity.get(connection)).map(connections -> connections.containsEntry(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom.getOpposite()))).orElse(false);
+	}
+
 	public Optional<Multimap<VoxelPosition, EnumFacing>> getConnections(Part part, PartPositionRotation positionRotation, ResourceLocation connect){
 		return Optional.ofNullable(getData(part).connectivity.get(connect)).map(connections -> {
 			Multimap<VoxelPosition, EnumFacing> rotated = HashMultimap.create();

@@ -172,6 +172,9 @@ public class AppEngME implements IME {
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
+		registerVoxelConnectivity(new ResourceLocation(AppEng.MODID, "energy"));
+		registerVoxelConnectivity(new ResourceLocation(AppEng.MODID, "data"));
+
 		MinecraftForge.EVENT_BUS.register(this);
 
 		initHandler.preInit();

@@ -84,7 +84,7 @@ public class DefaultPartPlacementLogic<P extends Part<P, S>, S extends Part.Stat
 	}
 
 	protected Pair<EnumFacing, EnumFacing> getForwardUp(EntityPlayer player, EnumFacing sideHit){
-		EnumFacing forward = sideHit;
+		EnumFacing forward = sideHit.getOpposite();
 		EnumFacing up = forward == EnumFacing.UP ? player.getHorizontalFacing() : forward == EnumFacing.DOWN ? player.getHorizontalFacing().getOpposite() : EnumFacing.UP;
 		return new ImmutablePair<>(forward, up);
 	}

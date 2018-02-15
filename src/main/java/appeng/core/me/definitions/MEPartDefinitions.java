@@ -27,7 +27,7 @@ public class MEPartDefinitions<P extends Part<P, S>, S extends Part.State<P, S>>
 		registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "tower"), ih(new PartDummy(true))).setEnabledByDefault(false).createDefaultPlacerItem(part -> new SideIsBottomPlacementLogic<>(part.maybe().get())).build();
 		registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "dish"), ih(new PartDummy(true))).setEnabledByDefault(false).createDefaultPlacerItem(part -> new SideIsBottomPlacementLogic<>(part.maybe().get())).build();
 
-		importBus = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "import_bus"), ih(new PartDummy(true))).rootMesh(new ResourceLocation(AppEng.MODID, "device/import_bus/import_bus.obj")).createDefaultPlacerItem(part -> new SideIsBottomPlacementLogic<>(part.maybe().get())).build();
+		importBus = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "import_bus"), ih(new PartDummy(true))).rootMesh(new ResourceLocation(AppEng.MODID, "device/import_bus/import_bus.obj")).createDefaultPlacerItem().build();
 	}
 
 	private DefinitionFactory.InputHandler<Part, Part> ih(Part part){

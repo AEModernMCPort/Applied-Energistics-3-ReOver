@@ -16,6 +16,7 @@ import appeng.core.me.api.network.GlobalNBDManager;
 import appeng.core.me.api.network.NBDIO;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -25,6 +26,7 @@ import appeng.core.me.bootstrap.DeviceDefinitionBuilder;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
+import appeng.core.me.network.DevicesHelper;
 import appeng.core.me.network.GlobalNBDManagerImpl;
 import appeng.core.me.network.NBDIOImpl;
 import appeng.core.me.parts.container.PartsContainer;
@@ -75,6 +77,7 @@ public class AppEngME implements IME {
 	private MEDeviceDefinitions deviceDefinitions;
 
 	private PartsHelper partsHelper;
+	private DevicesHelper devicesHelper;
 	private NBDIOImpl nbdio;
 
 	@Override
@@ -118,8 +121,9 @@ public class AppEngME implements IME {
 	}
 
 	@Override
-	public void registerVoxelConnectivity(ResourceLocation connect){
-		partsHelper.registerVoxelConnectivity(connect);
+	public void registerConnection(Connection connection){
+		partsHelper.registerVoxelConnectivity(connection.getId());
+		devicesHelper.registerConnection(connection);
 	}
 
 	@Override
@@ -168,12 +172,10 @@ public class AppEngME implements IME {
 		this.deviceDefinitions.init(registry);
 
 		initHandler.accept(partsHelper = new PartsHelper());
+		initHandler.accept(devicesHelper = new DevicesHelper());
 		initHandler.accept(nbdio = new NBDIOImpl());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
-
-		registerVoxelConnectivity(new ResourceLocation(AppEng.MODID, "energy"));
-		registerVoxelConnectivity(new ResourceLocation(AppEng.MODID, "data"));
 
 		MinecraftForge.EVENT_BUS.register(this);
 

@@ -3,6 +3,7 @@ package appeng.core.me.api;
 import appeng.api.definitions.IDefinitionsProvider;
 import appeng.core.me.api.network.GlobalNBDManager;
 import appeng.core.me.api.network.NBDIO;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import net.minecraft.util.ResourceLocation;
@@ -16,7 +17,7 @@ public interface IME extends IDefinitionsProvider {
 
 	PartPlacementLogic createDefaultPlacementLogic(Part part);
 
-	void registerVoxelConnectivity(ResourceLocation connect);
+	void registerConnection(Connection connection);
 
 	@Nonnull
 	NBDIO getNBDIO();

@@ -17,4 +17,6 @@ public interface ConnectionPassthrough extends Predicate<ResourceLocation> {
 
 	DeviceColor getColor();
 
+	<Param extends Comparable<Param>> Param getPassthroughConnectionParameter(Connection<Param, ?> connection);
+
 }

@@ -115,6 +115,10 @@ public class AppEngME implements IME {
 		return partsHelper;
 	}
 
+	public DevicesHelper getDevicesHelper(){
+		return devicesHelper;
+	}
+
 	@Override
 	public PartPlacementLogic createDefaultPlacementLogic(Part part){
 		return new DefaultPartPlacementLogic(part);

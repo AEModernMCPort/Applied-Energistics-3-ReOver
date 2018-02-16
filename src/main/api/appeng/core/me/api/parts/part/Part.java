@@ -1,5 +1,6 @@
 package appeng.core.me.api.parts.part;
 
+import appeng.core.me.api.parts.PartPositionRotation;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -50,6 +51,11 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 	interface State<P extends Part<P, S>, S extends State<P, S>> extends INBTSerializable<NBTTagCompound> {
 
 		P getPart();
+
+		@Nonnull
+		PartPositionRotation getAssignedPosRot();
+
+		void assignPosRot(@Nonnull PartPositionRotation positionRotation);
 
 		/**
 		 * Get the mesh to render for this state

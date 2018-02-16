@@ -1,5 +1,6 @@
 package appeng.core.me.parts.part;
 
+import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.part.Part;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import com.google.common.collect.Lists;
@@ -66,6 +67,7 @@ public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.Stat
 	public static abstract class StateBase<P extends PartBase<P, S>, S extends PartBase.StateBase<P, S>> implements Part.State<P, S> {
 
 		private final P part;
+		private transient PartPositionRotation positionRotation;
 
 		public StateBase(P part){
 			this.part = part;
@@ -74,6 +76,17 @@ public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.Stat
 		@Override
 		public P getPart(){
 			return part;
+		}
+
+		@Nonnull
+		@Override
+		public PartPositionRotation getAssignedPosRot(){
+			return positionRotation;
+		}
+
+		@Override
+		public void assignPosRot(@Nonnull PartPositionRotation positionRotation){
+			this.positionRotation = positionRotation;
 		}
 
 	}

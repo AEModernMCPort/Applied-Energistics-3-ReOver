@@ -1,4 +1,4 @@
-package appeng.core.me.api.parts;
+package appeng.core.me.api.network.block;
 
 import code.elix_x.excomms.color.RGBA;
 import code.elix_x.excomms.reflection.ReflectionHelper;
@@ -12,19 +12,19 @@ import java.util.function.Predicate;
  *
  * @author Elix_x
  */
-public enum PartColor {
+public enum DeviceColor {
 
 	;
 
 	public final RGBA refColor;
-	private final Predicate<PartColor> compatibility;
+	private final Predicate<DeviceColor> compatibility;
 
-	PartColor(RGBA refColor, Predicate<PartColor> compatibility){
+	DeviceColor(RGBA refColor, Predicate<DeviceColor> compatibility){
 		this.refColor = refColor;
 		this.compatibility = compatibility;
 	}
 
-	public boolean canConnect(PartColor color){
+	public boolean canConnect(DeviceColor color){
 		return compatibility.test(color) || color.compatibility.test(this);
 	}
 
@@ -32,7 +32,7 @@ public enum PartColor {
 	 * Public mutability access
 	 */
 
-	private static final ReflectionHelper.AClass.AEnum<PartColor> ENUM = new ReflectionHelper.AClass<>(PartColor.class).asEnum();
+	private static final ReflectionHelper.AClass.AEnum<DeviceColor> ENUM = new ReflectionHelper.AClass<>(DeviceColor.class).asEnum();
 
 	/**
 	 * Creates a new part color.
@@ -42,10 +42,10 @@ public enum PartColor {
 	 * @param compatibility check verifying whether this color can be connected to given color
 	 * @return created color
 	 */
-	public static PartColor createNewColor(String name, RGBA refColor, Predicate<PartColor> compatibility){
+	public static DeviceColor createNewColor(String name, RGBA refColor, Predicate<DeviceColor> compatibility){
 		//TODO Migrate back to EXComms once #advanced-reflective-operations is merged
 //		return ENUM.addEnum(name, refColor, compatibility);
-		return EnumHelper.addEnum(PartColor.class, name, new Class[]{RGBA.class, Predicate.class}, refColor, compatibility);
+		return EnumHelper.addEnum(DeviceColor.class, name, new Class[]{RGBA.class, Predicate.class}, refColor, compatibility);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public enum PartColor {
 	 * @param refColor reference color for default compatibility checks
 	 * @return created color
 	 */
-	public static PartColor createNewColor(String name, RGBA refColor){
+	public static DeviceColor createNewColor(String name, RGBA refColor){
 		return createNewColor(name, refColor, defaultCompatibility(refColor));
 	}
 
@@ -65,7 +65,7 @@ public enum PartColor {
 	 * @param refColor color to check against
 	 * @return default compatibility check
 	 */
-	public static Predicate<PartColor> defaultCompatibility(RGBA refColor){
+	public static Predicate<DeviceColor> defaultCompatibility(RGBA refColor){
 		return color -> color.refColor.equals(refColor);
 	}
 

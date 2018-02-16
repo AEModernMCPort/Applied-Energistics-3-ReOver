@@ -1,8 +1,7 @@
 package appeng.core.me.config;
 
-import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.api.network.block.DeviceColor;
 import code.elix_x.excomms.color.RGBA;
-import com.google.common.base.Predicates;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +17,7 @@ public class MEConfig {
 	}
 
 	public void registerColors(){
-		partColors.forEach((name, ref) -> PartColor.createNewColor(name, ref, name.equals(nocolorColor) ? other -> true : PartColor.defaultCompatibility(ref)));
+		partColors.forEach((name, ref) -> DeviceColor.createNewColor(name, ref, name.equals(nocolorColor) ? other -> true : DeviceColor.defaultCompatibility(ref)));
 	}
 
 }

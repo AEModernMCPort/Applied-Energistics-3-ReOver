@@ -4,6 +4,7 @@ import appeng.core.me.api.network.*;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
+import appeng.core.me.network.block.NetBlockConnections;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
@@ -66,6 +67,7 @@ public class NetBlockImpl implements NetBlock {
 	 * Devices
 	 */
 
+	protected NetBlockConnections connections = new NetBlockConnections(this);
 	protected Map<DeviceUUID, NetDevice> devices = new HashMap<>();
 
 	@Nonnull
@@ -106,12 +108,14 @@ public class NetBlockImpl implements NetBlock {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("pos", position.serializeNBT());
+		nbt.setTag("connections", connections.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		position = GlobalWorldVoxelPosition.fromNBT(nbt.getCompoundTag("pos"));
+		connections.deserializeNBT(nbt.getCompoundTag("connections"));
 	}
 
 	public static NetBlockImpl createFromNBT(@Nonnull NetBlockUUID uuid, @Nullable Network network, @Nonnull NBTTagCompound nbt){

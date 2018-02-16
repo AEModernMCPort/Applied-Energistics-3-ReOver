@@ -9,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class DevicesHelper implements InitializationComponent {
 
@@ -16,6 +17,10 @@ public class DevicesHelper implements InitializationComponent {
 
 	public void registerConnection(Connection connection){
 		connections.put(connection.getId(), connection);
+	}
+
+	public void forEachConnection(Consumer<Connection> consumer){
+		connections.values().forEach(consumer);
 	}
 
 	@Override

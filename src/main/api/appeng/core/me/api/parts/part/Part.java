@@ -1,9 +1,12 @@
 package appeng.core.me.api.parts.part;
 
 import appeng.core.me.api.parts.PartPositionRotation;
+import appeng.core.me.api.parts.container.PartsAccess;
 import com.google.common.collect.Lists;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
@@ -47,6 +50,22 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 	 * @return new instance of parts state
 	 */
 	S createNewState();
+
+	/*
+	 * Interaction
+	 */
+
+	default void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+
+	}
+
+	default void onBroken(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
+
+	}
+
+	default EnumActionResult onRightClick(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer placer, @Nonnull EnumHand hand){
+		return EnumActionResult.PASS;
+	}
 
 	interface State<P extends Part<P, S>, S extends State<P, S>> extends INBTSerializable<NBTTagCompound> {
 

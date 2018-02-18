@@ -3,7 +3,7 @@ package appeng.core.me.item;
 import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.container.*;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.parts.part.PartsHelper;
@@ -42,8 +42,9 @@ public class PartPlacerItem<P extends Part<P, S>, S extends Part.State<P, S>> ex
 		//FIXME Client-server desync. Possibly due to partial ticks between frames on client
 		PartsAccess.Mutable partsAccess = world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 		PartPositionRotation positionRotation = partPlacementLogic.getPlacementPosition(player, RayTraceHelper.rayTrace(player));
-		if(partsAccess.canPlace(positionRotation, getSPart().getPart())){
-			partsAccess.setPart(positionRotation, getSPart());
+		if(partsAccess.canPlace(positionRotation, getPPart())){
+			S state = getSPart();
+			partsAccess.setPart(positionRotation, state).ifPresent(uuid -> getPPart().onPlaced(state, partsAccess, world, player, hand));
 			return EnumActionResult.SUCCESS;
 		} else return EnumActionResult.FAIL;
 	}

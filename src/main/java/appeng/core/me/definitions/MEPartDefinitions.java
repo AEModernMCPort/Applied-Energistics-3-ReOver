@@ -9,17 +9,22 @@ import appeng.core.me.api.definitions.IMEPartDefinitions;
 import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.parts.part.PartDummy;
-import appeng.core.me.parts.part.connected.PartCable;
+import appeng.core.me.parts.part.connected.PartFiber;
+import appeng.core.me.parts.part.connected.PartRecerticFiber;
 import appeng.core.me.parts.placement.SideIsBottomPlacementLogic;
 import net.minecraft.util.ResourceLocation;
 
 public class MEPartDefinitions<P extends Part<P, S>, S extends Part.State<P, S>> extends Definitions<P, IPartDefinition<P, S>> implements IMEPartDefinitions<P, S> {
 
+	private final IPartDefinition recerticFiber;
+
 	public MEPartDefinitions(DefinitionFactory registry){
+		recerticFiber = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "recertic_fiber"), ih(new PartRecerticFiber())).rootMesh(new ResourceLocation(AppEng.MODID, "fiber/recertic.obj")).createDefaultPlacerItem().build();
 		for(PartColor color : PartColor.values()){
 			String colorName = color.name().toLowerCase();
-			dynamicallyCompiled(registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "glass_cable_micro_" + colorName), ih(new PartCable.Micro(color))).rootMesh(new ResourceLocation(AppEng.MODID, "cable/glass/micro/" + colorName + ".obj")).createDefaultPlacerItem().build());
-			dynamicallyCompiled(registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "glass_cable_normal_" + colorName), ih(new PartCable.Normal(color))).rootMesh(new ResourceLocation(AppEng.MODID, "cable/glass/normal/" + colorName + ".obj")).createDefaultPlacerItem().build());
+			dynamicallyCompiled(registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "siocertic_fiber_micro_" + colorName), ih(new PartFiber.Micro(color))).rootMesh(new ResourceLocation(AppEng.MODID, "fiber/siocertic/micro/" + colorName + ".obj")).createDefaultPlacerItem().build());
+			dynamicallyCompiled(registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "siocertic_fiber_normal_" + colorName), ih(new PartFiber.Normal(color))).rootMesh(new ResourceLocation(AppEng.MODID, "fiber/siocertic/normal/" + colorName + ".obj")).createDefaultPlacerItem().build());
+			dynamicallyCompiled(registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "siocertic_fiber_normal_joint_" + colorName), ih(new PartFiber.Normal.Joint(color))).rootMesh(new ResourceLocation(AppEng.MODID, "fiber/siocertic/normal/" + colorName + "_joint.obj")).createDefaultPlacerItem().build());
 		}
 		registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "unlocked_block"), ih(new PartDummy(false))).createDefaultPlacerItem().build();
 		registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "tower"), ih(new PartDummy(true))).setEnabledByDefault(false).createDefaultPlacerItem(part -> new SideIsBottomPlacementLogic<>(part.maybe().get())).build();

@@ -14,7 +14,6 @@ public class MEConfig {
 
 	public MEConfig(){
 		partColors.put("NOCOLOR", new RGBA(189, 169, 216));
-		partColors.put("GREEN", new RGBA(0f, 1f, 0f));
 	}
 
 	public void registerColors(){

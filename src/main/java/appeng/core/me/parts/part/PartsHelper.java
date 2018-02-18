@@ -7,7 +7,6 @@ import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.PartRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -56,35 +55,7 @@ public class PartsHelper implements InitializationComponent {
 
 	public static final Logger logger = LogManager.getLogger("Parts Helper");
 
-	public static final PartRotation noRotation = new PartRotation();
-
-	@CapabilityInject(IPartsContainer.class)
-	public static Capability<IPartsContainer> partsContainerCapability;
-
-	@CapabilityInject(PartsAccess.Mutable.class)
-	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
-
-	public static ResourceLocation getFullRootMeshLocation(Part part){
-		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + part.getRootMesh().getResourcePath());
-	}
-
-	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
-		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
-	}
-
-	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
-
-	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
-
 	private PartGroupsHelper groupsHelper = new PartGroupsHelper(this);
-
-	public Capability<IPartsContainer> getPartsContainerCapability(){
-		return partsContainerCapability;
-	}
-
-	public Capability<WorldPartsAccess> getWorldPartsAccessCapability(){
-		return worldPartsAccessCapability;
-	}
 
 	@Override
 	public void preInit(){
@@ -99,6 +70,16 @@ public class PartsHelper implements InitializationComponent {
 		loadMeshes();
 		groupsHelper.loadGroups();
 	}
+
+	/*
+	 * Caps
+	 */
+
+	@CapabilityInject(IPartsContainer.class)
+	public static Capability<IPartsContainer> partsContainerCapability;
+
+	@CapabilityInject(PartsAccess.Mutable.class)
+	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
 	@SubscribeEvent
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event){
@@ -130,6 +111,22 @@ public class PartsHelper implements InitializationComponent {
 			event.setCanceled(true);
 		});
 	}
+
+	/*
+	 * Meshing
+	 */
+
+	public static ResourceLocation getFullRootMeshLocation(Part part){
+		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + part.getRootMesh().getResourcePath());
+	}
+
+	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
+		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
+	}
+
+	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
+
+	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
 
 	private void loadMeshes(){
 		logger.info("Reloading meshes");

@@ -39,6 +39,7 @@ public class PartPlacerItem<P extends Part<P, S>, S extends Part.State<P, S>> ex
 
 	@Override
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
+		if(world.isRemote) return EnumActionResult.FAIL;
 		//FIXME Client-server desync. Possibly due to partial ticks between frames on client
 		PartsAccess.Mutable partsAccess = world.getCapability(PartsHelper.worldPartsAccessCapability, null);
 		PartPositionRotation positionRotation = partPlacementLogic.getPlacementPosition(player, RayTraceHelper.rayTrace(player));

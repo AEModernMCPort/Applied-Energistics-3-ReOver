@@ -40,7 +40,14 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 
 	protected abstract void removeContainer(BlockPos pos);
 
+	//TODO Remove once BlockBreakEvent is fired on client
+	@Deprecated
 	protected void markBlockRangeForUpdate(BlockPos pos1, BlockPos pos2){
+
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part){
 
 	}
 
@@ -94,7 +101,6 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 				partsAccess.getAffectedContainers(part.getPart(), positionRotation).forEach(pos -> {
 					Optional<IPartsContainer> container = partsAccess.getContainer(pos);
 					if(!container.isPresent()) container = partsAccess.createContainer(pos);
-					partsAccess.markBlockRangeForUpdate(pos, pos);
 					container.get().set(positionRotation.getPosition().getGlobalPosition(), partUUID, partsAccess.partsHelper().getVoxels(pos, part.getPart(), positionRotation));
 				});
 				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setOwnedPart(partUUID, new PartInfoImpl(part.getPart(), positionRotation, part));
@@ -115,6 +121,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 					IPartsContainer container = partsAccess.getContainer(pos).get();
 					container.remove(removedUUID.get().getLeft(), removedUUID.get().getRight(), partsAccess.partsHelper().getVoxels(pos, part.getPart(), part.getPositionRotation()));
 					if(container.isEmpty()) partsAccess.removeContainer(pos);
+					//TODO Remove once BlockBreakEvent is fired on client
 					partsAccess.markBlockRangeForUpdate(pos, pos);
 				}));
 				removedUUID.ifPresent(uuid -> event.setRemoved(new ImmutablePair<>(uuid.getRight(), removedPart.get())));

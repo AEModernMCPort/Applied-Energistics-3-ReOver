@@ -110,7 +110,7 @@ public class PartsHelper implements InitializationComponent {
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
 			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
-			if(rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
+			if(!event.getWorld().isRemote && rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
 				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo).ifPresent(uuidPart -> uuidPart.getRight().getPart().onBroken(uuidPart.getRight().getState().orElse(null), worldPartsAccess, event.getWorld(), event.getPlayer()));
 			event.setCanceled(true);
 		});

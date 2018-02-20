@@ -2,7 +2,7 @@ package appeng.core.me.parts.part.connected;
 
 import appeng.core.AppEng;
 import appeng.core.me.AppEngME;
-import appeng.core.me.api.network.block.DeviceColor;
+import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.PartRotation;
 import appeng.core.me.api.parts.VoxelPosition;
@@ -14,7 +14,7 @@ import net.minecraft.util.ResourceLocation;
 
 public abstract class PartCable<P extends PartCable<P, S>, S extends PartCable.CableState<P, S>> extends PartConnected<P, S> {
 
-	public PartCable(boolean supportsRotation, DeviceColor color){
+	public PartCable(boolean supportsRotation, PartColor color){
 		super(supportsRotation, color);
 	}
 
@@ -25,7 +25,7 @@ public abstract class PartCable<P extends PartCable<P, S>, S extends PartCable.C
 
 	public static class Micro extends PartCable<PartCable.Micro, CableState.Micro> {
 
-		public Micro(DeviceColor color){
+		public Micro(PartColor color){
 			super(false, color);
 		}
 
@@ -33,7 +33,7 @@ public abstract class PartCable<P extends PartCable<P, S>, S extends PartCable.C
 
 	public static class Normal extends PartCable<PartCable.Normal, PartCable.CableState.Normal> implements PartGroup<PartCable.Normal, PartCable.CableState.Normal> {
 
-		public Normal(DeviceColor color){
+		public Normal(PartColor color){
 			super(true, color);
 		}
 

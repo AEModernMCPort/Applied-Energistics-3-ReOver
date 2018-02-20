@@ -1,6 +1,7 @@
 package appeng.core.me.api.network.block;
 
 import appeng.core.me.api.network.PhysicalDevice;
+import appeng.core.me.api.parts.PartColor;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Predicate;
@@ -15,7 +16,7 @@ public interface ConnectionPassthrough extends Predicate<ResourceLocation> {
 	 */
 	ConnectUUID getUUIDForConnectionPassthrough();
 
-	DeviceColor getColor();
+	PartColor getColor();
 
 	<Param extends Comparable<Param>> Param getPassthroughConnectionParameter(Connection<Param, ?> connection);
 

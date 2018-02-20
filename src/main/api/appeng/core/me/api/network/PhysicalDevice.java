@@ -3,7 +3,7 @@ package appeng.core.me.api.network;
 import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
-import appeng.core.me.api.network.block.DeviceColor;
+import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.api.parts.VoxelPosition;
 
 /**
@@ -31,7 +31,7 @@ public interface PhysicalDevice<N extends NetDevice<N, P>, P extends PhysicalDev
 	 */
 	ConnectUUID getUUIDForConnection();
 
-	DeviceColor getColor();
+	PartColor getColor();
 
 	<Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection);
 

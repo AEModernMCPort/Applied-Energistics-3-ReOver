@@ -64,12 +64,6 @@ public class PartsHelper implements InitializationComponent {
 	@CapabilityInject(PartsAccess.Mutable.class)
 	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
-	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
-		String path = part.getRootMesh().getResourcePath();
-		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
-		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
-	}
-
 	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
 		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
 	}
@@ -140,6 +134,12 @@ public class PartsHelper implements InitializationComponent {
 		for(Part part : AppEngME.INSTANCE.getPartRegistry())
 			partDataMap.put(part.getRegistryName(), new PartData(part, voxelizer));
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
+	}
+
+	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
+		String path = part.getRootMesh().getResourcePath();
+		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
+		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
 	}
 
 	static Mesh loadMesh(Part part, String suffix){

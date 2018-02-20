@@ -107,15 +107,8 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 			S state = this.<P, S>getPart(positionRotation.getRotationCenterPosition()).flatMap(PartInfo::getState).orElse(null);
 			if(state == null) this.setPart(positionRotation, state = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(partId).createNewState());
 			state.deserializeNBT(newData);
+			world.markBlockRangeForRenderUpdate(state.getAssignedPosRot().getPosition().getGlobalPosition(), state.getAssignedPosRot().getPosition().getGlobalPosition());
 		}
-	}
-
-	@Nonnull
-	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<PartUUID, PartInfo<P, S>>> removePart(@Nonnull VoxelPosition position){
-		Optional<Pair<PartUUID, PartInfo<P, S>>> removed = super.removePart(position);
-		removed.flatMap(p -> p.getRight().getState()).ifPresent(part -> sendPart(part, true));
-		return removed;
 	}
 
 	public enum Storage implements Capability.IStorage {

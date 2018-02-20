@@ -174,6 +174,12 @@ public class PartsHelper implements InitializationComponent {
 		return getVoxels(part, positionRotation).filter(voxel -> gHandlerPos.equals(voxel.getGlobalPosition())).map(VoxelPosition::getLocalPosition);
 	}
 
+	public boolean haveConnectionsInCommon(Part p1, Part p2){
+		PartData d2 = getData(p2);
+		for(ResourceLocation c1 : getData(p1).connectivity.keySet()) if(d2.connectivity.containsKey(c1)) return true;
+		return false;
+	}
+
 	public boolean canConnect(Part part, PartPositionRotation positionRotation, ResourceLocation connection, VoxelPosition voxel, EnumFacing sideFrom){
 		return Optional.ofNullable(getData(part).connectivity.get(connection)).map(connections -> connections.containsEntry(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom.getOpposite()))).orElse(false);
 	}

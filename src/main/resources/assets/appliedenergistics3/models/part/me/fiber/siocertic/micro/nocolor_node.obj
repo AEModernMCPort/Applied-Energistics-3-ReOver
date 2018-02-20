@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'Micro cable.blend'
 # www.blender.org
-mtllib nocolor.mtl
+mtllib nocolor_node.mtl
 o Micro_Cable_Cube
 v 0.000000 0.000000 0.000000
 v 0.000000 0.062500 0.000000

@@ -244,6 +244,11 @@ public class PartsContainer implements IPartsContainer {
 		return getGlobalAccess().removePart(position);
 	}
 
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part){
+		getGlobalAccess().markDirty(part);
+	}
+
 	//Ray trace
 
 	@Override

@@ -29,12 +29,15 @@ import appeng.core.me.definitions.*;
 import appeng.core.me.network.DevicesHelper;
 import appeng.core.me.network.GlobalNBDManagerImpl;
 import appeng.core.me.network.NBDIOImpl;
+import appeng.core.me.netio.PartMessage;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.part.PartsHelper;
 import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import appeng.core.me.proxy.MEProxy;
+import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,12 +45,14 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Module(IME.NAME)
 public class AppEngME implements IME {
@@ -61,6 +66,8 @@ public class AppEngME implements IME {
 	public static MEProxy proxy;
 
 	public MEConfig config;
+
+	public SmartNetworkWrapper net;
 
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
@@ -81,7 +88,7 @@ public class AppEngME implements IME {
 	private NBDIOImpl nbdio;
 
 	@Override
-	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
 		if(clas == Item.class){
 			return (D) itemDefinitions;
 		}
@@ -179,6 +186,9 @@ public class AppEngME implements IME {
 		initHandler.accept(nbdio = new NBDIOImpl());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
+
+		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
+		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelper.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
 
 		MinecraftForge.EVENT_BUS.register(this);
 

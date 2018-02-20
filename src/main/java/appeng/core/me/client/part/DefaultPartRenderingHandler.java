@@ -26,13 +26,21 @@ import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSPERBLOCK
 
 public class DefaultPartRenderingHandler<P extends Part<P, S>, S extends Part.State<P, S>> implements PartRenderingHandler<P, S> {
 
-	@Override
-	public Collection<BakedQuad> getQuads(S state, PartPositionRotation partPositionRotation){
+	protected List<BakedQuad> getQuadsRaw(S state, PartPositionRotation positionRotation){
+		return ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0);
+	}
+
+	protected Matrix4f getTransforms(S state, PartPositionRotation partPositionRotation){
 		PartRotation rotation = partPositionRotation.getRotation();
 		VoxelPosition rp = partPositionRotation.getRotationCenterPosition();
 		Vec3i add = rp.getGlobalPosition().subtract(partPositionRotation.getPosition().getGlobalPosition());
 		BlockPos renderingPosition = rp.getLocalPosition().add(add.getX() * VOXELSPERBLOCKAXISI, add.getY() * VOXELSPERBLOCKAXISI, add.getZ() * VOXELSPERBLOCKAXISI);
-		return new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(new Matrix4f().translate(renderingPosition.getX() / VOXELSPERBLOCKAXISF, renderingPosition.getY() / VOXELSPERBLOCKAXISF, renderingPosition.getZ() / VOXELSPERBLOCKAXISF).mul(rotation.getRotationF())), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(ModelRegManagerHelper.getModel(new ModelResourceLocation(state.getMesh(), null)).getQuads(null, null, 0));
+		return new Matrix4f().translate(renderingPosition.getX() / VOXELSPERBLOCKAXISF, renderingPosition.getY() / VOXELSPERBLOCKAXISF, renderingPosition.getZ() / VOXELSPERBLOCKAXISF).mul(rotation.getRotationF());
+	}
+
+	@Override
+	public Collection<BakedQuad> getQuads(S state, PartPositionRotation partPositionRotation){
+		return new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(getTransforms(state, partPositionRotation)), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(getQuadsRaw(state, partPositionRotation));
 	}
 
 }

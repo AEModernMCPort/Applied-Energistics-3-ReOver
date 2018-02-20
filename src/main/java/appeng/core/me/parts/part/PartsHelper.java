@@ -7,7 +7,6 @@ import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.PartRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -56,31 +55,7 @@ public class PartsHelper implements InitializationComponent {
 
 	public static final Logger logger = LogManager.getLogger("Parts Helper");
 
-	public static final PartRotation noRotation = new PartRotation();
-
-	@CapabilityInject(IPartsContainer.class)
-	public static Capability<IPartsContainer> partsContainerCapability;
-
-	@CapabilityInject(PartsAccess.Mutable.class)
-	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
-
-	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
-		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
-	}
-
-	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
-
-	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
-
 	private PartGroupsHelper groupsHelper = new PartGroupsHelper(this);
-
-	public Capability<IPartsContainer> getPartsContainerCapability(){
-		return partsContainerCapability;
-	}
-
-	public Capability<WorldPartsAccess> getWorldPartsAccessCapability(){
-		return worldPartsAccessCapability;
-	}
 
 	@Override
 	public void preInit(){
@@ -95,6 +70,16 @@ public class PartsHelper implements InitializationComponent {
 		loadMeshes();
 		groupsHelper.loadGroups();
 	}
+
+	/*
+	 * Caps
+	 */
+
+	@CapabilityInject(IPartsContainer.class)
+	public static Capability<IPartsContainer> partsContainerCapability;
+
+	@CapabilityInject(PartsAccess.Mutable.class)
+	public static Capability<WorldPartsAccess> worldPartsAccessCapability;
 
 	@SubscribeEvent
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event){
@@ -116,16 +101,38 @@ public class PartsHelper implements InitializationComponent {
 		});
 	}
 
+	/*
+	 * Interaction
+	 */
+
 	@SubscribeEvent
 	public void tryBreakBlock(BlockEvent.BreakEvent event){
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
 			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
-			if(rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
-				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo);
+			if(!event.getWorld().isRemote && rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
+				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo).ifPresent(uuidPart -> uuidPart.getRight().getPart().onBroken(uuidPart.getRight().getState().orElse(null), worldPartsAccess, event.getWorld(), event.getPlayer()));
 			event.setCanceled(true);
 		});
 	}
+
+	/*
+	 * Meshing
+	 */
+
+	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
+		String path = part.getRootMesh().getResourcePath();
+		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
+		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
+	}
+
+	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
+		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
+	}
+
+	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
+
+	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
 
 	private void loadMeshes(){
 		logger.info("Reloading meshes");
@@ -134,12 +141,6 @@ public class PartsHelper implements InitializationComponent {
 		for(Part part : AppEngME.INSTANCE.getPartRegistry())
 			partDataMap.put(part.getRegistryName(), new PartData(part, voxelizer));
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
-	}
-
-	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
-		String path = part.getRootMesh().getResourcePath();
-		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
-		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
 	}
 
 	static Mesh loadMesh(Part part, String suffix){

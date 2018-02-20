@@ -35,6 +35,8 @@ public interface IDefinition<T> {
 	 * @param <S> Sub-definition definition type
 	 * @return {@linkplain ISubDefinition} representation if applicable
 	 */
+	//ALL SUB-DEFINITIONS DEPRECATED UNTIL DEFINITIVE DECISION (3rd party usefulness) IS TAKEN IN MC 1.13
+	@Deprecated
 	<D, P extends T, S extends ISubDefinition<D, P, S>> Optional<S> maybeSubDefinition();
 
 	/**

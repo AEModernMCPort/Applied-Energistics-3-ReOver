@@ -3,9 +3,13 @@ package appeng.core.me.api.parts.container;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.part.Part;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public interface PartsAccess {
@@ -54,6 +58,31 @@ public interface PartsAccess {
 		 */
 		@Nonnull
 		<P extends Part<P, S>, S extends Part.State<P, S>> Optional<Pair<PartUUID, PartInfo<P, S>>> removePart(@Nonnull VoxelPosition position);
+
+		/**
+		 * Marks the part as dirty
+		 * @param part part
+		 * @param <P>
+		 * @param <S>
+		 */
+		<P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part);
+
+		interface Syncable extends Mutable {
+
+			/**
+			 * Receive part (state) update from server (on client) - both add, change and remove:<br>
+			 * - If the part does not exist, create from <tt>partId</tt> and {@linkplain Part.State#deserializeNBT(NBTBase) deserialize nbt}<br>
+			 * - If the part exists, simply {@linkplain Part.State#deserializeNBT(NBTBase) deserialize nbt}<br>
+			 * - If <tt>newData</tt> is null, remove the part
+			 * @param positionRotation position & rotation of the part
+			 * @param partId id of the part, or <tt>null</tt> if the part should be removed
+			 * @param newData new part data, or <tt>null</tt> if the part should be removed
+			 * @param <P>
+			 * @param <S>
+			 */
+			<P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData);
+
+		}
 
 	}
 }

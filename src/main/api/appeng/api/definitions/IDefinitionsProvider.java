@@ -5,6 +5,6 @@ import appeng.api.definitions.IDefinitions;
 
 public interface IDefinitionsProvider {
 
-	<T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas);
+	<T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas);
 
 }

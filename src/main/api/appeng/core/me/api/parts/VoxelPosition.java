@@ -4,6 +4,7 @@ import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
 import com.google.common.collect.AbstractIterator;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -83,6 +84,10 @@ public final class VoxelPosition implements INBTSerializable<NBTTagCompound> {
 
 	public VoxelPosition substract(VoxelPosition position){
 		return new VoxelPosition(globalPosition.subtract(position.globalPosition), localPosition.subtract(position.localPosition));
+	}
+
+	public VoxelPosition offsetLocal(EnumFacing direction){
+		return new VoxelPosition(globalPosition, localPosition.offset(direction));
 	}
 
 	//Local access & convert

@@ -63,13 +63,17 @@ public class PartsContainerTile extends TileEntity {
 		return serializeNBT();
 	}
 
+	//TODO Remove once BlockBreakEvent is fired on client
+
 	@Nullable
 	@Override
+	@Deprecated
 	public SPacketUpdateTileEntity getUpdatePacket(){
 		return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
 	}
 
 	@Override
+	@Deprecated
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
 		deserializeNBT(pkt.getNbtCompound());
 	}

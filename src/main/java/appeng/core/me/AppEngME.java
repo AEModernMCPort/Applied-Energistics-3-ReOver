@@ -126,7 +126,6 @@ public class AppEngME implements IME {
 
 	@Override
 	public void registerConnection(Connection connection){
-		partsHelper.registerVoxelConnectivity(connection.getId());
 		devicesHelper.registerConnection(connection);
 	}
 

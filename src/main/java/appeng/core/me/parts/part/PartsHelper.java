@@ -43,7 +43,10 @@ import org.joml.Vector3dc;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -71,8 +74,6 @@ public class PartsHelper implements InitializationComponent {
 		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
 	}
 
-	private Set<ResourceLocation> voxelConnect = new HashSet<>();
-
 	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();
 
 	private Voxelizer voxelizer = new Voxelizer(Voxelizer.Voxelization.S6);
@@ -99,14 +100,6 @@ public class PartsHelper implements InitializationComponent {
 	public void postInit(){
 		loadMeshes();
 		groupsHelper.loadGroups();
-	}
-
-	public void registerVoxelConnectivity(ResourceLocation connect){
-		voxelConnect.add(connect);
-	}
-
-	public Set<ResourceLocation> getVoxelConnectivities(){
-		return Collections.unmodifiableSet(voxelConnect);
 	}
 
 	@SubscribeEvent
@@ -251,8 +244,8 @@ public class PartsHelper implements InitializationComponent {
 
 		private ImmutableMap.Builder<ResourceLocation, Multimap<VoxelPosition, EnumFacing>> loadConnectivity(Part part, Voxelizer voxelizer){
 			ImmutableMap.Builder<ResourceLocation, Multimap<VoxelPosition, EnumFacing>> builder = new ImmutableMap.Builder<>();
-			if(!voxels.isEmpty()) voxelConnect.forEach(connectivity -> {
-				Mesh mesh = loadMesh(part, connectivity.toString().replace(":", "-_-"));
+			if(!voxels.isEmpty()) AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connectivity -> {
+				Mesh mesh = loadMesh(part, connectivity.getId().toString().replace(":", "-_-"));
 				if(!mesh.verticesG.isEmpty()){
 					ImmutableSet<VoxelPosition> cVoxels = voxelizer.voxelize(mesh);
 					ImmutableMultimap.Builder<VoxelPosition, EnumFacing> cVc = new ImmutableMultimap.Builder<>();
@@ -262,7 +255,7 @@ public class PartsHelper implements InitializationComponent {
 							if(cVoxels.contains(vO) && !voxels.contains(vO)) cVc.put(voxel, side);
 						}
 					});
-					builder.put(connectivity, cVc.build());
+					builder.put(connectivity.getId(), cVc.build());
 				}
 			});
 			return builder;

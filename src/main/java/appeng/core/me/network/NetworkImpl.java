@@ -15,6 +15,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 
 public class NetworkImpl implements Network {
 
@@ -68,8 +69,8 @@ public class NetworkImpl implements Network {
 
 	@Nullable
 	@Override
-	public NetBlock getBlock(NetBlockUUID uuid){
-		return blocksManager.getBlock(uuid);
+	public Optional<NetBlock> getBlock(NetBlockUUID uuid){
+		return Optional.ofNullable(blocksManager.getBlock(uuid));
 	}
 
 	@Nonnull
@@ -103,7 +104,7 @@ public class NetworkImpl implements Network {
 
 	@Override
 	public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing){
-		return capabilities == null && capabilities.hasCapability(capability, facing);
+		return capabilities != null && capabilities.hasCapability(capability, facing);
 	}
 
 	@Nullable
@@ -120,14 +121,14 @@ public class NetworkImpl implements Network {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("blocks", blocksManager.serializeNBT());
-		nbt.setTag("capabilities", capabilities.serializeNBT());
+		if(capabilities != null) nbt.setTag("capabilities", capabilities.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		blocksManager.deserializeNBT(nbt.getCompoundTag("blocks"));
-		capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
+		if(capabilities != null && nbt.hasKey("capabilities")) capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
 	}
 
 	public static NetworkImpl createFromNBT(@Nonnull NetworkUUID uuid, @Nonnull NBTTagCompound nbt){

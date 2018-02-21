@@ -10,6 +10,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Network executing all operations
@@ -36,7 +37,7 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	 * Blocks
 	 */
 
-	@Nullable NetBlock getBlock(NetBlockUUID uuid);
+	@Nonnull Optional<NetBlock> getBlock(NetBlockUUID uuid);
 	@Nonnull Collection<? extends NetBlock> getBlocks();
 
 	/*

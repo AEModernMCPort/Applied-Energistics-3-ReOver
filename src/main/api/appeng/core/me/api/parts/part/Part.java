@@ -84,6 +84,14 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 			return getPart().getRootMesh();
 		}
 
+		default NBTTagCompound serializeSyncNBT(){
+			return serializeNBT();
+		}
+
+		default void deserializeSyncNBT(NBTTagCompound nbt){
+			deserializeNBT(nbt);
+		}
+
 	}
 
 }

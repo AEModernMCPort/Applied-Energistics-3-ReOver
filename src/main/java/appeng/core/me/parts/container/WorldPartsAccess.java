@@ -92,7 +92,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	protected <P extends Part<P, S>, S extends Part.State<P, S>> void sendPart(@Nonnull S part, boolean remove){
 		Vector3d gp = part.getAssignedPosRot().getPosition().asVector3d();
-		AppEngME.INSTANCE.net.sendToAllAround(new PartMessage(part.getAssignedPosRot(), remove ? null : part.getPart().getRegistryName(), remove ? null : part.serializeNBT()), new NetworkRegistry.TargetPoint(world.provider.getDimension(), gp.x, gp.y, gp.z, 128 /*TODO Find correct range*/));
+		AppEngME.INSTANCE.net.sendToAllAround(new PartMessage(part.getAssignedPosRot(), remove ? null : part.getPart().getRegistryName(), remove ? null : part.serializeSyncNBT()), new NetworkRegistry.TargetPoint(world.provider.getDimension(), gp.x, gp.y, gp.z, 128 /*TODO Find correct range*/));
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 		else {
 			S state = this.<P, S>getPart(positionRotation.getRotationCenterPosition()).flatMap(PartInfo::getState).orElse(null);
 			if(state == null) this.setPart(positionRotation, state = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(partId).createNewState());
-			state.deserializeNBT(newData);
+			state.deserializeSyncNBT(newData);
 			world.markBlockRangeForRenderUpdate(state.getAssignedPosRot().getPosition().getGlobalPosition(), state.getAssignedPosRot().getPosition().getGlobalPosition());
 		}
 	}

@@ -48,6 +48,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	Map<ConnectUUID, PhysicalDevice> devices = new HashMap<>();
 
 	public void recalculateAll(World world, PhysicalDevice root){
+		long t = System.currentTimeMillis();
 		deviceConnectionParams.clear();
 		nodes.clear();
 		links.clear();
@@ -71,6 +72,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 				});
 			});
 		}));
+		System.out.println("Pathway calculation took " + (System.currentTimeMillis() - t) + "ms");
 		System.out.println(nodes);
 		System.out.println(links);
 		System.out.println(passthroughs);

@@ -109,7 +109,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		List<ConnectionPassthrough> elements = new ArrayList<>();
 		elements.add(e1st);
 		MutableObject<ConnectionPassthrough> next = new MutableObject<>(e1st);
-		MutableObject<Set<ConnectionPassthrough>> nextAdjacentPTs = new MutableObject<>(connection2voxels(next).apply(connection).map(posRotVoxels -> getAdjacentPTs(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection)).orElse(new HashSet<>()));
+		MutableObject<Set<ConnectionPassthrough>> nextAdjacentPTs = new MutableObject<>(connection2voxels(next.getValue()).apply(connection).map(posRotVoxels -> getAdjacentPTs(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection)).orElse(new HashSet<>()));
 		while(nextAdjacentPTs.getValue() != null && next.getValue() != null){
 			passthroughs.put(next.getValue().getUUIDForConnectionPassthrough(), next.getValue());
 			ConnectionPassthrough prev = next.getValue();
@@ -172,17 +172,12 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	protected void forEachTargetVoxel(PartPositionRotation positionRotation, Multimap<VoxelPosition, EnumFacing> connections, BiConsumer<VoxelPosition, EnumFacing> targetVoxelConsumer){
-		connections.forEach((v, inDir) -> {
-			EnumFacing dir = positionRotation.getRotation().rotate(inDir).getOpposite();
-			v = positionRotation.getRotation().rotate(v).add(positionRotation.getRotationCenterPosition());
-			VoxelPosition voxel = new VoxelPosition(v.getGlobalPosition(), v.getLocalPosition().offset(dir));
-			targetVoxelConsumer.accept(v, dir);
-		});
+		connections.forEach((v, inDir) -> targetVoxelConsumer.accept(v.offsetLocal(inDir), inDir.getOpposite()));
 	}
 
 	protected <T> Function<ResourceLocation, Optional<Pair<PartPositionRotation, Multimap<VoxelPosition, EnumFacing>>>> connection2voxels(T t){
 		if(t instanceof Part.State) return c -> AppEngME.INSTANCE.getPartsHelper().getConnections(((Part.State) t).getPart(), ((Part.State) t).getAssignedPosRot(), c).map(cs -> new ImmutablePair<>(((Part.State) t).getAssignedPosRot(), cs));
-		return null;
+		return c -> Optional.empty();
 	}
 
 	protected class PathwayElement {

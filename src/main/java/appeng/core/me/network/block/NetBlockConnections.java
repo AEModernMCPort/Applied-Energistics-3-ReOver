@@ -117,7 +117,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			ConnectionPassthrough prev = next.getValue();
 			nextAdjacentPTs.getValue().forEach(adjacent -> connection2voxels(adjacent).apply(connection).ifPresent(adjacentPRV -> {
 				Set<ConnectionPassthrough> adjacentPTs = getAdjacentPTs(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
-				adjacentPTs.remove(next);
+				adjacentPTs.remove(prev);
 				Set<PhysicalDevice> adjacentDevices = getAdjacentDevices(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
 				if(adjacentPTs.size() == 1 && adjacentDevices.isEmpty()){
 					elements.add(adjacent);

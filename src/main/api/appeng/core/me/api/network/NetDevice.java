@@ -6,7 +6,6 @@ import appeng.core.me.api.network.event.NCEventBus;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,7 +24,7 @@ import java.util.Optional;
  * @param <P> In-world counterpart type
  * @author Elix_x
  */
-public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends ICapabilityProvider, EventBusOwner<N, NetDevice.NetDeviceEvent<N, P>>, INBTSerializable<NBTTagCompound> {
+public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends ICapabilityProvider, EventBusOwner<N, NetDevice.NetDeviceEvent<N, P>> {
 
 	@Nonnull
 	DeviceUUID getUUID();

@@ -181,7 +181,7 @@ public class PartsHelper implements InitializationComponent {
 	}
 
 	public boolean canConnect(Part part, PartPositionRotation positionRotation, ResourceLocation connection, VoxelPosition voxel, EnumFacing sideFrom){
-		return Optional.ofNullable(getData(part).connectivity.get(connection)).map(connections -> connections.containsEntry(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom.getOpposite()))).orElse(false);
+		return Optional.ofNullable(getData(part).connectivity.get(connection)).map(connections -> connections.containsEntry(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom))).orElse(false);
 	}
 
 	public Optional<Multimap<VoxelPosition, EnumFacing>> getConnections(Part part, PartPositionRotation positionRotation, ResourceLocation connect){

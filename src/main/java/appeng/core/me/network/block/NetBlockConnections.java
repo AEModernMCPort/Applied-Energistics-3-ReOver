@@ -71,6 +71,10 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 				});
 			});
 		}));
+		System.out.println(nodes);
+		System.out.println(links);
+		System.out.println(passthroughs);
+		System.out.println(devices);
 	}
 
 	protected void exploreNode(Node node, World world, ConnectionPassthrough passthrough, ResourceLocation connection){
@@ -214,6 +218,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			return Objects.hash(uuid);
 		}
 
+		@Override
+		public String toString(){
+			return "Node{" + "uuid=" + uuid + ", links=" + links + ", devices=" + devices + '}';
+		}
+
 	}
 
 	protected class Link extends PathwayElement {
@@ -237,6 +246,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		@Override
 		public int hashCode(){
 			return Objects.hash(from, to, elements);
+		}
+
+		@Override
+		public String toString(){
+			return "Link{" + "from=" + from + ", to=" + to + ", elements=" + elements + '}';
 		}
 
 	}

@@ -4,6 +4,7 @@ import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.AppEng;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.block.Connection;
+import appeng.core.me.network.connect.DataConnection;
 import appeng.core.me.network.connect.SPIntConnection;
 import net.minecraft.util.ResourceLocation;
 
@@ -26,5 +27,6 @@ public class DevicesHelper implements InitializationComponent {
 	@Override
 	public void init(){
 		AppEngME.INSTANCE.registerConnection(new SPIntConnection(new ResourceLocation(AppEng.MODID, "energy")));
+		AppEngME.INSTANCE.registerConnection(new DataConnection(new ResourceLocation(AppEng.MODID, "data")));
 	}
 }

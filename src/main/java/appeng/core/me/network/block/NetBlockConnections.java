@@ -11,7 +11,6 @@ import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.NetBlockImpl;
 import appeng.core.me.parts.part.PartsHelper;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -24,6 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
@@ -40,7 +40,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * Path
 	 */
 
-	protected Set<Node> nodes = new HashSet<>();
+	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
 	protected Set<Link> links = new HashSet<>();
 
 	//FIXME TMP
@@ -58,88 +58,83 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		//Graph generation
 		AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> c2c.apply(connection.getId()).ifPresent(voxels -> {
 			ResourceLocation cid = connection.getId();
-			forEachTargetVoxel(voxels.getLeft(), voxels.getRight(), (voxel, dir) -> {
-				getConnectionPassthrough(world, voxel, dir, cid).ifPresent(passthrough -> {
-					passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), passthrough);
-					Node node = new Node(passthrough.getUUIDForConnectionPassthrough());
-					nodes.add(node);
-					exploreNode(node, world, passthrough, cid);
-				});
-				getDevice(world, voxel, dir, cid).ifPresent(device -> {
-					devices.put(device.getUUIDForConnection(), device);
-					directLinks.add(device.getNetworkCounterpart().getUUID());
-					//TODO Params.
-				});
+			getAdjacentPTs(world, voxels.getLeft(), voxels.getRight(), cid).forEach(passthrough -> exploreAdjacent(world, cid, passthrough, null));
+			getAdjacentDevices(world, voxels.getLeft(), voxels.getRight(), cid).forEach(device -> {
+				devices.put(device.getUUIDForConnection(), device);
+				directLinks.add(device.getNetworkCounterpart().getUUID());
+				//TODO Params.
 			});
 		}));
-		System.out.println("Pathway calculation took " + (System.currentTimeMillis() - t) + "ms");
-		System.out.println(nodes);
-		System.out.println(links);
-		System.out.println(passthroughs);
-		System.out.println(devices);
+		exploreNodes();
+		AppEngME.logger.info("Pathway calculation took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(nodes.size() + " nodes");
+		AppEngME.logger.info(links.size() + " links");
+		AppEngME.logger.info(passthroughs.size() + " pts");
+		AppEngME.logger.info(devices);
 	}
 
-	protected void exploreNode(Node node, World world, ConnectionPassthrough passthrough, ResourceLocation connection){
-		connection2voxels(passthrough).apply(connection).ifPresent(posRotVoxels -> {
-			getAdjacentPTs(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection).forEach(adjacent -> connection2voxels(adjacent).apply(connection).ifPresent(adjacentPRV -> {
-				Set<ConnectionPassthrough> adjacentPTs = getAdjacentPTs(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
-				adjacentPTs.remove(passthrough);
-				Set<PhysicalDevice> adjacentDevices = getAdjacentDevices(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
-				if(adjacentPTs.size() == 1 && adjacentDevices.isEmpty()){
-					exploreLink(node, world, adjacent, connection);
-				} else {
-					Node end = new Node(adjacent.getUUIDForConnectionPassthrough());
-					Link link = new Link(node, end);
-					node.links.add(link);
-					end.links.add(link);
-					link.elements = new ArrayList<>();
-					adjacentDevices.forEach(device -> {
-						end.devices.add(device.getUUIDForConnection());
-						devices.put(device.getUUIDForConnection(), device);
+	protected Queue<Runnable> nodesExplorer = new LinkedList<>();
+
+	protected void exploreNodes(){
+		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
+	}
+
+	protected ExplorationResult exploreAdjacent(World world, ResourceLocation connection, ConnectionPassthrough current, ConnectionPassthrough previous){
+		final MutableObject<ExplorationResult> res = new MutableObject<>();
+		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
+		passthroughs.put(currentCUUID, current);
+		connection2voxels(current).apply(connection).ifPresent(posRotVoxels -> {
+			Set<ConnectionPassthrough> adjacentPTs = getAdjacentPTs(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection);
+			adjacentPTs.remove(previous);
+			Set<PhysicalDevice> adjacentDevices = getAdjacentDevices(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection);
+			if(adjacentPTs.size() == 1 && adjacentDevices.isEmpty()){
+				//return link;
+				res.setValue(new ExplorationResult.Link(adjacentPTs.toArray(new ConnectionPassthrough[1])[0]));
+			} else {
+				//return node;
+				getOrCreateNode(currentCUUID, nnode -> nodesExplorer.add(() -> {
+					adjacentDevices.forEach(nnode::addDevice);
+					adjacentPTs.stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
+						ConnectionPassthrough p = current;
+						ConnectionPassthrough c = adjacentPT;
+						List<ConnectUUID> es = new ArrayList<>();
+						ExplorationResult explorationResult = exploreAdjacent(world, connection, c, p);
+						while(explorationResult instanceof ExplorationResult.Link){
+							es.add(c.getUUIDForConnectionPassthrough());
+							p = c;
+							c = ((ExplorationResult.Link) explorationResult).next;
+							explorationResult = exploreAdjacent(world, connection, c, p);
+						}
+						createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), nnnn -> {}), es);
 					});
-					if(adjacentPTs.size() > 0) exploreNode(end, world, adjacent, connection);
-				}
-			}));
-			getAdjacentDevices(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection).forEach(device -> {
-				node.devices.add(device.getUUIDForConnection());
-				devices.put(device.getUUIDForConnection(), device);
-			});
+				}));
+				res.setValue(new ExplorationResult.Node());
+			}
 		});
+		return res.getValue();
 	}
 
-	protected void exploreLink(Node from, World world, ConnectionPassthrough e1st, ResourceLocation connection){
-		List<ConnectionPassthrough> elements = new ArrayList<>();
-		elements.add(e1st);
-		MutableObject<ConnectionPassthrough> next = new MutableObject<>(e1st);
-		MutableObject<Set<ConnectionPassthrough>> nextAdjacentPTs = new MutableObject<>(connection2voxels(next.getValue()).apply(connection).map(posRotVoxels -> getAdjacentPTs(world, posRotVoxels.getLeft(), posRotVoxels.getRight(), connection)).orElse(new HashSet<>()));
-		while(nextAdjacentPTs.getValue() != null && next.getValue() != null){
-			passthroughs.put(next.getValue().getUUIDForConnectionPassthrough(), next.getValue());
-			ConnectionPassthrough prev = next.getValue();
-			nextAdjacentPTs.getValue().forEach(adjacent -> connection2voxels(adjacent).apply(connection).ifPresent(adjacentPRV -> {
-				Set<ConnectionPassthrough> adjacentPTs = getAdjacentPTs(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
-				adjacentPTs.remove(prev);
-				Set<PhysicalDevice> adjacentDevices = getAdjacentDevices(world, adjacentPRV.getLeft(), adjacentPRV.getRight(), connection);
-				if(adjacentPTs.size() == 1 && adjacentDevices.isEmpty()){
-					elements.add(adjacent);
-					next.setValue(adjacent);
-					nextAdjacentPTs.setValue(adjacentPTs);
-				} else {
-					Node end = new Node(adjacent.getUUIDForConnectionPassthrough());
-					Link link = new Link(from, end);
-					from.links.add(link);
-					end.links.add(link);
-					link.elements = Lists.transform(elements, ConnectionPassthrough::getUUIDForConnectionPassthrough);
-					adjacentDevices.forEach(device -> {
-						end.devices.add(device.getUUIDForConnection());
-						devices.put(device.getUUIDForConnection(), device);
-					});
-					if(adjacentPTs.size() > 0) exploreNode(end, world, adjacent, connection);
-					//break;
-				}
-			}));
-			if(next.getValue() == prev) break;
+	protected static abstract class ExplorationResult {
+
+		static class Link extends ExplorationResult {
+
+			protected final ConnectionPassthrough next;
+
+			public Link(ConnectionPassthrough next){
+				this.next = next;
+			}
+
 		}
+
+		static class Node extends ExplorationResult {
+
+		}
+
 	}
+
+	/*
+	 * Adjacent
+	 */
 
 	protected Set<ConnectionPassthrough> getAdjacentPTs(World world, PartPositionRotation positionRotation, Multimap<VoxelPosition, EnumFacing> voxels, ResourceLocation connection){
 		Set<ConnectionPassthrough> adjacentPTs = new HashSet<>();
@@ -152,6 +147,10 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		forEachTargetVoxel(positionRotation, voxels, (v, dir) -> getDevice(world, v, dir, connection).ifPresent(adjacentDevices::add));
 		return adjacentDevices;
 	}
+
+	/*
+	 * Get at
+	 */
 
 	protected Optional<ConnectionPassthrough> getConnectionPassthrough(World world, VoxelPosition position, EnumFacing from, ResourceLocation connection){
 		MutableObject<ConnectionPassthrough> passthrough = new MutableObject<>();
@@ -173,6 +172,10 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		return Optional.ofNullable(device.getValue());
 	}
 
+	/*
+	 * C->V
+	 */
+
 	protected void forEachTargetVoxel(PartPositionRotation positionRotation, Multimap<VoxelPosition, EnumFacing> connections, BiConsumer<VoxelPosition, EnumFacing> targetVoxelConsumer){
 		connections.forEach((v, inDir) -> targetVoxelConsumer.accept(v.offsetLocal(inDir), inDir.getOpposite()));
 	}
@@ -180,6 +183,27 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected <T> Function<ResourceLocation, Optional<Pair<PartPositionRotation, Multimap<VoxelPosition, EnumFacing>>>> connection2voxels(T t){
 		if(t instanceof Part.State) return c -> AppEngME.INSTANCE.getPartsHelper().getConnections(((Part.State) t).getPart(), ((Part.State) t).getAssignedPosRot(), c).map(cs -> new ImmutablePair<>(((Part.State) t).getAssignedPosRot(), cs));
 		return c -> Optional.empty();
+	}
+
+	/*
+	 * Links & Nodes
+	 */
+
+	protected void createLink(Node from, Node to, List<ConnectUUID> elements){
+		Link link = new Link(from, to);
+		links.add(link);
+		from.links.add(link);
+		to.links.add(link);
+		link.elements = elements;
+	}
+
+	protected Node getOrCreateNode(ConnectUUID uuid, Consumer<Node> newlyCreated){
+		Node node = nodes.get(uuid);
+		if(node == null){
+			nodes.put(uuid, node = new Node(uuid));
+			newlyCreated.accept(node);
+		}
+		return node;
 	}
 
 	protected class PathwayElement {
@@ -196,6 +220,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 		public Node(ConnectUUID uuid){
 			this.uuid = uuid;
+		}
+
+		void addDevice(PhysicalDevice device){
+			this.devices.add(device.getUUIDForConnection());
+			NetBlockConnections.this.devices.put(device.getUUIDForConnection(), device);
 		}
 
 		NBTTagCompound serializeNBT(){

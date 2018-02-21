@@ -2,6 +2,7 @@ package appeng.core.me.api.network;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public interface GlobalNBDManager {
 
@@ -41,5 +42,18 @@ public interface GlobalNBDManager {
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getFreeDevice(DeviceUUID uuid);
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void registerFreeDevice(N device);
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeFreeDevice(N device);
+
+	/*
+	 * Physical device loading access
+	 */
+
+	@Nonnull
+	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N locateOrCreateNetworkCounterpart(@Nonnull Optional<DeviceUUID> duuidO, @Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO, @Nonnull Supplier<N> creator){
+		return duuidO.flatMap(duuid -> buuidO.flatMap(buuid -> nuuidO.flatMap(this::getNetwork).map(network -> network.getBlock(buuid)).orElseGet(() -> getFreeBlock(buuid))).map(netBlock -> netBlock.<N, P>getDevice(duuid)).orElseGet(() -> getFreeDevice(duuid))).orElseGet(() -> {
+			N nd = creator.get();
+			registerFreeDevice(nd);
+			return nd;
+		});
+	}
 
 }

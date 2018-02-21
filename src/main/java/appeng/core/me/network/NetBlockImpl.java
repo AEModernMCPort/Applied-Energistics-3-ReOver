@@ -1,11 +1,13 @@
 package appeng.core.me.network;
 
+import appeng.core.lib.pos.Ref2WorldCapability;
 import appeng.core.me.api.network.*;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
 import appeng.core.me.network.block.NetBlockConnections;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,11 +21,6 @@ public class NetBlockImpl implements NetBlock {
 	protected NetBlockImpl(NetBlockUUID uuid, Network network){
 		this.uuid = uuid;
 		this.network = network;
-	}
-
-	public NetBlockImpl(NetBlockUUID uuid, GlobalWorldVoxelPosition position, Network network){
-		this(uuid, network);
-		this.position = position;
 	}
 
 	/*
@@ -43,6 +40,15 @@ public class NetBlockImpl implements NetBlock {
 	@Override
 	public GlobalWorldVoxelPosition getPosition(){
 		return position;
+	}
+
+	/*
+	 * Init
+	 */
+
+	protected <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void init(World world, P pblockRoot){
+		position = new GlobalWorldVoxelPosition(Ref2WorldCapability.getCapability(world.isRemote).getReference(world), pblockRoot.getPosition());
+		connections.recalculateAll(world, pblockRoot);
 	}
 
 	/*

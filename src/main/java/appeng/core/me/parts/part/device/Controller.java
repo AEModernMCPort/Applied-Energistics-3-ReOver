@@ -3,10 +3,16 @@ package appeng.core.me.parts.part.device;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
+import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.api.parts.container.PartsAccess;
+import appeng.core.me.network.NetworkImpl;
 import appeng.core.me.network.device.NetDeviceBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +38,13 @@ public interface Controller {
 			return new Physical(this);
 		}
 
+		@Override
+		public void onPlaced(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+			if(theWorld != null && placer != null){
+				NetworkImpl network = new NetworkImpl(new NetworkUUID());
+				network.initialize(part.networkCounterpart = part.createNewNetworkCounterpart(), theWorld, part);
+			}
+		}
 	}
 
 	class Physical extends PartDevice.PartDeviceState<Part, Physical, Network> {

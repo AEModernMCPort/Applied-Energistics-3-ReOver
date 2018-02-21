@@ -6,8 +6,10 @@ import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.network.event.EventBusImpl;
+import appeng.core.me.parts.part.device.Controller;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -37,6 +39,14 @@ public class NetworkImpl implements Network {
 	@Override
 	public NetworkUUID getUUID(){
 		return uuid;
+	}
+
+	/*
+	 * Init
+	 */
+
+	public void initialize(Controller.Network controller, World world, Controller.Physical pcontroller){
+		blocksManager.initialize(controller, world, pcontroller);
 	}
 
 	/*

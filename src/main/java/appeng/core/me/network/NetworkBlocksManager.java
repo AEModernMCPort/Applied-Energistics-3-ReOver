@@ -4,8 +4,10 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.Network;
+import appeng.core.me.parts.part.device.Controller;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -32,6 +34,17 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 	@Nonnull
 	public Collection<NetBlockImpl> getBlocks(){
 		return netBlocks.values();
+	}
+
+	/*
+	 * Init
+	 */
+
+	protected void initialize(Controller.Network controller, World world, Controller.Physical pcontroller){
+		NetBlockImpl netBlock = new NetBlockImpl(new NetBlockUUID(), network);
+		netBlocks.put(netBlock.getUUID(), netBlock);
+
+		netBlock.init(world, pcontroller);
 	}
 
 	/*

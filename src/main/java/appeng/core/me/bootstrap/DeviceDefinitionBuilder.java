@@ -12,24 +12,25 @@ import appeng.core.me.definition.DeviceDefinition;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 public class DeviceDefinitionBuilder<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> extends DefinitionBuilder<DeviceRegistryEntryImpl<N, P>, DeviceRegistryEntry<N, P>, IDeviceDefinition<N, P>, DeviceDefinitionBuilder<N, P>> implements IDeviceBuilder<N, P, DeviceDefinitionBuilder<N, P>> {
 
-	private DeviceLoader<N, P> deserializer;
+	private Function<DeviceRegistryEntry<N, P>, DeviceLoader<N, P>> deserializer;
 
 	public DeviceDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName){
 		super(factory, registryName, new DeviceRegistryEntryImpl<>(null), "device");
 	}
 
 	@Override
-	public DeviceDefinitionBuilder<N, P> deserializer(DeviceLoader<N, P> deserializer){
+	public DeviceDefinitionBuilder<N, P> deserializer(Function<DeviceRegistryEntry<N, P>, DeviceLoader<N, P>> deserializer){
 		this.deserializer = deserializer;
 		return this;
 	}
 
 	@Override
 	protected IDeviceDefinition<N, P> def(@Nullable DeviceRegistryEntryImpl<N, P> reg){
-		reg.deserializer = this.deserializer;
+		reg.deserializer = this.deserializer.apply(reg);
 		return new DeviceDefinition<>(registryName, reg);
 	}
 }

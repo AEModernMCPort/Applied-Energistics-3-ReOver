@@ -7,8 +7,10 @@ import appeng.core.me.api.network.PhysicalDevice;
 import appeng.core.me.api.network.device.DeviceLoader;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 
+import java.util.function.Function;
+
 public interface IDeviceBuilder<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>, DD extends IDeviceBuilder<N, P, DD>> extends IDefinitionBuilder<DeviceRegistryEntry<N, P>, IDeviceDefinition<N, P>, DD> {
 
-	DD deserializer(DeviceLoader<N, P> deserializer);
+	DD deserializer(Function<DeviceRegistryEntry<N, P>, DeviceLoader<N, P>> deserializer);
 
 }

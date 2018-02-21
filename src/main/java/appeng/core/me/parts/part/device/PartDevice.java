@@ -81,6 +81,16 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			this.connectUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("cuuid"));
 		}
 
+		@Override
+		public NBTTagCompound serializeSyncNBT(){
+			return new NBTTagCompound();
+		}
+
+		@Override
+		public void deserializeSyncNBT(NBTTagCompound nbt){
+
+		}
+
 	}
 
 }

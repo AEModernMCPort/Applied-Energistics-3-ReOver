@@ -2,7 +2,7 @@ package appeng.core.me.client.part.render;
 
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.client.part.DefaultPartRenderingHandler;
-import appeng.core.me.parts.part.connected.PartFiber;
+import appeng.core.me.parts.part.cpassthrough.PartFiber;
 import net.minecraft.util.EnumFacing;
 import org.joml.Matrix4f;
 

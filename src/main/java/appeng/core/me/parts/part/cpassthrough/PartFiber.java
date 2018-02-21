@@ -1,4 +1,4 @@
-package appeng.core.me.parts.part.connected;
+package appeng.core.me.parts.part.cpassthrough;
 
 import appeng.core.AppEng;
 import appeng.core.me.AppEngME;
@@ -24,29 +24,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.CableState<P, S>> extends PartConnected<P, S> {
+public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.FiberState<P, S>> extends PartPassthrough<P, S> {
 
-	public PartFiber(boolean supportsRotation, PartColor color){
-		super(supportsRotation, color);
+	public PartFiber(boolean supportsRotation, PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+		super(supportsRotation, color, connectionParams);
 	}
 
-	public static class CableState<P extends PartFiber<P, S>, S extends CableState<P, S>> extends PartConnected.ConnectedState<P, S> {
+	public static class FiberState<P extends PartFiber<P, S>, S extends FiberState<P, S>> extends PassthroughState<P, S> {
 
-		public CableState(P part){
+		public FiberState(P part){
 			super(part);
 		}
 
 		@Override
 		public NBTTagCompound serializeNBT(){
-			return new NBTTagCompound();
+			return super.serializeNBT();
 		}
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt){
-
+			super.deserializeNBT(nbt);
 		}
 
 	}
@@ -55,8 +56,8 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 
 		protected ResourceLocation[] meshes = {new ResourceLocation(AppEng.MODID, "me/fiber/siocertic/micro/" + color.name().toLowerCase() + "_node.obj"), new ResourceLocation(AppEng.MODID, "me/fiber/siocertic/micro/" + color.name().toLowerCase() + "_line.obj")};
 
-		public Micro(PartColor color){
-			super(false, color);
+		public Micro(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+			super(false, color, connectionParams);
 		}
 
 		@Override
@@ -100,7 +101,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 		}
 	}
 
-	public static class MicroState extends CableState<PartFiber.Micro, MicroState> {
+	public static class MicroState extends FiberState<Micro, MicroState> {
 
 		public MicroState(PartFiber.Micro part){
 			super(part);
@@ -144,8 +145,8 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 
 	public static class Normal extends PartFiber<Normal, NormalState> implements PartGroup<PartFiber.Normal, NormalState> {
 
-		public Normal(PartColor color){
-			super(true, color);
+		public Normal(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+			super(true, color, connectionParams);
 		}
 
 		@Override
@@ -169,8 +170,8 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 
 		public static class Joint extends PartFiber<PartFiber.Normal.Joint, NormalState.JointState> {
 
-			public Joint(PartColor color){
-				super(false, color);
+			public Joint(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+				super(true, color, connectionParams);
 			}
 
 			@Override
@@ -181,13 +182,13 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 
 	}
 
-	public static class NormalState extends CableState<PartFiber.Normal, NormalState> {
+	public static class NormalState extends FiberState<Normal, NormalState> {
 
 		public NormalState(PartFiber.Normal part){
 			super(part);
 		}
 
-		public static class JointState extends CableState<PartFiber.Normal.Joint, PartFiber.NormalState.JointState> {
+		public static class JointState extends FiberState<Normal.Joint, JointState> {
 
 			public JointState(PartFiber.Normal.Joint part){
 				super(part);

@@ -40,9 +40,10 @@ public interface Controller {
 
 		@Override
 		public void onPlaced(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+			super.onPlaced(part, world, theWorld, placer, hand);
 			if(theWorld != null && placer != null){
 				NetworkImpl network = new NetworkImpl(new NetworkUUID());
-				network.initialize(part.networkCounterpart = part.createNewNetworkCounterpart(), theWorld, part);
+				network.initialize(part.networkCounterpart, theWorld, part);
 			}
 		}
 	}

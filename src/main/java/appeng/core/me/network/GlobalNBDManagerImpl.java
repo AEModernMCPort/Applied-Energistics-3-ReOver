@@ -35,7 +35,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	//TODO Backups
 
 	protected static File getDataFile(MinecraftServer server){
-		return server.getFile("ae3 networks.dat");
+		return server.getActiveAnvilConverter().getFile(server.getFolderName(), "ae3 networks.dat");
 	}
 
 	public static void serverStarting(MinecraftServer server){

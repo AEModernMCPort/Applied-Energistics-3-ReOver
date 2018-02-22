@@ -4,10 +4,16 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
 import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.device.NetDeviceBase;
 import appeng.core.me.parts.part.PartBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDevice.PartDeviceState<P, S, N>, N extends NetDeviceBase<N, S>> extends PartBase<P, S> {
@@ -17,6 +23,16 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 
 	public PartDevice(boolean supportsRotation){
 		super(supportsRotation);
+	}
+
+	@Override
+	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+		AppEngME.INSTANCE.getGlobalNBDManager().processCreatedDevice(part.networkCounterpart = part.createNewNetworkCounterpart());
+	}
+
+	@Override
+	public void onBroken(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
+		AppEngME.INSTANCE.getGlobalNBDManager().processDestroyedDevice(part.networkCounterpart);
 	}
 
 	protected abstract static class PartDeviceState<P extends PartDevice<P, S, N>, S extends PartDevice.PartDeviceState<P, S, N>, N extends NetDeviceBase<N, S>> extends StateBase<P, S> implements PhysicalDevice<N, S> {

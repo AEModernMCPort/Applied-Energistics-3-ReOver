@@ -56,4 +56,14 @@ public interface GlobalNBDManager {
 		});
 	}
 
+	//TODO Impl
+
+	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processCreatedDevice(@Nonnull N device){
+		registerFreeDevice(device);
+	}
+
+	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processDestroyedDevice(@Nonnull N device){
+		removeFreeDevice(device);
+	}
+
 }

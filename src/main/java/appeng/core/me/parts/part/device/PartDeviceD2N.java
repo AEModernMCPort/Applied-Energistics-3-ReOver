@@ -15,8 +15,8 @@ public interface PartDeviceD2N {
 
 	class Network<P extends PartDevice<P, S, N>, S extends Physical<P, S, N>, N extends Network<P, S, N>> extends NetDeviceBase<N, S>{
 
-		public Network(@Nonnull DeviceRegistryEntry<N, S> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock, @Nonnull ConnectionsParams params){
-			super(registryEntry, uuid, netBlock, params);
+		public Network(@Nonnull DeviceRegistryEntry<N, S> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
+			super(registryEntry, uuid, netBlock);
 		}
 
 	}

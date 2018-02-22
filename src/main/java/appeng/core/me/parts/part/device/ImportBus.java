@@ -12,7 +12,7 @@ public interface ImportBus {
 	class Network extends PartDeviceD2N.Network<Part, Physical, Network> {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
-			super(registryEntry, uuid, netBlock, null);
+			super(registryEntry, uuid, netBlock);
 		}
 
 	}

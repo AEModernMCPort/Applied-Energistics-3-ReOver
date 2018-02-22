@@ -1,5 +1,6 @@
 package appeng.core.me.network.device;
 
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetDevice;
@@ -23,11 +24,11 @@ import java.util.Optional;
 
 public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevice<N, P>> implements NetDevice<N, P> {
 
-	public NetDeviceBase(@Nonnull DeviceRegistryEntry<N, P> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock, @Nonnull ConnectionsParams params){
+	public NetDeviceBase(@Nonnull DeviceRegistryEntry<N, P> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 		this.registryEntry = registryEntry;
 		this.uuid = uuid;
 		this.netBlock = netBlock;
-		this.params = params;
+		this.params = AppEngME.INSTANCE.getDevicesHelper().gatherConnectionsParams(this);
 
 		initCapabilities();
 	}

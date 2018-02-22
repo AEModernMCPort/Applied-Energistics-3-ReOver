@@ -21,7 +21,7 @@ public interface Controller {
 	class Network extends NetDeviceBase<Network, Physical> {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
-			super(registryEntry, uuid, netBlock, null);
+			super(registryEntry, uuid, netBlock);
 		}
 
 	}

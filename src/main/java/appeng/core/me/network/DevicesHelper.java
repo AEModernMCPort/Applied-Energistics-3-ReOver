@@ -28,9 +28,15 @@ public class DevicesHelper implements InitializationComponent {
 		connections.values().forEach(consumer);
 	}
 
+	@Deprecated
+	public Connection ENERGY;
+	@Deprecated
+	public Connection DATA;
+
 	@Override
 	public void init(){
-		AppEngME.INSTANCE.registerConnection(new SPIntConnection(new ResourceLocation(AppEng.MODID, "energy")));
-		AppEngME.INSTANCE.registerConnection(new DataConnection(new ResourceLocation(AppEng.MODID, "data")));
+		AppEngME.INSTANCE.registerConnection(ENERGY = new SPIntConnection(new ResourceLocation(AppEng.MODID, "energy")));
+		AppEngME.INSTANCE.registerConnection(DATA = new DataConnection(new ResourceLocation(AppEng.MODID, "data")));
 	}
+
 }

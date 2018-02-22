@@ -20,6 +20,10 @@ public class DevicesHelper implements InitializationComponent {
 		connections.put(connection.getId(), connection);
 	}
 
+	public <P extends Comparable<P>> Connection<P, ?> getConnection(ResourceLocation id){
+		return connections.get(id);
+	}
+
 	public void forEachConnection(Consumer<Connection> consumer){
 		connections.values().forEach(consumer);
 	}

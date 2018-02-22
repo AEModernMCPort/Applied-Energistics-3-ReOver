@@ -35,6 +35,10 @@ public interface GlobalNBDManager {
 	void registerFreeBlock(NetBlock block);
 	void removeFreeBlock(NetBlock block);
 
+	default Optional<NetBlock> getNetblock(@Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO){
+		return buuidO.flatMap(buuid -> nuuidO.flatMap(this::getNetwork).map(network -> network.getBlock(buuid)).orElseGet(() -> getFreeBlock(buuid)));
+	}
+
 	/*
 	 * Block-Free devices
 	 */
@@ -43,13 +47,17 @@ public interface GlobalNBDManager {
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void registerFreeDevice(N device);
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeFreeDevice(N device);
 
+	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull Optional<DeviceUUID> duuidO, @Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO){
+		return duuidO.flatMap(duuid -> getNetblock(buuidO, nuuidO).map(netBlock -> netBlock.<N, P>getDevice(duuid)).orElseGet(() -> getFreeDevice(duuid)));
+	}
+
 	/*
 	 * Physical device loading access
 	 */
 
 	@Nonnull
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N locateOrCreateNetworkCounterpart(@Nonnull Optional<DeviceUUID> duuidO, @Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO, @Nonnull Supplier<N> creator){
-		return duuidO.flatMap(duuid -> buuidO.flatMap(buuid -> nuuidO.flatMap(this::getNetwork).map(network -> network.getBlock(buuid)).orElseGet(() -> getFreeBlock(buuid))).map(netBlock -> netBlock.<N, P>getDevice(duuid)).orElseGet(() -> getFreeDevice(duuid))).orElseGet(() -> {
+		return this.<N, P>getDevice(duuidO, buuidO, nuuidO).orElseGet(() -> {
 			N nd = creator.get();
 			registerFreeDevice(nd);
 			return nd;

@@ -15,6 +15,7 @@ import appeng.core.me.parts.part.PartDummy;
 import appeng.core.me.parts.part.cpassthrough.PartFiber;
 import appeng.core.me.parts.part.cpassthrough.PartRecerticFiber;
 import appeng.core.me.parts.part.device.Controller;
+import appeng.core.me.parts.part.device.ImportBus;
 import appeng.core.me.parts.placement.SideIsBottomPlacementLogic;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.ResourceLocation;
@@ -43,7 +44,7 @@ public class MEPartDefinitions<P extends Part<P, S>, S extends Part.State<P, S>>
 
 		controller = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "controller"), ih(new Controller.Part())).rootMesh(new ResourceLocation(AppEng.MODID, "controller/controller.obj")).createDefaultPlacerItem().build();
 
-		importBus = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "import_bus"), ih(new PartDummy(true))).rootMesh(new ResourceLocation(AppEng.MODID, "device/import_bus/import_bus.obj")).createDefaultPlacerItem().build();
+		importBus = registry.<P, IPartDefinition<P, S>, IPartBuilder<P, S, ?>, P>definitionBuilder(new ResourceLocation(AppEng.MODID, "import_bus"), ih(new ImportBus.Part())).rootMesh(new ResourceLocation(AppEng.MODID, "device/import_bus/import_bus.obj")).createDefaultPlacerItem().build();
 	}
 
 	private DefinitionFactory.InputHandler<Part, Part> ih(Part part){

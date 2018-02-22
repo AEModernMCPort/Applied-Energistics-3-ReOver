@@ -220,7 +220,7 @@ public class AppEngME implements IME {
 	}
 
 	@ModuleEventHandler
-	public void serverStarting(AEStateEvent.AEServerStartingEvent event){
+	public void serverStarting(AEStateEvent.AEServerAboutToStartEvent event){
 		GlobalNBDManagerImpl.serverStarting(FMLCommonHandler.instance().getMinecraftServerInstance());
 	}
 

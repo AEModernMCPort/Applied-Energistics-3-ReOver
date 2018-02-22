@@ -4,8 +4,11 @@ import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
+import appeng.core.me.api.network.block.ConnectUUID;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.network.event.NCEventBus;
+import appeng.core.me.network.connect.ConnectionsParams;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
@@ -20,10 +23,11 @@ import java.util.Optional;
 
 public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevice<N, P>> implements NetDevice<N, P> {
 
-	public NetDeviceBase(@Nonnull DeviceRegistryEntry<N, P> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
+	public NetDeviceBase(@Nonnull DeviceRegistryEntry<N, P> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock, @Nonnull ConnectionsParams params){
 		this.registryEntry = registryEntry;
 		this.uuid = uuid;
 		this.netBlock = netBlock;
+		this.params = params;
 
 		initCapabilities();
 	}
@@ -52,6 +56,23 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 
 	public void assignPhysicalCounterpart(P p){
 		this.physicalCounterpart = new WeakReference<>(p);
+	}
+
+	/*
+	 * Connection
+	 */
+
+	private ConnectUUID connectUUID = new ConnectUUID();
+	private ConnectionsParams<?> params;
+
+	@Override
+	public ConnectUUID getUUIDForConnection(){
+		return connectUUID;
+	}
+
+	@Override
+	public <Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection){
+		return params.getParam(connection);
 	}
 
 	/*
@@ -119,11 +140,13 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("dcuuid", connectUUID.serializeNBT());
 		if(capabilities != null) nbt.setTag("capabilities", capabilities.serializeNBT());
 		return nbt;
 	}
 
 	protected void deserializeNBT(NBTTagCompound nbt){
+		connectUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("dcuuid"));
 		if(capabilities != null && nbt.hasKey("capabilities")) capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
 	}
 

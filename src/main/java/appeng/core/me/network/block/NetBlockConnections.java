@@ -63,7 +63,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> rootVoxels = oPrCsVs.get().getRight();
 		getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
 		getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
-			devices.put(device.getUUIDForConnection(), device);
+			devices.put(device.getNetworkCounterpart().getUUIDForConnection(), device);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
 		exploreNodes();
@@ -241,8 +241,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		}
 
 		void addDevice(PhysicalDevice device, Collection<ResourceLocation> connections){
-			this.devices.putAll(device.getUUIDForConnection(), connections);
-			NetBlockConnections.this.devices.put(device.getUUIDForConnection(), device);
+			ConnectUUID duuid = device.getNetworkCounterpart().getUUIDForConnection();
+			this.devices.putAll(duuid, connections);
+			NetBlockConnections.this.devices.put(duuid, device);
 		}
 
 		NBTTagCompound serializeNBT(){

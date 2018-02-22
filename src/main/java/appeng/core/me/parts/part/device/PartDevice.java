@@ -1,8 +1,10 @@
 package appeng.core.me.parts.part.device;
 
 import appeng.core.me.AppEngME;
-import appeng.core.me.api.network.*;
-import appeng.core.me.api.network.block.ConnectUUID;
+import appeng.core.me.api.network.DeviceUUID;
+import appeng.core.me.api.network.NetBlockUUID;
+import appeng.core.me.api.network.NetworkUUID;
+import appeng.core.me.api.network.PhysicalDevice;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.device.NetDeviceBase;
@@ -60,17 +62,6 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 		}
 
 		/*
-		 * Connections
-		 */
-
-		protected ConnectUUID connectUUID = new ConnectUUID();
-
-		@Override
-		public ConnectUUID getUUIDForConnection(){
-			return connectUUID;
-		}
-
-		/*
 		 * IO
 		 */
 
@@ -82,8 +73,6 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 				nbt.setTag("buuid", netBlock.getUUID().serializeNBT());
 				netBlock.getNetwork().ifPresent(network -> nbt.setTag("nuuid", network.getUUID().serializeNBT()));
 			});
-
-			nbt.setTag("cuuid", connectUUID.serializeNBT());
 			return nbt;
 		}
 
@@ -93,8 +82,6 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			Optional<NetBlockUUID> buuidO = Optional.ofNullable(nbt.hasKey("buuid") ? nbt.getCompoundTag("buuid") : null).map(NetBlockUUID::fromNBT);
 			Optional<NetworkUUID> nuuidO = Optional.ofNullable(nbt.hasKey("nuuid") ? nbt.getCompoundTag("nuuid") : null).map(NetworkUUID::fromNBT);
 			this.networkCounterpart = AppEngME.INSTANCE.getGlobalNBDManager().locateOrCreateNetworkCounterpart(Optional.of(duuid), buuidO, nuuidO, this::createNewNetworkCounterpart);
-
-			this.connectUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("cuuid"));
 		}
 
 		@Override

@@ -3,7 +3,6 @@ package appeng.core.me.parts.part.device;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
-import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.network.connect.ConnectionsParams;
@@ -16,11 +15,8 @@ public interface PartDeviceD2N {
 
 	class Network<P extends PartDevice<P, S, N>, S extends Physical<P, S, N>, N extends Network<P, S, N>> extends NetDeviceBase<N, S>{
 
-		protected final ConnectionsParams<?> params;
-
-		public Network(@Nonnull DeviceRegistryEntry<N, S> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock, ConnectionsParams<?> params){
-			super(registryEntry, uuid, netBlock);
-			this.params = params;
+		public Network(@Nonnull DeviceRegistryEntry<N, S> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock, @Nonnull ConnectionsParams params){
+			super(registryEntry, uuid, netBlock, params);
 		}
 
 	}
@@ -40,11 +36,6 @@ public interface PartDeviceD2N {
 		@Override
 		public PartColor getColor(){
 			return PartColor.values()[0];
-		}
-
-		@Override
-		public <Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection){
-			return getNetworkCounterpart().params.getParam(connection);
 		}
 
 	}

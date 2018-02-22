@@ -4,24 +4,21 @@ import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartBase;
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-
-import java.util.Map;
 
 public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends PartPassthrough.PassthroughState<P, S>> extends PartBase<P, S> {
 
 	protected final PartColor color;
-	protected final Map<ResourceLocation, Comparable<?>> connectionParams;
+	protected final ConnectionsParams<?> connectionParams;
 
-	public PartPassthrough(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+	public PartPassthrough(PartColor color, ConnectionsParams connectionParams){
 		this.color = color;
-		this.connectionParams = ImmutableMap.copyOf(connectionParams);
+		this.connectionParams = connectionParams;
 	}
 
-	public PartPassthrough(boolean supportsRotation, PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+	public PartPassthrough(boolean supportsRotation, PartColor color, ConnectionsParams connectionParams){
 		super(supportsRotation);
 		this.color = color;
 		this.connectionParams = connectionParams;
@@ -50,13 +47,13 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		}
 
 		@Override
-		public boolean test(ResourceLocation connection){
-			return getPart().connectionParams.containsKey(connection);
+		public boolean test(Connection connection){
+			return getPart().connectionParams.getParam(connection) != null;
 		}
 
 		@Override
 		public <Param extends Comparable<Param>> Param getPassthroughConnectionParameter(Connection<Param, ?> connection){
-			return (Param) getPart().connectionParams.get(connection.getId());
+			return getPart().connectionParams.getParam(connection);
 		}
 
 		/*

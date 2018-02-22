@@ -11,6 +11,7 @@ import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.part.PartGroup;
+import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.container.SmallDetachedPartAccess;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,13 +25,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.FiberState<P, S>> extends PartPassthrough<P, S> {
 
-	public PartFiber(boolean supportsRotation, PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+	public PartFiber(boolean supportsRotation, PartColor color, ConnectionsParams connectionParams){
 		super(supportsRotation, color, connectionParams);
 	}
 
@@ -56,7 +56,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 
 		protected ResourceLocation[] meshes = {new ResourceLocation(AppEng.MODID, "me/fiber/siocertic/micro/" + color.name().toLowerCase() + "_node.obj"), new ResourceLocation(AppEng.MODID, "me/fiber/siocertic/micro/" + color.name().toLowerCase() + "_line.obj")};
 
-		public Micro(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+		public Micro(PartColor color, ConnectionsParams connectionParams){
 			super(false, color, connectionParams);
 		}
 
@@ -145,7 +145,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 
 	public static class Normal extends PartFiber<Normal, NormalState> implements PartGroup<PartFiber.Normal, NormalState> {
 
-		public Normal(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+		public Normal(PartColor color, ConnectionsParams connectionParams){
 			super(true, color, connectionParams);
 		}
 
@@ -170,7 +170,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 
 		public static class Joint extends PartFiber<PartFiber.Normal.Joint, NormalState.JointState> {
 
-			public Joint(PartColor color, Map<ResourceLocation, Comparable<?>> connectionParams){
+			public Joint(PartColor color, ConnectionsParams connectionParams){
 				super(true, color, connectionParams);
 			}
 

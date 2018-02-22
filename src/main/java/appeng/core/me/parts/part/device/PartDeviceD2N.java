@@ -5,7 +5,6 @@ import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
-import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.network.device.NetDeviceBase;
 
 import javax.annotation.Nonnull;

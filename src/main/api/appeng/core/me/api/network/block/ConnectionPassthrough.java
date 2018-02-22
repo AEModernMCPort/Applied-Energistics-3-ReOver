@@ -6,7 +6,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Predicate;
 
-public interface ConnectionPassthrough extends Predicate<ResourceLocation> {
+public interface ConnectionPassthrough extends Predicate<Connection> {
 
 	/**
 	 * Persistent, serialized, immutable, server-only UUID used for connection path finding <i>through this component</i> inside network blocks.<br><br>

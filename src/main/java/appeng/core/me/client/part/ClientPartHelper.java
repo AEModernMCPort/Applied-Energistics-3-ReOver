@@ -12,13 +12,16 @@ import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.item.PartPlacerItem;
 import appeng.core.me.parts.part.PartsHelper;
 import code.elix_x.excomms.color.RGBA;
+import com.google.common.collect.Multimap;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -26,6 +29,7 @@ import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4d;
@@ -122,11 +126,15 @@ public class ClientPartHelper {
 					PartPositionRotation positionRotation = info.getPositionRotation();
 					drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
 					drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
-					if(event.getPlayer().isSneaking()) AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connectivity -> partsHelper().getConnections(info.getPart(), info.getPositionRotation(), connectivity.getId()).ifPresent(connections -> {
-						RGBA color = new RGBA(connectivity.getId().hashCode());
-						color.setAF(0.75f);
-						connections.forEach((v, s) -> drawFilledBox(v.getBB().intersect(new VoxelPosition(v.getGlobalPosition(), v.getLocalPosition().offset(s)).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE));
-					}));
+					if(event.getPlayer().isSneaking()){
+						Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections = partsHelper().getConnections(info.getPart(), info.getPositionRotation());
+						connections.forEach((vS, c) -> {
+							RGBA color = new RGBA(c.hashCode());
+							color.setAF(0.5f);
+							VoxelPosition v = vS.getLeft();
+							drawFilledBox(v.getBB().intersect(v.offsetLocal(vS.getRight()).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);
+						});
+					}
 				});
 
 				//TODO Remove this debug stuff???

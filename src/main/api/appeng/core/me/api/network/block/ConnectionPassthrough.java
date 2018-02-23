@@ -1,9 +1,13 @@
 package appeng.core.me.api.network.block;
 
+import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.parts.PartColor;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public interface ConnectionPassthrough extends Predicate<Connection> {
@@ -32,5 +36,10 @@ public interface ConnectionPassthrough extends Predicate<Connection> {
 	 * @return requirements for given connection
 	 */
 	<Param extends Comparable<Param>> Param getPassthroughConnectionParameter(Connection<Param, ?> connection);
+
+	@Nonnull
+	Optional<NetBlock> getAssignedNetBlock();
+
+	void assignNetBlock(@Nullable NetBlock netBlock);
 
 }

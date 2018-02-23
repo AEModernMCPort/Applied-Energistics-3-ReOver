@@ -64,7 +64,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> rootVoxels = oPrCsVs.get().getRight();
 		getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
 		getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
-			devices.put(device.getNetworkCounterpart().getUUIDForConnection(), device.getNetworkCounterpart());
+			addDevice(device.getNetworkCounterpart());
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
 		exploreNodes();
@@ -84,7 +84,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous){
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
-		passthroughs.put(currentCUUID, current);
+		addPassthrough(current);
 		voxels(current).ifPresent(prCsVs -> {
 			Multimap<ConnectionPassthrough, ResourceLocation> adjacentPTs = getAdjacentPTs(world, prCsVs.getRight());
 			adjacentPTs.removeAll(previous);
@@ -96,7 +96,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			} else {
 				//return node;
 				getOrCreateNode(currentCUUID, prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
-					adjacentDevices.keySet().forEach(device -> nnode.addDevice(device, adjacentDevices.get(device)));
+					adjacentDevices.keySet().forEach(device -> nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device)));
 					adjacentPTs.keySet().stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
 						ConnectionPassthrough p = current;
 						ConnectionPassthrough c = adjacentPT;
@@ -202,8 +202,18 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	/*
-	 * Links & Nodes
+	 * Links, Nodes, Devices...
 	 */
+
+	protected void addPassthrough(ConnectionPassthrough passthrough){
+		this.passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), passthrough);
+		passthrough.assignNetBlock(netBlock);
+	}
+
+	protected void addDevice(NetDevice device){
+		this.devices.put(device.getUUIDForConnection(), device);
+		device.switchNetBlock(netBlock);
+	}
 
 	protected void createLink(Node from, Node to, List<ConnectUUID> elements, ConnectionsParams params){
 		Link link = new Link(from, to, params);
@@ -241,10 +251,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			this.params = params;
 		}
 
-		void addDevice(PhysicalDevice device, Collection<ResourceLocation> connections){
-			ConnectUUID duuid = device.getNetworkCounterpart().getUUIDForConnection();
-			this.devices.putAll(duuid, connections);
-			NetBlockConnections.this.devices.put(duuid, device.getNetworkCounterpart());
+		void addDevice(NetDevice device, Collection<ResourceLocation> connections){
+			this.devices.putAll(device.getUUIDForConnection(), connections);
+			NetBlockConnections.this.addDevice(device);
 		}
 
 		NBTTagCompound serializeNBT(){

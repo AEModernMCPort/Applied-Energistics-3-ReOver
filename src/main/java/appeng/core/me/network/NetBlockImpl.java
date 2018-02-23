@@ -1,6 +1,7 @@
 package appeng.core.me.network;
 
 import appeng.core.lib.pos.Ref2WorldCapability;
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.NCEventBus;
@@ -46,7 +47,9 @@ public class NetBlockImpl implements NetBlock {
 	 * Init
 	 */
 
-	protected <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void init(World world, P pblockRoot){
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void init(World world, P pblockRoot){
+		AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(this);
+
 		position = new GlobalWorldVoxelPosition(Ref2WorldCapability.getCapability(world.isRemote).getReference(world), pblockRoot.getPosition());
 		connections.recalculateAll(world, pblockRoot);
 	}

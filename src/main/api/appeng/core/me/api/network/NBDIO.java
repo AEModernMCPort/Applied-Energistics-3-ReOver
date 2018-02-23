@@ -1,6 +1,7 @@
 package appeng.core.me.api.network;
 
 import appeng.api.AEModInfo;
+import appeng.core.me.network.connect.ConnectionsParams;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,5 +59,13 @@ public interface NBDIO {
 
 	@Nonnull
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Pair<DeviceUUID, N> deserializeDeviceWithArgs(NetBlock block, NBTTagCompound nbt);
+
+	/*
+	 * Connections params
+	 */
+
+	NBTTagCompound serializeConnectionsParams(ConnectionsParams<?> cps);
+
+	ConnectionsParams<?> deserializeConnectionsParams(NBTTagCompound nbt);
 
 }

@@ -3,8 +3,11 @@ package appeng.core.me.network;
 import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.network.block.NetBlockImpl;
+import appeng.core.me.network.connect.ConnectionsParams;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -113,4 +116,34 @@ public class NBDIOImpl implements NBDIO, InitializationComponent {
 		N device = AppEngME.INSTANCE.<N, P>getDeviceRegistry().getValue(new ResourceLocation(nbt.getString("id"))).deserializeNBT(uuid, block, nbt.getCompoundTag("device"));
 		return new ImmutablePair<>(uuid, device);
 	}
+
+	/*
+	 * Connections params
+	 */
+
+	@Override
+	public NBTTagCompound serializeConnectionsParams(ConnectionsParams<?> cps){
+		NBTTagCompound nbt = new NBTTagCompound();
+		NBTTagList params = new NBTTagList();
+		cps.getAllConnections().forEach(connection -> {
+			NBTTagCompound tag = new NBTTagCompound();
+			tag.setString("connection", connection.getId().toString());
+			tag.setTag("param", connection.serializeParam(cps.getParam(connection)));
+			params.appendTag(tag);
+		});
+		nbt.setTag("params", params);
+		return nbt;
+	}
+
+	@Override
+	public ConnectionsParams<?> deserializeConnectionsParams(NBTTagCompound nbt){
+		Map<Connection, Comparable<?>> params = new HashMap<>();
+		((NBTTagList) nbt.getTag("params")).forEach(base -> {
+			NBTTagCompound tag = (NBTTagCompound) base;
+			Connection connection = AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection")));
+			params.put(connection, connection.deserializeParam(tag.getTag("param")));
+		});
+		return new ConnectionsParams(params);
+	}
+
 }

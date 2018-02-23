@@ -58,8 +58,8 @@ public class NetBlockImpl implements NetBlock {
 	public void destroyBlock(){
 		getDevices().forEach(d -> d.switchNetBlock(null));
 		if(network != null){
-			network = null;
 			network.removeDestroyedBlock(this);
+			network = null;
 		}
 	}
 

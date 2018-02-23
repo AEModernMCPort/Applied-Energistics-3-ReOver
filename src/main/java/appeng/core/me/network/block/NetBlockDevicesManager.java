@@ -543,7 +543,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
 			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setTag("device", AppEngME.INSTANCE.getNBDIO().serializeDeviceWithArgs(device));
+			nbt.setTag("device", AppEngME.INSTANCE.getNBDIO().<NetDevice, PhysicalDevice>serializeDeviceWithArgs(device));
 			NBTTagList active = new NBTTagList();
 			this.active.forEach((c, p) -> {
 				NBTTagCompound tag = new NBTTagCompound();

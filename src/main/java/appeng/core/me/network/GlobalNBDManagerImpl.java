@@ -100,7 +100,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	@Override
 	public void networkDestroyed(NetworkUUID uuid){
-
+		networks.remove(uuid);
 	}
 
 	/*

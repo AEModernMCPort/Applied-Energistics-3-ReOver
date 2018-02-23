@@ -54,6 +54,7 @@ public class NetworkImpl implements Network {
 	@Override
 	public void destroyNetwork(){
 		blocksManager.destroy();
+		AppEngME.INSTANCE.getGlobalNBDManager().networkDestroyed(uuid);
 	}
 
 	/*

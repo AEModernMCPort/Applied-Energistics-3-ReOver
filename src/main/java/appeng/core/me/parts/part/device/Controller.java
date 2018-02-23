@@ -49,10 +49,9 @@ public interface Controller {
 
 		@Override
 		public void onBroken(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
-			super.onBroken(part, world, theWorld, breaker);
 			part.networkCounterpart.getNetBlock().ifPresent(netBlock -> {
-				netBlock.destroyBlock();
 				netBlock.getNetwork().ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
+				netBlock.destroyBlock();
 			});
 		}
 

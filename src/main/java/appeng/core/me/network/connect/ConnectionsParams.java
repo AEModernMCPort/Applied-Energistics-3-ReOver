@@ -35,6 +35,10 @@ public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 		return (P) params.get(connection);
 	}
 
+	public boolean hasNoParams(){
+		return params.isEmpty();
+	}
+
 	@Override
 	public boolean equals(Object o){
 		if(this == o) return true;

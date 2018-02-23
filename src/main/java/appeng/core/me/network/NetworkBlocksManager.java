@@ -53,7 +53,12 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 	}
 
 	protected void destroy(){
-		getBlocks().forEach(netBlock -> netBlock.switchNetwork(null));
+		getBlocks().forEach(netBlock -> {
+			if(netBlock.getNetwork().isPresent()){
+				netBlock.switchNetwork(null);
+				AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(netBlock);
+			}
+		});
 		netBlocks = null;
 	}
 

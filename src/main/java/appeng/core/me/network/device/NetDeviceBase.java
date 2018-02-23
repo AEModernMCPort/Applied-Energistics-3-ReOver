@@ -89,7 +89,7 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 
 	@Override
 	public void switchNetBlock(@Nullable NetBlock block){
-		this.netBlock = netBlock;
+		this.netBlock = block;
 	}
 
 	/*

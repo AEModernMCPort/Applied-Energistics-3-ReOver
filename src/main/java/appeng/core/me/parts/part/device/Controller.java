@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 public interface Controller {
 
@@ -50,8 +51,9 @@ public interface Controller {
 		@Override
 		public void onBroken(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
 			part.networkCounterpart.getNetBlock().ifPresent(netBlock -> {
-				netBlock.getNetwork().ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
+				Optional<appeng.core.me.api.network.Network> network = netBlock.getNetwork();
 				netBlock.destroyBlock();
+				network.ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
 			});
 		}
 

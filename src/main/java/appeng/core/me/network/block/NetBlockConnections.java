@@ -2,6 +2,7 @@ package appeng.core.me.network.block;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
+import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
 import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
@@ -49,7 +50,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 	//FIXME TMP
 	Map<ConnectUUID, ConnectionPassthrough> passthroughs = new HashMap<>();
-	Map<ConnectUUID, PhysicalDevice> devices = new HashMap<>();
+	Map<ConnectUUID, NetDevice> devices = new HashMap<>();
 
 	public void recalculateAll(World world, PhysicalDevice root){
 		long t = System.currentTimeMillis();
@@ -63,7 +64,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> rootVoxels = oPrCsVs.get().getRight();
 		getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
 		getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
-			devices.put(device.getNetworkCounterpart().getUUIDForConnection(), device);
+			devices.put(device.getNetworkCounterpart().getUUIDForConnection(), device.getNetworkCounterpart());
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
 		exploreNodes();
@@ -243,7 +244,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		void addDevice(PhysicalDevice device, Collection<ResourceLocation> connections){
 			ConnectUUID duuid = device.getNetworkCounterpart().getUUIDForConnection();
 			this.devices.putAll(duuid, connections);
-			NetBlockConnections.this.devices.put(duuid, device);
+			NetBlockConnections.this.devices.put(duuid, device.getNetworkCounterpart());
 		}
 
 		NBTTagCompound serializeNBT(){

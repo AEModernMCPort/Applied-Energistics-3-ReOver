@@ -58,7 +58,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		passthroughs.values().forEach(ptRef -> Optional.ofNullable(ptRef.get()).ifPresent(pt -> pt.assignNetBlock(null)));
 		passthroughs.clear();
 		generateGraph(world, root);
-		computePathways(world, root);
+		computePathways(world);
 		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
 	}
@@ -73,13 +73,13 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	transient Set<NetDevice> devicesToRoute;
 	transient Multimap<DeviceUUID, Node> dtr2n;
 
-	protected void generateGraph(World world, PhysicalDevice root){
+	protected void generateGraph(World world, PhysicalDevice proot){
 		long t = System.currentTimeMillis();
 		nodes.clear();
 		links.clear();
 		devicesToRoute = new HashSet<>();
 		dtr2n = HashMultimap.create();
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(root);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(proot);
 		if(!oPrCsVs.isPresent()) return;
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
@@ -356,11 +356,8 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 */
 
 	protected Map<DeviceUUID, DeviceInformation> devices = new HashMap<>();
-	@Deprecated
-	protected NetDevice broot;
 
-	protected void computePathways(World world, PhysicalDevice root){
-		broot = root.getNetworkCounterpart();
+	protected void computePathways(World world){
 		devices.values().forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
 		devicesToRoute.forEach(this::recompute);
@@ -370,8 +367,8 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected void recompute(NetDevice device){
 		devices.remove(device.getUUID());
 		List<Pathway> pathways = new ArrayList<>();
-		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>(), broot));
-		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(broot);
+		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
+		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 		ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
 		Multimap<Connection, Pathway> c2ps = HashMultimap.create();
 		pathways.stream().filter(pathway -> ConnectionsParams.join(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
@@ -397,17 +394,17 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 
-	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous, NetDevice root){
+	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous){
 		if(current instanceof Link){
 			Link link = (Link) current;
 			previous.add(link);
-			if(!previous.contains(link.from)) nextStep(pathways, link.from, addCurrent(previous, current), root);
-			if(!previous.contains(link.to)) nextStep(pathways, link.to, addCurrent(previous, current), root);
+			if(!previous.contains(link.from)) nextStep(pathways, link.from, addCurrent(previous, current));
+			if(!previous.contains(link.to)) nextStep(pathways, link.to, addCurrent(previous, current));
 		}
 		if(current instanceof Node){
 			Node node = (Node) current;
-			if(node.devices.containsKey(root)) pathways.add(new Pathway(addCurrent(previous, current)));
-			node.links.stream().filter(link -> !previous.contains(link)).forEach(link -> nextStep(pathways, link, addCurrent(previous, current), root));
+			if(node.devices.containsKey(netBlock.root)) pathways.add(new Pathway(addCurrent(previous, current)));
+			node.links.stream().filter(link -> !previous.contains(link)).forEach(link -> nextStep(pathways, link, addCurrent(previous, current)));
 		}
 	}
 

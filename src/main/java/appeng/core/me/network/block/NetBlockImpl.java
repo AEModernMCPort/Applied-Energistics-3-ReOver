@@ -47,9 +47,12 @@ public class NetBlockImpl implements NetBlock {
 	 * Init
 	 */
 
+	protected NetDevice root;
+
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void init(World world, P pblockRoot){
 		AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(this);
 
+		root = pblockRoot.getNetworkCounterpart();
 		position = new GlobalWorldVoxelPosition(Ref2WorldCapability.getCapability(world.isRemote).getReference(world), pblockRoot.getPosition());
 		connections.recalculateAll(world, pblockRoot);
 	}

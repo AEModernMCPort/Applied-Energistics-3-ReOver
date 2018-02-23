@@ -3,6 +3,7 @@ package appeng.core.me.parts.part.device;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
+import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
@@ -45,6 +46,16 @@ public interface Controller {
 				network.initialize(part.networkCounterpart, theWorld, part);
 			}
 		}
+
+		@Override
+		public void onBroken(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
+			super.onBroken(part, world, theWorld, breaker);
+			part.networkCounterpart.getNetBlock().ifPresent(netBlock -> {
+				netBlock.destroyBlock();
+				netBlock.getNetwork().ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
+			});
+		}
+
 	}
 
 	class Physical extends PartDevice.PartDeviceState<Part, Physical, Network> {

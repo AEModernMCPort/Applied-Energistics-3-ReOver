@@ -17,7 +17,9 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -280,7 +282,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected ConnectionsParams params;
 		protected ConnectionsParams leftover;
 		protected double length;
-		protected List<Pathway> pathways = new ArrayList<>();
+//		protected List<Pathway> pathways = new ArrayList<>();
+
+		PathwayElement(){
+		}
 
 		public PathwayElement(ConnectionsParams params, double length){
 			this.params = params;
@@ -304,13 +309,35 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			leftover = ConnectionsParams.add(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
+		/*
+		 * IO
+		 */
+
+		protected NBTTagCompound serializeNBT(){
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setTag("params", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(params));
+			nbt.setTag("leftover", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(leftover));
+			nbt.setDouble("length", length);
+			return nbt;
+		}
+
+		protected void deserializeNBT(NBTTagCompound nbt){
+			params = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("params"));
+			leftover = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("leftover"));
+			length = nbt.getDouble("length");
+		}
+
 	}
 
 	protected class Node extends PathwayElement {
 
-		protected ConnectUUID uuid;
+		protected final ConnectUUID uuid;
 		protected List<Link> links = new ArrayList<>();
 		protected Multimap<DeviceUUID, Connection> devices = HashMultimap.create();
+
+		Node(ConnectUUID uuid){
+			this.uuid = uuid;
+		}
 
 		public Node(ConnectUUID uuid, double length, ConnectionsParams params){
 			super(params, length);
@@ -325,9 +352,37 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			NetBlockDevicesManager.this.addDevice(device);
 		}
 
-		NBTTagCompound serializeNBT(){
-			return uuid.serializeNBT();
+		/*
+		 * IO
+		 */
+
+		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
+			NBTTagCompound nbt = super.serializeNBT();
+			nbt.setIntArray("links", this.links.stream().mapToInt(l2i::get).toArray());
+			NBTTagList devices = new NBTTagList();
+			this.devices.forEach((duuid, c) -> {
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setTag("duuid", duuid.serializeNBT());
+				tag.setString("connection", c.getId().toString());
+				devices.appendTag(tag);
+			});
+			nbt.setTag("devices", devices);
+			return nbt;
 		}
+
+		protected void deserializeNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
+			super.deserializeNBT(nbt);
+			this.links = Arrays.stream(nbt.getIntArray("links")).mapToObj(i2l::get).collect(Collectors.toList());
+			this.devices.clear();
+			((NBTTagList) nbt.getTag("devices")).forEach(base -> {
+				NBTTagCompound tag = (NBTTagCompound) base;
+				devices.put(DeviceUUID.fromNBT(tag.getCompoundTag("duuid")), AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection"))));
+			});
+		}
+
+		/*
+		 * EH2S
+		 */
 
 		@Override
 		public boolean equals(Object o){
@@ -353,6 +408,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected Node from, to;
 		protected List<ConnectUUID> elements;
 
+		Link(){
+		}
+
 		public Link(Node from, Node to, double length, ConnectionsParams params){
 			super(params, length);
 			this.from = from;
@@ -360,6 +418,32 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			this.length = length;
 			this.params = params;
 		}
+
+		/*
+		 * IO
+		 */
+
+		protected NBTTagCompound serializeNBT(){
+			NBTTagCompound nbt = super.serializeNBT();
+			nbt.setTag("from", from.uuid.serializeNBT());
+			nbt.setTag("to", to.uuid.serializeNBT());
+			NBTTagList elements = new NBTTagList();
+			for(ConnectUUID cuuid : this.elements) elements.appendTag(cuuid.serializeNBT());
+			nbt.setTag("elements", elements);
+			return nbt;
+		}
+
+		protected void deserializeNBT(NBTTagCompound nbt){
+			super.deserializeNBT(nbt);
+			from = nodes.get(ConnectUUID.fromNBT(nbt.getCompoundTag("from")));
+			to = nodes.get(ConnectUUID.fromNBT(nbt.getCompoundTag("to")));
+			this.elements.clear();
+			for(NBTTagCompound base : (Iterable<NBTTagCompound>) nbt.getTag("elements")) this.elements.add(ConnectUUID.fromNBT(base));
+		}
+
+		/*
+		 * EH2S
+		 */
 
 		@Override
 		public boolean equals(Object o){
@@ -455,6 +539,42 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N getDevice(){
 			return (N) device;
 		}
+
+		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setTag("device", AppEngME.INSTANCE.getNBDIO().serializeDeviceWithArgs(device));
+			NBTTagList active = new NBTTagList();
+			this.active.forEach((c, p) -> {
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setString("connection", c.getId().toString());
+				tag.setTag("pathway", p.serializeNBT(l2i));
+				active.appendTag(tag);
+			});
+			nbt.setTag("active", active);
+			NBTTagList dormant = new NBTTagList();
+			this.dormant.forEach(p -> dormant.appendTag(p.serializeNBT(l2i)));
+			nbt.setTag("dormant", dormant);
+			return nbt;
+		}
+
+	}
+
+	protected void deserializeDeviceInfoNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
+		Pair<DeviceUUID, NetDevice> device = AppEngME.INSTANCE.getNBDIO().<NetDevice, PhysicalDevice>deserializeDeviceWithArgs(netBlock, nbt.getCompoundTag("device"));
+		Map<Connection, Pathway> active = new HashMap<>();
+		((NBTTagList) nbt.getTag("active")).forEach(base -> {
+			NBTTagCompound tag = (NBTTagCompound) base;
+			Pathway pathway = new Pathway();
+			pathway.deserializeNBT(tag.getCompoundTag("pathway"), i2l);
+			active.put(AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection"))), pathway);
+		});
+		Set<Pathway> dormant = new HashSet<>();
+		((NBTTagList) nbt.getTag("dormant")).forEach(base -> {
+			Pathway pathway = new Pathway();
+			pathway.deserializeNBT((NBTTagCompound) base, i2l);
+			dormant.add(pathway);
+		});
+		devices.put(device.getLeft(), new DeviceInformation(device.getRight(), active, dormant));
 	}
 
 	protected class Pathway {
@@ -462,6 +582,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected List<PathwayElement> elements;
 		protected double length;
 		protected ConnectionsParams params;
+
+		Pathway(){
+		}
 
 		public Pathway(List<PathwayElement> elements){
 			this.elements = elements;
@@ -484,6 +607,35 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			elements.forEach(e -> e.replenish(connection, params));
 		}
 
+		/*
+		 * IO
+		 */
+
+		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
+			NBTTagCompound nbt = new NBTTagCompound();
+			NBTTagList elements = new NBTTagList();
+			for(PathwayElement e : this.elements){
+				NBTTagCompound tag = new NBTTagCompound();
+				if(e instanceof Node) tag.setTag("node", ((Node) e).uuid.serializeNBT());
+				if(e instanceof Link) tag.setInteger("link", l2i.get(e));
+				elements.appendTag(tag);
+			}
+			nbt.setTag("elements", elements);
+			nbt.setTag("params", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(params));
+			nbt.setDouble("length", length);
+			return nbt;
+		}
+
+		protected void deserializeNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
+			this.elements.clear();
+			for(NBTTagCompound tag : (Iterable<NBTTagCompound>) nbt.getTag("elements")){
+				if(tag.hasKey("node")) elements.add(nodes.get(ConnectUUID.fromNBT(tag.getCompoundTag("node"))));
+				if(tag.hasKey("link")) elements.add(i2l.get(tag.getInteger("link")));
+			}
+			params = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("params"));
+			length = nbt.getDouble("length");
+		}
+
 	}
 
 	/*
@@ -493,12 +645,63 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		Map<Link, Integer> l2i = new HashMap<>();
+		{
+			NBTTagList links = new NBTTagList();
+			int next = 0;
+			Iterator<Link> lit = this.links.iterator();
+			while(lit.hasNext()){
+				Link link = lit.next();
+				l2i.put(link, next);
+				links.appendTag(link.serializeNBT());
+				next++;
+			}
+			nbt.setTag("links", links);
+		}
+		{
+			NBTTagList nodes = new NBTTagList();
+			this.nodes.forEach((uuid, node) -> {
+				NBTTagCompound tag = new NBTTagCompound();
+				tag.setTag("cuuid", uuid.serializeNBT());
+				tag.setTag("node", node.serializeNBT(l2i));
+				nodes.appendTag(tag);
+			});
+			nbt.setTag("nodes", nodes);
+		}
+		{
+			NBTTagList devices = new NBTTagList();
+			this.devices.values().forEach(info -> devices.appendTag(info.serializeNBT(l2i)));
+			nbt.setTag("devices", devices);
+		}
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
-
+		this.links.clear();
+		Map<Integer, Link> i2l = new HashMap<>();
+		Map<Link, NBTTagCompound> ldq = new HashMap<>();
+		{
+			int next = 0;
+			for(NBTTagCompound tag : (Iterable<NBTTagCompound>) nbt.getTag("links")){
+				Link link = new Link();
+				this.links.add(link);
+				ldq.put(link, tag);
+				i2l.put(next, link);
+				next++;
+			}
+		}
+		this.nodes.clear();
+		((NBTTagList) nbt.getTag("nodes")).forEach(base -> {
+			NBTTagCompound tag = (NBTTagCompound) base;
+			ConnectUUID cuuid = ConnectUUID.fromNBT(tag.getCompoundTag("cuuid"));
+			Node node = new Node(cuuid);
+			node.deserializeNBT(nbt.getCompoundTag("node"), i2l);
+			this.nodes.put(cuuid, node);
+		});
+		this.devices.clear();
+		((NBTTagList) nbt.getTag("devices")).forEach(base -> deserializeDeviceInfoNBT((NBTTagCompound) base, i2l));
+		ldq.forEach(Link::deserializeNBT);
 	}
 
 }

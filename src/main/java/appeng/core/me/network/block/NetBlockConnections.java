@@ -260,8 +260,16 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 	protected class PathwayElement {
 
-		protected List<Pathway> pathways;
+		protected ConnectionsParams params;
+		protected List<Pathway> pathways = new ArrayList<>();
 
+		public PathwayElement(ConnectionsParams params){
+			this.params = params;
+		}
+
+		public ConnectionsParams getParams(){
+			return params;
+		}
 	}
 
 	protected class Node extends PathwayElement {
@@ -271,9 +279,8 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		protected List<Link> links = new ArrayList<>();
 		protected Multimap<ConnectUUID, Connection> devices = HashMultimap.create();
 
-		protected ConnectionsParams params;
-
 		public Node(ConnectUUID uuid, double length, ConnectionsParams params){
+			super(params);
 			this.uuid = uuid;
 			this.length = length;
 			this.params = params;
@@ -314,9 +321,8 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		protected List<ConnectUUID> elements;
 		protected double length;
 
-		protected ConnectionsParams params;
-
 		public Link(Node from, Node to, double length, ConnectionsParams params){
+			super(params);
 			this.from = from;
 			this.to = to;
 			this.length = length;
@@ -361,6 +367,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected void recompute(NetDevice device){
 		List<Pathway> pathways = new ArrayList<>();
 		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>(), broot));
+		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(broot);
+		ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
+		pathways.removeIf(pathway -> ConnectionsParams.join(pathway.computeParams(rootParams), deviceParams).hasNoParams());
 	}
 
 	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous, NetDevice root){
@@ -394,10 +403,16 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected class Pathway {
 
 		protected List<PathwayElement> elements;
+		protected ConnectionsParams params;
 
 		public Pathway(List<PathwayElement> elements){
 			this.elements = elements;
 		}
+
+		protected ConnectionsParams computeParams(ConnectionsParams rootParams){
+			return params = elements.stream().map(PathwayElement::getParams).reduce(rootParams, ConnectionsParams::join);
+		}
+
 	}
 
 	/*

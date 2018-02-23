@@ -1,7 +1,6 @@
 package appeng.core.me.api.network.block;
 
 import appeng.core.me.api.network.NetBlock;
-import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.parts.PartColor;
 
 import javax.annotation.Nonnull;
@@ -14,8 +13,7 @@ import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSIZED;
 public interface ConnectionPassthrough extends Predicate<Connection> {
 
 	/**
-	 * Persistent, serialized, immutable, server-only UUID used for connection path finding <i>through this component</i> inside network blocks.<br><br>
-	 * If your device both uses and pass the connection through, {@linkplain ConnectionPassthrough#getUUIDForConnectionPassthrough()} and {@linkplain NetDevice#getUUIDForConnection()} must return <b>different UUIDs.</b>
+	 * Persistent, serialized, immutable, server-only UUID used for connection path finding <i>through this component</i> inside network blocks.
 	 *
 	 * @return UUID for connection <i>through this component</i>
 	 */

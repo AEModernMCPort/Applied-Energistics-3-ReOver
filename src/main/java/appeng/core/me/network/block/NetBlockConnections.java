@@ -310,7 +310,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 		protected ConnectUUID uuid;
 		protected List<Link> links = new ArrayList<>();
-		protected Multimap<ConnectUUID, Connection> devices = HashMultimap.create();
+		protected Multimap<DeviceUUID, Connection> devices = HashMultimap.create();
 
 		public Node(ConnectUUID uuid, double length, ConnectionsParams params){
 			super(params, length);
@@ -320,7 +320,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		}
 
 		void addDevice(NetDevice device, Collection<Connection> connections){
-			this.devices.putAll(device.getUUIDForConnection(), connections);
+			this.devices.putAll(device.getUUID(), connections);
 			dtr2n.put(device.getUUID(), this);
 			NetBlockConnections.this.addDevice(device);
 		}

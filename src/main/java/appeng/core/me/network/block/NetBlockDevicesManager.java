@@ -258,7 +258,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected void addDevice(NetDevice device){
 		devicesToRoute.add(device);
-		device.switchNetBlock(netBlock);
 	}
 
 	protected void createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
@@ -503,6 +502,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			active.values().forEach(dormant::add);
 			active.clear();
 		}
+		device.switchNetBlock(netBlock);
+		AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(device);
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 

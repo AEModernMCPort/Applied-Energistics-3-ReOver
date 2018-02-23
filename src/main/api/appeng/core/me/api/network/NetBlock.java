@@ -20,7 +20,17 @@ import java.util.Optional;
  */
 public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent>, INBTSerializable<NBTTagCompound> {
 
+	/*
+	 * Info
+	 */
+
 	@Nonnull NetBlockUUID getUUID();
+
+	@Nonnull GlobalWorldVoxelPosition getPosition();
+
+	/*
+	 * Network
+	 */
 
 	@Nonnull Optional<Network> getNetwork();
 	void switchNetwork(@Nullable Network network);
@@ -28,11 +38,20 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 		return getNetwork().isPresent();
 	}
 
+	/*
+	 * Destruction
+	 */
+
+	void destroyBlock();
+
+	/*
+	 * Devices
+	 */
+
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(DeviceUUID device);
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices();
 
-	@Nonnull
-	GlobalWorldVoxelPosition getPosition();
+	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device);
 
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();
 

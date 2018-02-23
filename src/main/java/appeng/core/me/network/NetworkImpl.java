@@ -49,6 +49,11 @@ public class NetworkImpl implements Network {
 		blocksManager.initialize(controller, world, pcontroller);
 	}
 
+	@Override
+	public void destroyNetwork(){
+		blocksManager.destroy();
+	}
+
 	/*
 	 * Threads
 	 */
@@ -87,6 +92,11 @@ public class NetworkImpl implements Network {
 	@Override
 	public Collection<? extends NetBlock> getBlocks(){
 		return blocksManager.getBlocks();
+	}
+
+	@Override
+	public void removeDestroyedBlock(NetBlock netBlock){
+		blocksManager.removeDestroyedBlock(netBlock);
 	}
 
 	/*

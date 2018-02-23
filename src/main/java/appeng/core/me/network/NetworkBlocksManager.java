@@ -36,6 +36,10 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 		return netBlocks.values();
 	}
 
+	protected void removeDestroyedBlock(NetBlock netBlock){
+		netBlocks.remove(netBlock.getUUID());
+	}
+
 	/*
 	 * Init
 	 */
@@ -45,6 +49,10 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 		netBlocks.put(netBlock.getUUID(), netBlock);
 
 		netBlock.init(world, pcontroller);
+	}
+
+	protected void destroy(){
+		getBlocks().forEach(netBlock -> netBlock.switchNetwork(null));
 	}
 
 	/*

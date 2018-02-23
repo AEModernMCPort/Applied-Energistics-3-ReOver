@@ -64,14 +64,22 @@ public interface GlobalNBDManager {
 		});
 	}
 
-	//TODO Impl
+	default void processCreatedBlock(@Nonnull NetBlock netBlock){
+		registerFreeBlock(netBlock);
+	}
+
+	default void processDestroyedBlock(@Nonnull NetBlock netBlock){
+		if(netBlock.getNetwork().isPresent()) netBlock.getNetwork().get().removeDestroyedBlock(netBlock);
+		else registerFreeBlock(netBlock);
+	}
 
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processCreatedDevice(@Nonnull N device){
 		registerFreeDevice(device);
 	}
 
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processDestroyedDevice(@Nonnull N device){
-		removeFreeDevice(device);
+		if(device.getNetBlock().isPresent()) device.getNetBlock().get().removeDestroyedDevice(device);
+		else removeFreeDevice(device);
 	}
 
 }

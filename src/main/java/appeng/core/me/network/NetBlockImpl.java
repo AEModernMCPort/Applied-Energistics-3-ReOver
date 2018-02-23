@@ -51,6 +51,15 @@ public class NetBlockImpl implements NetBlock {
 		connections.recalculateAll(world, pblockRoot);
 	}
 
+	@Override
+	public void destroyBlock(){
+		getDevices().forEach(d -> d.switchNetBlock(null));
+		if(network != null){
+			network = null;
+			network.removeDestroyedBlock(this);
+		}
+	}
+
 	/*
 	 * Network
 	 */
@@ -86,6 +95,11 @@ public class NetBlockImpl implements NetBlock {
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices(){
 		return (Collection) devices.values();
+	}
+
+	@Override
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
+		devices.remove(device.getUUID());
 	}
 
 	@Nonnull

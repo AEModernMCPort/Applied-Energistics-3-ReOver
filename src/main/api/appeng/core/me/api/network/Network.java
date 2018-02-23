@@ -40,6 +40,14 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	@Nonnull Optional<NetBlock> getBlock(NetBlockUUID uuid);
 	@Nonnull Collection<? extends NetBlock> getBlocks();
 
+	void removeDestroyedBlock(NetBlock netBlock);
+
+	/*
+	 * Destruction
+	 */
+
+	void destroyNetwork();
+
 	/*
 	 * IO
 	 */

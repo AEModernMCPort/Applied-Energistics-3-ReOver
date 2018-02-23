@@ -3,6 +3,7 @@ package appeng.core.me.network;
 import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
+import appeng.core.me.network.block.NetBlockImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.tuple.ImmutablePair;

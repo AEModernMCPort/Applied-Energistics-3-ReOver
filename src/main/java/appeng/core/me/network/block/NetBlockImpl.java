@@ -1,4 +1,4 @@
-package appeng.core.me.network;
+package appeng.core.me.network.block;
 
 import appeng.core.lib.pos.Ref2WorldCapability;
 import appeng.core.me.AppEngME;
@@ -7,7 +7,6 @@ import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
-import appeng.core.me.network.block.NetBlockConnections;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -20,7 +19,7 @@ import java.util.Optional;
 
 public class NetBlockImpl implements NetBlock {
 
-	protected NetBlockImpl(NetBlockUUID uuid, Network network){
+	public NetBlockImpl(NetBlockUUID uuid, Network network){
 		this.uuid = uuid;
 		this.network = network;
 	}

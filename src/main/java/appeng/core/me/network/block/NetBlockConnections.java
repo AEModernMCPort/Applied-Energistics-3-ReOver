@@ -11,7 +11,6 @@ import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.network.NetBlockImpl;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.collect.HashMultimap;

@@ -4,6 +4,7 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.Network;
+import appeng.core.me.network.block.NetBlockImpl;
 import appeng.core.me.parts.part.device.Controller;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;

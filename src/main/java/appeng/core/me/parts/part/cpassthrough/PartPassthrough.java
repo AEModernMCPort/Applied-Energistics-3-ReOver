@@ -98,6 +98,7 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		public void deserializeNBT(NBTTagCompound nbt){
 			pcUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("pcuuid"));
 			netBlock = AppEngME.INSTANCE.getGlobalNBDManager().getNetblock(Optional.ofNullable(nbt.hasKey("buuid") ? NetBlockUUID.fromNBT(nbt.getCompoundTag("buuid")) : null), Optional.ofNullable(nbt.hasKey("nuuid") ? NetworkUUID.fromNBT(nbt.getCompoundTag("nuuid")) : null)).orElse(null);
+			if(netBlock != null) netBlock.notifyPassthroughLoaded(this);
 		}
 
 		@Override

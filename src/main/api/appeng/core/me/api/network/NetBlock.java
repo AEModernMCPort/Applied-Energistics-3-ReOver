@@ -1,5 +1,6 @@
 package appeng.core.me.api.network;
 
+import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
@@ -52,6 +53,8 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices();
 
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device);
+
+	void notifyPassthroughLoaded(ConnectionPassthrough passthrough);
 
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();
 

@@ -27,6 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -40,13 +41,23 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	/*
+	 * Passthroughs
+	 */
+
+	Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs = new HashMap<>();
+
+	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
+		passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
+	}
+
+	/*
 	 * Path
 	 */
 
-	Map<ConnectUUID, ConnectionPassthrough> passthroughs = new HashMap<>();
-
 	public void recalculateAll(World world, PhysicalDevice root){
 		long t = System.currentTimeMillis();
+		passthroughs.values().forEach(ptRef -> Optional.ofNullable(ptRef.get()).ifPresent(pt -> pt.assignNetBlock(null)));
+		passthroughs.clear();
 		generateGraph(world, root);
 		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
@@ -219,7 +230,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 */
 
 	protected void addPassthrough(ConnectionPassthrough passthrough){
-		this.passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), passthrough);
+		notifyPassthroughLoaded(passthrough);
 		passthrough.assignNetBlock(netBlock);
 	}
 

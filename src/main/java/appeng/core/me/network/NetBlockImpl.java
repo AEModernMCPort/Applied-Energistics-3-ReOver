@@ -3,6 +3,7 @@ package appeng.core.me.network;
 import appeng.core.lib.pos.Ref2WorldCapability;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.network.device.BRINMDevice;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
@@ -103,6 +104,11 @@ public class NetBlockImpl implements NetBlock {
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
 		devices.remove(device.getUUID());
+	}
+
+	@Override
+	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
+		connections.notifyPassthroughLoaded(passthrough);
 	}
 
 	@Nonnull

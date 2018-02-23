@@ -1,5 +1,6 @@
 package appeng.core.me.network;
 
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.Network;
@@ -46,6 +47,7 @@ public class NetworkImpl implements Network {
 	 */
 
 	public void initialize(Controller.Network controller, World world, Controller.Physical pcontroller){
+		AppEngME.INSTANCE.getGlobalNBDManager().networkCreated(this);
 		blocksManager.initialize(controller, world, pcontroller);
 	}
 

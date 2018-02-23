@@ -15,6 +15,7 @@ import appeng.core.me.network.NetBlockImpl;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -59,6 +60,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		passthroughs.values().forEach(ptRef -> Optional.ofNullable(ptRef.get()).ifPresent(pt -> pt.assignNetBlock(null)));
 		passthroughs.clear();
 		generateGraph(world, root);
+		computePathways(world, root);
 		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
 	}
@@ -340,11 +342,62 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		}
 	}
 
+	/*
+	 * Devices
+	 */
+
+	protected Map<DeviceUUID, DeviceInformation> devices = new HashMap<>();
+	@Deprecated
+	protected NetDevice broot;
+
+	protected void computePathways(World world, PhysicalDevice root){
+		broot = root.getNetworkCounterpart();
+		devices.values().forEach(info -> info.device.switchNetBlock(null));
+		devices.clear();
+		devicesToRoute.forEach(this::recompute);
+		devicesToRoute.clear();
+	}
+
+	protected void recompute(NetDevice device){
+		List<Pathway> pathways = new ArrayList<>();
+		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>(), broot));
+	}
+
+	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous, NetDevice root){
+		if(current instanceof Link){
+			Link link = (Link) current;
+			previous.add(link);
+			if(!previous.contains(link.from)) nextStep(pathways, link.from, addCurrent(previous, current), root);
+			if(!previous.contains(link.to)) nextStep(pathways, link.to, addCurrent(previous, current), root);
+		}
+		if(current instanceof Node){
+			Node node = (Node) current;
+			if(node.devices.containsKey(root)) pathways.add(new Pathway(addCurrent(previous, current)));
+			node.links.stream().filter(link -> !previous.contains(link)).forEach(link -> nextStep(pathways, link, addCurrent(previous, current), root));
+		}
+	}
+
+	protected List<PathwayElement> addCurrent(List<PathwayElement> previous, PathwayElement current){
+		List<PathwayElement> list = new ArrayList<>(previous);
+		list.add(current);
+		return list;
+	}
+
+	class DeviceInformation {
+
+		NetDevice device;
+		Map<Connection, Pathway> active = new HashMap<>();
+		Collection<Pathway> dormant;
+
+	}
+
 	protected class Pathway {
 
 		protected List<PathwayElement> elements;
-		protected boolean dormant;
 
+		public Pathway(List<PathwayElement> elements){
+			this.elements = elements;
+		}
 	}
 
 	/*

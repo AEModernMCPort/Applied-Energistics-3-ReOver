@@ -137,6 +137,7 @@ public class NetBlockImpl implements NetBlock {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("pos", position.serializeNBT());
 		nbt.setTag("devices", devicesManager.serializeNBT());
+		nbt.setTag("rduuid", root.getUUID().serializeNBT());
 		return nbt;
 	}
 
@@ -144,6 +145,7 @@ public class NetBlockImpl implements NetBlock {
 	public void deserializeNBT(NBTTagCompound nbt){
 		position = GlobalWorldVoxelPosition.fromNBT(nbt.getCompoundTag("pos"));
 		devicesManager.deserializeNBT(nbt.getCompoundTag("devices"));
+		root = devicesManager.getDevice(DeviceUUID.fromNBT(nbt.getCompoundTag("rduuid"))).get();
 	}
 
 	public static NetBlockImpl createFromNBT(@Nonnull NetBlockUUID uuid, @Nullable Network network, @Nonnull NBTTagCompound nbt){

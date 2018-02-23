@@ -18,17 +18,27 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 	ResourceLocation getId();
 
 	/**
-	 * Join 2 connection parameters, aka calculate global connection parameter for 2 {@linkplain ConnectionPassthrough passthroughs}.
+	 * Intersect 2 connection parameters, aka calculate global connection parameter for 2 {@linkplain ConnectionPassthrough passthroughs}.
 	 *
 	 * @param param1 first parameter
 	 * @param param2 second parameter
 	 * @return global parameter
 	 */
 	@Nonnull
-	P join(@Nonnull P param1, @Nonnull P param2);
+	P intersect(@Nonnull P param1, @Nonnull P param2);
 
 	/**
-	 * Add 2 parameters
+	 * Unite 2 parameters, AKA in a junction of multiple cables
+	 *
+	 * @param param1 first parameter
+	 * @param param2 second parameter
+	 * @return sum of 2 parameters
+	 */
+	@Nonnull
+	P union(@Nonnull P param1, @Nonnull P param2);
+
+	/**
+	 * Add 2 parameters. Inverse-operation of {@linkplain Connection#subtract(Comparable, Comparable) subtract}.
 	 *
 	 * @param param1 first parameter
 	 * @param param2 second parameter
@@ -38,7 +48,7 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 	P add(@Nonnull P param1, @Nonnull P param2);
 
 	/**
-	 * Subtract given consumption from the parameter
+	 * Subtract sub from param. Inverse-operation of {@linkplain Connection#add(Comparable, Comparable) add}.
 	 *
 	 * @param param parameter
 	 * @param sub   value to subtract
@@ -48,7 +58,7 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 	P subtract(@Nonnull P param, @Nonnull P sub);
 
 	/**
-	 * Divides given parameter into equal parts by given number
+	 * Divides given parameter into given number of equal parts
 	 *
 	 * @param param parameter
 	 * @param parts parts

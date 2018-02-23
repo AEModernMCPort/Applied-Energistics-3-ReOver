@@ -33,8 +33,13 @@ public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 	}
 
 	@Nullable
-	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> join(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
-		return binop(params1, params2, (connection, param1, param2) -> connection.join(param1, param2));
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> intersect(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+		return binop(params1, params2, (connection, param1, param2) -> connection.intersect(param1, param2));
+	}
+
+	@Nullable
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> union(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+		return binop(params1, params2, (connection, param1, param2) -> connection.union(param1, param2));
 	}
 
 	@Nullable

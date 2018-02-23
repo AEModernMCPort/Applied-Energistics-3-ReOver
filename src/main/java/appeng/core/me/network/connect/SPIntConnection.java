@@ -1,12 +1,11 @@
 package appeng.core.me.network.connect;
 
-import appeng.core.me.api.network.block.Connection;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public class SPIntConnection extends AConnection<Integer, NBTTagInt> implements Connection<Integer, NBTTagInt> {
+public class SPIntConnection extends AConnection<Integer, NBTTagInt> {
 
 	public SPIntConnection(ResourceLocation id, double maxDistance){
 		super(id, maxDistance);
@@ -14,8 +13,14 @@ public class SPIntConnection extends AConnection<Integer, NBTTagInt> implements 
 
 	@Nonnull
 	@Override
-	public Integer join(@Nonnull Integer param1, @Nonnull Integer param2){
+	public Integer intersect(@Nonnull Integer param1, @Nonnull Integer param2){
 		return Math.min(param1, param2);
+	}
+
+	@Nonnull
+	@Override
+	public Integer union(@Nonnull Integer param1, @Nonnull Integer param2){
+		return param1 + param2;
 	}
 
 	@Nonnull

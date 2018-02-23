@@ -13,14 +13,20 @@ public class DataConnection extends AConnection<DataConnection.Params, NBTTagCom
 
 	@Nonnull
 	@Override
-	public Params join(@Nonnull Params param1, @Nonnull Params param2){
+	public Params intersect(@Nonnull Params param1, @Nonnull Params param2){
 		return new Params(Math.min(param1.channels, param2.channels), Math.min(param1.dpc, param2.dpc));
 	}
 
 	@Nonnull
 	@Override
-	public Params add(@Nonnull Params param1, @Nonnull Params param2){
+	public Params union(@Nonnull Params param1, @Nonnull Params param2){
 		return new Params(Math.max(param1.channels, param2.channels), Math.min(param1.dpc, param2.dpc));
+	}
+
+	@Nonnull
+	@Override
+	public Params add(@Nonnull Params param1, @Nonnull Params param2){
+		return new Params(param1.channels + param2.channels, param1.dpc);
 	}
 
 	@Nonnull

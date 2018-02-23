@@ -93,28 +93,30 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			if(adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
 				//return link;
 				ConnectionPassthrough adjN0 = adjacentPTs.keySet().toArray(new ConnectionPassthrough[1])[0];
-				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), adjN0));
+				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), current.getLength(), adjN0));
 			} else {
 				//return node;
-				getOrCreateNode(currentCUUID, prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
+				getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
 					adjacentDevices.keySet().forEach(device -> nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device)));
 					adjacentPTs.keySet().stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
 						ConnectionPassthrough p = current;
 						ConnectionPassthrough c = adjacentPT;
 						List<ConnectUUID> es = new ArrayList<>();
+						double length = 0;
 						ConnectionsParams params = null;
 						ExplorationResult explorationResult = exploreAdjacent(world, c, p);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
+							length += explorationResult.length;
 							params = ConnectionsParams.join(params, explorationResult.connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
 							explorationResult = exploreAdjacent(world, c, p);
 						}
-						createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), explorationResult.connectionsParams, nnnn -> {}), es, params);
+						createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params);
 					});
 				}));
-				res.setValue(new ExplorationResult.Node(prCsVs.getMiddle()));
+				res.setValue(new ExplorationResult.Node(prCsVs.getMiddle(), current.getLength()));
 			}
 		});
 		return res.getValue();
@@ -123,25 +125,27 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected static abstract class ExplorationResult {
 
 		protected final ConnectionsParams connectionsParams;
+		protected final double length;
 
-		ExplorationResult(ConnectionsParams connectionsParams){
+		public ExplorationResult(ConnectionsParams connectionsParams, double length){
 			this.connectionsParams = connectionsParams;
+			this.length = length;
 		}
 
 		static class Link extends ExplorationResult {
 
 			protected final ConnectionPassthrough next;
 
-			Link(ConnectionsParams connectionsParams, ConnectionPassthrough next){
-				super(connectionsParams);
+			Link(ConnectionsParams connectionsParams, double length, ConnectionPassthrough next){
+				super(connectionsParams, length);
 				this.next = next;
 			}
 		}
 
 		static class Node extends ExplorationResult {
 
-			Node(ConnectionsParams connectionsParams){
-				super(connectionsParams);
+			public Node(ConnectionsParams connectionsParams, double length){
+				super(connectionsParams, length);
 			}
 		}
 
@@ -216,18 +220,18 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		device.switchNetBlock(netBlock);
 	}
 
-	protected void createLink(Node from, Node to, List<ConnectUUID> elements, ConnectionsParams params){
-		Link link = new Link(from, to, params);
+	protected void createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
+		Link link = new Link(from, to, length, params);
 		links.add(link);
 		from.links.add(link);
 		to.links.add(link);
 		link.elements = elements;
 	}
 
-	protected Node getOrCreateNode(ConnectUUID uuid, ConnectionsParams params, Consumer<Node> newlyCreated){
+	protected Node getOrCreateNode(ConnectUUID uuid, double length, ConnectionsParams params, Consumer<Node> newlyCreated){
 		Node node = nodes.get(uuid);
 		if(node == null){
-			nodes.put(uuid, node = new Node(uuid, params));
+			nodes.put(uuid, node = new Node(uuid, length, params));
 			newlyCreated.accept(node);
 		}
 		return node;
@@ -242,13 +246,15 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected class Node extends PathwayElement {
 
 		protected ConnectUUID uuid;
+		protected double length;
 		protected List<Link> links = new ArrayList<>();
 		protected Multimap<ConnectUUID, Connection> devices = HashMultimap.create();
 
 		protected ConnectionsParams params;
 
-		public Node(ConnectUUID uuid, ConnectionsParams params){
+		public Node(ConnectUUID uuid, double length, ConnectionsParams params){
 			this.uuid = uuid;
+			this.length = length;
 			this.params = params;
 		}
 
@@ -284,12 +290,14 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 		protected Node from, to;
 		protected List<ConnectUUID> elements;
+		protected double length;
 
 		protected ConnectionsParams params;
 
-		public Link(Node from, Node to, ConnectionsParams params){
+		public Link(Node from, Node to, double length, ConnectionsParams params){
 			this.from = from;
 			this.to = to;
+			this.length = length;
 			this.params = params;
 		}
 

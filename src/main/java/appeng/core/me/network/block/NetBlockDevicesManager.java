@@ -472,11 +472,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		devices.values().stream().filter(d -> d != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
 		devices.put(netBlock.root.getUUID(), new DeviceInformation(netBlock.root, null, null));
-		devicesToRoute.forEach(this::recompute);
-		devicesToRoute.clear();
+		devicesToRoute.forEach(this::compute);
+		devicesToRoute = null;
+		dtr2n = null;
 	}
 
-	protected void recompute(NetDevice device){
+	protected void compute(NetDevice device){
 		devices.remove(device.getUUID());
 		List<Pathway> pathways = new ArrayList<>();
 		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));

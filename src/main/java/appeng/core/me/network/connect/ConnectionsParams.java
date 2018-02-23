@@ -46,6 +46,10 @@ public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 		return params.isEmpty();
 	}
 
+	public Collection<Connection<IntP, ?>> getAllConnections(){
+		return params.keySet();
+	}
+
 	@Nonnull
 	public ConnectionsParams<IntP> mul(Function<Connection<IntP, ?>, Double> c2d){
 		return new ConnectionsParams<>(Maps.transformEntries(params, (c, p) -> c.mul(p, c2d.apply(c))));

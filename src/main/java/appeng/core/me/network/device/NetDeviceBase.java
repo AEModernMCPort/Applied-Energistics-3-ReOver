@@ -20,6 +20,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
+import java.util.Collection;
 import java.util.Optional;
 
 public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevice<N, P>> implements NetDevice<N, P> {
@@ -74,6 +75,11 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	@Override
 	public <Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection){
 		return params.getParam(connection);
+	}
+
+	@Override
+	public boolean fulfill(Collection<Connection> connectionsFulfilled){
+		return params.getAllConnections().containsAll(connectionsFulfilled);
 	}
 
 	/*

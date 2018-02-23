@@ -15,7 +15,6 @@ import appeng.core.me.network.NetBlockImpl;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -370,6 +369,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	protected void recompute(NetDevice device){
+		devices.remove(device.getUUID());
 		List<Pathway> pathways = new ArrayList<>();
 		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>(), broot));
 		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(broot);
@@ -382,6 +382,20 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 				if(decayedParams.compareTo(req) >= 0) c2ps.put(connection, pathway);
 			}
 		}));
+		Map<Connection, Pathway> active = new HashMap<>();
+		Set<Pathway> dormant = new HashSet<>();
+		AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> c2ps.get(connection).stream().sorted(Comparator.comparingDouble(Pathway::getLength)).forEachOrdered(pathway ->{
+			if(!active.containsKey(connection)) active.put(connection, pathway);
+			else dormant.add(pathway);
+		}));
+		AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+			Comparable req = device.getConnectionRequirement(connection);
+			if(req != null) if(!device.fulfill(active.keySet())){
+				active.values().forEach(dormant::add);
+				active.clear();
+			}
+		});
+		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 
 	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous, NetDevice root){
@@ -407,8 +421,14 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	class DeviceInformation {
 
 		NetDevice device;
-		Map<Connection, Pathway> active = new HashMap<>();
-		Collection<Pathway> dormant;
+		Map<Connection, Pathway> active;
+		Set<Pathway> dormant;
+
+		public DeviceInformation(NetDevice device, Map<Connection, Pathway> active, Set<Pathway> dormant){
+			this.device = device;
+			this.active = active;
+			this.dormant = dormant;
+		}
 
 	}
 
@@ -427,6 +447,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			return params = elements.stream().map(PathwayElement::getParams).reduce(rootParams, ConnectionsParams::join);
 		}
 
+		public double getLength(){
+			return length;
+		}
 	}
 
 	/*

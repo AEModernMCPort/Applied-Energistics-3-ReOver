@@ -12,6 +12,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -63,6 +64,16 @@ public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N
 	 * @return requirements for given connection
 	 */
 	<Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection);
+
+	/**
+	 * Called whenever paths to this device have been recomputed, giving you all the connection types that can be fulfilled.<br>
+	 * Returning true will fulfill all requirements that can be, and consume them from the best paths, possibly limiting other devices.<br>
+	 * Returning false will not consume your requirements from the network.
+	 *
+	 * @param connectionsFulfilled all connections that can be fullfilled
+	 * @return whether to fulfill and consume your requirements
+	 */
+	boolean fulfill(Collection<Connection> connectionsFulfilled);
 
 	/*
 	 * IO

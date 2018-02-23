@@ -12,9 +12,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -55,7 +52,7 @@ public class NetBlockImpl implements NetBlock {
 
 		root = pblockRoot.getNetworkCounterpart();
 		position = new GlobalWorldVoxelPosition(Ref2WorldCapability.getCapability(world.isRemote).getReference(world), pblockRoot.getPosition());
-		connections.recalculateAll(world, pblockRoot);
+		devicesManager.recalculateAll(world, pblockRoot);
 	}
 
 	@Override
@@ -89,28 +86,28 @@ public class NetBlockImpl implements NetBlock {
 	 * Devices
 	 */
 
-	protected NetBlockConnections connections = new NetBlockConnections(this);
+	protected NetBlockDevicesManager devicesManager = new NetBlockDevicesManager(this);
 
 	@Nonnull
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull DeviceUUID device){
-		return connections.getDevice(device);
+		return devicesManager.getDevice(device);
 	}
 
 	@Nonnull
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices(){
-		return connections.getDevices();
+		return devicesManager.getDevices();
 	}
 
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device){
-		connections.removeDestroyedDevice(device);
+		devicesManager.removeDestroyedDevice(device);
 	}
 
 	@Override
 	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
-		connections.notifyPassthroughLoaded(passthrough);
+		devicesManager.notifyPassthroughLoaded(passthrough);
 	}
 
 	@Nonnull
@@ -139,14 +136,14 @@ public class NetBlockImpl implements NetBlock {
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("pos", position.serializeNBT());
-		nbt.setTag("connections", connections.serializeNBT());
+		nbt.setTag("devices", devicesManager.serializeNBT());
 		return nbt;
 	}
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		position = GlobalWorldVoxelPosition.fromNBT(nbt.getCompoundTag("pos"));
-		connections.deserializeNBT(nbt.getCompoundTag("connections"));
+		devicesManager.deserializeNBT(nbt.getCompoundTag("devices"));
 	}
 
 	public static NetBlockImpl createFromNBT(@Nonnull NetBlockUUID uuid, @Nullable Network network, @Nonnull NBTTagCompound nbt){

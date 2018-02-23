@@ -34,11 +34,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
+public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> {
 
 	protected NetBlockImpl netBlock;
 
-	public NetBlockConnections(NetBlockImpl netBlock){
+	public NetBlockDevicesManager(NetBlockImpl netBlock){
 		this.netBlock = netBlock;
 	}
 
@@ -322,7 +322,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		void addDevice(NetDevice device, Collection<Connection> connections){
 			this.devices.putAll(device.getUUID(), connections);
 			dtr2n.put(device.getUUID(), this);
-			NetBlockConnections.this.addDevice(device);
+			NetBlockDevicesManager.this.addDevice(device);
 		}
 
 		NBTTagCompound serializeNBT(){

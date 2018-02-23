@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 
 public class DataConnection extends AConnection<DataConnection.Params, NBTTagCompound> {
 
-	public DataConnection(ResourceLocation id){
-		super(id);
+	public DataConnection(ResourceLocation id, double maxDistance){
+		super(id, maxDistance);
 	}
 
 	@Nonnull
@@ -33,6 +33,12 @@ public class DataConnection extends AConnection<DataConnection.Params, NBTTagCom
 	@Override
 	public Params divide(@Nonnull Params param, int parts){
 		return new Params(Math.floorDiv(param.channels, parts) + 1, param.dpc);
+	}
+
+	@Nonnull
+	@Override
+	public Params mul(@Nonnull Params param, double d){
+		return new Params(param.channels, (int) (param.dpc * d));
 	}
 
 	@Override

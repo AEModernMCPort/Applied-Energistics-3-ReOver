@@ -33,9 +33,9 @@ public class DevicesHelper implements InitializationComponent {
 	}
 
 	@Deprecated
-	public Connection ENERGY = new SPIntConnection(new ResourceLocation(AppEng.MODID, "energy"));
+	public Connection ENERGY = new SPIntConnection(new ResourceLocation(AppEng.MODID, "energy"), AppEngME.INSTANCE.config.energyMaxDistance);
 	@Deprecated
-	public Connection DATA = new DataConnection(new ResourceLocation(AppEng.MODID, "data"));
+	public Connection DATA = new DataConnection(new ResourceLocation(AppEng.MODID, "data"), AppEngME.INSTANCE.config.dataMaxDistance);
 
 	@Override
 	public void init(){

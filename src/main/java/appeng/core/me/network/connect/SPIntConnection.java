@@ -8,8 +8,8 @@ import javax.annotation.Nonnull;
 
 public class SPIntConnection extends AConnection<Integer, NBTTagInt> implements Connection<Integer, NBTTagInt> {
 
-	public SPIntConnection(ResourceLocation id){
-		super(id);
+	public SPIntConnection(ResourceLocation id, double maxDistance){
+		super(id, maxDistance);
 	}
 
 	@Nonnull
@@ -34,6 +34,12 @@ public class SPIntConnection extends AConnection<Integer, NBTTagInt> implements 
 	@Override
 	public Integer divide(@Nonnull Integer param, int parts){
 		return Math.floorDiv(param, parts) + 1;
+	}
+
+	@Nonnull
+	@Override
+	public Integer mul(@Nonnull Integer param, double d){
+		return (int) (param * d);
 	}
 
 	@Override

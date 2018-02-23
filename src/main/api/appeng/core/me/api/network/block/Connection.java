@@ -11,7 +11,6 @@ import javax.annotation.Nonnull;
  *
  * @param <P> parameter type
  * @param <N> serialize parameter type
- *
  * @author Elix_x
  */
 public interface Connection<P extends Comparable<P>, N extends NBTBase> {
@@ -20,6 +19,7 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 
 	/**
 	 * Join 2 connection parameters, aka calculate global connection parameter for 2 {@linkplain ConnectionPassthrough passthroughs}.
+	 *
 	 * @param param1 first parameter
 	 * @param param2 second parameter
 	 * @return global parameter
@@ -29,6 +29,7 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 
 	/**
 	 * Add 2 parameters
+	 *
 	 * @param param1 first parameter
 	 * @param param2 second parameter
 	 * @return sum of 2 parameters
@@ -38,8 +39,9 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 
 	/**
 	 * Subtract given consumption from the parameter
+	 *
 	 * @param param parameter
-	 * @param sub value to subtract
+	 * @param sub   value to subtract
 	 * @return subtracted parameter
 	 */
 	@Nonnull
@@ -47,12 +49,35 @@ public interface Connection<P extends Comparable<P>, N extends NBTBase> {
 
 	/**
 	 * Divides given parameter into equal parts by given number
+	 *
 	 * @param param parameter
 	 * @param parts parts
 	 * @return parameter of a part
 	 */
 	@Nonnull
 	P divide(@Nonnull P param, int parts);
+
+	/*
+	 * Decay
+	 */
+
+	/**
+	 * Maximum reach of this connection type, in meters (blocks)
+	 *
+	 * @return maximum distance that signal of this connection type can reach
+	 */
+	double maxDistance();
+
+	/**
+	 * Multiply given parameter by the number. Used primarily for calculating and reverse-calculating signal decay effects.<br>
+	 * The number is between 0 and 1 if calculating decay effects, larger than 1 if reversing decay effects.
+	 *
+	 * @param param connection
+	 * @param d     between 0 and 1 if calculating decay effects, larger than 1 if reversing decay effects
+	 * @return multiplied parameter
+	 */
+	@Nonnull
+	P mul(@Nonnull P param, double d);
 
 	/*
 	 * IO

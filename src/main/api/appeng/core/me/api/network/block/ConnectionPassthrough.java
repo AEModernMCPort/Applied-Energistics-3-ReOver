@@ -40,6 +40,7 @@ public interface ConnectionPassthrough extends Predicate<Connection> {
 
 	/**
 	 * Abstract length of this passthrough in meters (blocks) for simulating signal decay.<br>
+	 * Can be negative, in which case the passthrough is a repeater(/booster).
 	 *
 	 * @return abstract length of this passthrough
 	 */

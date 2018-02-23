@@ -7,14 +7,21 @@ import net.minecraft.util.ResourceLocation;
 public abstract class AConnection<P extends Comparable<P>, N extends NBTBase> implements Connection<P, N> {
 
 	private final ResourceLocation id;
+	private final double maxDistance;
 
-	public AConnection(ResourceLocation id){
+	public AConnection(ResourceLocation id, double maxDistance){
 		this.id = id;
+		this.maxDistance = maxDistance;
 	}
 
 	@Override
 	public ResourceLocation getId(){
 		return id;
+	}
+
+	@Override
+	public double maxDistance(){
+		return maxDistance;
 	}
 
 }

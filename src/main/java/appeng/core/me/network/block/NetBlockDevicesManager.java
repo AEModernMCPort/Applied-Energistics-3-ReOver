@@ -83,6 +83,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		computePathways(world);
 		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
+		AppEngME.logger.info(devices.size() + " devices");
 	}
 
 	/*

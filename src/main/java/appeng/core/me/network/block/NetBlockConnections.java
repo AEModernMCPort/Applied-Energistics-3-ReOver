@@ -18,7 +18,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -40,14 +39,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		this.netBlock = netBlock;
 	}
 
-	protected Map<DeviceUUID, Map<ResourceLocation, ?>> deviceConnectionParams = new HashMap<>();
-
 	/*
 	 * Path
 	 */
-
-	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
-	protected Set<Link> links = new HashSet<>();
 
 	//FIXME TMP
 	Map<ConnectUUID, ConnectionPassthrough> passthroughs = new HashMap<>();
@@ -55,7 +49,21 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 	public void recalculateAll(World world, PhysicalDevice root){
 		long t = System.currentTimeMillis();
-		deviceConnectionParams.clear();
+		generateGraph(world, root);
+		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(passthroughs.size() + " PTs");
+		AppEngME.logger.info(devices);
+	}
+
+	/*
+	 * Graph Gen
+	 */
+
+	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
+	protected Set<Link> links = new HashSet<>();
+
+	protected void generateGraph(World world, PhysicalDevice root){
+		long t = System.currentTimeMillis();
 		nodes.clear();
 		links.clear();
 		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(root);
@@ -72,8 +80,6 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		AppEngME.logger.info("GC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(nodes.size() + " nodes");
 		AppEngME.logger.info(links.size() + " links");
-		AppEngME.logger.info(passthroughs.size() + " PTs");
-		AppEngME.logger.info(devices);
 	}
 
 	protected Queue<Runnable> nodesExplorer = new LinkedList<>();

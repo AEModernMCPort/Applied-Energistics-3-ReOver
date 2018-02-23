@@ -14,6 +14,7 @@ import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -64,7 +65,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
-		devices.remove(device.getUUID());
+		devices.remove(device.getUUID()).active.forEach((c, p) -> p.replenish(c, device.getConnectionRequirement(c)));
 	}
 
 	/*
@@ -145,7 +146,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
 							length += explorationResult.length;
-							params = ConnectionsParams.join(params, explorationResult.connectionsParams);
+							params = ConnectionsParams.intersect(params, explorationResult.connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
 							explorationResult = exploreAdjacent(world, c, p);
@@ -277,20 +278,30 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected class PathwayElement {
 
 		protected ConnectionsParams params;
+		protected ConnectionsParams leftover;
 		protected double length;
 		protected List<Pathway> pathways = new ArrayList<>();
 
 		public PathwayElement(ConnectionsParams params, double length){
 			this.params = params;
+			this.leftover = params;
 			this.length = length;
 		}
 
-		public ConnectionsParams getParams(){
-			return params;
+		public ConnectionsParams getLeftoverParams(){
+			return leftover;
 		}
 
 		public double getLength(){
 			return length;
+		}
+
+		public <P extends Comparable<P>> void consume(Connection<P, ?> connection, P params){
+			leftover = ConnectionsParams.subtract(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
+		}
+
+		public <P extends Comparable<P>> void replenish(Connection<P, ?> connection, P params){
+			leftover = ConnectionsParams.add(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
 	}
@@ -387,7 +398,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 		ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
 		Multimap<Connection, Pathway> c2ps = HashMultimap.create();
-		pathways.stream().filter(pathway -> ConnectionsParams.join(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+		pathways.stream().filter(pathway -> ConnectionsParams.intersect(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 			Comparable req = device.getConnectionRequirement(connection);
 			if(req != null){
 				Comparable decayedParams = AppEngME.INSTANCE.config.lossFactor(connection, pathway.length);
@@ -400,13 +411,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			if(!active.containsKey(connection)) active.put(connection, pathway);
 			else dormant.add(pathway);
 		}));
-		AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-			Comparable req = device.getConnectionRequirement(connection);
-			if(req != null) if(!device.fulfill(active.keySet())){
-				active.values().forEach(dormant::add);
-				active.clear();
-			}
-		});
+		if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, deviceParams.getParam(c)));
+		else {
+			active.values().forEach(dormant::add);
+			active.clear();
+		}
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 
@@ -459,12 +468,21 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		}
 
 		protected ConnectionsParams computeParams(ConnectionsParams rootParams){
-			return params = elements.stream().map(PathwayElement::getParams).reduce(rootParams, ConnectionsParams::join);
+			return params = elements.stream().map(PathwayElement::getLeftoverParams).reduce(rootParams, ConnectionsParams::intersect);
 		}
 
 		public double getLength(){
 			return length;
 		}
+
+		public <P extends Comparable<P>> void consume(Connection<P, ?> connection, P params){
+			elements.forEach(e -> e.consume(connection, params));
+		}
+
+		protected <P extends Comparable<P>> void replenish(Connection<P, ?> connection, P params){
+			elements.forEach(e -> e.replenish(connection, params));
+		}
+
 	}
 
 	/*

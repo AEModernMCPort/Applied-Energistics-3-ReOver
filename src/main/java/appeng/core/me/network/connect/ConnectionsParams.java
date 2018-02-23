@@ -2,12 +2,15 @@ package appeng.core.me.network.connect;
 
 import appeng.core.me.api.network.block.Connection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 
@@ -35,8 +38,17 @@ public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 		return (P) params.get(connection);
 	}
 
+	public boolean hasParams(){
+		return !params.isEmpty();
+	}
+
 	public boolean hasNoParams(){
 		return params.isEmpty();
+	}
+
+	@Nonnull
+	public ConnectionsParams<IntP> mul(Function<Connection<IntP, ?>, Double> c2d){
+		return new ConnectionsParams<>(Maps.transformEntries(params, (c, p) -> c.mul(p, c2d.apply(c))));
 	}
 
 	@Override

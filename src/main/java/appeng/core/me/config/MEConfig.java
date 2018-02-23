@@ -2,6 +2,7 @@ package appeng.core.me.config;
 
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.network.connect.ConnectionsParams;
 import code.elix_x.excomms.color.RGBA;
 
 import java.util.HashMap;
@@ -32,6 +33,10 @@ public class MEConfig {
 
 	public double lossFactor(Connection connection, double distance){
 		return Math.pow(1 - Math.pow(Math.max(distance, 0) / connection.maxDistance(), lossExponent), 1/lossExponent);
+	}
+
+	public ConnectionsParams<?> decay(ConnectionsParams<?> params, double distance){
+		return params.mul(c -> lossFactor(c, distance));
 	}
 
 }

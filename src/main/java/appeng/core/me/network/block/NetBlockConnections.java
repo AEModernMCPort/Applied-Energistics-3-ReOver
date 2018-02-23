@@ -26,10 +26,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
@@ -40,13 +42,29 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	/*
-	 * Passthroughs
+	 * Steady-state
 	 */
 
-	Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs = new HashMap<>();
+	protected Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs = new HashMap<>();
 
 	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
 		passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
+	}
+
+	protected Map<DeviceUUID, DeviceInformation> devices = new HashMap<>();
+
+	@Nonnull
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(DeviceUUID device){
+		return Optional.ofNullable(devices.get(device)).map(DeviceInformation::getDevice);
+	}
+
+	@Nonnull
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices(){
+		return devices.values().stream().map(DeviceInformation::getDevice);
+	}
+
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
+		devices.remove(device.getUUID());
 	}
 
 	/*
@@ -355,8 +373,6 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * Devices
 	 */
 
-	protected Map<DeviceUUID, DeviceInformation> devices = new HashMap<>();
-
 	protected void computePathways(World world){
 		devices.values().forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
@@ -426,6 +442,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			this.dormant = dormant;
 		}
 
+		public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N getDevice(){
+			return (N) device;
+		}
 	}
 
 	protected class Pathway {

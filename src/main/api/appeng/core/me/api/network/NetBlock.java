@@ -11,8 +11,8 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Network devices block is a distinct collection of physically inter-connected devices.
@@ -49,8 +49,8 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 	 * Devices
 	 */
 
-	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(DeviceUUID device);
-	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices();
+	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull DeviceUUID device);
+	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices();
 
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device);
 

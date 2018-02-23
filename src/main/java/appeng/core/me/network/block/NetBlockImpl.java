@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class NetBlockImpl implements NetBlock {
 
@@ -89,23 +90,22 @@ public class NetBlockImpl implements NetBlock {
 	 */
 
 	protected NetBlockConnections connections = new NetBlockConnections(this);
-	protected Map<DeviceUUID, NetDevice> devices = new HashMap<>();
 
 	@Nonnull
 	@Override
-	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(DeviceUUID device){
-		return Optional.ofNullable((N) devices.get(device));
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull DeviceUUID device){
+		return connections.getDevice(device);
 	}
 
 	@Nonnull
 	@Override
-	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Collection<N> getDevices(){
-		return (Collection) devices.values();
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices(){
+		return connections.getDevices();
 	}
 
 	@Override
-	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
-		devices.remove(device.getUUID());
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device){
+		connections.removeDestroyedDevice(device);
 	}
 
 	@Override

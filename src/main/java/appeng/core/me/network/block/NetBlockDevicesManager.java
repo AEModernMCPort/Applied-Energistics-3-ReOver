@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Consumer;
@@ -531,7 +532,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Map<Connection, Pathway> active;
 		Set<Pathway> dormant;
 
-		public DeviceInformation(NetDevice device, Map<Connection, Pathway> active, Set<Pathway> dormant){
+		public DeviceInformation(@Nonnull NetDevice device, @Nullable Map<Connection, Pathway> active, @Nullable Set<Pathway> dormant){
 			this.device = device;
 			this.active = active;
 			this.dormant = dormant;
@@ -544,17 +545,21 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
 			NBTTagCompound nbt = new NBTTagCompound();
 			nbt.setTag("device", AppEngME.INSTANCE.getNBDIO().<NetDevice, PhysicalDevice>serializeDeviceWithArgs(device));
-			NBTTagList active = new NBTTagList();
-			this.active.forEach((c, p) -> {
-				NBTTagCompound tag = new NBTTagCompound();
-				tag.setString("connection", c.getId().toString());
-				tag.setTag("pathway", p.serializeNBT(l2i));
-				active.appendTag(tag);
-			});
-			nbt.setTag("active", active);
-			NBTTagList dormant = new NBTTagList();
-			this.dormant.forEach(p -> dormant.appendTag(p.serializeNBT(l2i)));
-			nbt.setTag("dormant", dormant);
+			if(active != null){
+				NBTTagList active = new NBTTagList();
+				this.active.forEach((c, p) -> {
+					NBTTagCompound tag = new NBTTagCompound();
+					tag.setString("connection", c.getId().toString());
+					tag.setTag("pathway", p.serializeNBT(l2i));
+					active.appendTag(tag);
+				});
+				nbt.setTag("active", active);
+			}
+			if(dormant != null){
+				NBTTagList dormant = new NBTTagList();
+				this.dormant.forEach(p -> dormant.appendTag(p.serializeNBT(l2i)));
+				nbt.setTag("dormant", dormant);
+			}
 			return nbt;
 		}
 
@@ -562,15 +567,15 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected void deserializeDeviceInfoNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
 		Pair<DeviceUUID, NetDevice> device = AppEngME.INSTANCE.getNBDIO().<NetDevice, PhysicalDevice>deserializeDeviceWithArgs(netBlock, nbt.getCompoundTag("device"));
-		Map<Connection, Pathway> active = new HashMap<>();
-		((NBTTagList) nbt.getTag("active")).forEach(base -> {
+		Map<Connection, Pathway> active = nbt.hasKey("active") ? new HashMap<>() : null;
+		if(active != null) ((NBTTagList) nbt.getTag("active")).forEach(base -> {
 			NBTTagCompound tag = (NBTTagCompound) base;
 			Pathway pathway = new Pathway();
 			pathway.deserializeNBT(tag.getCompoundTag("pathway"), i2l);
 			active.put(AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection"))), pathway);
 		});
-		Set<Pathway> dormant = new HashSet<>();
-		((NBTTagList) nbt.getTag("dormant")).forEach(base -> {
+		Set<Pathway> dormant = nbt.hasKey("dormant") ? new HashSet<>() : null;
+		if(dormant != null) ((NBTTagList) nbt.getTag("dormant")).forEach(base -> {
 			Pathway pathway = new Pathway();
 			pathway.deserializeNBT((NBTTagCompound) base, i2l);
 			dormant.add(pathway);

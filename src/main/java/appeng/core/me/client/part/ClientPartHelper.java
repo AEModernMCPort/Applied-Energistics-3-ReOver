@@ -3,6 +3,7 @@ package appeng.core.me.client.part;
 import appeng.core.core.client.render.model.ModelRegManagerHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.client.part.PartRenderingHandler;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
@@ -127,9 +128,9 @@ public class ClientPartHelper {
 					drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
 					drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
 					if(event.getPlayer().isSneaking()){
-						Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections = partsHelper().getConnections(info.getPart(), info.getPositionRotation());
+						Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections = partsHelper().getConnections(info.getPart(), info.getPositionRotation());
 						connections.forEach((vS, c) -> {
-							RGBA color = new RGBA(c.hashCode());
+							RGBA color = new RGBA(c.getId().hashCode());
 							color.setAF(0.5f);
 							VoxelPosition v = vS.getLeft();
 							drawFilledBox(v.getBB().intersect(v.offsetLocal(vS.getRight()).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);

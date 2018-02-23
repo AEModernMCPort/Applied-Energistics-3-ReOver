@@ -14,10 +14,7 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.container.WorldPartsAccess;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
 import com.owens.oobjloader.parser.OObjMeshLoader;
@@ -194,14 +191,14 @@ public class PartsHelper implements InitializationComponent {
 		return new ConnectionsParams(params);
 	}
 
-	public boolean canConnect(Part part, PartPositionRotation positionRotation, ResourceLocation connection, VoxelPosition voxel, EnumFacing sideFrom){
-		return getData(part).connectivity.containsEntry(new ImmutablePair<>(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom)), connection);
+	public boolean canConnect(Part part, PartPositionRotation positionRotation, Connection connection, VoxelPosition voxel, EnumFacing sideFrom){
+		return getData(part).connectivity.containsEntry(new ImmutablePair<>(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom)), connection.getId());
 	}
 
-	public Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> getConnections(Part part, PartPositionRotation positionRotation){
+	public Multimap<Pair<VoxelPosition, EnumFacing>, Connection> getConnections(Part part, PartPositionRotation positionRotation){
 		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections = getData(part).connectivity;
-		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> rotated = HashMultimap.create();
-		connections.keySet().forEach(voxelSide -> rotated.putAll(applyTransforms(voxelSide.getLeft(), voxelSide.getRight(), positionRotation), connections.get(voxelSide)));
+		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rotated = HashMultimap.create();
+		connections.keySet().forEach(voxelSide -> rotated.putAll(applyTransforms(voxelSide.getLeft(), voxelSide.getRight(), positionRotation), Iterables.transform(connections.get(voxelSide), AppEngME.INSTANCE.getDevicesHelper()::getConnection)));
 		return rotated;
 	}
 

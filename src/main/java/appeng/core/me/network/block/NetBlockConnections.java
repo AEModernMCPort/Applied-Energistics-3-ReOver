@@ -5,6 +5,7 @@ import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
 import appeng.core.me.api.network.block.ConnectUUID;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
@@ -57,11 +58,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		deviceConnectionParams.clear();
 		nodes.clear();
 		links.clear();
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation>>> oPrCsVs = voxels(root);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(root);
 		if(!oPrCsVs.isPresent()) return;
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
-		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> rootVoxels = oPrCsVs.get().getRight();
+		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
 		getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
 		getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			addDevice(device.getNetworkCounterpart());
@@ -86,9 +87,9 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
 		voxels(current).ifPresent(prCsVs -> {
-			Multimap<ConnectionPassthrough, ResourceLocation> adjacentPTs = getAdjacentPTs(world, prCsVs.getRight());
+			Multimap<ConnectionPassthrough, Connection> adjacentPTs = getAdjacentPTs(world, prCsVs.getRight());
 			adjacentPTs.removeAll(previous);
-			Multimap<PhysicalDevice, ResourceLocation> adjacentDevices = getAdjacentDevices(world, prCsVs.getRight());
+			Multimap<PhysicalDevice, Connection> adjacentDevices = getAdjacentDevices(world, prCsVs.getRight());
 			if(adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
 				//return link;
 				ConnectionPassthrough adjN0 = adjacentPTs.keySet().toArray(new ConnectionPassthrough[1])[0];
@@ -150,14 +151,14 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * Adjacent
 	 */
 
-	protected Multimap<ConnectionPassthrough, ResourceLocation> getAdjacentPTs(World world, Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> voxels){
-		Multimap<ConnectionPassthrough, ResourceLocation> adjacentPTs = HashMultimap.create();
+	protected Multimap<ConnectionPassthrough, Connection> getAdjacentPTs(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
+		Multimap<ConnectionPassthrough, Connection> adjacentPTs = HashMultimap.create();
 		forEachTargetVoxel(voxels, (v, dir, cs) -> getConnectionPassthrough(world, v, dir, cs).ifPresent(cptCs -> adjacentPTs.putAll(cptCs.getLeft(), cptCs.getRight())));
 		return adjacentPTs;
 	}
 
-	protected Multimap<PhysicalDevice, ResourceLocation> getAdjacentDevices(World world, Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> voxels){
-		Multimap<PhysicalDevice, ResourceLocation> adjacentDevices = HashMultimap.create();
+	protected Multimap<PhysicalDevice, Connection> getAdjacentDevices(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
+		Multimap<PhysicalDevice, Connection> adjacentDevices = HashMultimap.create();
 		forEachTargetVoxel(voxels, (v, dir, cs) -> getDevice(world, v, dir, cs).ifPresent(phdCs -> adjacentDevices.putAll(phdCs.getLeft(), phdCs.getRight())));
 		return adjacentDevices;
 	}
@@ -166,22 +167,22 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * Get at
 	 */
 
-	protected Optional<Pair<ConnectionPassthrough, Collection<ResourceLocation>>> getConnectionPassthrough(World world, VoxelPosition position, EnumFacing from, Collection<ResourceLocation> connections){
-		MutableObject<Pair<ConnectionPassthrough, Collection<ResourceLocation>>> passthrough = new MutableObject<>();
+	protected Optional<Pair<ConnectionPassthrough, Collection<Connection>>> getConnectionPassthrough(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
+		MutableObject<Pair<ConnectionPassthrough, Collection<Connection>>> passthrough = new MutableObject<>();
 		world.getCapability(PartsHelper.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
 			if(s instanceof ConnectionPassthrough){
-				List<ResourceLocation> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
+				List<Connection> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
 				if(!cs.isEmpty()) passthrough.setValue(new ImmutablePair<>((ConnectionPassthrough) s, cs));
 			}
 		});
 		return Optional.ofNullable(passthrough.getValue());
 	}
 
-	protected Optional<Pair<PhysicalDevice, Collection<ResourceLocation>>> getDevice(World world, VoxelPosition position, EnumFacing from, Collection<ResourceLocation> connections){
-		MutableObject<Pair<PhysicalDevice, Collection<ResourceLocation>>> device = new MutableObject<>();
+	protected Optional<Pair<PhysicalDevice, Collection<Connection>>> getDevice(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
+		MutableObject<Pair<PhysicalDevice, Collection<Connection>>> device = new MutableObject<>();
 		world.getCapability(PartsHelper.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
 			if(s instanceof PhysicalDevice){
-				List<ResourceLocation> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
+				List<Connection> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
 				if(!cs.isEmpty()) device.setValue(new ImmutablePair<>((PhysicalDevice) s, cs));
 			}
 		});
@@ -192,11 +193,11 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * C->V
 	 */
 
-	protected void forEachTargetVoxel(Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections, TriConsumer<VoxelPosition, EnumFacing, Collection<ResourceLocation>> targetVoxelConsumer){
+	protected void forEachTargetVoxel(Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections, TriConsumer<VoxelPosition, EnumFacing, Collection<Connection>> targetVoxelConsumer){
 		connections.keySet().forEach(vS -> targetVoxelConsumer.accept(vS.getLeft().offsetLocal(vS.getRight()), vS.getRight().getOpposite(), connections.get(vS)));
 	}
 
-	protected <T> Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation>>> voxels(T t){
+	protected <T> Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> voxels(T t){
 		if(t instanceof Part.State) return Optional.of(new ImmutableTriple<>(((Part.State) t).getAssignedPosRot(), AppEngME.INSTANCE.getPartsHelper().getConnectionParams((Part.State) t, t instanceof ConnectionPassthrough ? c -> ((ConnectionPassthrough) t).getPassthroughConnectionParameter(c) : c -> 0), AppEngME.INSTANCE.getPartsHelper().getConnections(((Part.State) t).getPart(), ((Part.State) t).getAssignedPosRot())));
 		return Optional.empty();
 	}
@@ -242,7 +243,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 		protected ConnectUUID uuid;
 		protected List<Link> links = new ArrayList<>();
-		protected Multimap<ConnectUUID, ResourceLocation> devices = HashMultimap.create();
+		protected Multimap<ConnectUUID, Connection> devices = HashMultimap.create();
 
 		protected ConnectionsParams params;
 
@@ -251,7 +252,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 			this.params = params;
 		}
 
-		void addDevice(NetDevice device, Collection<ResourceLocation> connections){
+		void addDevice(NetDevice device, Collection<Connection> connections){
 			this.devices.putAll(device.getUUIDForConnection(), connections);
 			NetBlockConnections.this.addDevice(device);
 		}

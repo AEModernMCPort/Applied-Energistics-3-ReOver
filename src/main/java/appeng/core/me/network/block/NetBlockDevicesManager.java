@@ -710,7 +710,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			NBTTagCompound tag = (NBTTagCompound) base;
 			ConnectUUID cuuid = ConnectUUID.fromNBT(tag.getCompoundTag("cuuid"));
 			Node node = new Node(cuuid);
-			node.deserializeNBT(nbt.getCompoundTag("node"), i2l);
+			node.deserializeNBT(tag.getCompoundTag("node"), i2l);
 			this.nodes.put(cuuid, node);
 		});
 		this.devices.clear();

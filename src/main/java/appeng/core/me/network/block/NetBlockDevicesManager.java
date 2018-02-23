@@ -257,7 +257,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected void addDevice(NetDevice device){
-		devicesToRoute.add(device);
+		if(device != netBlock.root) devicesToRoute.add(device);
 	}
 
 	protected void createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
@@ -469,9 +469,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 */
 
 	protected void computePathways(World world){
-		devices.values().stream().filter(d -> d != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
+		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
-		devices.put(netBlock.root.getUUID(), new DeviceInformation(netBlock.root, null, null));
+		compute(netBlock.root);
 		devicesToRoute.forEach(this::compute);
 		devicesToRoute = null;
 		dtr2n = null;
@@ -479,28 +479,35 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected void compute(NetDevice device){
 		devices.remove(device.getUUID());
-		List<Pathway> pathways = new ArrayList<>();
-		dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
-		ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
-		ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
-		Multimap<Connection, Pathway> c2ps = HashMultimap.create();
-		pathways.stream().filter(pathway -> ConnectionsParams.intersect(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-			Comparable req = device.getConnectionRequirement(connection);
-			if(req != null){
-				Comparable decayedParams = AppEngME.INSTANCE.config.lossFactor(connection, pathway.length);
-				if(decayedParams.compareTo(req) >= 0) c2ps.put(connection, pathway);
+		Map<Connection, Pathway> active;
+		Set<Pathway> dormant;
+		if(device != netBlock.root){
+			List<Pathway> pathways = new ArrayList<>();
+			dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
+			ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
+			ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
+			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
+			pathways.stream().filter(pathway -> ConnectionsParams.intersect(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+				Comparable req = device.getConnectionRequirement(connection);
+				if(req != null){
+					Comparable decayedParams = AppEngME.INSTANCE.config.lossFactor(connection, pathway.length);
+					if(decayedParams.compareTo(req) >= 0) c2ps.put(connection, pathway);
+				}
+			}));
+			active = new HashMap<>();
+			dormant = new HashSet<>();
+			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> c2ps.get(connection).stream().sorted(Comparator.comparingDouble(Pathway::getLength)).forEachOrdered(pathway -> {
+				if(!active.containsKey(connection)) active.put(connection, pathway);
+				else dormant.add(pathway);
+			}));
+			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, deviceParams.getParam(c)));
+			else {
+				active.values().forEach(dormant::add);
+				active.clear();
 			}
-		}));
-		Map<Connection, Pathway> active = new HashMap<>();
-		Set<Pathway> dormant = new HashSet<>();
-		AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> c2ps.get(connection).stream().sorted(Comparator.comparingDouble(Pathway::getLength)).forEachOrdered(pathway ->{
-			if(!active.containsKey(connection)) active.put(connection, pathway);
-			else dormant.add(pathway);
-		}));
-		if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, deviceParams.getParam(c)));
-		else {
-			active.values().forEach(dormant::add);
-			active.clear();
+		} else {
+			active = null;
+			dormant = null;
 		}
 		device.switchNetBlock(netBlock);
 		AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(device);

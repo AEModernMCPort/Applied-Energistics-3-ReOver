@@ -48,4 +48,12 @@ public class DevicesHelper implements InitializationComponent {
 		else return new ConnectionsParams(ImmutableMap.of(ENERGY, 10, DATA, new DataConnection.Params(1, 10)));
 	}
 
+	public ConnectionsParams<?> getConnectionParams(NetDevice device){
+		Map<Connection, Comparable<?>> params = new HashMap<>();
+		forEachConnection(c -> {
+			if(device.getConnectionRequirement(c) != null) params.put(c, device.getConnectionRequirement(c));
+		});
+		return new ConnectionsParams(params);
+	}
+
 }

@@ -14,17 +14,37 @@ import java.util.function.Function;
 
 public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 
-	@Nullable
-	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> join(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+	private interface CPBO<IntP extends Comparable<IntP>> {
+
+		IntP apply(@Nonnull Connection<IntP, ?> connection, @Nonnull IntP param1, @Nonnull IntP param2);
+
+	}
+
+	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binop(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, @Nonnull CPBO<IntP> CPBO){
 		if(params1 == null && params2 == null) return null;
 		else if(params1 == null) return params2;
 		else if(params2 == null) return params1;
 		else {
-			Map<Connection<IntP, ?>, IntP> joined = new HashMap<>();
+			Map<Connection<IntP, ?>, IntP> isect = new HashMap<>();
 			Collection<Connection<IntP, ?>> cs2 = params2.params.keySet();
-			params1.params.keySet().stream().filter(cs2::contains).forEach(c -> joined.put(c, c.join(params1.getParam(c), params2.getParam(c))));
-			return new ConnectionsParams(joined);
+			params1.params.keySet().stream().filter(cs2::contains).forEach(c -> isect.put(c, CPBO.apply(c, params1.getParam(c), params2.getParam(c))));
+			return new ConnectionsParams<>(isect);
 		}
+	}
+
+	@Nullable
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> join(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+		return binop(params1, params2, (connection, param1, param2) -> connection.join(param1, param2));
+	}
+
+	@Nullable
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> add(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+		return binop(params1, params2, (connection, param1, param2) -> connection.add(param1, param2));
+	}
+
+	@Nullable
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> subtract(@Nullable ConnectionsParams<IntP> params, @Nullable ConnectionsParams<IntP> sub){
+		return binop(params, sub, (connection, param1, param2) -> connection.subtract(param1, param2));
 	}
 
 	private final Map<Connection<IntP, ?>, IntP> params;

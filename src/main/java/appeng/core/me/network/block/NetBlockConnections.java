@@ -43,16 +43,13 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	 * Path
 	 */
 
-	//FIXME TMP
 	Map<ConnectUUID, ConnectionPassthrough> passthroughs = new HashMap<>();
-	Map<ConnectUUID, NetDevice> devices = new HashMap<>();
 
 	public void recalculateAll(World world, PhysicalDevice root){
 		long t = System.currentTimeMillis();
 		generateGraph(world, root);
 		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
-		AppEngME.logger.info(devices);
 	}
 
 	/*
@@ -62,10 +59,15 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
 	protected Set<Link> links = new HashSet<>();
 
+	transient Set<NetDevice> devicesToRoute;
+	transient Multimap<DeviceUUID, Node> dtr2n;
+
 	protected void generateGraph(World world, PhysicalDevice root){
 		long t = System.currentTimeMillis();
 		nodes.clear();
 		links.clear();
+		devicesToRoute = new HashSet<>();
+		dtr2n = HashMultimap.create();
 		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(root);
 		if(!oPrCsVs.isPresent()) return;
 		Set<DeviceUUID> directLinks = new HashSet<>();
@@ -222,7 +224,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 	}
 
 	protected void addDevice(NetDevice device){
-		this.devices.put(device.getUUIDForConnection(), device);
+		devicesToRoute.add(device);
 		device.switchNetBlock(netBlock);
 	}
 
@@ -266,6 +268,7 @@ public class NetBlockConnections implements INBTSerializable<NBTTagCompound> {
 
 		void addDevice(NetDevice device, Collection<Connection> connections){
 			this.devices.putAll(device.getUUIDForConnection(), connections);
+			dtr2n.put(device.getUUID(), this);
 			NetBlockConnections.this.addDevice(device);
 		}
 

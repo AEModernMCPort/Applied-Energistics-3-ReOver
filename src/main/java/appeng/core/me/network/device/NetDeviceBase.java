@@ -5,7 +5,6 @@ import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
-import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.network.event.NCEventBus;
@@ -64,13 +63,7 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	 * Connection
 	 */
 
-	private ConnectUUID connectUUID = new ConnectUUID();
 	private ConnectionsParams<?> params;
-
-	@Override
-	public ConnectUUID getUUIDForConnection(){
-		return connectUUID;
-	}
 
 	@Override
 	public <Param extends Comparable<Param>> Param getConnectionRequirement(Connection<Param, ?> connection){
@@ -147,13 +140,11 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setTag("dcuuid", connectUUID.serializeNBT());
 		if(capabilities != null) nbt.setTag("capabilities", capabilities.serializeNBT());
 		return nbt;
 	}
 
 	protected void deserializeNBT(NBTTagCompound nbt){
-		connectUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("dcuuid"));
 		if(capabilities != null && nbt.hasKey("capabilities")) capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
 	}
 

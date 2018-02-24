@@ -79,7 +79,9 @@ public class DataConnection extends AConnection<DataConnection.Params, NBTTagCom
 
 		@Override
 		public int compareTo(Params o){
-			return channels - o.channels == 0 ? dpc - o.dpc : channels - o.channels;
+			int dc = channels - o.channels;
+			int ddpc = dpc - o.dpc;
+			return dc < 0 || ddpc < 0 ? -1 : dc == 0 || ddpc == 0 ? 0 : 1;
 		}
 
 	}

@@ -491,7 +491,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			pathways.stream().filter(pathway -> ConnectionsParams.intersect(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 				Comparable req = device.getConnectionRequirement(connection);
 				if(req != null){
-					Comparable decayedParams = AppEngME.INSTANCE.config.lossFactor(connection, pathway.length);
+					Comparable decayedParams = connection.mul(pathway.params.getParam(connection), AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
 					if(decayedParams.compareTo(req) >= 0) c2ps.put(connection, pathway);
 				}
 			}));

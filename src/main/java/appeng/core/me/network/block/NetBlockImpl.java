@@ -57,14 +57,10 @@ public class NetBlockImpl implements NetBlock {
 
 	@Override
 	public void destroyBlock(){
-		getDevices().forEach(d -> {
-			d.switchNetBlock(null);
-			if(d != root) AppEngME.INSTANCE.getGlobalNBDManager().registerFreeDevice(d);
-		});
-		if(network != null){
-			network.removeDestroyedBlock(this);
-			network = null;
-		} else AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(this);
+		getDevices().forEach(d -> d.switchNetBlock(null));
+		if(network != null) network.removeDestroyedBlock(this);
+		else AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(this);
+		network = null;
 	}
 
 	/*
@@ -81,6 +77,8 @@ public class NetBlockImpl implements NetBlock {
 
 	@Override
 	public void switchNetwork(@Nullable Network network){
+		if(this.network != null && network == null) AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(this);
+		if(this.network == null && network != null) AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(this);
 		this.network = network;
 		//TODO Notify devices
 	}

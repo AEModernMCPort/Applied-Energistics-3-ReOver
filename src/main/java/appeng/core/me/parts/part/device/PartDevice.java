@@ -29,12 +29,12 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 
 	@Override
 	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
-		AppEngME.INSTANCE.getGlobalNBDManager().processCreatedDevice(part.createNewNetworkCounterpartInt());
+		part.init();
 	}
 
 	@Override
 	public void onBroken(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
-		AppEngME.INSTANCE.getGlobalNBDManager().processDestroyedDevice(part.networkCounterpart);
+		part.networkCounterpart.destroy();
 	}
 
 	protected abstract static class PartDeviceState<P extends PartDevice<P, S, N>, S extends PartDevice.PartDeviceState<P, S, N>, N extends NetDeviceBase<N, S>> extends StateBase<P, S> implements PhysicalDevice<N, S> {
@@ -54,9 +54,9 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			return networkCounterpart;
 		}
 
-		protected N createNewNetworkCounterpartInt(){
+		protected N init(){
 			networkCounterpart = createNewNetworkCounterpart();
-			networkCounterpart.assignPhysicalCounterpart((S) this);
+			networkCounterpart.init((S) this);
 			return networkCounterpart;
 		}
 
@@ -88,7 +88,7 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			Optional<NetBlockUUID> buuidO = Optional.ofNullable(nbt.hasKey("buuid") ? nbt.getCompoundTag("buuid") : null).map(NetBlockUUID::fromNBT);
 			Optional<NetworkUUID> nuuidO = Optional.ofNullable(nbt.hasKey("nuuid") ? nbt.getCompoundTag("nuuid") : null).map(NetworkUUID::fromNBT);
 			this.networkCounterpart = AppEngME.INSTANCE.getGlobalNBDManager().locateOrCreateNetworkCounterpart(Optional.of(duuid), buuidO, nuuidO, this::createNewNetworkCounterpart);
-			this.networkCounterpart.assignPhysicalCounterpart((S) this);
+			this.networkCounterpart.init((S) this);
 		}
 
 		@Override

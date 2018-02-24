@@ -57,26 +57,26 @@ public interface GlobalNBDManager {
 
 	@Nonnull
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N locateOrCreateNetworkCounterpart(@Nonnull Optional<DeviceUUID> duuidO, @Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO, @Nonnull Supplier<N> creator){
-		return this.<N, P>getDevice(duuidO, buuidO, nuuidO).orElseGet(() -> {
-			N nd = creator.get();
-			processCreatedDevice(nd);
-			return nd;
-		});
+		return this.<N, P>getDevice(duuidO, buuidO, nuuidO).orElseGet(creator);
 	}
 
+	@Deprecated
 	default void processCreatedBlock(@Nonnull NetBlock netBlock){
 		registerFreeBlock(netBlock);
 	}
 
+	@Deprecated
 	default void processDestroyedBlock(@Nonnull NetBlock netBlock){
 		if(netBlock.getNetwork().isPresent()) netBlock.getNetwork().get().removeDestroyedBlock(netBlock);
 		else registerFreeBlock(netBlock);
 	}
 
+	@Deprecated
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processCreatedDevice(@Nonnull N device){
 		registerFreeDevice(device);
 	}
 
+	@Deprecated
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void processDestroyedDevice(@Nonnull N device){
 		if(device.getNetBlock().isPresent()) device.getNetBlock().get().removeDestroyedDevice(device);
 		else removeFreeDevice(device);

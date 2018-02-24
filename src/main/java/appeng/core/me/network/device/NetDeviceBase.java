@@ -45,6 +45,21 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	}
 
 	/*
+	 * Init
+	 */
+
+	public void init(P p){
+		assignPhysicalCounterpart(p);
+		AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>registerFreeDevice(this);
+	}
+
+	public void destroy(){
+		if(netBlock != null) netBlock.<NetDevice, PhysicalDevice>removeDestroyedDevice(this);
+		else AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(this);
+		netBlock = null;
+	}
+
+	/*
 	 * P
 	 */
 
@@ -89,6 +104,8 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 
 	@Override
 	public void switchNetBlock(@Nullable NetBlock block){
+		if(this.netBlock != null && block == null) AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>registerFreeDevice(this);
+		if(this.netBlock == null && block != null) AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(this);
 		this.netBlock = block;
 	}
 

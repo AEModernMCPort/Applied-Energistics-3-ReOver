@@ -46,18 +46,15 @@ public class NetworkBlocksManager implements INBTSerializable<NBTTagCompound> {
 	 */
 
 	protected void initialize(Controller.Network controller, World world, Controller.Physical pcontroller){
-		NetBlockImpl netBlock = new NetBlockImpl(new NetBlockUUID(), network);
+		NetBlockImpl netBlock = new NetBlockImpl(new NetBlockUUID(), null);
 		netBlock.init(world, pcontroller);
-		AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(netBlock);
+		netBlock.switchNetwork(network);
 		netBlocks.put(netBlock.getUUID(), netBlock);
 	}
 
 	protected void destroy(){
 		getBlocks().forEach(netBlock -> {
-			if(netBlock.getNetwork().isPresent()){
-				netBlock.switchNetwork(null);
-				AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(netBlock);
-			}
+			if(netBlock.getNetwork().isPresent()) netBlock.switchNetwork(null);
 		});
 		netBlocks = null;
 	}

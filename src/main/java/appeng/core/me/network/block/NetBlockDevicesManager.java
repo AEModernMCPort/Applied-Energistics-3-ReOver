@@ -511,7 +511,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			dormant = null;
 		}
 		device.switchNetBlock(netBlock);
-		AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(device);
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 

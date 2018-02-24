@@ -44,7 +44,7 @@ public class DevicesHelper implements InitializationComponent {
 	}
 
 	public ConnectionsParams gatherConnectionsParams(NetDevice device){
-		if(device instanceof Controller) return new ConnectionsParams(ImmutableMap.of(ENERGY, 100, DATA, new DataConnection.Params(192, 500)));
+		if(device instanceof Controller.Network) return new ConnectionsParams(ImmutableMap.of(ENERGY, 100, DATA, new DataConnection.Params(192, 500)));
 		else return new ConnectionsParams(ImmutableMap.of(ENERGY, 10, DATA, new DataConnection.Params(1, 10)));
 	}
 

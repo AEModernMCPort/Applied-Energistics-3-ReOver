@@ -518,7 +518,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous){
 		if(current instanceof Link){
 			Link link = (Link) current;
-			previous.add(link);
 			if(!previous.contains(link.from)) nextStep(pathways, link.from, addCurrent(previous, current));
 			if(!previous.contains(link.to)) nextStep(pathways, link.to, addCurrent(previous, current));
 		}

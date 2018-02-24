@@ -91,7 +91,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 */
 
 	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
-	protected Set<Link> links = new HashSet<>();
+	protected List<Link> links = new ArrayList<>();
 
 	transient Set<NetDevice> devicesToRoute;
 	transient Multimap<DeviceUUID, Node> dtr2n;
@@ -693,13 +693,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	public void deserializeNBT(NBTTagCompound nbt){
 		this.links.clear();
 		Map<Integer, Link> i2l = new HashMap<>();
-		Map<Link, NBTTagCompound> ldq = new HashMap<>();
+		Queue<Pair<Link, NBTTagCompound>> ldq = new LinkedList<>();
 		{
 			int next = 0;
 			for(NBTTagCompound tag : (Iterable<NBTTagCompound>) nbt.getTag("links")){
 				Link link = new Link();
 				this.links.add(link);
-				ldq.put(link, tag);
+				ldq.add(new ImmutablePair<>(link, tag));
 				i2l.put(next, link);
 				next++;
 			}
@@ -714,7 +714,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		});
 		this.devices.clear();
 		((NBTTagList) nbt.getTag("devices")).forEach(base -> deserializeDeviceInfoNBT((NBTTagCompound) base, i2l));
-		ldq.forEach(Link::deserializeNBT);
+		ldq.forEach(lt -> lt.getLeft().deserializeNBT(lt.getRight()));
 	}
 
 }

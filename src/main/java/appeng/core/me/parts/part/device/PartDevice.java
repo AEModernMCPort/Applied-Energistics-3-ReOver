@@ -29,7 +29,7 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 
 	@Override
 	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
-		AppEngME.INSTANCE.getGlobalNBDManager().processCreatedDevice(part.networkCounterpart = part.createNewNetworkCounterpart());
+		AppEngME.INSTANCE.getGlobalNBDManager().processCreatedDevice(part.createNewNetworkCounterpartInt());
 	}
 
 	@Override
@@ -51,6 +51,12 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 
 		@Override
 		public N getNetworkCounterpart(){
+			return networkCounterpart;
+		}
+
+		protected N createNewNetworkCounterpartInt(){
+			networkCounterpart = createNewNetworkCounterpart();
+			networkCounterpart.assignPhysicalCounterpart((S) this);
 			return networkCounterpart;
 		}
 
@@ -82,6 +88,7 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			Optional<NetBlockUUID> buuidO = Optional.ofNullable(nbt.hasKey("buuid") ? nbt.getCompoundTag("buuid") : null).map(NetBlockUUID::fromNBT);
 			Optional<NetworkUUID> nuuidO = Optional.ofNullable(nbt.hasKey("nuuid") ? nbt.getCompoundTag("nuuid") : null).map(NetworkUUID::fromNBT);
 			this.networkCounterpart = AppEngME.INSTANCE.getGlobalNBDManager().locateOrCreateNetworkCounterpart(Optional.of(duuid), buuidO, nuuidO, this::createNewNetworkCounterpart);
+			this.networkCounterpart.assignPhysicalCounterpart((S) this);
 		}
 
 		@Override

@@ -6,11 +6,9 @@ import com.google.common.collect.Maps;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 
@@ -20,36 +18,62 @@ public final class ConnectionsParams<IntP extends Comparable<IntP>> {
 
 	}
 
-	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binop(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, @Nonnull CPBO<IntP> CPBO){
+	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binop(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, Supplier<ConnectionsParams<IntP>> bNN){
 		if(params1 == null && params2 == null) return null;
 		else if(params1 == null) return params2;
 		else if(params2 == null) return params1;
-		else {
+		else return bNN.get();
+	}
+
+	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binopInter(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, @Nonnull CPBO<IntP> CPBO){
+		return binop(params1, params2, () -> {
 			Map<Connection<IntP, ?>, IntP> isect = new HashMap<>();
-			Collection<Connection<IntP, ?>> cs2 = params2.params.keySet();
-			params1.params.keySet().stream().filter(cs2::contains).forEach(c -> isect.put(c, CPBO.apply(c, params1.getParam(c), params2.getParam(c))));
+			params1.params.keySet().stream().filter(params2.params::containsKey).forEach(c -> isect.put(c, CPBO.apply(c, params1.getParam(c), params2.getParam(c))));
 			return new ConnectionsParams<>(isect);
-		}
+		});
+	}
+
+	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binopUnion(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, @Nonnull CPBO<IntP> CPBO){
+		return binop(params1, params2, () -> {
+			Map<Connection<IntP, ?>, IntP> union = new HashMap<>();
+			Set<Connection<IntP, ?>> all = new HashSet<>();
+			all.addAll(params1.params.keySet());
+			all.addAll(params2.params.keySet());
+			all.forEach(c -> {
+				IntP p1 = params1.getParam(c);
+				IntP p2 = params2.getParam(c);
+				union.put(c, p1 == null ? p2 : p2 == null ? p1 : CPBO.apply(c, p1, p2));
+			});
+			return new ConnectionsParams<>(union);
+		});
+	}
+
+	private static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> binopKeep1(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2, @Nonnull CPBO<IntP> CPBO){
+		return binop(params1, params2, () -> {
+			Map<Connection<IntP, ?>, IntP> keep1 = new HashMap<>();
+			params1.params.keySet().stream().forEach(c -> keep1.put(c, !params2.params.containsKey(c) ? params1.getParam(c) : CPBO.apply(c, params1.getParam(c), params2.getParam(c))));
+			return new ConnectionsParams<>(keep1);
+		});
 	}
 
 	@Nullable
 	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> intersect(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
-		return binop(params1, params2, (connection, param1, param2) -> connection.intersect(param1, param2));
+		return binopInter(params1, params2, (connection, param1, param2) -> connection.intersect(param1, param2));
 	}
 
 	@Nullable
 	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> union(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
-		return binop(params1, params2, (connection, param1, param2) -> connection.union(param1, param2));
+		return binopUnion(params1, params2, (connection, param1, param2) -> connection.union(param1, param2));
 	}
 
 	@Nullable
-	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> add(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
-		return binop(params1, params2, (connection, param1, param2) -> connection.add(param1, param2));
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> addContained(@Nullable ConnectionsParams<IntP> params1, @Nullable ConnectionsParams<IntP> params2){
+		return binopKeep1(params1, params2, (connection, param1, param2) -> connection.add(param1, param2));
 	}
 
 	@Nullable
-	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> subtract(@Nullable ConnectionsParams<IntP> params, @Nullable ConnectionsParams<IntP> sub){
-		return binop(params, sub, (connection, param1, param2) -> connection.subtract(param1, param2));
+	public static <IntP extends Comparable<IntP>> ConnectionsParams<IntP> subtractContained(@Nullable ConnectionsParams<IntP> params, @Nullable ConnectionsParams<IntP> sub){
+		return binopKeep1(params, sub, (connection, param1, param2) -> connection.subtract(param1, param2));
 	}
 
 	private final Map<Connection<IntP, ?>, IntP> params;

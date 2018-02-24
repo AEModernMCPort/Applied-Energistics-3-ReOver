@@ -303,11 +303,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 
 		public <P extends Comparable<P>> void consume(Connection<P, ?> connection, P params){
-			leftover = ConnectionsParams.subtract(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
+			leftover = ConnectionsParams.subtractContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
 		public <P extends Comparable<P>> void replenish(Connection<P, ?> connection, P params){
-			leftover = ConnectionsParams.add(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
+			leftover = ConnectionsParams.addContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
 		/*

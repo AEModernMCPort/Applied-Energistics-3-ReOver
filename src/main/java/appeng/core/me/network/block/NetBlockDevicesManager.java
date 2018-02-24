@@ -523,7 +523,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 		if(current instanceof Node){
 			Node node = (Node) current;
-			if(node.devices.containsKey(netBlock.root)) pathways.add(new Pathway(addCurrent(previous, current)));
+			if(node.devices.containsKey(netBlock.root.getUUID())) pathways.add(new Pathway(addCurrent(previous, current)));
 			node.links.stream().filter(link -> !previous.contains(link)).forEach(link -> nextStep(pathways, link, addCurrent(previous, current)));
 		}
 	}

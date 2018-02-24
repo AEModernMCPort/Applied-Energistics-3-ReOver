@@ -640,7 +640,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 
 		protected void deserializeNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
-			this.elements.clear();
+			this.elements = new ArrayList<>();
 			for(NBTTagCompound tag : (Iterable<NBTTagCompound>) nbt.getTag("elements")){
 				if(tag.hasKey("node")) elements.add(nodes.get(ConnectUUID.fromNBT(tag.getCompoundTag("node"))));
 				if(tag.hasKey("link")) elements.add(i2l.get(tag.getInteger("link")));

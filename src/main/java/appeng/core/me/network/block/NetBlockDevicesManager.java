@@ -486,13 +486,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			List<Pathway> pathways = new ArrayList<>();
 			dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
 			ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
-			ConnectionsParams deviceParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(device);
 			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
-			pathways.stream().filter(pathway -> ConnectionsParams.intersect(pathway.computeParams(rootParams), deviceParams).hasParams()).forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+			pathways.forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 				Comparable req = device.getConnectionRequirement(connection);
-				if(req != null){
-					Comparable decayedParams = connection.mul(pathway.params.getParam(connection), AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
-					if(decayedParams.compareTo(req) >= 0) c2ps.put(connection, pathway);
+				Comparable provided = pathway.computeParams(rootParams).getParam(connection);
+				if(req != null && provided != null){
+					Comparable decayed = connection.mul(provided, AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
+					if(decayed.compareTo(req) >= 0) c2ps.put(connection, pathway);
 				}
 			}));
 			active = new HashMap<>();
@@ -501,7 +501,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				if(!active.containsKey(connection)) active.put(connection, pathway);
 				else dormant.add(pathway);
 			}));
-			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, deviceParams.getParam(c)));
+			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, device.getConnectionRequirement(c)));
 			else {
 				active.values().forEach(dormant::add);
 				active.clear();

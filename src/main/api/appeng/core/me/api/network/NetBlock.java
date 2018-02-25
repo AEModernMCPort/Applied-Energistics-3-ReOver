@@ -54,9 +54,15 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device);
 
-	void notifyPassthroughLoaded(ConnectionPassthrough passthrough);
-
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();
+
+	/*
+	 * Passthroughs
+	 */
+
+	void assignedPassthroughLoaded(ConnectionPassthrough passthrough);
+
+	void assignedPassthroughDestroed(ConnectionPassthrough passthrough);
 
 	/*
 	 * IO

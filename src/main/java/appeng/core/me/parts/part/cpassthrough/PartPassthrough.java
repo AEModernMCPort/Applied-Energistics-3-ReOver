@@ -8,10 +8,14 @@ import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -29,6 +33,11 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		super(supportsRotation);
 		this.color = color;
 		this.connectionParams = connectionParams;
+	}
+
+	@Override
+	public void onBroken(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
+		part.getAssignedNetBlock().ifPresent(netBlock -> netBlock.assignedPassthroughDestroed(part));
 	}
 
 	public static abstract class PassthroughState<P extends PartPassthrough<P, S>, S extends PassthroughState<P, S>> extends PartBase.StateBase<P, S> implements ConnectionPassthrough {
@@ -98,7 +107,7 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		public void deserializeNBT(NBTTagCompound nbt){
 			pcUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("pcuuid"));
 			netBlock = AppEngME.INSTANCE.getGlobalNBDManager().getNetblock(Optional.ofNullable(nbt.hasKey("buuid") ? NetBlockUUID.fromNBT(nbt.getCompoundTag("buuid")) : null), Optional.ofNullable(nbt.hasKey("nuuid") ? NetworkUUID.fromNBT(nbt.getCompoundTag("nuuid")) : null)).orElse(null);
-			if(netBlock != null) netBlock.notifyPassthroughLoaded(this);
+			if(netBlock != null) netBlock.assignedPassthroughLoaded(this);
 		}
 
 		@Override

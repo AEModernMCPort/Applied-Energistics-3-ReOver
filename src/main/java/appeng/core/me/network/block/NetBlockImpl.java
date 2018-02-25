@@ -106,16 +106,25 @@ public class NetBlockImpl implements NetBlock {
 		devicesManager.removeDestroyedDevice(device);
 	}
 
-	@Override
-	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
-		devicesManager.notifyPassthroughLoaded(passthrough);
-	}
-
 	@Nonnull
 	@Override
 	public <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster(){
 		//TODO Masters
 		return null;
+	}
+
+	/*
+	 * Passthrough
+	 */
+
+	@Override
+	public void assignedPassthroughLoaded(ConnectionPassthrough passthrough){
+		devicesManager.notifyPassthroughLoaded(passthrough);
+	}
+
+	@Override
+	public void assignedPassthroughDestroed(ConnectionPassthrough passthrough){
+		devicesManager.passthroughDestroyed(passthrough);
 	}
 
 	/*

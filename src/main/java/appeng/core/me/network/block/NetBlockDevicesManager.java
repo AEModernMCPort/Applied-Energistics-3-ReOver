@@ -33,11 +33,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> {
 
@@ -85,8 +85,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		passthroughs.clear();
 		generateGraph(world, root);
 		computePathways(world);
-		AppEngME.logger.info("CR took " + (System.currentTimeMillis() - t) + "ms");
+		recomputeDSects();
+		AppEngME.logger.info("TC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
+		AppEngME.logger.info(dsects.size() + " disjoint sections");
 		AppEngME.logger.info(devices.size() + " devices");
 	}
 
@@ -549,6 +551,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 */
 
 	protected void computePathways(World world){
+		long t = System.currentTimeMillis();
 		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
 		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
@@ -556,6 +559,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		devicesToRoute.forEach(this::compute);
 		devicesToRoute = null;
 		dtr2n = null;
+		AppEngME.logger.info("CP took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
 	protected Set<DeviceInformation> destroyPathways(List<Pathway> toDestroy){
@@ -774,6 +778,78 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	/*
+	 * DSects
+	 */
+
+	protected Set<DSect> dsects = new HashSet<>();
+
+	protected void recomputeDSects(){
+		long t = System.currentTimeMillis();
+		dsects = computeDSects(this.nodes.values());
+		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
+	}
+
+	protected Set<DSect> computeDSects(Collection<Node> nodesToDSect){
+		Set<DSect> dsects = new HashSet<>();
+		Set<Node> nodes = new HashSet<>(nodesToDSect);
+		while(!nodes.isEmpty()){
+			Node next = nodes.stream().findAny().get();
+			Set<Node> nextNodes = new HashSet<>();
+			Set<Link> nextLinks = new HashSet<>();
+			floodfill(next, nextNodes, nextLinks);
+			floodfill();
+			nodes.removeAll(nextNodes);
+			dsects.add(new DSect(new ArrayList<>(nextNodes), new ArrayList<>(nextLinks)));
+		}
+		return dsects;
+	}
+
+	protected Queue<Runnable> ffq = new LinkedList<>();
+
+	protected void floodfill(){
+		while(ffq.peek() != null) ffq.poll().run();
+	}
+
+	protected void floodfill(Node next, Set<Node> nodes, Set<Link> links){
+		if(nodes.contains(next)) return;
+		nodes.add(next);
+		next.links.forEach(link -> {
+			if(links.contains(link)) return;
+			links.add(link);
+			if(link.from != next) ffq.add(() -> floodfill(link.from, nodes, links));
+			if(link.to != next) ffq.add(() -> floodfill(link.to, nodes, links));
+		});
+	}
+
+	class DSect {
+
+		protected List<Node> nodes;
+		protected List<Link> links;
+
+		DSect(){
+		}
+
+		public DSect(List<Node> nodes, List<Link> links){
+			this.nodes = nodes;
+			this.links = links;
+		}
+
+		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){
+			NBTTagCompound nbt = new NBTTagCompound();
+			NBTTagList nodes = new NBTTagList();
+			this.nodes.forEach(node -> nodes.appendTag(node.uuid.serializeNBT()));
+			nbt.setTag("nodes", nodes);
+			nbt.setIntArray("links", this.links.stream().mapToInt(l2i::get).toArray());
+			return nbt;
+		}
+
+		protected void deserializeNBT(NBTTagCompound nbt, Map<Integer, Link> i2l){
+			this.nodes = StreamSupport.stream(((Iterable<NBTTagCompound>) nbt.getTag("nodes")).spliterator(), false).map(ConnectUUID::fromNBT).map(NetBlockDevicesManager.this.nodes::get).collect(Collectors.toList());
+			this.links = Arrays.stream(nbt.getIntArray("links")).mapToObj(i2l::get).collect(Collectors.toList());
+		}
+	}
+
+	/*
 	 * IO
 	 */
 
@@ -808,6 +884,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			this.devices.values().forEach(info -> devices.appendTag(info.serializeNBT(l2i)));
 			nbt.setTag("devices", devices);
 		}
+		{
+			NBTTagList dsects = new NBTTagList();
+			this.dsects.forEach(dSect -> dsects.appendTag(dSect.serializeNBT(l2i)));
+			nbt.setTag("dsects", dsects);
+		}
 		return nbt;
 	}
 
@@ -836,6 +917,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		});
 		this.devices.clear();
 		((NBTTagList) nbt.getTag("devices")).forEach(base -> deserializeDeviceInfoNBT((NBTTagCompound) base, i2l));
+		this.dsects.clear();
+		((Iterable<NBTTagCompound>) nbt.getTag("dsects")).forEach(tag -> {
+			DSect dSect = new DSect();
+			dSect.deserializeNBT(tag, i2l);
+			dsects.add(dSect);
+		});
 		ldq.forEach(lt -> lt.getLeft().deserializeNBT(lt.getRight()));
 	}
 

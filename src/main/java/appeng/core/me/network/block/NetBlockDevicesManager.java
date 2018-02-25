@@ -104,6 +104,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
 			Set<DeviceInformation> recomp = destroyPathways(e.pathways);
 			regenGraphSectionPTDestroyed(passthrough, e);
+			recompElemDSectAndDisconnect(e, recomp);
 			this.recompute(recomp);
 		});
 		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
@@ -813,6 +814,27 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void recomputeDSects(){
 		long t = System.currentTimeMillis();
 		dsects = computeDSects(this.nodes.values());
+		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
+	}
+
+	protected void recompElemDSectAndDisconnect(PathwayElement e, Set<DeviceInformation> recalcQ){
+		long t = System.currentTimeMillis();
+		DSect eDSect = dsects.stream().filter(e instanceof Node ? (ds -> ds.nodes.contains(e)) : (ds -> ds.links.contains(e)))./*There can only be one*/findAny()./*And there must be*/get();
+		this.dsects.remove(eDSect);
+		Set<DeviceUUID> remove = new HashSet<>();
+		Set<DeviceUUID> keep = new HashSet<>();
+		computeDSects(eDSect.nodes).forEach(nndSect -> {
+			if(Collections.disjoint(rootAdjacent, nndSect.nodes)){
+				nndSect.nodes.forEach(node -> remove.addAll(node.devices.keySet()));
+				notifyPTsUnassign(nndSect.nodes, nndSect.links);
+			} else {
+				nndSect.nodes.forEach(node -> keep.addAll(node.devices.keySet()));
+				this.dsects.add(nndSect);
+			}
+		});
+		remove.removeAll(keep);
+		recalcQ.removeIf(d -> remove.contains(d.device.getUUID()));
+		remove.forEach(d -> this.devices.remove(d).device.switchNetBlock(null));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

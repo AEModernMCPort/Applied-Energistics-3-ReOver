@@ -88,6 +88,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info(devices.size() + " devices");
 	}
 
+	protected Optional<PathwayElement> getElement(ConnectUUID cuuid){
+		MutableObject<PathwayElement> e = new MutableObject<>(nodes.get(cuuid));
+		if(e.getValue() == null) links.parallelStream().filter(link -> link.elements.contains(cuuid)).findAny().ifPresent(e::setValue);
+		return Optional.ofNullable(e.getValue());
+	}
+
 	/*
 	 * Graph Gen
 	 */

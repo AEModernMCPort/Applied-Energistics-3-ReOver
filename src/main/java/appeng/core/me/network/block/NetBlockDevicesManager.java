@@ -71,6 +71,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		devices.remove(device.getUUID()).active.forEach((c, p) -> p.replenish(c, device.getConnectionRequirement(c)));
 	}
 
+	protected ConnectionsParams remainingRootParams;
+
 	/*
 	 * Path
 	 */
@@ -472,6 +474,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void computePathways(World world){
 		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
+		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 		compute(netBlock.root);
 		devicesToRoute.forEach(this::compute);
 		devicesToRoute = null;
@@ -485,11 +488,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		if(device != netBlock.root){
 			List<Pathway> pathways = new ArrayList<>();
 			dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
-			ConnectionsParams rootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
 			pathways.forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 				Comparable req = device.getConnectionRequirement(connection);
-				Comparable provided = pathway.computeParams(rootParams).getParam(connection);
+				Comparable provided = pathway.computeParams(remainingRootParams).getParam(connection);
 				if(req != null && provided != null){
 					Comparable decayed = connection.mul(provided, AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
 					if(decayed.compareTo(req) >= 0) c2ps.put(connection, pathway);
@@ -613,10 +615,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 
 		public <P extends Comparable<P>> void consume(Connection<P, ?> connection, P params){
+			remainingRootParams = ConnectionsParams.subtractContained(remainingRootParams, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 			elements.forEach(e -> e.consume(connection, params));
 		}
 
 		protected <P extends Comparable<P>> void replenish(Connection<P, ?> connection, P params){
+			remainingRootParams = ConnectionsParams.addContained(remainingRootParams, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 			elements.forEach(e -> e.replenish(connection, params));
 		}
 

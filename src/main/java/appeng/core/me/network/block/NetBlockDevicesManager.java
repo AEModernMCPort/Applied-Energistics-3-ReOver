@@ -285,7 +285,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected ConnectionsParams params;
 		protected ConnectionsParams leftover;
 		protected double length;
-//		protected List<Pathway> pathways = new ArrayList<>();
+		protected List<Pathway> pathways = new ArrayList<>();
 
 		PathwayElement(){
 		}
@@ -503,11 +503,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				if(!active.containsKey(connection)) active.put(connection, pathway);
 				else dormant.add(pathway);
 			}));
-			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.consume(c, device.getConnectionRequirement(c)));
+			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.markActive(true).consume(c, device.getConnectionRequirement(c)));
 			else {
 				active.values().forEach(dormant::add);
 				active.clear();
 			}
+			Stream.concat(active.values().stream(), dormant.stream()).forEach(Pathway::assignToElements);
 		} else {
 			active = null;
 			dormant = null;
@@ -581,7 +582,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			NBTTagCompound tag = (NBTTagCompound) base;
 			Pathway pathway = new Pathway();
 			pathway.deserializeNBT(tag.getCompoundTag("pathway"), i2l);
-			active.put(AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection"))), pathway);
+			active.put(AppEngME.INSTANCE.getDevicesHelper().getConnection(new ResourceLocation(tag.getString("connection"))), pathway.markActive(true));
 		});
 		Set<Pathway> dormant = nbt.hasKey("dormant") ? new HashSet<>() : null;
 		if(dormant != null) ((NBTTagList) nbt.getTag("dormant")).forEach(base -> {
@@ -597,6 +598,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected List<PathwayElement> elements;
 		protected double length;
 		protected ConnectionsParams params;
+		protected boolean active = false;
 
 		Pathway(){
 		}
@@ -624,6 +626,15 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			elements.forEach(e -> e.replenish(connection, params));
 		}
 
+		protected Pathway markActive(boolean active){
+			this.active = active;
+			return this;
+		}
+
+		protected void assignToElements(){
+			elements.forEach(e -> e.pathways.add(this));
+		}
+
 		/*
 		 * IO
 		 */
@@ -649,6 +660,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				if(tag.hasKey("node")) elements.add(nodes.get(ConnectUUID.fromNBT(tag.getCompoundTag("node"))));
 				if(tag.hasKey("link")) elements.add(i2l.get(tag.getInteger("link")));
 			}
+			assignToElements();
 			params = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("params"));
 			length = nbt.getDouble("length");
 		}

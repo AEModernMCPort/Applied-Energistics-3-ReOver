@@ -552,6 +552,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			this.device = device;
 			this.active = active;
 			this.dormant = dormant;
+			//In any case, they're either both null or both not null.
+			if(active != null && dormant != null) Stream.concat(active.values().stream(), dormant.stream()).forEach(pathway -> pathway.device = this);
 		}
 
 		public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N getDevice(){
@@ -604,6 +606,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		protected List<PathwayElement> elements;
 		protected double length;
 		protected ConnectionsParams params;
+		protected DeviceInformation device;
 		protected boolean active = false;
 
 		Pathway(){

@@ -101,6 +101,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	public void passthroughDestroyed(ConnectionPassthrough passthrough){
 		long t = System.currentTimeMillis();
+		int pts = this.passthroughs.size();
+		int dsects = this.dsects.size();
+		int devices = this.devices.size();
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
 			Set<DeviceInformation> recomp = destroyPathways(e.pathways);
 			regenGraphSectionPTDestroyed(passthrough, e);
@@ -108,6 +111,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			this.recompute(recomp);
 		});
 		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
+		AppEngME.logger.info(dsects + " -> " + this.dsects.size() + " disjoint sections");
+		AppEngME.logger.info(devices + " -> " + this.devices.size() + " devices");
 	}
 
 	/*

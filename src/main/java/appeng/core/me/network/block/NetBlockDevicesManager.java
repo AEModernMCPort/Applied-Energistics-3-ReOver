@@ -74,6 +74,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected ConnectionsParams remainingRootParams;
+	protected Set<Node> rootAdjacent = new HashSet<>();
 
 	/*
 	 * Change
@@ -135,6 +136,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
 		exploreNodes();
+		rootAdjacent.addAll(dtr2n.get(netBlock.root.getUUID()));
 		AppEngME.logger.info("GC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(nodes.size() + " nodes");
 		AppEngME.logger.info(links.size() + " links");
@@ -888,6 +890,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			nbt.setTag("nodes", nodes);
 		}
 		{
+			NBTTagList rootAdjacent = new NBTTagList();
+			this.rootAdjacent.forEach(node -> rootAdjacent.appendTag(node.uuid.serializeNBT()));
+			nbt.setTag("rootadj", rootAdjacent);
+		}
+		{
 			NBTTagList devices = new NBTTagList();
 			this.devices.values().forEach(info -> devices.appendTag(info.serializeNBT(l2i)));
 			nbt.setTag("devices", devices);
@@ -923,6 +930,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			node.deserializeNBT(tag.getCompoundTag("node"), i2l);
 			this.nodes.put(cuuid, node);
 		});
+		this.rootAdjacent = StreamSupport.stream(((Iterable<NBTTagCompound>) nbt.getTag("rootadj")).spliterator(), false).map(ConnectUUID::fromNBT).map(this.nodes::get).collect(Collectors.toSet());
 		this.devices.clear();
 		((NBTTagList) nbt.getTag("devices")).forEach(base -> deserializeDeviceInfoNBT((NBTTagCompound) base, i2l));
 		this.dsects.clear();

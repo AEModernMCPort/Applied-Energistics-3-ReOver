@@ -600,7 +600,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected void compute(NetDevice device){
-		devices.remove(device.getUUID());
 		Map<Connection, Pathway> active;
 		Set<Pathway> dormant;
 		if(device != netBlock.root){
@@ -637,7 +636,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected void recompute(Set<DeviceInformation> devices){
 		long t = System.currentTimeMillis();
-		//TODO
+		//TODO Use dormant paths. I mean, we don't keep them for nothing...
+		devices.forEach(info -> compute(info.device));
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

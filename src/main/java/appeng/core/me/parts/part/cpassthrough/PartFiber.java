@@ -73,6 +73,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 
 		@Override
 		public void onPlaced(@Nullable MicroState part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+			super.onPlaced(part, world, theWorld, placer, hand);
 			for(EnumFacing dir : EnumFacing.values()){
 				world.getPart(part.getAssignedPosRot().getPosition().offsetLocal(dir)).flatMap(PartInfo::getState).ifPresent(s -> {
 					if(s instanceof MicroState){
@@ -90,6 +91,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 
 		@Override
 		public void onBroken(@Nullable MicroState part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
+			super.onBroken(part, world, theWorld, breaker);
 			for(EnumFacing dir : part.connections){
 				world.getPart(part.getAssignedPosRot().getPosition().offsetLocal(dir)).flatMap(PartInfo::getState).ifPresent(s -> {
 					if(s instanceof MicroState){

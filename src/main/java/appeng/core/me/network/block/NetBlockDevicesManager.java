@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -105,9 +106,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int dsects = this.dsects.size();
 		int devices = this.devices.size();
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
+			DSect eDSect = getDSect(e);
 			Set<DeviceInformation> recomp = destroyPathways(e.pathways);
 			regenGraphSectionPTDestroyed(passthrough, e);
-			recompElemDSectAndDisconnect(e, recomp);
+			recompElemDSectAndDisconnect(eDSect, recomp);
+			this.passthroughs.remove(passthrough.getUUIDForConnectionPassthrough());
 			this.recompute(recomp);
 		});
 		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
@@ -122,15 +125,17 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected void onBlockDestroyed(){
 		getDevices().forEach(d -> d.switchNetBlock(null));
-		notifyPTsUnassign(nodes.values(), links);
+		notifyPTsUnassign(new HashSet<>(nodes.values()), links);
 	}
 
 	protected void notifyPTsUnassign(Collection<Node> nodes, Collection<Link> links){
 		notifyPTsUnassign(Stream.concat(nodes.stream().map(node -> node.uuid), links.stream().flatMap(link -> link.elements.stream())));
+		nodes.stream().map(n -> n.uuid).forEach(this.nodes::remove);
+		this.links.removeAll(links);
 	}
 
 	protected void notifyPTsUnassign(Stream<ConnectUUID> pts){
-		pts.map(passthroughs::get).forEach(wr -> Optional.ofNullable(wr.get()).ifPresent(pt -> pt.assignNetBlock(null)));
+		pts.forEach(cuuid -> Optional.ofNullable(passthroughs.remove(cuuid).get()).ifPresent(pt -> pt.assignNetBlock(null)));
 	}
 
 	/*
@@ -167,34 +172,44 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
-		Function<ConnectUUID, Node> createNode = cuuid -> {
+		BiFunction<ConnectUUID, PathwayElement, Node> createNode = (cuuid, pe) -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
-			return getOrCreateNode(cuuid, pt.getLength(), getConnectionsParams(pt).get(), ncn -> {});
+			Node node = getOrCreateNode(cuuid, pt.getLength(), getConnectionsParams(pt).get(), ncn -> {});
+			getDSect(pe).nodes.add(node);
+			return node;
 		};
-		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.stream().map(cuuid -> getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());;
+		Consumer<Node> removeNode = node -> {
+			nodes.remove(node.uuid);
+			getDSect(node).nodes.remove(node);
+		};
+		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
+			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			getDSect(from).links.add(link);
+		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
 			link.from.links.remove(link);
 			link.to.links.remove(link);
+			getDSect(link).links.remove(link);
 		};
 		long t = System.currentTimeMillis();
 		if(e instanceof Node){
 			Node node = (Node) e;
-			nodes.remove(node.uuid);
+			removeNode.accept(node);
 			ArrayList<Link> links = new ArrayList<>(node.links);
 			links.forEach(link -> {
 				removeLink.accept(link);
 				if(!link.elements.isEmpty()){
 					if(link.from == node){
 						Node to = link.to;
-						Node from = createNode.apply(link.elements.get(0));
+						Node from = createNode.apply(link.elements.get(0), to);
 						List<ConnectUUID> elements = link.elements.subList(1, link.elements.size());
 						createLink.accept(from, to, elements);
 					}
 					if(link.to == node){
 						Node from = link.from;
-						Node to = createNode.apply(link.elements.get(link.elements.size() - 1));
+						Node to = createNode.apply(link.elements.get(link.elements.size() - 1), from);
 						List<ConnectUUID> elements = link.elements.subList(0, link.elements.size() - 1);
 						createLink.accept(from, to, elements);
 					}
@@ -207,13 +222,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			int ei = link.elements.indexOf(passthrough.getUUIDForConnectionPassthrough());
 			if(ei > 0){
 				Node from = link.from;
-				Node to = createNode.apply(link.elements.get(ei - 1));
+				Node to = createNode.apply(link.elements.get(ei - 1), from);
 				List<ConnectUUID> elements = link.elements.subList(0, ei - 1);
 				createLink.accept(from, to, elements);
 			}
 			if(ei < link.elements.size() - 1){
 				Node to = link.to;
-				Node from = createNode.apply(link.elements.get(ei + 1));
+				Node from = createNode.apply(link.elements.get(ei + 1), to);
 				List<ConnectUUID> elements = link.elements.subList(ei + 2, link.elements.size());
 				createLink.accept(from, to, elements);
 			}
@@ -369,12 +384,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		if(device != netBlock.root) devicesToRoute.add(device);
 	}
 
-	protected void createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
+	protected Link createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
 		Link link = new Link(from, to, length, params);
 		links.add(link);
 		from.links.add(link);
 		to.links.add(link);
 		link.elements = elements;
+		return link;
 	}
 
 	protected Node getOrCreateNode(ConnectUUID uuid, double length, ConnectionsParams params, Consumer<Node> newlyCreated){
@@ -411,11 +427,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 
 		public <P extends Comparable<P>> void consume(Connection<P, ?> connection, P params){
-			leftover = ConnectionsParams.subtractContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
+			if(leftover != null) leftover = ConnectionsParams.subtractContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
 		public <P extends Comparable<P>> void replenish(Connection<P, ?> connection, P params){
-			leftover = ConnectionsParams.addContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
+			if(leftover != null) leftover = ConnectionsParams.addContained(leftover, new ConnectionsParams<>(ImmutableMap.of(connection, params)));
 		}
 
 		/*
@@ -424,15 +440,15 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		protected NBTTagCompound serializeNBT(){
 			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setTag("params", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(params));
-			nbt.setTag("leftover", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(leftover));
+			if(params != null) nbt.setTag("params", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(params));
+			if(leftover != null) nbt.setTag("leftover", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(leftover));
 			nbt.setDouble("length", length);
 			return nbt;
 		}
 
 		protected void deserializeNBT(NBTTagCompound nbt){
-			params = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("params"));
-			leftover = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("leftover"));
+			if(nbt.hasKey("params")) params = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("params"));
+			if(nbt.hasKey("leftover")) leftover = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("leftover"));
 			length = nbt.getDouble("length");
 		}
 
@@ -585,8 +601,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
 		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
-		compute(netBlock.root);
-		devicesToRoute.forEach(this::compute);
+		compute(netBlock.root, rootAdjacent.stream());
+		devicesToRoute.forEach(device -> compute(device, dtr2n.get(device.getUUID()).stream()));
 		devicesToRoute = null;
 		dtr2n = null;
 		AppEngME.logger.info("CP took " + (System.currentTimeMillis() - t) + "ms");
@@ -605,12 +621,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return recalc;
 	}
 
-	protected void compute(NetDevice device){
+	protected void compute(NetDevice device, Stream<Node> adj){
 		Map<Connection, Pathway> active;
 		Set<Pathway> dormant;
 		if(device != netBlock.root){
 			List<Pathway> pathways = new ArrayList<>();
-			dtr2n.get(device.getUUID()).forEach(node -> nextStep(pathways, node, new ArrayList<>()));
+			adj.forEach(node -> nextStep(pathways, node, new ArrayList<>()));
 			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
 			pathways.forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 				Comparable req = device.getConnectionRequirement(connection);
@@ -643,7 +659,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void recompute(Set<DeviceInformation> devices){
 		long t = System.currentTimeMillis();
 		//TODO Use dormant paths. I mean, we don't keep them for nothing...
-		devices.forEach(info -> compute(info.device));
+		devices.forEach(info -> compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID()))));
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
@@ -817,15 +833,18 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected Set<DSect> dsects = new HashSet<>();
 
+	protected DSect getDSect(PathwayElement e){
+		return dsects.stream().filter(e instanceof Node ? (ds -> ds.nodes.contains(e)) : (ds -> ds.links.contains(e)))./*There can only be one*/findAny()./*And there must be*/get();
+	}
+
 	protected void recomputeDSects(){
 		long t = System.currentTimeMillis();
 		dsects = computeDSects(this.nodes.values());
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected void recompElemDSectAndDisconnect(PathwayElement e, Set<DeviceInformation> recalcQ){
+	protected void recompElemDSectAndDisconnect(DSect eDSect, Set<DeviceInformation> recalcQ){
 		long t = System.currentTimeMillis();
-		DSect eDSect = dsects.stream().filter(e instanceof Node ? (ds -> ds.nodes.contains(e)) : (ds -> ds.links.contains(e)))./*There can only be one*/findAny()./*And there must be*/get();
 		this.dsects.remove(eDSect);
 		Set<DeviceUUID> remove = new HashSet<>();
 		Set<DeviceUUID> keep = new HashSet<>();

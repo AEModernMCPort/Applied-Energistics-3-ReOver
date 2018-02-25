@@ -14,6 +14,8 @@ import appeng.core.me.parts.part.PartBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -107,7 +109,8 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		public void deserializeNBT(NBTTagCompound nbt){
 			pcUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("pcuuid"));
 			netBlock = AppEngME.INSTANCE.getGlobalNBDManager().getNetblock(Optional.ofNullable(nbt.hasKey("buuid") ? NetBlockUUID.fromNBT(nbt.getCompoundTag("buuid")) : null), Optional.ofNullable(nbt.hasKey("nuuid") ? NetworkUUID.fromNBT(nbt.getCompoundTag("nuuid")) : null)).orElse(null);
-			if(netBlock != null) netBlock.assignedPassthroughLoaded(this);
+			//TODO FIXME This does not even work "for now", but at least you get the point #BlameForge
+			if(netBlock != null && FMLCommonHandler.instance().getEffectiveSide() != Side.CLIENT) netBlock.assignedPassthroughLoaded(this);
 		}
 
 		@Override

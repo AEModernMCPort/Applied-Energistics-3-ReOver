@@ -99,11 +99,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	public void passthroughDestroyed(ConnectionPassthrough passthrough){
+		long t = System.currentTimeMillis();
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
 			Set<DeviceInformation> recomp = destroyPathways(e.pathways);
 			regenGraphSectionPTDestroyed(passthrough, e);
-			recomp.forEach(this::recompute);
+			this.recompute(recomp);
 		});
+		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
 	/*
@@ -150,6 +152,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			link.from.links.remove(link);
 			link.to.links.remove(link);
 		};
+		long t = System.currentTimeMillis();
 		if(e instanceof Node){
 			Node node = (Node) e;
 			nodes.remove(node.uuid);
@@ -189,6 +192,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				createLink.accept(from, to, elements);
 			}
 		}
+		AppEngME.logger.info("GC took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
 	protected Queue<Runnable> nodesExplorer = new LinkedList<>();
@@ -563,6 +567,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected Set<DeviceInformation> destroyPathways(List<Pathway> toDestroy){
+		long t = System.currentTimeMillis();
 		Set<DeviceInformation> recalc = new HashSet<>();
 		new ArrayList<>(toDestroy).forEach(pathway -> {
 			pathway.elements.forEach(pE -> pE.pathways.remove(pathway));
@@ -570,6 +575,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			concernedDevice.remove(pathway);
 			if(pathway.active) recalc.add(concernedDevice);
 		});
+		AppEngME.logger.info("PD took " + (System.currentTimeMillis() - t) + "ms");
 		return recalc;
 	}
 
@@ -609,8 +615,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 	}
 
-	protected void recompute(DeviceInformation device){
+	protected void recompute(Set<DeviceInformation> devices){
+		long t = System.currentTimeMillis();
 		//TODO
+		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
 	protected void nextStep(Collection<Pathway> pathways, PathwayElement current, List<PathwayElement> previous){

@@ -57,7 +57,7 @@ public class NetBlockImpl implements NetBlock {
 
 	@Override
 	public void destroyBlock(){
-		getDevices().forEach(d -> d.switchNetBlock(null));
+		devicesManager.onBlockDestroyed();
 		if(network != null) network.removeDestroyedBlock(this);
 		else AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(this);
 		network = null;

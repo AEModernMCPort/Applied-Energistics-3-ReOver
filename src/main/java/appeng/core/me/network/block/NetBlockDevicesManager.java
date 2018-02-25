@@ -110,6 +110,23 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	/*
+	 * Destruction
+	 */
+
+	protected void onBlockDestroyed(){
+		getDevices().forEach(d -> d.switchNetBlock(null));
+		notifyPTsUnassign(nodes.values(), links);
+	}
+
+	protected void notifyPTsUnassign(Collection<Node> nodes, Collection<Link> links){
+		notifyPTsUnassign(Stream.concat(nodes.stream().map(node -> node.uuid), links.stream().flatMap(link -> link.elements.stream())));
+	}
+
+	protected void notifyPTsUnassign(Stream<ConnectUUID> pts){
+		pts.map(passthroughs::get).forEach(wr -> Optional.ofNullable(wr.get()).ifPresent(pt -> pt.assignNetBlock(null)));
+	}
+
+	/*
 	 * Graph Gen
 	 */
 

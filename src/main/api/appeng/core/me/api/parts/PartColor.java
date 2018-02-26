@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  */
 public enum PartColor {
 
-	;
+	NOCOLOR(new RGBA(189, 169, 216), other -> true);
 
 	public final RGBA refColor;
 	private final Predicate<PartColor> compatibility;

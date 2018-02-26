@@ -60,7 +60,6 @@ public class NetBlockImpl implements NetBlock {
 		devicesManager.onBlockDestroyed();
 		if(network != null) network.removeDestroyedBlock(this);
 		else AppEngME.INSTANCE.getGlobalNBDManager().removeFreeBlock(this);
-		network = null;
 	}
 
 	/*

@@ -56,7 +56,6 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	public void destroy(){
 		if(netBlock != null) netBlock.<NetDevice, PhysicalDevice>removeDestroyedDevice(this);
 		else AppEngME.INSTANCE.getGlobalNBDManager().<NetDevice, PhysicalDevice>removeFreeDevice(this);
-		netBlock = null;
 	}
 
 	/*

@@ -3,7 +3,6 @@ package appeng.core.me.parts.part.device;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
-import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
@@ -16,7 +15,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public interface Controller {
 
@@ -24,6 +22,13 @@ public interface Controller {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 			super(registryEntry, uuid, netBlock);
+		}
+
+		@Override
+		public void destroy(){
+			super.destroy();
+			netBlock.destroyBlock();
+			netBlock.getNetwork().ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
 		}
 
 	}
@@ -46,15 +51,6 @@ public interface Controller {
 				NetworkImpl network = new NetworkImpl(new NetworkUUID());
 				network.initialize(part.networkCounterpart, theWorld, part);
 			}
-		}
-
-		@Override
-		public void onBroken(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer breaker){
-			part.networkCounterpart.getNetBlock().ifPresent(netBlock -> {
-				Optional<appeng.core.me.api.network.Network> network = netBlock.getNetwork();
-				netBlock.destroyBlock();
-				network.ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
-			});
 		}
 
 	}

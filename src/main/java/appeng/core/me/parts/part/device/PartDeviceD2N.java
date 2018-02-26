@@ -34,7 +34,7 @@ public interface PartDeviceD2N {
 
 		@Override
 		public PartColor getColor(){
-			return PartColor.values()[0];
+			return PartColor.NOCOLOR;
 		}
 
 	}

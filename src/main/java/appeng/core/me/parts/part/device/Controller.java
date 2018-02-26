@@ -74,7 +74,7 @@ public interface Controller {
 
 		@Override
 		public PartColor getColor(){
-			return PartColor.values()[0];
+			return PartColor.NOCOLOR;
 		}
 
 	}

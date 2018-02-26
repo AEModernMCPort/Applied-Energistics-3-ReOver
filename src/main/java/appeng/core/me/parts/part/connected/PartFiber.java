@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.CableState<P, S>> extends PartConnected<P, S> {
+public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.FiberState<P, S>> extends PartConnected<P, S> {
 
 	public PartFiber(boolean supportsRotation, PartColor color){
 		super(supportsRotation, color);
 	}
 
-	public static class CableState<P extends PartFiber<P, S>, S extends CableState<P, S>> extends PartConnected.ConnectedState<P, S> {
+	public static class FiberState<P extends PartFiber<P, S>, S extends FiberState<P, S>> extends PartConnected.ConnectedState<P, S> {
 
-		public CableState(P part){
+		public FiberState(P part){
 			super(part);
 		}
 
@@ -100,7 +100,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 		}
 	}
 
-	public static class MicroState extends CableState<PartFiber.Micro, MicroState> {
+	public static class MicroState extends FiberState<Micro, MicroState> {
 
 		public MicroState(PartFiber.Micro part){
 			super(part);
@@ -181,13 +181,13 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.C
 
 	}
 
-	public static class NormalState extends CableState<PartFiber.Normal, NormalState> {
+	public static class NormalState extends FiberState<Normal, NormalState> {
 
 		public NormalState(PartFiber.Normal part){
 			super(part);
 		}
 
-		public static class JointState extends CableState<PartFiber.Normal.Joint, PartFiber.NormalState.JointState> {
+		public static class JointState extends FiberState<Normal.Joint, JointState> {
 
 			public JointState(PartFiber.Normal.Joint part){
 				super(part);

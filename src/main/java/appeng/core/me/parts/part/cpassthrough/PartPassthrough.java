@@ -8,6 +8,7 @@ import appeng.core.me.api.network.block.ConnectUUID;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartColor;
+import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartBase;
@@ -35,6 +36,11 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		super(supportsRotation);
 		this.color = color;
 		this.connectionParams = connectionParams;
+	}
+
+	@Override
+	public void onLoad(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){
+		if(part.netBlock != null) part.netBlock.assignedPassthroughLoaded(part);
 	}
 
 	@Override
@@ -109,8 +115,6 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 		public void deserializeNBT(NBTTagCompound nbt){
 			pcUUID = ConnectUUID.fromNBT(nbt.getCompoundTag("pcuuid"));
 			netBlock = AppEngME.INSTANCE.getGlobalNBDManager().getNetblock(Optional.ofNullable(nbt.hasKey("buuid") ? NetBlockUUID.fromNBT(nbt.getCompoundTag("buuid")) : null), Optional.ofNullable(nbt.hasKey("nuuid") ? NetworkUUID.fromNBT(nbt.getCompoundTag("nuuid")) : null)).orElse(null);
-			//TODO FIXME This does not even work "for now", but at least you get the point #BlameForge
-			if(netBlock != null && FMLCommonHandler.instance().getEffectiveSide() != Side.CLIENT) netBlock.assignedPassthroughLoaded(this);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlockUUID;
 import appeng.core.me.api.network.NetworkUUID;
 import appeng.core.me.api.network.PhysicalDevice;
+import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.device.NetDeviceBase;
@@ -25,6 +26,11 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 
 	public PartDevice(boolean supportsRotation){
 		super(supportsRotation);
+	}
+
+	@Override
+	public void onLoad(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){
+		part.networkCounterpart.assignPhysicalCounterpart(part);
 	}
 
 	@Override
@@ -88,7 +94,6 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 			Optional<NetBlockUUID> buuidO = Optional.ofNullable(nbt.hasKey("buuid") ? nbt.getCompoundTag("buuid") : null).map(NetBlockUUID::fromNBT);
 			Optional<NetworkUUID> nuuidO = Optional.ofNullable(nbt.hasKey("nuuid") ? nbt.getCompoundTag("nuuid") : null).map(NetworkUUID::fromNBT);
 			this.networkCounterpart = AppEngME.INSTANCE.getGlobalNBDManager().locateOrCreateNetworkCounterpart(Optional.of(duuid), buuidO, nuuidO, this::createNewNetworkCounterpart);
-			this.networkCounterpart.init((S) this);
 		}
 
 		@Override

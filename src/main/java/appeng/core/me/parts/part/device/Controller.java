@@ -26,9 +26,9 @@ public interface Controller {
 
 		@Override
 		public void destroy(){
-			super.destroy();
-			netBlock.destroyBlock();
 			netBlock.getNetwork().ifPresent(appeng.core.me.api.network.Network::destroyNetwork);
+			netBlock.destroyBlock();
+			super.destroy();
 		}
 
 	}

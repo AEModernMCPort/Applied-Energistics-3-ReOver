@@ -1,11 +1,9 @@
 package appeng.core.me.parts.container;
 
-import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.*;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.base.Predicates;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,10 +27,6 @@ import java.util.stream.Stream;
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
 
 public class PartsContainer implements IPartsContainer {
-
-	public static PartsHelper partsHelper(){
-		return AppEngME.INSTANCE.getPartsHelper();
-	}
 
 	//Link to outside world
 
@@ -64,6 +58,21 @@ public class PartsContainer implements IPartsContainer {
 	@Override
 	public void setGlobalPosition(BlockPos globalPosition){
 		this.globalPosition = globalPosition;
+	}
+
+	/*
+	 * Load-unload (server only)
+	 */
+
+	@Override
+	public void onLoad(){
+		ownedParts.values().forEach(info -> info.getPart().onLoad((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation()));
+	}
+
+	//FIXME Not yet called when the world unloads
+	@Override
+	public void onUnload(){
+		ownedParts.values().forEach(info -> info.getPart().onUnload((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation()));
 	}
 
 	/*

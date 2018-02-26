@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 public class PartRecerticFiber extends PartFiber.Micro {
 
 	public PartRecerticFiber(ConnectionsParams connectionParams){
-		super(PartColor.values()[0], connectionParams);
+		super(PartColor.NOCOLOR, connectionParams);
 		meshes = new ResourceLocation[]{new ResourceLocation(AppEng.MODID, "me/fiber/recertic/recertic_node.obj"), new ResourceLocation(AppEng.MODID, "me/fiber/recertic/recertic_line.obj")};
 	}
 

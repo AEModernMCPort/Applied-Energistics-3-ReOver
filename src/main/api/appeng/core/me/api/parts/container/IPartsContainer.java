@@ -21,7 +21,9 @@ import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSPERBLOCK
 
 public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<NBTTagCompound> {
 
-	//Link with outside world
+	/*
+	 * Link with outside world
+	 */
 
 	@Nonnull
 	PartsAccess.Mutable getGlobalAccess();
@@ -46,7 +48,17 @@ public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<N
 		return new VoxelPosition(getGlobalPosition(), new BlockPos(VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2));
 	}
 
-	//Owned parts
+	/*
+	 * Load-unload (server only)
+	 */
+
+	default void onLoad(){}
+
+	default void onUnload(){}
+
+	/*
+	 * Owned parts
+	 */
 
 	@Nonnull
 	Map<PartUUID, PartInfo> getOwnedParts();
@@ -84,7 +96,9 @@ public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<N
 	 */
 	<P extends Part<P, S>, S extends Part.State<P, S>> Optional<PartInfo<P, S>> removeOwnedPart(@Nonnull PartUUID partUUID);
 
-	//Voxel information
+	/*
+	 * Voxel information
+	 */
 
 	/**
 	 * Checks whether there's a part at given voxel

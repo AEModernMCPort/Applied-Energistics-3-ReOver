@@ -11,14 +11,12 @@ import java.util.Map;
 public class MEConfig {
 
 	private Map<String, RGBA> partColors = new HashMap<>();
-	private String nocolorColor = "NOCOLOR";
 
 	public MEConfig(){
-		partColors.put("NOCOLOR", new RGBA(189, 169, 216));
 	}
 
 	public void registerColors(){
-		partColors.forEach((name, ref) -> PartColor.createNewColor(name, ref, name.equals(nocolorColor) ? other -> true : PartColor.defaultCompatibility(ref)));
+		partColors.forEach((name, ref) -> PartColor.createNewColor(name, ref, PartColor.defaultCompatibility(ref)));
 	}
 
 	/*

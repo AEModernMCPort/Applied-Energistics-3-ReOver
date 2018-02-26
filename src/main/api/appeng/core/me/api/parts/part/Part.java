@@ -5,7 +5,9 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -18,6 +20,7 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 
 	/**
 	 * Obj root mesh file location for physical interaction
+	 *
 	 * @return Obj root mesh location
 	 */
 	@Nonnull
@@ -26,6 +29,7 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 
 	/**
 	 * List of all meshes that the part <i>can</i> use for rendering. They <b>must</b> be contained in root mesh's bounds.
+	 *
 	 * @return all meshes the part needs baked
 	 */
 	@Nonnull
@@ -47,9 +51,19 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 
 	/**
 	 * Creates new instance of parts state for data storage
+	 *
 	 * @return new instance of parts state
 	 */
 	S createNewState();
+
+	/*
+	 * Load-unload (server only)
+	 */
+
+	default void onLoad(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){}
+
+	//FIXME Not yet called when the world unloads
+	default void onUnload(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){}
 
 	/*
 	 * Interaction
@@ -78,6 +92,7 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 
 		/**
 		 * Get the mesh to render for this state
+		 *
 		 * @return mesh to render
 		 */
 		default ResourceLocation getMesh(){

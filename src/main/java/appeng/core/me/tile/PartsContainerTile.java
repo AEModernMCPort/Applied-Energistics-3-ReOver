@@ -33,6 +33,25 @@ public class PartsContainerTile extends TileEntity {
 		container.setGlobalPosition(pos);
 	}
 
+	/*
+	 * Load-unload
+	 */
+
+	@Override
+	public void onLoad(){
+		if(!world.isRemote) container.onLoad();
+	}
+
+	//FIXME Not called when the world unloads (like exit world) - but container.onUnload must still be called.
+	@Override
+	public void onChunkUnload(){
+		if(!world.isRemote) container.onUnload();
+	}
+
+	/*
+	 * Caps
+	 */
+
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing){
 		return capability == PartsHelper.partsContainerCapability;
@@ -43,6 +62,10 @@ public class PartsContainerTile extends TileEntity {
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing){
 		return capability == PartsHelper.partsContainerCapability ? (T) container : null;
 	}
+
+	/*
+	 * IO
+	 */
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt){

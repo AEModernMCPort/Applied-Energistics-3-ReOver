@@ -181,6 +181,20 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+		BiFunction<ConnectUUID, PathwayElement, Node> createNode = (cuuid, pe) -> {
+			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
+			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
+			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
+			return node;
+		};
+		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
+			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+		};
+		Consumer<Link> removeLink = link -> {
+			links.remove(link);
+			link.from.links.remove(link);
+			link.to.links.remove(link);
+		};
 		long t = System.currentTimeMillis();
 		Map<ConnectionPassthrough, PathwayElement> adjacentClaimed = new HashMap<>();
 		Set<Pathway> pathwaysToDestroy = new HashSet<>();
@@ -191,6 +205,18 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long dt1 = System.currentTimeMillis() - t;
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 		t = System.currentTimeMillis();
+		adjacentClaimed.forEach((pt, pte) -> {
+			if(pte instanceof Link){
+				Link link = (Link) pte;
+				removeLink.accept(link);
+				int ei = link.elements.indexOf(pt.getUUIDForConnectionPassthrough());
+				if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
+				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough(), pte);
+				createLink.accept(link.from, ntf, link.elements.subList(0, ei));
+				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
+			}
+		});
+		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
 		Set<Node> allAffectedNodes = new HashSet<>();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put);

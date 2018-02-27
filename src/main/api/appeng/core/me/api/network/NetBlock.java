@@ -7,6 +7,7 @@ import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nonnull;
@@ -62,7 +63,7 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 
 	void assignedPassthroughLoaded(ConnectionPassthrough passthrough);
 
-	void passthroughCreatedAdjacentToAssigned(ConnectionPassthrough passthroughCreated);
+	void passthroughCreatedAdjacentToAssigned(World world, ConnectionPassthrough passthroughCreated);
 
 	void assignedPassthroughDestroed(ConnectionPassthrough passthrough);
 

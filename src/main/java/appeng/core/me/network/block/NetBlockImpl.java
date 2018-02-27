@@ -122,8 +122,8 @@ public class NetBlockImpl implements NetBlock {
 	}
 
 	@Override
-	public void passthroughCreatedAdjacentToAssigned(ConnectionPassthrough passthroughCreated){
-		devicesManager.passthroughCreated(passthroughCreated);
+	public void passthroughCreatedAdjacentToAssigned(World world, ConnectionPassthrough passthroughCreated){
+		devicesManager.passthroughCreated(world, passthroughCreated);
 	}
 
 	@Override

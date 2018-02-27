@@ -157,7 +157,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 			List<NetBlock> adjNB = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().stream().map(pt -> pt.getAssignedNetBlock().orElse(null)).filter(Objects::nonNull).distinct().collect(Collectors.toList());
 			if(adjNB.size() == 1) netBlock.setValue(adjNB.get(0));
 		});
-		if(netBlock.getValue() != null) netBlock.getValue().passthroughCreatedAdjacentToAssigned(passthrough);
+		if(netBlock.getValue() != null) netBlock.getValue().passthroughCreatedAdjacentToAssigned(world, passthrough);
 		return Optional.ofNullable(netBlock.getValue());
 	}
 

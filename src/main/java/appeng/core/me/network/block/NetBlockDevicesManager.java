@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -96,8 +97,19 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return Optional.ofNullable(e.getValue());
 	}
 
-	public void passthroughCreated(ConnectionPassthrough passthrough){
-
+	public void passthroughCreated(World world, ConnectionPassthrough passthrough){
+		long t = System.currentTimeMillis();
+		int pts = this.passthroughs.size();
+		int dsects = this.dsects.size();
+		int devices = this.devices.size();
+		Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
+		recompNewDSects(recompRedsect.getMiddle());
+		recompute(recompRedsect.getLeft());
+		computePathways(recompRedsect.getRight());
+		AppEngME.logger.info("TPC took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
+		AppEngME.logger.info(dsects + " -> " + this.dsects.size() + " disjoint sections");
+		AppEngME.logger.info(devices + " -> " + this.devices.size() + " devices");
 	}
 
 	public void passthroughDestroyed(ConnectionPassthrough passthrough){
@@ -166,6 +178,25 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info(nodes.size() + " nodes");
 		AppEngME.logger.info(links.size() + " links");
 		return dtr2n;
+	}
+
+	protected Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+		long t = System.currentTimeMillis();
+		Map<ConnectionPassthrough, PathwayElement> adjacentClaimed = new HashMap<>();
+		Set<Pathway> pathwaysToDestroy = new HashSet<>();
+		AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough).ifPresent(prCsVs -> AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().forEach(adj -> getElement(adj.getUUIDForConnectionPassthrough()).ifPresent(adje -> {
+			adjacentClaimed.put(adj, adje);
+			if(adje instanceof Link) pathwaysToDestroy.addAll(adje.pathways);
+		})));
+		long dt1 = System.currentTimeMillis() - t;
+		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
+		t = System.currentTimeMillis();
+		Set<Node> allAffectedNodes = new HashSet<>();
+		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
+		exploreAdjacent(world, passthrough, null, allAffectedNodes::add, link -> {}, dtr2n::put);
+		exploreNodes();
+		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
+		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
@@ -776,6 +807,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void recomputeDSects(){
 		long t = System.currentTimeMillis();
 		dsects = computeDSects(this.nodes.values());
+		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
+	}
+
+	protected void recompNewDSects(Set<Node> allUpdatedNodes){
+		long t = System.currentTimeMillis();
+		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(allUpdatedNodes, dsect.nodes)).collect(Collectors.toSet());
+		this.dsects.removeAll(affectedDSects);
+		this.dsects.addAll(computeDSects(affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream()).collect(Collectors.toSet())));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

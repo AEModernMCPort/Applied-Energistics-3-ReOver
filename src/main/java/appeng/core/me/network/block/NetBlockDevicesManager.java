@@ -167,7 +167,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, node -> {}, link -> {}, dtr2n::put));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, true, node -> {}, link -> {}, dtr2n::put));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			dtr2n.put(device.getNetworkCounterpart(), null);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
@@ -193,7 +193,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		t = System.currentTimeMillis();
 		Set<Node> allAffectedNodes = new HashSet<>();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		exploreAdjacent(world, passthrough, null, allAffectedNodes::add, link -> {}, dtr2n::put);
+		exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put);
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
@@ -270,7 +270,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, boolean forceNextNode, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer){
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
@@ -278,7 +278,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			Multimap<ConnectionPassthrough, Connection> adjacentPTs = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight());
 			adjacentPTs.removeAll(previous);
 			Multimap<PhysicalDevice, Connection> adjacentDevices = AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight());
-			if(adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
+			if(!forceNextNode && adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
 				//return link;
 				ConnectionPassthrough adjN0 = adjacentPTs.keySet().toArray(new ConnectionPassthrough[1])[0];
 				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), current.getLength(), adjN0));
@@ -295,14 +295,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						List<ConnectUUID> es = new ArrayList<>();
 						double length = 0;
 						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+						ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
 							length += explorationResult.length;
 							params = ConnectionsParams.intersect(params, explorationResult.connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+							explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						}
 						exploredLinksConsumer.accept(createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params));
 					});

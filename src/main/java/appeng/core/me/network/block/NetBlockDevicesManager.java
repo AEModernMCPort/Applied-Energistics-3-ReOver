@@ -100,7 +100,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int pts = this.passthroughs.size();
 		int dsects = this.dsects.size();
 		int devices = this.devices.size();
-		Triple<Set<DeviceInformation>, Set<PathwayElement>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
+		Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
 		recompNewDSects(recompRedsect.getMiddle());
 		recompute(recompRedsect.getLeft());
 		computePathways(recompRedsect.getRight());
@@ -178,7 +178,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return dtr2n;
 	}
 
-	protected Triple<Set<DeviceInformation>, Set<PathwayElement>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+	protected Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
 		Function<ConnectUUID, Node> createNode = cuuid -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
@@ -206,9 +206,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long dt1 = System.currentTimeMillis() - t;
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 		t = System.currentTimeMillis();
+		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
+		Set<Node> allAffectedNodes = new HashSet<>();
+		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		adjacentClaimed.forEach((pt, pte) -> {
 			if(pte instanceof Link){
 				Link link = (Link) pte;
+				allAffectedNodes.add(link.from);
+				allAffectedNodes.add(link.to);
 				removeLink.accept(link);
 				int ei = link.elements.indexOf(pt.getUUIDForConnectionPassthrough());
 				if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
@@ -217,14 +222,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
 			}
 		});
-		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
-		Set<PathwayElement> allAffectedNodesAndLinks = new HashSet<>();
-		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodesAndLinks::add, allAffectedNodesAndLinks::add, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
+		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {
+			allAffectedNodes.add(link.from);
+			allAffectedNodes.add(link.to);
+		}, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
-		reduceNodesToLinks(removeNode.andThen(allAffectedNodesAndLinks::remove), createLink, removeLink);
-		return new ImmutableTriple<>(recomp, allAffectedNodesAndLinks, dtr2n);
+		reduceNodesToLinks(removeNode.andThen(allAffectedNodes::remove), createLink, removeLink);
+		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
 	}
 
 	protected void reduceNodesToLinks(Consumer<Node> removeNode, TriConsumer<Node, Node, List<ConnectUUID>> createLink, Consumer<Link> removeLink){
@@ -872,11 +877,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected void recompNewDSects(Set<PathwayElement> allUpdatedNodesAndLinks){
+	protected void recompNewDSects(Set<Node> allUpdatedNodes){
 		long t = System.currentTimeMillis();
-		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(allUpdatedNodesAndLinks, dsect.nodes) || !Collections.disjoint(allUpdatedNodesAndLinks, dsect.links)).collect(Collectors.toSet());
+		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(allUpdatedNodes, dsect.nodes)).collect(Collectors.toSet());
 		this.dsects.removeAll(affectedDSects);
-		this.dsects.addAll(computeDSects(affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream()).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
+		this.dsects.addAll(computeDSects(Stream.concat(allUpdatedNodes.stream(), affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream())).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

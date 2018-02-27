@@ -30,10 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -186,15 +183,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
 			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
-			dsect.nodes.add(node);
 			return node;
 		};
 		Consumer<Node> removeNode = node -> {
 			nodes.remove(node.uuid);
 		};
-		TriConsumer<Pair<Node, Node>, List<ConnectUUID>, DSect> createLink = (fromTo, elements, dsect) -> {
-			Link link = createLink(fromTo.getLeft(), fromTo.getRight(), elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
-			dsect.links.add(link);
+		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
+			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
@@ -217,10 +212,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				removeLink.accept(link);
 				int ei = link.elements.indexOf(pt.getUUIDForConnectionPassthrough());
 				if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
-				DSect dsect = getDSect(link);
-				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough(), dsect);
-				createLink.accept(new ImmutablePair<>(link.from, ntf), link.elements.subList(0, ei), dsect);
-				createLink.accept(new ImmutablePair<>(ntf, link.to), link.elements.subList(ei + 1, link.elements.size()), dsect);
+				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough(), pte);
+				createLink.accept(link.from, ntf, link.elements.subList(0, ei));
+				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
 			}
 		});
 		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
@@ -233,7 +227,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return new ImmutableTriple<>(recomp, allAffectedNodesAndLinks, dtr2n);
 	}
 
-	protected void reduceNodesToLinks(Consumer<Node> removeNode, TriConsumer<Pair<Node, Node>, List<ConnectUUID>, DSect> createLink, Consumer<Link> removeLink){
+	protected void reduceNodesToLinks(Consumer<Node> removeNode, TriConsumer<Node, Node, List<ConnectUUID>> createLink, Consumer<Link> removeLink){
 		long t = System.currentTimeMillis();
 		int c = 0;
 		Optional<Node> next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
@@ -250,7 +244,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			elements.addAll(l1.elements);
 			elements.add(node.uuid);
 			elements.addAll(l2.elements);
-			createLink.accept(new ImmutablePair<>(l1.from, l2.to), elements, getDSect(node));
+			createLink.accept(l1.from, l2.to, elements);
 
 			c++;
 			next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();

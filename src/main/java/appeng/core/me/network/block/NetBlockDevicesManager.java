@@ -158,7 +158,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, node -> {}, link -> {}));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			addDevice(device.getNetworkCounterpart());
 			directLinks.add(device.getNetworkCounterpart().getUUID());
@@ -241,7 +241,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer){
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
@@ -255,7 +255,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), current.getLength(), adjN0));
 			} else {
 				//return node;
-				getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
+				exploredNodesConsumer.accept(getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
 					adjacentDevices.keySet().forEach(device -> nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device)));
 					adjacentPTs.keySet().stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
 						ConnectionPassthrough p = current;
@@ -263,18 +263,18 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						List<ConnectUUID> es = new ArrayList<>();
 						double length = 0;
 						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p);
+						ExplorationResult explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
 							length += explorationResult.length;
 							params = ConnectionsParams.intersect(params, explorationResult.connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p);
+							explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer);
 						}
-						createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params);
+						exploredLinksConsumer.accept(createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params));
 					});
-				}));
+				})));
 				res.setValue(new ExplorationResult.Node(prCsVs.getMiddle(), current.getLength()));
 			}
 		});

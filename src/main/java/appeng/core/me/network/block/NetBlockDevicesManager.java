@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -80,8 +81,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long t = System.currentTimeMillis();
 		passthroughs.values().forEach(ptRef -> Optional.ofNullable(ptRef.get()).ifPresent(pt -> pt.assignNetBlock(null)));
 		passthroughs.clear();
-		generateGraph(world, root);
-		computePathways(world);
+		Multimap<NetDevice, Node> dtr2n = generateGraph(world, root);
+		recomputePathways(dtr2n);
 		recomputeDSects();
 		AppEngME.logger.info("TC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(passthroughs.size() + " PTs");
@@ -144,30 +145,27 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
 	protected List<Link> links = new ArrayList<>();
 
-	transient Set<NetDevice> devicesToRoute;
-	transient Multimap<DeviceUUID, Node> dtr2n;
-
-	protected void generateGraph(World world, PhysicalDevice proot){
+	protected Multimap<NetDevice, Node> generateGraph(World world, PhysicalDevice proot){
 		long t = System.currentTimeMillis();
 		nodes.clear();
 		links.clear();
-		devicesToRoute = new HashSet<>();
-		dtr2n = HashMultimap.create();
+		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(proot);
-		if(!oPrCsVs.isPresent()) return;
+		if(!oPrCsVs.isPresent()) throw new IllegalArgumentException("Something is very very wrong");
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, node -> {}, link -> {}));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, node -> {}, link -> {}, dtr2n::put));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
-			addDevice(device.getNetworkCounterpart());
+			dtr2n.put(device.getNetworkCounterpart(), null);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
 		exploreNodes();
-		rootAdjacent.addAll(dtr2n.get(netBlock.root.getUUID()));
+		rootAdjacent.addAll(dtr2n.get(netBlock.root));
 		AppEngME.logger.info("GC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(nodes.size() + " nodes");
 		AppEngME.logger.info(links.size() + " links");
+		return dtr2n;
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
@@ -241,7 +239,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer){
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
@@ -256,21 +254,24 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			} else {
 				//return node;
 				exploredNodesConsumer.accept(getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
-					adjacentDevices.keySet().forEach(device -> nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device)));
+					adjacentDevices.keySet().forEach(device -> {
+						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
+						exploredDevicesAdjNodeConsumer.accept(device.getNetworkCounterpart(), nnode);
+					});
 					adjacentPTs.keySet().stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
 						ConnectionPassthrough p = current;
 						ConnectionPassthrough c = adjacentPT;
 						List<ConnectUUID> es = new ArrayList<>();
 						double length = 0;
 						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer);
+						ExplorationResult explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
 							length += explorationResult.length;
 							params = ConnectionsParams.intersect(params, explorationResult.connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer);
+							explorationResult = exploreAdjacent(world, c, p, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						}
 						exploredLinksConsumer.accept(createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params));
 					});
@@ -317,10 +318,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void addPassthrough(ConnectionPassthrough passthrough){
 		notifyPassthroughLoaded(passthrough);
 		passthrough.assignNetBlock(netBlock);
-	}
-
-	protected void addDevice(NetDevice device){
-		if(device != netBlock.root) devicesToRoute.add(device);
 	}
 
 	protected Link createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
@@ -412,8 +409,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		void addDevice(NetDevice device, Collection<Connection> connections){
 			this.devices.putAll(device.getUUID(), connections);
-			dtr2n.put(device.getUUID(), this);
-			NetBlockDevicesManager.this.addDevice(device);
 		}
 
 		/*
@@ -535,19 +530,21 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 * Devices
 	 */
 
-	protected void computePathways(World world){
-		long t = System.currentTimeMillis();
+	protected void recomputePathways(Multimap<NetDevice, Node> dtr2n){
 		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
 		devices.clear();
 		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 		compute(netBlock.root, rootAdjacent.stream());
-		devicesToRoute.forEach(device -> compute(device, dtr2n.get(device.getUUID()).stream()));
-		devicesToRoute = null;
-		dtr2n = null;
+		computePathways(dtr2n);
+	}
+
+	protected void computePathways(Multimap<NetDevice, Node> dtr2n){
+		long t = System.currentTimeMillis();
+		dtr2n.keySet().forEach(device -> compute(device, dtr2n.get(device).stream()));
 		AppEngME.logger.info("CP took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected Set<DeviceInformation> destroyPathways(List<Pathway> toDestroy){
+	protected Set<DeviceInformation> destroyPathways(Collection<Pathway> toDestroy){
 		long t = System.currentTimeMillis();
 		Set<DeviceInformation> recalc = new HashSet<>();
 		new ArrayList<>(toDestroy).forEach(pathway -> {
@@ -565,7 +562,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<Pathway> dormant;
 		if(device != netBlock.root){
 			List<Pathway> pathways = new ArrayList<>();
-			adj.forEach(node -> nextStep(pathways, node, new ArrayList<>()));
+			adj.filter(Objects::nonNull)/*FIXME Implement direct links root-device*/.forEach(node -> nextStep(pathways, node, new ArrayList<>()));
 			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
 			pathways.forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
 				Comparable req = device.getConnectionRequirement(connection);

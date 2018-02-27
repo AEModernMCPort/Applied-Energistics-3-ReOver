@@ -179,35 +179,46 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+		Set<Node> allAffectedNodes = new HashSet<>();
+
 		Function<ConnectUUID, Node> createNode = cuuid -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
 			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
+			allAffectedNodes.add(node);
 			return node;
 		};
 		Consumer<Node> removeNode = node -> {
 			nodes.remove(node.uuid);
+			allAffectedNodes.add(node);
+		};
+		Consumer<Link> aanLC = link -> {
+			allAffectedNodes.add(link.from);
+			allAffectedNodes.add(link.to);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
 			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			aanLC.accept(link);
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
 			link.from.links.remove(link);
 			link.to.links.remove(link);
+			aanLC.accept(link);
 		};
 		long t = System.currentTimeMillis();
+
 		Map<ConnectionPassthrough, PathwayElement> adjacentClaimed = new HashMap<>();
 		Set<Pathway> pathwaysToDestroy = new HashSet<>();
 		AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough).ifPresent(prCsVs -> AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().forEach(adj -> getElement(adj.getUUIDForConnectionPassthrough()).ifPresent(adje -> {
 			adjacentClaimed.put(adj, adje);
 			if(adje instanceof Link) pathwaysToDestroy.addAll(adje.pathways);
 		})));
+
 		long dt1 = System.currentTimeMillis() - t;
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 		t = System.currentTimeMillis();
-		Set<Node> allAffectedNodes = new HashSet<>();
-		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
+
 		adjacentClaimed.forEach((pt, pte) -> {
 			if(pte instanceof Link){
 				Link link = (Link) pte;
@@ -221,13 +232,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
 			}
 		});
+
+		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
-		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {
-			allAffectedNodes.add(link.from);
-			allAffectedNodes.add(link.to);
-		}, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
+		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, aanLC, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
+
 		reduceNodesToLinks(removeNode.andThen(allAffectedNodes::remove), createLink, removeLink);
 		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
 	}

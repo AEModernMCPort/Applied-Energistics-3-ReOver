@@ -62,6 +62,8 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 
 	void assignedPassthroughLoaded(ConnectionPassthrough passthrough);
 
+	void passthroughCreatedAdjacentToAssigned(ConnectionPassthrough passthroughCreated);
+
 	void assignedPassthroughDestroed(ConnectionPassthrough passthrough);
 
 	/*

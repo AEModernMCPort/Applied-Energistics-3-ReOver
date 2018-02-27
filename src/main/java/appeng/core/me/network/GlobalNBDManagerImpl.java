@@ -2,10 +2,13 @@ package appeng.core.me.network;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.block.ConnectionPassthrough;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -13,11 +16,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class GlobalNBDManagerImpl implements GlobalNBDManager {
@@ -143,6 +144,21 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	@Override
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeFreeDevice(N device){
 		bfDevices.remove(device.getUUID());
+	}
+
+	/*
+	 * Creation
+	 */
+
+	@Override
+	public Optional<NetBlock> onPTCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull ConnectionPassthrough passthrough){
+		MutableObject<NetBlock> netBlock = new MutableObject<>();
+		AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough).ifPresent(prCsVs -> {
+			List<NetBlock> adjNB = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().stream().map(pt -> pt.getAssignedNetBlock().orElse(null)).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+			if(adjNB.size() == 1) netBlock.setValue(adjNB.get(0));
+		});
+		if(netBlock.getValue() != null) netBlock.getValue().passthroughCreatedAdjacentToAssigned(passthrough);
+		return Optional.ofNullable(netBlock.getValue());
 	}
 
 	/*

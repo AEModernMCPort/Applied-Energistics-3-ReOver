@@ -14,6 +14,7 @@ import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.part.PartBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -41,6 +42,11 @@ public abstract class PartPassthrough<P extends PartPassthrough<P, S>, S extends
 	@Override
 	public void onLoad(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){
 		if(part.netBlock != null) part.netBlock.assignedPassthroughLoaded(part);
+	}
+
+	@Override
+	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
+		if(theWorld != null) AppEngME.INSTANCE.getGlobalNBDManager().onPTCreatedTryToFindAdjacentNetBlock(theWorld, part);
 	}
 
 	@Override

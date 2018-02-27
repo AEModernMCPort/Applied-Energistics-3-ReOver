@@ -95,6 +95,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return Optional.ofNullable(e.getValue());
 	}
 
+	public void passthroughCreated(ConnectionPassthrough passthrough){
+
+	}
+
 	public void passthroughDestroyed(ConnectionPassthrough passthrough){
 		long t = System.currentTimeMillis();
 		int pts = this.passthroughs.size();

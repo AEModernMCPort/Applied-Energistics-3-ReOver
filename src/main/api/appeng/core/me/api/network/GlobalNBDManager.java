@@ -1,5 +1,8 @@
 package appeng.core.me.api.network;
 
+import appeng.core.me.api.network.block.ConnectionPassthrough;
+import net.minecraft.world.World;
+
 import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -59,5 +62,11 @@ public interface GlobalNBDManager {
 	default <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N locateOrCreateNetworkCounterpart(@Nonnull Optional<DeviceUUID> duuidO, @Nonnull Optional<NetBlockUUID> buuidO, @Nonnull Optional<NetworkUUID> nuuidO, @Nonnull Supplier<N> creator){
 		return this.<N, P>getDevice(duuidO, buuidO, nuuidO).orElseGet(creator);
 	}
+
+	/*
+	 * Creation
+	 */
+
+	Optional<NetBlock> onPTCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull ConnectionPassthrough passthrough);
 
 }

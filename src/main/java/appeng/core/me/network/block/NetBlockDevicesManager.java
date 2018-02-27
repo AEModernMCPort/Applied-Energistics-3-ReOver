@@ -179,7 +179,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected Triple<Set<DeviceInformation>, Set<PathwayElement>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
-		BiFunction<ConnectUUID, DSect, Node> createNode = (cuuid, dsect) -> {
+		Function<ConnectUUID, Node> createNode = cuuid -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
 			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
@@ -212,7 +212,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				removeLink.accept(link);
 				int ei = link.elements.indexOf(pt.getUUIDForConnectionPassthrough());
 				if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
-				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough(), pte);
+				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough());
 				createLink.accept(link.from, ntf, link.elements.subList(0, ei));
 				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
 			}

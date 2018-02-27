@@ -223,7 +223,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodesAndLinks::add, allAffectedNodesAndLinks::add, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
-		reduceNodesToLinks(node -> removeNode.andThen(allAffectedNodesAndLinks::remove), createLink, removeLink);
+		reduceNodesToLinks(removeNode.andThen(allAffectedNodesAndLinks::remove), createLink, removeLink);
 		return new ImmutableTriple<>(recomp, allAffectedNodesAndLinks, dtr2n);
 	}
 

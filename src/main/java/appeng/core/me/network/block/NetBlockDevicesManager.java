@@ -185,6 +185,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
 			return node;
 		};
+		Consumer<Node> removeNode = node -> {
+			nodes.remove(node.uuid);
+		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
 			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
 		};
@@ -217,10 +220,34 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
 		Set<Node> allAffectedNodes = new HashSet<>();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
+		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
+		reduceNodesToLinks(node -> removeNode.andThen(allAffectedNodes::remove), createLink, removeLink);
 		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
+	}
+
+	protected void reduceNodesToLinks(Consumer<Node> removeNode, TriConsumer<Node, Node, List<ConnectUUID>> createLink, Consumer<Link> removeLink){
+		long t = System.currentTimeMillis();
+		Optional<Node> next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+		while(next.isPresent()){
+			Node node = next.get();
+			Link al1 = node.links.get(0);
+			Link al2 = node.links.get(1);
+			Link l1 = al1.to == node ? al1 : al2;
+			Link l2 = al1.from == node ? al1 : al2;
+			removeNode.accept(node);
+			removeLink.accept(l1);
+			removeLink.accept(l2);
+			ArrayList<ConnectUUID> elements = new ArrayList<>();
+			elements.addAll(l1.elements);
+			elements.add(node.uuid);
+			elements.addAll(l2.elements);
+			createLink.accept(l1.from, l2.to, elements);
+
+			next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+		}
+		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){

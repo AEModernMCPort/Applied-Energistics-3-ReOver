@@ -876,7 +876,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long t = System.currentTimeMillis();
 		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(allUpdatedNodesAndLinks, dsect.nodes) || !Collections.disjoint(allUpdatedNodesAndLinks, dsect.links)).collect(Collectors.toSet());
 		this.dsects.removeAll(affectedDSects);
-		this.dsects.addAll(computeDSects(affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream()).collect(Collectors.toSet())));
+		this.dsects.addAll(computeDSects(affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream()).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

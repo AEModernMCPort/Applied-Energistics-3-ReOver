@@ -284,7 +284,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), current.getLength(), adjN0));
 			} else {
 				//return node;
-				exploredNodesConsumer.accept(getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
+				Node resNode = getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
 					adjacentDevices.keySet().forEach(device -> {
 						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
 						exploredDevicesAdjNodeConsumer.accept(device.getNetworkCounterpart(), nnode);
@@ -298,16 +298,17 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
-							length += explorationResult.length;
-							params = ConnectionsParams.intersect(params, explorationResult.connectionsParams);
+							length += ((ExplorationResult.Link) explorationResult).length;
+							params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
 							explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
 						}
-						exploredLinksConsumer.accept(createLink(nnode, getOrCreateNode(c.getUUIDForConnectionPassthrough(), c.getLength(), explorationResult.connectionsParams, nnnn -> {}), es, length, params));
+						exploredLinksConsumer.accept(createLink(nnode, ((ExplorationResult.Node) explorationResult).node, es, length, params));
 					});
-				})));
-				res.setValue(new ExplorationResult.Node(prCsVs.getMiddle(), current.getLength()));
+				}));
+				exploredNodesConsumer.accept(resNode);
+				res.setValue(new ExplorationResult.Node(resNode));
 			}
 		});
 		return res.getValue();
@@ -315,28 +316,25 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected static abstract class ExplorationResult {
 
-		protected final ConnectionsParams connectionsParams;
-		protected final double length;
-
-		public ExplorationResult(ConnectionsParams connectionsParams, double length){
-			this.connectionsParams = connectionsParams;
-			this.length = length;
-		}
-
 		static class Link extends ExplorationResult {
 
+			protected final ConnectionsParams connectionsParams;
+			protected final double length;
 			protected final ConnectionPassthrough next;
 
-			Link(ConnectionsParams connectionsParams, double length, ConnectionPassthrough next){
-				super(connectionsParams, length);
+			public Link(ConnectionsParams connectionsParams, double length, ConnectionPassthrough next){
+				this.connectionsParams = connectionsParams;
+				this.length = length;
 				this.next = next;
 			}
 		}
 
 		static class Node extends ExplorationResult {
 
-			public Node(ConnectionsParams connectionsParams, double length){
-				super(connectionsParams, length);
+			protected final NetBlockDevicesManager.Node node;
+
+			public Node(NetBlockDevicesManager.Node node){
+				this.node = node;
 			}
 		}
 

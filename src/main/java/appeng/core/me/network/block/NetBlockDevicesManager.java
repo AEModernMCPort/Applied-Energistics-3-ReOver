@@ -289,22 +289,31 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
 						exploredDevicesAdjNodeConsumer.accept(device.getNetworkCounterpart(), nnode);
 					});
-					adjacentPTs.keySet().stream().filter(adj -> !passthroughs.containsKey(adj.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
-						ConnectionPassthrough p = current;
-						ConnectionPassthrough c = adjacentPT;
-						List<ConnectUUID> es = new ArrayList<>();
-						double length = 0;
-						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
-						while(explorationResult instanceof ExplorationResult.Link){
-							es.add(c.getUUIDForConnectionPassthrough());
-							length += ((ExplorationResult.Link) explorationResult).length;
-							params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
-							p = c;
-							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
-						}
-						exploredLinksConsumer.accept(createLink(nnode, ((ExplorationResult.Node) explorationResult).node, es, length, params));
+					adjacentPTs.keySet().forEach(adjacentPT -> {
+						if(!passthroughs.containsKey(adjacentPT.getUUIDForConnectionPassthrough())){
+							ConnectionPassthrough p = current;
+							ConnectionPassthrough c = adjacentPT;
+							List<ConnectUUID> es = new ArrayList<>();
+							double length = 0;
+							ConnectionsParams params = null;
+							ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+							while(explorationResult instanceof ExplorationResult.Link){
+								es.add(c.getUUIDForConnectionPassthrough());
+								length += ((ExplorationResult.Link) explorationResult).length;
+								params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
+								p = c;
+								c = ((ExplorationResult.Link) explorationResult).next;
+								explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+							}
+							exploredLinksConsumer.accept(createLink(nnode, ((ExplorationResult.Node) explorationResult).node, es, length, params));
+						} else getElement(adjacentPT.getUUIDForConnectionPassthrough()).ifPresent(adjExpPE -> {
+							if(adjExpPE instanceof Node){
+								Node adjExpNode = (Node) adjExpPE;
+								exploredNodesConsumer.accept(adjExpNode);
+								exploredLinksConsumer.accept(createLink(nnode, adjExpNode, new ArrayList<>(), 0, null));
+							}
+							if(adjExpPE instanceof Link) throw new IllegalArgumentException("Something went very very badly...");
+						});
 					});
 				}));
 				exploredNodesConsumer.accept(resNode);

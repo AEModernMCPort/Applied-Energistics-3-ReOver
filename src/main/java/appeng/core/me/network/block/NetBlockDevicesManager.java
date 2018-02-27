@@ -206,7 +206,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long dt1 = System.currentTimeMillis() - t;
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 		t = System.currentTimeMillis();
-		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
 		Set<Node> allAffectedNodes = new HashSet<>();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		adjacentClaimed.forEach((pt, pte) -> {
@@ -222,6 +221,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
 			}
 		});
+		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
 		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {
 			allAffectedNodes.add(link.from);
 			allAffectedNodes.add(link.to);

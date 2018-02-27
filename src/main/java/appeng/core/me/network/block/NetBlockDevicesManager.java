@@ -9,10 +9,7 @@ import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
-import appeng.core.me.api.parts.container.PartInfo;
-import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.connect.ConnectionsParams;
-import appeng.core.me.parts.part.PartsHelper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
@@ -24,7 +21,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -35,7 +31,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -154,13 +149,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		links.clear();
 		devicesToRoute = new HashSet<>();
 		dtr2n = HashMultimap.create();
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = voxels(proot);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(proot);
 		if(!oPrCsVs.isPresent()) return;
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
-		getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			addDevice(device.getNetworkCounterpart());
 			directLinks.add(device.getNetworkCounterpart().getUUID());
 		});
@@ -175,7 +170,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		BiFunction<ConnectUUID, PathwayElement, Node> createNode = (cuuid, pe) -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
-			Node node = getOrCreateNode(cuuid, pt.getLength(), getConnectionsParams(pt).get(), ncn -> {});
+			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
 			getDSect(pe).nodes.add(node);
 			return node;
 		};
@@ -184,7 +179,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			getDSect(node).nodes.remove(node);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
-			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
 			getDSect(from).links.add(link);
 		};
 		Consumer<Link> removeLink = link -> {
@@ -246,10 +241,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
-		voxels(current).ifPresent(prCsVs -> {
-			Multimap<ConnectionPassthrough, Connection> adjacentPTs = getAdjacentPTs(world, prCsVs.getRight());
+		AppEngME.INSTANCE.getDevicesHelper().voxels(current).ifPresent(prCsVs -> {
+			Multimap<ConnectionPassthrough, Connection> adjacentPTs = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight());
 			adjacentPTs.removeAll(previous);
-			Multimap<PhysicalDevice, Connection> adjacentDevices = getAdjacentDevices(world, prCsVs.getRight());
+			Multimap<PhysicalDevice, Connection> adjacentDevices = AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight());
 			if(adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
 				//return link;
 				ConnectionPassthrough adjN0 = adjacentPTs.keySet().toArray(new ConnectionPassthrough[1])[0];
@@ -309,66 +304,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			}
 		}
 
-	}
-
-	/*
-	 * Adjacent
-	 */
-
-	protected Multimap<ConnectionPassthrough, Connection> getAdjacentPTs(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
-		Multimap<ConnectionPassthrough, Connection> adjacentPTs = HashMultimap.create();
-		forEachTargetVoxel(voxels, (v, dir, cs) -> getConnectionPassthrough(world, v, dir, cs).ifPresent(cptCs -> adjacentPTs.putAll(cptCs.getLeft(), cptCs.getRight())));
-		return adjacentPTs;
-	}
-
-	protected Multimap<PhysicalDevice, Connection> getAdjacentDevices(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
-		Multimap<PhysicalDevice, Connection> adjacentDevices = HashMultimap.create();
-		forEachTargetVoxel(voxels, (v, dir, cs) -> getDevice(world, v, dir, cs).ifPresent(phdCs -> adjacentDevices.putAll(phdCs.getLeft(), phdCs.getRight())));
-		return adjacentDevices;
-	}
-
-	/*
-	 * Get at
-	 */
-
-	protected Optional<Pair<ConnectionPassthrough, Collection<Connection>>> getConnectionPassthrough(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
-		MutableObject<Pair<ConnectionPassthrough, Collection<Connection>>> passthrough = new MutableObject<>();
-		world.getCapability(PartsHelper.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
-			if(s instanceof ConnectionPassthrough){
-				List<Connection> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
-				if(!cs.isEmpty()) passthrough.setValue(new ImmutablePair<>((ConnectionPassthrough) s, cs));
-			}
-		});
-		return Optional.ofNullable(passthrough.getValue());
-	}
-
-	protected Optional<Pair<PhysicalDevice, Collection<Connection>>> getDevice(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
-		MutableObject<Pair<PhysicalDevice, Collection<Connection>>> device = new MutableObject<>();
-		world.getCapability(PartsHelper.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
-			if(s instanceof PhysicalDevice){
-				List<Connection> cs = connections.stream().filter(c -> AppEngME.INSTANCE.getPartsHelper().canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
-				if(!cs.isEmpty()) device.setValue(new ImmutablePair<>((PhysicalDevice) s, cs));
-			}
-		});
-		return Optional.ofNullable(device.getValue());
-	}
-
-	/*
-	 * C->V
-	 */
-
-	protected void forEachTargetVoxel(Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections, TriConsumer<VoxelPosition, EnumFacing, Collection<Connection>> targetVoxelConsumer){
-		connections.keySet().forEach(vS -> targetVoxelConsumer.accept(vS.getLeft().offsetLocal(vS.getRight()), vS.getRight().getOpposite(), connections.get(vS)));
-	}
-
-	protected <T> Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> voxels(T t){
-		if(t instanceof Part.State) return Optional.of(new ImmutableTriple<>(((Part.State) t).getAssignedPosRot(), AppEngME.INSTANCE.getPartsHelper().getConnectionParams((Part.State) t, t instanceof ConnectionPassthrough ? c -> ((ConnectionPassthrough) t).getPassthroughConnectionParameter(c) : c -> 0), AppEngME.INSTANCE.getPartsHelper().getConnections(((Part.State) t).getPart(), ((Part.State) t).getAssignedPosRot())));
-		return Optional.empty();
-	}
-
-	protected Optional<ConnectionsParams<?>> getConnectionsParams(ConnectionPassthrough passthrough){
-		if(passthrough instanceof Part.State) return Optional.of(AppEngME.INSTANCE.getPartsHelper().getConnectionParams((Part.State) passthrough, passthrough::getPassthroughConnectionParameter));
-		return Optional.empty();
 	}
 
 	/*

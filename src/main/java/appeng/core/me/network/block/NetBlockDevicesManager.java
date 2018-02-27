@@ -92,7 +92,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info(devices.size() + " devices");
 	}
 
-	protected Optional<PathwayElement> getElement(ConnectUUID cuuid){
+	public Optional<PathwayElement> getElement(ConnectUUID cuuid){
 		MutableObject<PathwayElement> e = new MutableObject<>(nodes.get(cuuid));
 		if(e.getValue() == null) links.parallelStream().filter(link -> link.elements.contains(cuuid)).findAny().ifPresent(e::setValue);
 		return Optional.ofNullable(e.getValue());
@@ -437,7 +437,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return node;
 	}
 
-	protected class PathwayElement {
+	public class PathwayElement {
 
 		protected ConnectionsParams params;
 		protected ConnectionsParams leftover;
@@ -868,7 +868,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	protected Set<DSect> dsects = new HashSet<>();
 
-	protected DSect getDSect(PathwayElement e){
+	public DSect getDSect(PathwayElement e){
 		return dsects.stream().filter(e instanceof Node ? (ds -> ds.nodes.contains(e)) : (ds -> ds.links.contains(e)))./*There can only be one*/findAny()./*And there must be*/get();
 	}
 

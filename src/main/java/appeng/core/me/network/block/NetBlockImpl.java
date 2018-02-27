@@ -86,7 +86,7 @@ public class NetBlockImpl implements NetBlock {
 	 * Devices
 	 */
 
-	protected NetBlockDevicesManager devicesManager = new NetBlockDevicesManager(this);
+	public NetBlockDevicesManager devicesManager = new NetBlockDevicesManager(this);
 
 	@Nonnull
 	@Override

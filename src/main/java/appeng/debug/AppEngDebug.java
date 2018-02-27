@@ -9,19 +9,37 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.core.AppEng;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.core.lib.raytrace.RayTraceHelper;
+import appeng.core.me.api.network.block.ConnectionPassthrough;
+import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.container.PartInfo;
+import appeng.core.me.api.parts.container.PartsAccess;
+import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
+import appeng.core.me.network.block.NetBlockDevicesManager;
+import appeng.core.me.network.block.NetBlockImpl;
+import appeng.core.me.parts.part.PartsHelper;
 import appeng.debug.config.DebugConfig;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
 import appeng.debug.definitions.DebugTileDefinitions;
 import appeng.debug.proxy.DebugProxy;
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /*
  * The only module not built with gradle.
@@ -79,6 +97,8 @@ public class AppEngDebug {
 		this.blockDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 
+		MinecraftForge.EVENT_BUS.register(this);
+
 		initHandler.preInit();
 		proxy.preInit(event);
 
@@ -99,6 +119,28 @@ public class AppEngDebug {
 	public void postInitAE(final AEStateEvent.AEPostInitializationEvent event){
 		initHandler.postInit();
 		proxy.postInit(event);
+	}
+
+	@SubscribeEvent
+	public void graphDebugStick(PlayerInteractEvent.RightClickItem event){
+		if(!event.getWorld().isRemote && event.getEntityPlayer().getItemStackFromSlot(event.getHand() == EnumHand.MAIN_HAND ? EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND).getItem() == Items.STICK){
+			RayTraceResult trace = RayTraceHelper.rayTrace(event.getEntityPlayer());
+			if(trace.hitInfo instanceof VoxelPosition){
+				VoxelPosition targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(trace);
+				PartsAccess.Mutable worldPartsAccess = event.getEntityPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				worldPartsAccess.getPart(targetVoxel).flatMap(PartInfo::getState).ifPresent(s -> {
+					if(s instanceof ConnectionPassthrough){
+						ConnectionPassthrough cp = (ConnectionPassthrough) s;
+						cp.getAssignedNetBlock().ifPresent(netBlock -> {
+							NetBlockDevicesManager dm = ((NetBlockImpl) netBlock).devicesManager;
+							Optional pe = dm.getElement(cp.getUUIDForConnectionPassthrough());
+							event.getEntityPlayer().sendMessage(new TextComponentString("PE " + pe.orElse(null)));
+							pe.ifPresent(ppe -> event.getEntityPlayer().sendMessage(new TextComponentString("DSect " + dm.getDSect((NetBlockDevicesManager.PathwayElement) ppe))));
+						});
+					}
+				});
+			}
+		}
 	}
 
 }

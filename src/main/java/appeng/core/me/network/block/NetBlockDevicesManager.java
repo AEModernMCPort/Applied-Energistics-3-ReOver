@@ -30,9 +30,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -167,7 +165,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, true, node -> {}, link -> {}, dtr2n::put));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, true, node -> {}, link -> {}, dtr2n::put, (p, n) -> false));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			dtr2n.put(device.getNetworkCounterpart(), null);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
@@ -219,7 +217,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
 		Set<Node> allAffectedNodes = new HashSet<>();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put);
+		exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, link -> {}, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
@@ -296,7 +294,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, boolean forceNextNode, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, boolean forceNextNode, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer, BiPredicate<ConnectionPassthrough, Node> canCreateLinkWithPreEx){
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
 		addPassthrough(current);
@@ -322,23 +320,24 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 							List<ConnectUUID> es = new ArrayList<>();
 							double length = 0;
 							ConnectionsParams params = null;
-							ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+							ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer, canCreateLinkWithPreEx);
 							while(explorationResult instanceof ExplorationResult.Link){
 								es.add(c.getUUIDForConnectionPassthrough());
 								length += ((ExplorationResult.Link) explorationResult).length;
 								params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
 								p = c;
 								c = ((ExplorationResult.Link) explorationResult).next;
-								explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer);
+								explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer, canCreateLinkWithPreEx);
 							}
 							exploredLinksConsumer.accept(createLink(nnode, ((ExplorationResult.Node) explorationResult).node, es, length, params));
 						} else getElement(adjacentPT.getUUIDForConnectionPassthrough()).ifPresent(adjExpPE -> {
 							if(adjExpPE instanceof Node){
 								Node adjExpNode = (Node) adjExpPE;
-								exploredNodesConsumer.accept(adjExpNode);
-								exploredLinksConsumer.accept(createLink(nnode, adjExpNode, new ArrayList<>(), 0, null));
+								if(canCreateLinkWithPreEx.test(adjacentPT, adjExpNode)){
+									exploredNodesConsumer.accept(adjExpNode);
+									exploredLinksConsumer.accept(createLink(nnode, adjExpNode, new ArrayList<>(), 0, null));
+								}
 							}
-							if(adjExpPE instanceof Link) throw new IllegalArgumentException("Something went very very badly...");
 						});
 					});
 				}));

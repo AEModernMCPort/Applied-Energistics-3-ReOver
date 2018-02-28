@@ -100,7 +100,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int pts = this.passthroughs.size();
 		int dsects = this.dsects.size();
 		int devices = this.devices.size();
-		Triple<Set<DeviceInformation>, Triple<Set<Node>, Set<Node>, Set<Link>>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
+		Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
 		recompNewDSects(recompRedsect.getMiddle());
 		recompute(recompRedsect.getLeft());
 		computePathways(recompRedsect.getRight());
@@ -178,7 +178,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return dtr2n;
 	}
 
-	protected Triple<Set<DeviceInformation>, Triple<Set<Node>, Set<Node>, Set<Link>>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+	protected Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
 		Set<Node> affectedNodes = new HashSet<>();
 		Set<Node> createdNodes = new HashSet<>();
 		Set<Link> createdLinks = new HashSet<>();
@@ -188,7 +188,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			else createdNodes.add(node);
 		};
 		Function<ConnectionPassthrough, Node> createNode = pt -> {
-//			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
 			Node node = new Node(pt.getUUIDForConnectionPassthrough(), pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get());
 			createdNodes.add(node);
 			return node;
@@ -237,7 +236,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		t = System.currentTimeMillis();
 
 		Map<ConnectUUID, Node> nodesCopy = new HashMap<>(nodes);
-		Set<Link> linksCopy = new HashSet<>(links);
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		adjacentDevices.keySet().forEach(device -> {
 			nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
@@ -267,27 +265,26 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				List<ConnectUUID> es = new ArrayList<>();
 				double length = 0;
 				ConnectionsParams params = null;
-				ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, linksCopy, dtr2n);
+				ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, links, dtr2n);
 				while(explorationResult instanceof ExplorationResult.Link){
 					es.add(c.getUUIDForConnectionPassthrough());
 					length += ((ExplorationResult.Link) explorationResult).length;
 					params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
 					p = c;
 					c = ((ExplorationResult.Link) explorationResult).next;
-					explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, linksCopy, dtr2n);
+					explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, links, dtr2n);
 				}
 				createLinkFull.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
 			});
 		});
 		exploreNodes();
 		createdNodes.addAll(Maps.difference(nodesCopy, nodes).entriesOnlyOnLeft().values());
-		createdLinks.addAll(Sets.difference(linksCopy, new HashSet<>(links)));
 
 		createdNodes.forEach(cn -> nodes.put(cn.uuid, cn));
 		links.addAll(createdLinks);
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 
-		return new ImmutableTriple<>(recomp, new ImmutableTriple<>(affectedNodes, createdNodes, createdLinks), dtr2n);
+		return new ImmutableTriple<>(recomp, new ImmutablePair<>(affectedNodes, createdNodes), dtr2n);
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
@@ -939,11 +936,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected void recompNewDSects(Triple<Set<Node>, Set<Node>, Set<Link>> affectedCreatedCreated){
+	protected void recompNewDSects(Pair<Set<Node>, Set<Node>> affectedCreatedCreated){
 		long t = System.currentTimeMillis();
 		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(affectedCreatedCreated.getLeft(), dsect.nodes)).collect(Collectors.toSet());
 		this.dsects.removeAll(affectedDSects);
-		this.dsects.addAll(computeDSects(Stream.concat(affectedCreatedCreated.getMiddle().stream(), affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream())).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
+		this.dsects.addAll(computeDSects(Stream.concat(affectedCreatedCreated.getRight().stream(), affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream())).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

@@ -275,7 +275,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		BiFunction<ConnectUUID, PathwayElement, Node> createNode = (cuuid, pe) -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
-			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
+			Node node = nodes.get(cuuid);
+			if(node == null) nodes.put(cuuid, node = new Node(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get()));
 			getDSect(pe).nodes.add(node);
 			return node;
 		};
@@ -284,7 +285,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			getDSect(node).nodes.remove(node);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
-			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			Link link = new Link(from, to, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			links.add(link);
+			from.links.add(link);
+			to.links.add(link);
+			link.elements = elements;
 			getDSect(from).links.add(link);
 		};
 		Consumer<Link> removeLink = link -> {

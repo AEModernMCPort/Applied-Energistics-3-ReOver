@@ -153,7 +153,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 */
 
 	protected Map<ConnectUUID, Node> nodes = new HashMap<>();
-	protected List<Link> links = new ArrayList<>();
+	protected Set<Link> links = new HashSet<>();
 
 	protected Multimap<NetDevice, Node> generateGraph(World world, PhysicalDevice proot){
 		long t = System.currentTimeMillis();
@@ -1084,7 +1084,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			int next = 0;
 			for(NBTTagCompound tag : (Iterable<NBTTagCompound>) nbt.getTag("links")){
 				Link link = new Link();
-				this.links.add(link);
 				ldq.add(new ImmutablePair<>(link, tag));
 				i2l.put(next, link);
 				next++;
@@ -1107,7 +1106,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			dSect.deserializeNBT(tag, i2l);
 			dsects.add(dSect);
 		});
-		ldq.forEach(lt -> lt.getLeft().deserializeNBT(lt.getRight()));
+		ldq.forEach(lt -> {
+			Link link = lt.getKey();
+			link.deserializeNBT(lt.getValue());
+			links.add(link);
+		});
 	}
 
 }

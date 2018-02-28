@@ -386,22 +386,27 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
 						dtr2n.put(device.getNetworkCounterpart(), nnode);
 					});
-					adjacentPTs.keySet().stream().filter(adjPT -> !passthroughs.containsKey(adjPT.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
-						ConnectionPassthrough p = current;
-						ConnectionPassthrough c = adjacentPT;
-						List<ConnectUUID> es = new ArrayList<>();
-						double length = 0;
-						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
-						while(explorationResult instanceof ExplorationResult.Link){
-							es.add(c.getUUIDForConnectionPassthrough());
-							length += ((ExplorationResult.Link) explorationResult).length;
-							params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
-							p = c;
-							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
-						}
-						createLink.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
+					adjacentPTs.keySet().forEach(adjacentPT -> {
+						if(!passthroughs.containsKey(adjacentPT.getUUIDForConnectionPassthrough())){
+							ConnectionPassthrough p = current;
+							ConnectionPassthrough c = adjacentPT;
+							List<ConnectUUID> es = new ArrayList<>();
+							double length = 0;
+							ConnectionsParams params = null;
+							ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
+							while(explorationResult instanceof ExplorationResult.Link){
+								es.add(c.getUUIDForConnectionPassthrough());
+								length += ((ExplorationResult.Link) explorationResult).length;
+								params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
+								p = c;
+								c = ((ExplorationResult.Link) explorationResult).next;
+								explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
+							}
+							createLink.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
+						} else Optional.ofNullable(nodes.get(adjacentPT.getUUIDForConnectionPassthrough())).ifPresent(adjENode -> {
+							if(adjENode.links.stream().noneMatch(link -> (link.from == nnode && link.to == adjENode) || (link.from == adjENode && link.to == nnode)))
+								createLink.apply(new ImmutablePair<>(nnode, adjENode), new ImmutableTriple<>(new ArrayList<>(), 0d, null));
+						});
 					});
 				}));
 				res.setValue(new ExplorationResult.Node(resNode));

@@ -240,34 +240,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 
-		reduceNodesToLinks(removeNode.andThen(allAffectedNodes::remove), createLink, removeLink);
 		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
-	}
-
-	protected void reduceNodesToLinks(Consumer<Node> removeNode, TriConsumer<Node, Node, List<ConnectUUID>> createLink, Consumer<Link> removeLink){
-		long t = System.currentTimeMillis();
-		int c = 0;
-		Optional<Node> next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
-		while(next.isPresent()){
-			Node node = next.get();
-			Link al1 = node.links.get(0);
-			Link al2 = node.links.get(1);
-			Link l1 = al1.to == node ? al1 : al2;
-			Link l2 = al1.from == node ? al1 : al2;
-			removeNode.accept(node);
-			removeLink.accept(l1);
-			removeLink.accept(l2);
-			ArrayList<ConnectUUID> elements = new ArrayList<>();
-			elements.addAll(l1.elements);
-			elements.add(node.uuid);
-			elements.addAll(l2.elements);
-			createLink.accept(l1.from, l2.to, elements);
-
-			c++;
-			next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
-		}
-		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
-		AppEngME.logger.info("Reduced " + c + " nodes");
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
@@ -632,6 +605,39 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			return "Link{" + "from=" + from.uuid + ", to=" + to.uuid + ", " + elements.size() + " elements, params=" + params + '}';
 		}
 	}
+
+	/*
+	 * Graph reduction
+	 * TODO
+	 */
+
+	/*
+	protected void reduceNodesToLinks(){
+		long t = System.currentTimeMillis();
+		int c = 0;
+		Optional<Node> next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+		while(next.isPresent()){
+			Node node = next.get();
+			Link al1 = node.links.get(0);
+			Link al2 = node.links.get(1);
+			Link l1 = al1.to == node ? al1 : al2;
+			Link l2 = al1.from == node ? al1 : al2;
+			removeNode.accept(node);
+			removeLink.accept(l1);
+			removeLink.accept(l2);
+			ArrayList<ConnectUUID> elements = new ArrayList<>();
+			elements.addAll(l1.elements);
+			elements.add(node.uuid);
+			elements.addAll(l2.elements);
+			createLink.accept(l1.from, l2.to, elements);
+
+			c++;
+			next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+		}
+		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info("Reduced " + c + " nodes");
+	}
+	*/
 
 	/*
 	 * Devices

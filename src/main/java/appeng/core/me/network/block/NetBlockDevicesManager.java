@@ -10,9 +10,7 @@ import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.network.connect.ConnectionsParams;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
@@ -102,7 +100,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int pts = this.passthroughs.size();
 		int dsects = this.dsects.size();
 		int devices = this.devices.size();
-		Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
+		Triple<Set<DeviceInformation>, Triple<Set<Node>, Set<Node>, Set<Link>>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
 		recompNewDSects(recompRedsect.getMiddle());
 		recompute(recompRedsect.getLeft());
 		computePathways(recompRedsect.getRight());
@@ -180,67 +178,116 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return dtr2n;
 	}
 
-	protected Triple<Set<DeviceInformation>, Set<Node>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
-		Set<Node> allAffectedNodes = new HashSet<>();
+	protected Triple<Set<DeviceInformation>, Triple<Set<Node>, Set<Node>, Set<Link>>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
+		Set<Node> affectedNodes = new HashSet<>();
+		Set<Node> createdNodes = new HashSet<>();
+		Set<Link> createdLinks = new HashSet<>();
 
-		Function<ConnectUUID, Node> createNode = cuuid -> {
-			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
-			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
-			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
-			allAffectedNodes.add(node);
+		Consumer<Node> affectNode = node -> {
+			if(nodes.containsKey(node.uuid)) affectedNodes.add(node);
+			else createdNodes.add(node);
+		};
+		Function<ConnectionPassthrough, Node> createNode = pt -> {
+//			Node node = getOrCreateNode(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get(), ncn -> {});
+			Node node = new Node(pt.getUUIDForConnectionPassthrough(), pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get());
+			createdNodes.add(node);
 			return node;
 		};
-		Consumer<Node> removeNode = node -> {
-			nodes.remove(node.uuid);
-			allAffectedNodes.add(node);
-		};
-		Consumer<Link> aanLC = link -> {
-			allAffectedNodes.add(link.from);
-			allAffectedNodes.add(link.to);
+		BiFunction<Pair<Node, Node>, Triple<List<ConnectUUID>, Double, ConnectionsParams>, Link> createLinkFull = (fromTo, elementsLengthParams) -> {
+			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
+			fromTo.getLeft().links.add(link);
+			fromTo.getRight().links.add(link);
+			link.elements = elementsLengthParams.getLeft();
+			createdLinks.add(link);
+			affectNode.accept(fromTo.getLeft());
+			affectNode.accept(fromTo.getRight());
+			return link;
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
-			Link link = createLink(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
-			aanLC.accept(link);
+			createLinkFull.apply(new ImmutablePair<>(from, to), new ImmutableTriple<>(elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get()));
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
 			link.from.links.remove(link);
 			link.to.links.remove(link);
-			aanLC.accept(link);
+			affectedNodes.add(link.from);
+			affectedNodes.add(link.to);
 		};
 		long t = System.currentTimeMillis();
 
-		Map<ConnectionPassthrough, PathwayElement> adjacentClaimed = new HashMap<>();
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough);
+		if(!oPrCsVs.isPresent()) throw new IllegalArgumentException("Something is very very wrong");
+		Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>> prCsVs = oPrCsVs.get();
+
+		Node nnode = createNode.apply(passthrough);
+		passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
+		passthrough.assignNetBlock(netBlock);
+
+		Map<ConnectionPassthrough, Optional<PathwayElement>> adjacentPTs = new HashMap<>();
 		Set<Pathway> pathwaysToDestroy = new HashSet<>();
-		AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough).ifPresent(prCsVs -> AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().forEach(adj -> getElement(adj.getUUIDForConnectionPassthrough()).ifPresent(adje -> {
-			adjacentClaimed.put(adj, adje);
-			if(adje instanceof Link) pathwaysToDestroy.addAll(adje.pathways);
-		})));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().forEach(adj -> {
+			Optional<PathwayElement> adjeO = getElement(adj.getUUIDForConnectionPassthrough());
+			adjacentPTs.put(adj, adjeO);
+			adjeO.ifPresent(adje -> { if(adje instanceof Link) pathwaysToDestroy.addAll(adje.pathways); });
+		});
+		Multimap<PhysicalDevice, Connection> adjacentDevices = AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight());
 
 		long dt1 = System.currentTimeMillis() - t;
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 		t = System.currentTimeMillis();
 
-		adjacentClaimed.forEach((pt, pte) -> {
-			if(pte instanceof Link){
-				Link link = (Link) pte;
-				allAffectedNodes.add(link.from);
-				allAffectedNodes.add(link.to);
-				removeLink.accept(link);
-				int ei = link.elements.indexOf(pt.getUUIDForConnectionPassthrough());
-				if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
-				Node ntf = createNode.apply(pt.getUUIDForConnectionPassthrough());
-				createLink.accept(link.from, ntf, link.elements.subList(0, ei));
-				createLink.accept(ntf, link.to, link.elements.subList(ei + 1, link.elements.size()));
-			}
-		});
-
+		Map<ConnectUUID, Node> nodesCopy = new HashMap<>(nodes);
+		Set<Link> linksCopy = new HashSet<>(links);
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
+		adjacentDevices.keySet().forEach(device -> {
+			nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
+			dtr2n.put(device.getNetworkCounterpart(), nnode);
+		});
+		adjacentPTs.forEach((adjacentPT, pteO) -> {
+			if(pteO.isPresent()){
+				PathwayElement pte = pteO.get();
+				Node node;
+				if(pte instanceof Link){
+					Link link = (Link) pte;
+					removeLink.accept(link);
+					int ei = link.elements.indexOf(adjacentPT.getUUIDForConnectionPassthrough());
+					if(ei < 0) throw new IllegalArgumentException("Something went very very badly...");
+					node = createNode.apply(adjacentPT);
+					createLink.accept(link.from, node, link.elements.subList(0, ei));
+					createLink.accept(node, link.to, link.elements.subList(ei + 1, link.elements.size()));
+				} else {
+					node = (Node) pte;
+					affectedNodes.add(node);
+				}
+				createLink.accept(nnode, node, new ArrayList<>());
+				//TODO On-place reduction?
+			} else nodesExplorer.add(() -> {
+				ConnectionPassthrough p = passthrough;
+				ConnectionPassthrough c = adjacentPT;
+				List<ConnectUUID> es = new ArrayList<>();
+				double length = 0;
+				ConnectionsParams params = null;
+				ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, linksCopy, dtr2n);
+				while(explorationResult instanceof ExplorationResult.Link){
+					es.add(c.getUUIDForConnectionPassthrough());
+					length += ((ExplorationResult.Link) explorationResult).length;
+					params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
+					p = c;
+					c = ((ExplorationResult.Link) explorationResult).next;
+					explorationResult = exploreAdjacent(world, c, p, passthroughs, nodesCopy, linksCopy, dtr2n);
+				}
+				createLinkFull.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
+			});
+		});
 		exploreNodes();
+		createdNodes.addAll(Maps.difference(nodesCopy, nodes).entriesOnlyOnLeft().values());
+		createdLinks.addAll(Sets.difference(linksCopy, new HashSet<>(links)));
+
+		createdNodes.forEach(cn -> nodes.put(cn.uuid, cn));
+		links.addAll(createdLinks);
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 
-		return new ImmutableTriple<>(recomp, allAffectedNodes, dtr2n);
+		return new ImmutableTriple<>(recomp, new ImmutableTriple<>(affectedNodes, createdNodes, createdLinks), dtr2n);
 	}
 
 	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
@@ -892,11 +939,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected void recompNewDSects(Set<Node> allUpdatedNodes){
+	protected void recompNewDSects(Triple<Set<Node>, Set<Node>, Set<Link>> affectedCreatedCreated){
 		long t = System.currentTimeMillis();
-		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(allUpdatedNodes, dsect.nodes)).collect(Collectors.toSet());
+		Set<DSect> affectedDSects = dsects.stream().filter(dsect -> !Collections.disjoint(affectedCreatedCreated.getLeft(), dsect.nodes)).collect(Collectors.toSet());
 		this.dsects.removeAll(affectedDSects);
-		this.dsects.addAll(computeDSects(Stream.concat(allUpdatedNodes.stream(), affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream())).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
+		this.dsects.addAll(computeDSects(Stream.concat(affectedCreatedCreated.getMiddle().stream(), affectedDSects.stream().flatMap(dsect -> dsect.nodes.stream())).filter(node -> nodes.containsKey(node.uuid)).collect(Collectors.toSet())));
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

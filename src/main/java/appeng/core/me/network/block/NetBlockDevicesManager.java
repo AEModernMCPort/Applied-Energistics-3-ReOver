@@ -639,12 +639,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			if(this == o) return true;
 			if(!(o instanceof Link)) return false;
 			Link link = (Link) o;
-			return Objects.equals(from, link.from) && Objects.equals(to, link.to) && Objects.equals(elements, link.elements);
+			return Objects.equals(from, link.from) && Objects.equals(to, link.to);
 		}
 
 		@Override
 		public int hashCode(){
-			return Objects.hash(from, to, elements);
+			return Objects.hash(from.uuid, to.uuid);
 		}
 
 		@Override

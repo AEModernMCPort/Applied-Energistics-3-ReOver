@@ -167,7 +167,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, passthroughs, nodes, links));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, passthroughs, nodes, links, dtr2n));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			dtr2n.put(device.getNetworkCounterpart(), null);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
@@ -237,7 +237,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
 		Set<ConnectUUID> pre = new HashSet<>(nodes.keySet());
-		ExplorationResult.Node res = (ExplorationResult.Node) exploreAdjacent(world, passthrough, null, true, allAffectedNodes::add, aanLC, dtr2n::put, (p, n) -> pre.contains(p.getUUIDForConnectionPassthrough()));
 		exploreNodes();
 		AppEngME.logger.info("GC took " + (dt1 + System.currentTimeMillis() - t) + "ms");
 
@@ -347,7 +346,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs, Map<ConnectUUID, Node> nodes, Collection<Link> links){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs, Map<ConnectUUID, Node> nodes, Collection<Link> links, Multimap<NetDevice, Node> dtr2n){
 		Consumer<ConnectionPassthrough> addPassthrough = passthrough -> {
 			passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
 			passthrough.assignNetBlock(netBlock);
@@ -385,6 +384,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				Node resNode = getOrCreateNode.apply(new ImmutableTriple<>(currentCUUID, current.getLength(), prCsVs.getMiddle()), nnode -> nodesExplorer.add(() -> {
 					adjacentDevices.keySet().forEach(device -> {
 						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
+						dtr2n.put(device.getNetworkCounterpart(), nnode);
 					});
 					adjacentPTs.keySet().stream().filter(adjPT -> !passthroughs.containsKey(adjPT.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
 						ConnectionPassthrough p = current;
@@ -392,14 +392,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 						List<ConnectUUID> es = new ArrayList<>();
 						double length = 0;
 						ConnectionsParams params = null;
-						ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links);
+						ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
 						while(explorationResult instanceof ExplorationResult.Link){
 							es.add(c.getUUIDForConnectionPassthrough());
 							length += ((ExplorationResult.Link) explorationResult).length;
 							params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
 							p = c;
 							c = ((ExplorationResult.Link) explorationResult).next;
-							explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links);
+							explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links, dtr2n);
 						}
 						createLink.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
 					});

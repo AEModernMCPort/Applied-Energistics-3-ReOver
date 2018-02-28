@@ -30,7 +30,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -165,7 +167,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
 		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
-		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, true, node -> {}, link -> {}, dtr2n::put, (p, n) -> false));
+		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, passthroughs, nodes, links));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			dtr2n.put(device.getNetworkCounterpart(), null);
 			directLinks.add(device.getNetworkCounterpart().getUUID());
@@ -340,54 +342,63 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		while(nodesExplorer.peek() != null) nodesExplorer.poll().run();
 	}
 
-	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, boolean forceNextNode, Consumer<Node> exploredNodesConsumer, Consumer<Link> exploredLinksConsumer, BiConsumer<NetDevice, Node> exploredDevicesAdjNodeConsumer, BiPredicate<ConnectionPassthrough, Node> canCreateLinkWithPreEx){
+	protected ExplorationResult exploreAdjacent(World world, ConnectionPassthrough current, ConnectionPassthrough previous, Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs, Map<ConnectUUID, Node> nodes, Collection<Link> links){
+		Consumer<ConnectionPassthrough> addPassthrough = passthrough -> {
+			passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
+			passthrough.assignNetBlock(netBlock);
+		};
+		BiFunction<Pair<Node, Node>, Triple<List<ConnectUUID>, Double, ConnectionsParams>,Link> createLink = (fromTo, elementsLengthParams) -> {
+			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
+			links.add(link);
+			fromTo.getLeft().links.add(link);
+			fromTo.getRight().links.add(link);
+			link.elements = elementsLengthParams.getLeft();
+			return link;
+		};
+		BiFunction<Triple<ConnectUUID, Double, ConnectionsParams>, Consumer<Node>, Node> getOrCreateNode = (uuidLengthParams, newlyCreated) -> {
+			Node node = nodes.get(uuidLengthParams.getLeft());
+			if(node == null){
+				nodes.put(uuidLengthParams.getLeft(), node = new Node(uuidLengthParams.getLeft(), uuidLengthParams.getMiddle(), uuidLengthParams.getRight()));
+				newlyCreated.accept(node);
+			}
+			return node;
+		};
+
 		final MutableObject<ExplorationResult> res = new MutableObject<>();
 		final ConnectUUID currentCUUID = current.getUUIDForConnectionPassthrough();
-		addPassthrough(current);
+		addPassthrough.accept(current);
 		AppEngME.INSTANCE.getDevicesHelper().voxels(current).ifPresent(prCsVs -> {
 			Multimap<ConnectionPassthrough, Connection> adjacentPTs = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight());
 			adjacentPTs.removeAll(previous);
 			Multimap<PhysicalDevice, Connection> adjacentDevices = AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight());
-			if(!forceNextNode && adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
+			if(adjacentPTs.keySet().size() == 1 && adjacentDevices.isEmpty()){
 				//return link;
 				ConnectionPassthrough adjN0 = adjacentPTs.keySet().toArray(new ConnectionPassthrough[1])[0];
 				res.setValue(new ExplorationResult.Link(prCsVs.getMiddle(), current.getLength(), adjN0));
 			} else {
 				//return node;
-				Node resNode = getOrCreateNode(currentCUUID, current.getLength(), prCsVs.getMiddle(), nnode -> nodesExplorer.add(() -> {
+				Node resNode = getOrCreateNode.apply(new ImmutableTriple<>(currentCUUID, current.getLength(), prCsVs.getMiddle()), nnode -> nodesExplorer.add(() -> {
 					adjacentDevices.keySet().forEach(device -> {
 						nnode.addDevice(device.getNetworkCounterpart(), adjacentDevices.get(device));
-						exploredDevicesAdjNodeConsumer.accept(device.getNetworkCounterpart(), nnode);
 					});
-					adjacentPTs.keySet().forEach(adjacentPT -> {
-						if(!passthroughs.containsKey(adjacentPT.getUUIDForConnectionPassthrough())){
-							ConnectionPassthrough p = current;
-							ConnectionPassthrough c = adjacentPT;
-							List<ConnectUUID> es = new ArrayList<>();
-							double length = 0;
-							ConnectionsParams params = null;
-							ExplorationResult explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer, canCreateLinkWithPreEx);
-							while(explorationResult instanceof ExplorationResult.Link){
-								es.add(c.getUUIDForConnectionPassthrough());
-								length += ((ExplorationResult.Link) explorationResult).length;
-								params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
-								p = c;
-								c = ((ExplorationResult.Link) explorationResult).next;
-								explorationResult = exploreAdjacent(world, c, p, false, exploredNodesConsumer, exploredLinksConsumer, exploredDevicesAdjNodeConsumer, canCreateLinkWithPreEx);
-							}
-							exploredLinksConsumer.accept(createLink(nnode, ((ExplorationResult.Node) explorationResult).node, es, length, params));
-						} else getElement(adjacentPT.getUUIDForConnectionPassthrough()).ifPresent(adjExpPE -> {
-							if(adjExpPE instanceof Node){
-								Node adjExpNode = (Node) adjExpPE;
-								if(canCreateLinkWithPreEx.test(adjacentPT, adjExpNode)){
-									exploredNodesConsumer.accept(adjExpNode);
-									exploredLinksConsumer.accept(createLink(nnode, adjExpNode, new ArrayList<>(), 0, null));
-								}
-							}
-						});
+					adjacentPTs.keySet().stream().filter(adjPT -> !passthroughs.containsKey(adjPT.getUUIDForConnectionPassthrough())).forEach(adjacentPT -> {
+						ConnectionPassthrough p = current;
+						ConnectionPassthrough c = adjacentPT;
+						List<ConnectUUID> es = new ArrayList<>();
+						double length = 0;
+						ConnectionsParams params = null;
+						ExplorationResult explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links);
+						while(explorationResult instanceof ExplorationResult.Link){
+							es.add(c.getUUIDForConnectionPassthrough());
+							length += ((ExplorationResult.Link) explorationResult).length;
+							params = ConnectionsParams.intersect(params, ((ExplorationResult.Link) explorationResult).connectionsParams);
+							p = c;
+							c = ((ExplorationResult.Link) explorationResult).next;
+							explorationResult = exploreAdjacent(world, c, p, passthroughs, nodes, links);
+						}
+						createLink.apply(new ImmutablePair<>(nnode, ((ExplorationResult.Node) explorationResult).node), new ImmutableTriple<>(es, length, params));
 					});
 				}));
-				exploredNodesConsumer.accept(resNode);
 				res.setValue(new ExplorationResult.Node(resNode));
 			}
 		});
@@ -423,29 +434,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	/*
 	 * Links, Nodes, Devices...
 	 */
-
-	protected void addPassthrough(ConnectionPassthrough passthrough){
-		notifyPassthroughLoaded(passthrough);
-		passthrough.assignNetBlock(netBlock);
-	}
-
-	protected Link createLink(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
-		Link link = new Link(from, to, length, params);
-		links.add(link);
-		from.links.add(link);
-		to.links.add(link);
-		link.elements = elements;
-		return link;
-	}
-
-	protected Node getOrCreateNode(ConnectUUID uuid, double length, ConnectionsParams params, Consumer<Node> newlyCreated){
-		Node node = nodes.get(uuid);
-		if(node == null){
-			nodes.put(uuid, node = new Node(uuid, length, params));
-			newlyCreated.accept(node);
-		}
-		return node;
-	}
 
 	public class PathwayElement {
 

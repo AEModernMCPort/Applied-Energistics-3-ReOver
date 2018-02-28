@@ -193,10 +193,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			return node;
 		};
 		BiFunction<Pair<Node, Node>, Triple<List<ConnectUUID>, Double, ConnectionsParams>, Link> createLinkFull = (fromTo, elementsLengthParams) -> {
-			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
+			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getLeft(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
 			fromTo.getLeft().links.add(link);
 			fromTo.getRight().links.add(link);
-			link.elements = elementsLengthParams.getLeft();
 			createdLinks.add(link);
 			affectNode.accept(fromTo.getLeft());
 			affectNode.accept(fromTo.getRight());
@@ -301,11 +300,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			getDSect(node).nodes.remove(node);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
-			Link link = new Link(from, to, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			Link link = new Link(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
 			links.add(link);
 			from.links.add(link);
 			to.links.add(link);
-			link.elements = elements;
 			getDSect(from).links.add(link);
 		};
 		Consumer<Link> removeLink = link -> {
@@ -369,11 +367,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			passthrough.assignNetBlock(netBlock);
 		};
 		BiFunction<Pair<Node, Node>, Triple<List<ConnectUUID>, Double, ConnectionsParams>,Link> createLink = (fromTo, elementsLengthParams) -> {
-			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
+			Link link = new Link(fromTo.getLeft(), fromTo.getRight(), elementsLengthParams.getLeft(), elementsLengthParams.getMiddle(), elementsLengthParams.getRight());
 			links.add(link);
 			fromTo.getLeft().links.add(link);
 			fromTo.getRight().links.add(link);
-			link.elements = elementsLengthParams.getLeft();
 			return link;
 		};
 		BiFunction<Triple<ConnectUUID, Double, ConnectionsParams>, Consumer<Node>, Node> getOrCreateNode = (uuidLengthParams, newlyCreated) -> {
@@ -597,10 +594,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Link(){
 		}
 
-		public Link(Node from, Node to, double length, ConnectionsParams params){
+		public Link(Node from, Node to, List<ConnectUUID> elements, double length, ConnectionsParams params){
 			super(params, length);
 			this.from = from;
 			this.to = to;
+			this.elements = elements;
 			this.length = length;
 			this.params = params;
 		}
@@ -636,12 +634,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			if(this == o) return true;
 			if(!(o instanceof Link)) return false;
 			Link link = (Link) o;
-			return Objects.equals(from, link.from) && Objects.equals(to, link.to);
+			return Objects.equals(from, link.from) && Objects.equals(to, link.to) && Objects.equals(elements, link.elements);
 		}
 
 		@Override
 		public int hashCode(){
-			return Objects.hash(from.uuid, to.uuid);
+			return Objects.hash(from.uuid, to.uuid, elements);
 		}
 
 		@Override

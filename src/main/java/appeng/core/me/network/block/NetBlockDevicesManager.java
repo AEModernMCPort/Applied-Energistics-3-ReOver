@@ -101,6 +101,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int dsects = this.dsects.size();
 		int devices = this.devices.size();
 		Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
+		reduceCreatedNodes(recompRedsect.getMiddle());
 		recompNewDSects(recompRedsect.getMiddle());
 		recompute(recompRedsect.getLeft());
 		computePathways(recompRedsect.getRight());
@@ -651,6 +652,28 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	/*
 	 * Reduce reuse recycle
 	 */
+
+	protected void reduceCreatedNodes(Pair<Set<Node>, Set<Node>> affectedCreated){
+		long t = System.currentTimeMillis();
+		int c = 0;
+
+		Set<Node> affectedNodes = affectedCreated.getLeft();
+		Set<Node> createdNodes = affectedCreated.getRight();
+
+		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes);
+		affReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
+		nodes.values().removeAll(affReducedAffected.getLeft());
+		affectedNodes.removeAll(affReducedAffected.getLeft());
+		c += affReducedAffected.getLeft().size();
+
+		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes);
+		creReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
+		nodes.values().removeAll(creReducedAffected.getLeft());
+		c += creReducedAffected.getLeft().size();
+
+		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info("Reduced " + c + " nodes");
+	}
 
 	protected Pair<Set<Node>, Set<Node>> reduceNodesToLinks(Set<Node> nodes){
 		Set<Node> reduced = new HashSet<>();

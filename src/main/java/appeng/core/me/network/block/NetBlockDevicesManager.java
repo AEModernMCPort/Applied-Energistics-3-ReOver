@@ -118,8 +118,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int devices = this.devices.size();
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
 			DSect eDSect = getDSect(e);
-			Set<DeviceInformation> recomp = destroyPathways(e.pathways);
-			regenGraphSectionPTDestroyed(passthrough, e);
+			Pair<Set<Node>, Set<Node>> affectedCreated = regenGraphSectionPTDestroyed(passthrough, e);
+			Set<Node> reduced = reduceDestroyedNodes(affectedCreated);
+			Set<DeviceInformation> recomp = destroyPathways(Stream.concat(e.pathways.stream(), reduced.stream().flatMap(node -> node.pathways.stream())).collect(Collectors.toList()));
 			recompElemDSectAndDisconnect(eDSect, recomp);
 			this.passthroughs.remove(passthrough.getUUIDForConnectionPassthrough());
 			this.recompute(recomp);
@@ -287,18 +288,26 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return new ImmutableTriple<>(recomp, new ImmutablePair<>(affectedNodes, createdNodes), dtr2n);
 	}
 
-	protected void regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
+	protected Pair<Set<Node>, Set<Node>> regenGraphSectionPTDestroyed(ConnectionPassthrough passthrough, PathwayElement e){
+		Set<Node> affected = new HashSet<>();
+		Set<Node> created = new HashSet<>();
+		Consumer<Node> affect = node -> {
+			if(!created.contains(node)) affected.add(node);
+		};
 		BiFunction<ConnectUUID, PathwayElement, Node> createNode = (cuuid, pe) -> {
 			ConnectionPassthrough pt = passthroughs.get(cuuid).get();
 			if(pt == null) throw new IllegalArgumentException("Cannot recalculate paths when the entirety of block is not loaded!");
 			Node node = nodes.get(cuuid);
 			if(node == null) nodes.put(cuuid, node = new Node(cuuid, pt.getLength(), AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(pt).get()));
 			getDSect(pe).nodes.add(node);
+			created.add(node);
 			return node;
 		};
 		Consumer<Node> removeNode = node -> {
 			nodes.remove(node.uuid);
+			affected.remove(node);
 			getDSect(node).nodes.remove(node);
+			created.remove(node);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
 			Link link = new Link(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
@@ -306,12 +315,16 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			from.links.add(link);
 			to.links.add(link);
 			getDSect(from).links.add(link);
+			affect.accept(from);
+			affect.accept(to);
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
 			link.from.links.remove(link);
 			link.to.links.remove(link);
 			getDSect(link).links.remove(link);
+			affect.accept(link.from);
+			affect.accept(link.to);
 		};
 		long t = System.currentTimeMillis();
 		if(e instanceof Node){
@@ -354,6 +367,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			}
 		}
 		AppEngME.logger.info("GC took " + (System.currentTimeMillis() - t) + "ms");
+		return new ImmutablePair<>(affected, created);
 	}
 
 	protected Queue<Runnable> nodesExplorer = new LinkedList<>();
@@ -673,6 +687,34 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info("Reduced " + c + " nodes");
+	}
+
+	protected Set<Node> reduceDestroyedNodes(Pair<Set<Node>, Set<Node>> affectedCreated){
+		long t = System.currentTimeMillis();
+		int c = 0;
+
+		Set<Node> affectedNodes = affectedCreated.getLeft();
+		Set<Node> createdNodes = affectedCreated.getRight();
+		Set<Node> reduced = new HashSet<>();
+
+		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes);
+		affReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
+		reduced.addAll(affReducedAffected.getLeft());
+		nodes.values().removeAll(affReducedAffected.getLeft());
+		affectedNodes.removeAll(affReducedAffected.getLeft());
+		c += affReducedAffected.getLeft().size();
+
+		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes);
+		creReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
+		reduced.addAll(creReducedAffected.getLeft());
+		nodes.values().removeAll(creReducedAffected.getLeft());
+		c += creReducedAffected.getLeft().size();
+
+		reduced.forEach(node -> getDSect(node).nodes.remove(node));
+
+		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info("Reduced " + c + " nodes");
+		return reduced;
 	}
 
 	protected Pair<Set<Node>, Set<Node>> reduceNodesToLinks(Set<Node> nodes){

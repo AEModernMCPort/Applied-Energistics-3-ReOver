@@ -649,22 +649,37 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	/*
-	 * Graph reduction
-	 * TODO
+	 * Reduce reuse recycle
 	 */
 
-	/*
-	protected void reduceNodesToLinks(){
+	protected Set<Node> reduceNodesToLinks(Set<Node> nodes){
+		Set<Node> reduced = new HashSet<>();
+		Consumer<Node> removeReduceNode = node -> {
+			nodes.remove(node);
+			reduced.add(node);
+		};
+		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
+			Link link = new Link(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
+			links.add(link);
+			from.links.add(link);
+			to.links.add(link);
+		};
+		Consumer<Link> removeLink = link -> {
+			links.remove(link);
+			link.from.links.remove(link);
+			link.to.links.remove(link);
+		};
+
 		long t = System.currentTimeMillis();
 		int c = 0;
-		Optional<Node> next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+		Optional<Node> next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
 		while(next.isPresent()){
 			Node node = next.get();
 			Link al1 = node.links.get(0);
 			Link al2 = node.links.get(1);
 			Link l1 = al1.to == node ? al1 : al2;
 			Link l2 = al1.from == node ? al1 : al2;
-			removeNode.accept(node);
+			removeReduceNode.accept(node);
 			removeLink.accept(l1);
 			removeLink.accept(l2);
 			ArrayList<ConnectUUID> elements = new ArrayList<>();
@@ -674,12 +689,12 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			createLink.accept(l1.from, l2.to, elements);
 
 			c++;
-			next = nodes.values().stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
+			next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
 		}
 		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info("Reduced " + c + " nodes");
+		return reduced;
 	}
-	*/
 
 	/*
 	 * Devices

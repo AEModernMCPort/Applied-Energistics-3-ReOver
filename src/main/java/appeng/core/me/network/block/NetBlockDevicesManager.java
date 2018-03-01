@@ -118,6 +118,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int devices = this.devices.size();
 		getElement(passthrough.getUUIDForConnectionPassthrough()).ifPresent(e -> {
 			DSect eDSect = getDSect(e);
+			rootAdjacent.remove(e);
 			Pair<Set<Node>, Set<Node>> affectedCreated = regenGraphSectionPTDestroyed(passthrough, e);
 			Set<Node> reduced = reduceDestroyedNodes(affectedCreated);
 			Set<DeviceInformation> recomp = destroyPathways(Stream.concat(e.pathways.stream(), reduced.stream().flatMap(node -> node.pathways.stream())).collect(Collectors.toList()));
@@ -775,6 +776,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected void computePathways(Multimap<NetDevice, Node> dtr2n){
 		long t = System.currentTimeMillis();
 		dtr2n.keySet().forEach(device -> compute(device, dtr2n.get(device).stream()));
+		Optional.ofNullable(dtr2n.get(netBlock.root)).ifPresent(newRootAdj -> rootAdjacent.addAll(newRootAdj));
 		AppEngME.logger.info("CP took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

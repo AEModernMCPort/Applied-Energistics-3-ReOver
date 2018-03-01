@@ -50,7 +50,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	protected Map<ConnectUUID, WeakReference<ConnectionPassthrough>> passthroughs = new HashMap<>();
 
 	public void notifyPassthroughLoaded(ConnectionPassthrough passthrough){
-		passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
+		//FIXME This clearly shouldn't be the case, but it seems that on load (world -> pt part) is not always called when we expect it has already been
+		if(!getElement(passthrough.getUUIDForConnectionPassthrough()).isPresent()) passthrough.assignNetBlock(null);
+		else passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));
 	}
 
 	protected Map<DeviceUUID, DeviceInformation> devices = new HashMap<>();
@@ -148,7 +150,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	protected void notifyPTsUnassign(Stream<ConnectUUID> pts){
-		pts.forEach(cuuid -> Optional.ofNullable(passthroughs.remove(cuuid).get()).ifPresent(pt -> pt.assignNetBlock(null)));
+		//FIXME This clearly shouldn't be the case, but it seems that on load (world -> pt part) is not always called when we expect it has already been
+		pts.forEach(cuuid -> Optional.ofNullable(passthroughs.remove(cuuid)).map(WeakReference::get).ifPresent(pt -> pt.assignNetBlock(null)));
 	}
 
 	/*

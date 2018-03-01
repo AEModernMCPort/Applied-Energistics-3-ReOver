@@ -652,17 +652,21 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 * Reduce reuse recycle
 	 */
 
-	protected Set<Node> reduceNodesToLinks(Set<Node> nodes){
+	protected Pair<Set<Node>, Set<Node>> reduceNodesToLinks(Set<Node> nodes){
 		Set<Node> reduced = new HashSet<>();
+		Set<Node> affected = new HashSet<>();
 		Consumer<Node> removeReduceNode = node -> {
 			nodes.remove(node);
 			reduced.add(node);
+			affected.remove(node);
 		};
 		TriConsumer<Node, Node, List<ConnectUUID>> createLink = (from, to, elements) -> {
 			Link link = new Link(from, to, elements, elements.stream().mapToDouble(cuuid -> passthroughs.get(cuuid).get().getLength()).sum(), elements.isEmpty() ? null : elements.stream().map(cuuid -> AppEngME.INSTANCE.getDevicesHelper().getConnectionsParams(passthroughs.get(cuuid).get()).get()).reduce(ConnectionsParams::intersect).get());
 			links.add(link);
 			from.links.add(link);
 			to.links.add(link);
+			affected.add(from);
+			affected.add(to);
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
@@ -670,30 +674,25 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			link.to.links.remove(link);
 		};
 
-		long t = System.currentTimeMillis();
-		int c = 0;
 		Optional<Node> next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
 		while(next.isPresent()){
 			Node node = next.get();
 			Link al1 = node.links.get(0);
 			Link al2 = node.links.get(1);
-			Link l1 = al1.to == node ? al1 : al2;
-			Link l2 = al1.from == node ? al1 : al2;
-			removeReduceNode.accept(node);
-			removeLink.accept(l1);
-			removeLink.accept(l2);
+			removeLink.accept(al1);
+			removeLink.accept(al2);
+			Node from = al1.from != node ? al1.from : al1.to;
+			Node to = al2.from != node ? al2.from : al2.to;
 			ArrayList<ConnectUUID> elements = new ArrayList<>();
-			elements.addAll(l1.elements);
+			elements.addAll(from == al1.from ? al1.elements : Lists.reverse(al1.elements));
 			elements.add(node.uuid);
-			elements.addAll(l2.elements);
-			createLink.accept(l1.from, l2.to, elements);
+			elements.addAll(to == al2.to ? al2.elements : Lists.reverse(al2.elements));
+			createLink.accept(from, to, elements);
+			removeReduceNode.accept(node);
 
-			c++;
 			next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
 		}
-		AppEngME.logger.info("NR took " + (System.currentTimeMillis() - t) + "ms");
-		AppEngME.logger.info("Reduced " + c + " nodes");
-		return reduced;
+		return new ImmutablePair<>(reduced, affected);
 	}
 
 	/*

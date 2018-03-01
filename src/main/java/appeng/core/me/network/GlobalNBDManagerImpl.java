@@ -18,8 +18,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
@@ -154,7 +154,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	public Optional<NetBlock> onPTCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull ConnectionPassthrough passthrough){
 		MutableObject<NetBlock> netBlock = new MutableObject<>();
 		AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough).ifPresent(prCsVs -> {
-			List<NetBlock> adjNB = AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().stream().map(pt -> pt.getAssignedNetBlock().orElse(null)).filter(Objects::nonNull).distinct().collect(Collectors.toList());
+			List<NetBlock> adjNB = Stream.concat(AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().stream().map(pt -> pt.getAssignedNetBlock().orElse(null)), AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight()).keySet().stream().map(device -> device.getNetworkCounterpart()).map(device -> ((Optional<NetBlock>) device.getNetBlock()).filter(nb -> nb.getRoot() == device).orElse(null))).filter(Objects::nonNull).distinct().collect(Collectors.toList());
 			if(adjNB.size() == 1) netBlock.setValue(adjNB.get(0));
 		});
 		if(netBlock.getValue() != null) netBlock.getValue().passthroughCreatedAdjacentToAssigned(world, passthrough);

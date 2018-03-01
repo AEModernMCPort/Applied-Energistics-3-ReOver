@@ -50,6 +50,8 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 	 * Devices
 	 */
 
+	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> N getRoot();
+
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull DeviceUUID device);
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices();
 

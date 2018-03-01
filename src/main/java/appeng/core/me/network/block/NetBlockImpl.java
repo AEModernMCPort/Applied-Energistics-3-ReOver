@@ -47,6 +47,11 @@ public class NetBlockImpl implements NetBlock {
 
 	protected NetDevice root;
 
+	@Override
+	public NetDevice getRoot(){
+		return root;
+	}
+
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void init(World world, P pblockRoot){
 		AppEngME.INSTANCE.getGlobalNBDManager().registerFreeBlock(this);
 

@@ -745,13 +745,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<Node> affectedNodes = affectedCreated.getLeft();
 		Set<Node> createdNodes = affectedCreated.getRight();
 
-		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes);
+		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes).getLeft();
 		affReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
 		nodes.values().removeAll(affReducedAffected.getLeft());
 		affectedNodes.removeAll(affReducedAffected.getLeft());
 		c += affReducedAffected.getLeft().size();
 
-		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes);
+		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes).getLeft();
 		creReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
 		nodes.values().removeAll(creReducedAffected.getLeft());
 		c += creReducedAffected.getLeft().size();
@@ -768,14 +768,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<Node> createdNodes = affectedCreated.getRight();
 		Set<Node> reduced = new HashSet<>();
 
-		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes);
+		Pair<Set<Node>, Set<Node>> affReducedAffected = reduceNodesToLinks(affectedNodes).getLeft();
 		affReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
 		reduced.addAll(affReducedAffected.getLeft());
 		nodes.values().removeAll(affReducedAffected.getLeft());
 		affectedNodes.removeAll(affReducedAffected.getLeft());
 		c += affReducedAffected.getLeft().size();
 
-		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes);
+		Pair<Set<Node>, Set<Node>> creReducedAffected = reduceNodesToLinks(createdNodes).getLeft();
 		creReducedAffected.getRight().stream().filter(n -> !createdNodes.contains(n)).forEach(affectedNodes::add);
 		reduced.addAll(creReducedAffected.getLeft());
 		nodes.values().removeAll(creReducedAffected.getLeft());
@@ -788,9 +788,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return reduced;
 	}
 
-	protected Pair<Set<Node>, Set<Node>> reduceNodesToLinks(Set<Node> nodes){
+	protected Pair<Pair<Set<Node>, Set<Node>>, Pair<Set<Link>, Set<Link>>> reduceNodesToLinks(Set<Node> nodes){
 		Set<Node> reduced = new HashSet<>();
 		Set<Node> affected = new HashSet<>();
+		Set<Link> destroyed = new HashSet<>();
+		Set<Link> created = new HashSet<>();
 		Consumer<Node> removeReduceNode = node -> {
 			nodes.remove(node);
 			reduced.add(node);
@@ -803,11 +805,14 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			to.links.add(link);
 			affected.add(from);
 			affected.add(to);
+			created.add(link);
 		};
 		Consumer<Link> removeLink = link -> {
 			links.remove(link);
 			link.from.links.remove(link);
 			link.to.links.remove(link);
+			if(created.contains(link)) created.remove(link);
+			else destroyed.add(link);
 		};
 
 		Optional<Node> next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
@@ -828,7 +833,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 			next = nodes.stream().filter(n -> n.links.size() == 2 && n.devices.isEmpty()).findAny();
 		}
-		return new ImmutablePair<>(reduced, affected);
+		return new ImmutablePair<>(new ImmutablePair<>(reduced, affected), new ImmutablePair<>(destroyed, created));
 	}
 
 	/*

@@ -68,7 +68,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreated(@Nonnull World world, @Nonnull N device){
-
+		long t = System.currentTimeMillis();
+		int d = this.devices.size();
+		
+		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");
 	}
 
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){

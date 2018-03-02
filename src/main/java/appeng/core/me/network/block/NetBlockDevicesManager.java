@@ -72,7 +72,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	}
 
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
+		long t = System.currentTimeMillis();
+		int d = this.devices.size();
 		if(device != netBlock.root) devices.remove(device.getUUID()).active.forEach((c, p) -> p.replenish(c, device.getConnectionRequirement(c)));
+		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
+		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");
 	}
 
 	protected ConnectionsParams remainingRootParams;

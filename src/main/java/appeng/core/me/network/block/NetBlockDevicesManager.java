@@ -83,6 +83,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long t = System.currentTimeMillis();
 		int d = this.devices.size();
 		if(device != netBlock.root) devices.remove(device.getUUID()).active.forEach((c, p) -> p.replenish(c, device.getConnectionRequirement(c)));
+		}
 		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");
 	}
@@ -859,7 +860,6 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		long t = System.currentTimeMillis();
 		Set<DeviceInformation> recalc = new HashSet<>();
 		new ArrayList<>(toDestroy).forEach(pathway -> {
-			pathway.elements.forEach(pE -> pE.pathways.remove(pathway));
 			DeviceInformation concernedDevice = pathway.device;
 			concernedDevice.remove(pathway);
 			if(pathway.active) recalc.add(concernedDevice);
@@ -948,6 +948,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 
 		protected void remove(Pathway pathway){
+			pathway.elements.forEach(pE -> pE.pathways.remove(pathway));
 			if(pathway.active) active.entrySet().removeIf(e -> {
 					if(e.getValue() == pathway){
 						pathway.replenish(e.getKey(), device.getConnectionRequirement(e.getKey()));

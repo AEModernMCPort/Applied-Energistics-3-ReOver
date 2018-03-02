@@ -67,7 +67,7 @@ public interface GlobalNBDManager {
 	 * Creation
 	 */
 
-	Optional<NetBlock> onDeviceCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull NetDevice device);
+	Optional<NetBlock> onDeviceCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull PhysicalDevice device);
 
 	Optional<NetBlock> onPTCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull ConnectionPassthrough passthrough);
 

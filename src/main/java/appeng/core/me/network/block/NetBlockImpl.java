@@ -106,7 +106,7 @@ public class NetBlockImpl implements NetBlock {
 	}
 
 	@Override
-	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreatedAdjacentToAssigned(@Nonnull World world, @Nonnull N device){
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreatedAdjacentToAssigned(@Nonnull World world, @Nonnull P device){
 		devicesManager.deviceCreated(world, device);
 	}
 

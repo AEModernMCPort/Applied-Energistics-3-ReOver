@@ -67,7 +67,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return devices.values().stream().map(DeviceInformation::getDevice);
 	}
 
-	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreated(@Nonnull World world, @Nonnull N device){
+	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreated(@Nonnull World world, @Nonnull P device){
 		long t = System.currentTimeMillis();
 		int d = this.devices.size();
 		

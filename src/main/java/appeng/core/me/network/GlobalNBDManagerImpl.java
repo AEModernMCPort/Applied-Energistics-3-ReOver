@@ -151,7 +151,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	 */
 
 	@Override
-	public Optional<NetBlock> onDeviceCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull NetDevice device){
+	public Optional<NetBlock> onDeviceCreatedTryToFindAdjacentNetBlock(@Nonnull World world, @Nonnull PhysicalDevice device){
 		MutableObject<NetBlock> netBlock = new MutableObject<>();
 		AppEngME.INSTANCE.getDevicesHelper().voxels(device).ifPresent(prCsVs -> {
 			List<NetBlock> adjNB = Stream.concat(AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().stream().map(pt -> pt.getAssignedNetBlock().orElse(null)), AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, prCsVs.getRight()).keySet().stream().map(d -> d.getNetworkCounterpart()).map(d -> ((Optional<NetBlock>) d.getNetBlock()).filter(nb -> nb.getRoot() == d).orElse(null))).filter(Objects::nonNull).distinct().collect(Collectors.toList());

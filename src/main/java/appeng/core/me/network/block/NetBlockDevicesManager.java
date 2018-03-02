@@ -82,7 +82,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	public <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(N device){
 		long t = System.currentTimeMillis();
 		int d = this.devices.size();
-		if(device != netBlock.root) devices.remove(device.getUUID()).active.forEach((c, p) -> p.replenish(c, device.getConnectionRequirement(c)));
+		if(device != netBlock.root){
+			devices.remove(device.getUUID()).removeEntirely();
+			Set<DeviceInformation> recomp = regenGraphSectionDeviceDestroyed(device);
+			recompute(recomp);
 		}
 		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");
@@ -250,6 +253,27 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Set<DeviceInformation> recomp = destroyPathways(pathwaysToDestroy);
 
 		return new ImmutablePair<>(adj, recomp);
+	}
+
+	protected Set<DeviceInformation> regenGraphSectionDeviceDestroyed(NetDevice device){
+		Set<Node> adj = nodes.values().stream().filter(node -> node.devices.containsKey(device.getUUID())).collect(Collectors.toSet());
+		adj.forEach(an -> an.devices.removeAll(device.getUUID()));
+		Set<Pathway> pathwaysToDestroy = new HashSet<>();
+		Pair<Pair<Set<Node>, Set<Node>>, Pair<Set<Link>, Set<Link>>> reducedAffectedDestroyedCreated = reduceNodesToLinks(adj);
+		reducedAffectedDestroyedCreated.getLeft().getLeft().forEach(red -> {
+			nodes.remove(red.uuid);
+			getDSect(red).nodes.remove(red);
+			pathwaysToDestroy.addAll(red.pathways);
+		});
+		reducedAffectedDestroyedCreated.getRight().getLeft().forEach(des -> {
+			links.remove(des);
+			getDSect(des).links.remove(des);
+			pathwaysToDestroy.addAll(des.pathways);
+		});
+		reducedAffectedDestroyedCreated.getRight().getRight().forEach(cre -> {
+			getDSect(cre.from).links.add(cre);
+		});
+		return destroyPathways(pathwaysToDestroy);
 	}
 
 	protected Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
@@ -957,6 +981,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 					return false;
 				});
 			else dormant.remove(pathway);
+		}
+
+		protected void removeEntirely(){
+			Stream.concat(active.values().stream(), dormant.stream()).collect(Collectors.toSet()).forEach(this::remove);
 		}
 
 		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){

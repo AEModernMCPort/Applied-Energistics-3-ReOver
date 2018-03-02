@@ -36,6 +36,7 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 	@Override
 	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
 		part.init();
+		if(theWorld != null) AppEngME.INSTANCE.getGlobalNBDManager().onDeviceCreatedTryToFindAdjacentNetBlock(theWorld, part.networkCounterpart);
 	}
 
 	@Override

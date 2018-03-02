@@ -55,6 +55,8 @@ public interface NetBlock extends EventBusOwner<NetBlock, NetBlock.NetBlockEvent
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Optional<N> getDevice(@Nonnull DeviceUUID device);
 	@Nonnull <N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> Stream<N> getDevices();
 
+	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void deviceCreatedAdjacentToAssigned(@Nonnull World world, @Nonnull N device);
+
 	<N extends NetDevice<N, P>, P extends PhysicalDevice<N, P>> void removeDestroyedDevice(@Nonnull N device);
 
 	@Nonnull <N extends BRINMDevice<N, P>, P extends PhysicalDevice<N, P>> N getMaster();

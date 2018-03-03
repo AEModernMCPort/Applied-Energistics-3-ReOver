@@ -1,7 +1,7 @@
-package appeng.core.me.network.storage;
+package appeng.core.me.network.storage.reqrep;
 
-import appeng.core.me.api.network.storage.SubtypedNetworkStorage;
-import appeng.core.me.api.network.storage.TypedNetworkStorage;
+import appeng.core.me.api.network.storage.reqrep.SubtypedRRNetworkStorage;
+import appeng.core.me.api.network.storage.reqrep.TypedRRNetworkStorage;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -14,9 +14,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorageImpl<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends SubtypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends SubtypedNetworkStorage.Request<WriteRep>, WriteRep> extends NetworkStorageImpl<NS, ReadReq, ReadRep, WriteReq, WriteRep> implements SubtypedNetworkStorage<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
+public class SubtypedRRNetworkStorageImpl<T, ST, NS extends SubtypedRRNetworkStorageImpl<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends SubtypedRRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends SubtypedRRNetworkStorage.Request<WriteRep>, WriteRep> extends RRNetworkStorageImpl<NS, ReadReq, ReadRep, WriteReq, WriteRep> implements SubtypedRRNetworkStorage<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
-	public SubtypedNetworkStorageImpl(Function<ST, T> getType, Function<T, NBTTagCompound> serializerT, Function<NBTTagCompound, T> deserializerT, Function<ST, NBTTagCompound> serializerST, Function<NBTTagCompound, ST> deserializerST){
+	public SubtypedRRNetworkStorageImpl(Function<ST, T> getType, Function<T, NBTTagCompound> serializerT, Function<NBTTagCompound, T> deserializerT, Function<ST, NBTTagCompound> serializerST, Function<NBTTagCompound, ST> deserializerST){
 		this.getType = getType;
 		this.serializerT = serializerT;
 		this.deserializerT = deserializerT;
@@ -111,14 +111,14 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	@Override
 	protected <Req extends ReadReq, Rep extends ReadRep> Rep processReadRequest(Req request){
-		if(request instanceof TypedNetworkStorage.Request.GetStoredAmount){
-			TypedNetworkStorage.Request.GetStoredAmount<ST> req = (TypedNetworkStorage.Request.GetStoredAmount) request;
+		if(request instanceof TypedRRNetworkStorage.Request.GetStoredAmount){
+			TypedRRNetworkStorage.Request.GetStoredAmount<ST> req = (TypedRRNetworkStorage.Request.GetStoredAmount) request;
 			return (Rep) new GetStoredAmountReply(get(getType(req.query())).map(st -> st.get(req.query()).getValue()).orElse(0));
-		} else if(request instanceof SubtypedNetworkStorage.Request.GetSubtypesCount){
-			SubtypedNetworkStorage.Request.GetSubtypesCount<T> req = (SubtypedNetworkStorage.Request.GetSubtypesCount) request;
+		} else if(request instanceof SubtypedRRNetworkStorage.Request.GetSubtypesCount){
+			SubtypedRRNetworkStorage.Request.GetSubtypesCount<T> req = (SubtypedRRNetworkStorage.Request.GetSubtypesCount) request;
 			return (Rep) new GetSubtypesCountReply<>(get(req.query()).map(st -> st.subtypes.size()).orElse(0));
-		} else if(request instanceof SubtypedNetworkStorage.Request.GetTotalAmountStored){
-			SubtypedNetworkStorage.Request.GetTotalAmountStored<T> req = (SubtypedNetworkStorage.Request.GetTotalAmountStored) request;
+		} else if(request instanceof SubtypedRRNetworkStorage.Request.GetTotalAmountStored){
+			SubtypedRRNetworkStorage.Request.GetTotalAmountStored<T> req = (SubtypedRRNetworkStorage.Request.GetTotalAmountStored) request;
 			return (Rep) new GetTotalAmountStoredReply<>(get(req.query()).map(st -> st.subtypes.values().stream().mapToInt(MutableInt::intValue).sum()).orElse(0));
 		}
 		return null;
@@ -126,8 +126,8 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	@Override
 	protected <Req extends WriteReq, Rep extends WriteRep> Rep processWriteRequest(Req request){
-		if(request instanceof TypedNetworkStorage.Request.Store){
-			TypedNetworkStorage.Request.Store<ST> req = (TypedNetworkStorage.Request.Store<ST>) request;
+		if(request instanceof TypedRRNetworkStorage.Request.Store){
+			TypedRRNetworkStorage.Request.Store<ST> req = (TypedRRNetworkStorage.Request.Store<ST>) request;
 
 			assert req.minAmount() != 0 && req.maxAmount() != 0 && Math.signum(req.minAmount()) == Math.signum(req.maxAmount());
 			boolean store = Math.signum(req.maxAmount()) == 1;
@@ -158,25 +158,25 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	@Override
 	public int getStoredAmount(ST st){
-		return this.<TypedNetworkStorage.Request.GetStoredAmount<ST>, TypedNetworkStorage.Request.GetStoredAmount.Reply<ST>>read(new GetStoredAmount(st)).amountStored();
+		return this.<TypedRRNetworkStorage.Request.GetStoredAmount<ST>, TypedRRNetworkStorage.Request.GetStoredAmount.Reply<ST>>read(new GetStoredAmount(st)).amountStored();
 	}
 
 	@Override
 	public int getSubtypesCount(T t){
-		return this.<SubtypedNetworkStorage.Request.GetSubtypesCount<T>, SubtypedNetworkStorage.Request.GetSubtypesCount.Reply<T>>read(new GetSubtypesCount(t)).subtypesCount();
+		return this.<SubtypedRRNetworkStorage.Request.GetSubtypesCount<T>, SubtypedRRNetworkStorage.Request.GetSubtypesCount.Reply<T>>read(new GetSubtypesCount(t)).subtypesCount();
 	}
 
 	@Override
 	public int getTotalAmountStored(T t){
-		return this.<SubtypedNetworkStorage.Request.GetTotalAmountStored<T>, SubtypedNetworkStorage.Request.GetTotalAmountStored.Reply<T>>read(new GetTotalAmountStored(t)).totalAmountStored();
+		return this.<SubtypedRRNetworkStorage.Request.GetTotalAmountStored<T>, SubtypedRRNetworkStorage.Request.GetTotalAmountStored.Reply<T>>read(new GetTotalAmountStored(t)).totalAmountStored();
 	}
 
 	@Override
-	public void store(ST st, int minAmount, int maxAmount, Consumer<TypedNetworkStorage.Request.Store.Reply<ST>> replyConsumer){
-		this.<TypedNetworkStorage.Request.Store<ST>, TypedNetworkStorage.Request.Store.Reply<ST>>write(new Store(st, minAmount, maxAmount, replyConsumer));
+	public void store(ST st, int minAmount, int maxAmount, Consumer<TypedRRNetworkStorage.Request.Store.Reply<ST>> replyConsumer){
+		this.<TypedRRNetworkStorage.Request.Store<ST>, TypedRRNetworkStorage.Request.Store.Reply<ST>>write(new Store(st, minAmount, maxAmount, replyConsumer));
 	}
 
-	protected class GetStoredAmount implements TypedNetworkStorage.Request.GetStoredAmount<ST> {
+	protected class GetStoredAmount implements TypedRRNetworkStorage.Request.GetStoredAmount<ST> {
 
 		protected ST query;
 
@@ -203,7 +203,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	}
 
-	protected static class GetStoredAmountReply<ST> implements TypedNetworkStorage.Request.GetStoredAmount.Reply<ST> {
+	protected static class GetStoredAmountReply<ST> implements TypedRRNetworkStorage.Request.GetStoredAmount.Reply<ST> {
 
 		protected int amount;
 
@@ -217,7 +217,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 		}
 	}
 
-	protected class GetSubtypesCount implements SubtypedNetworkStorage.Request.GetSubtypesCount<T> {
+	protected class GetSubtypesCount implements SubtypedRRNetworkStorage.Request.GetSubtypesCount<T> {
 
 		protected T query;
 
@@ -244,7 +244,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	}
 
-	protected static class GetSubtypesCountReply<T> implements SubtypedNetworkStorage.Request.GetSubtypesCount.Reply<T> {
+	protected static class GetSubtypesCountReply<T> implements SubtypedRRNetworkStorage.Request.GetSubtypesCount.Reply<T> {
 
 		protected int count;
 
@@ -258,7 +258,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 		}
 	}
 
-	protected class GetTotalAmountStored implements SubtypedNetworkStorage.Request.GetTotalAmountStored<T> {
+	protected class GetTotalAmountStored implements SubtypedRRNetworkStorage.Request.GetTotalAmountStored<T> {
 
 		protected T query;
 
@@ -285,7 +285,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	}
 
-	protected static class GetTotalAmountStoredReply<T> implements SubtypedNetworkStorage.Request.GetTotalAmountStored.Reply<T> {
+	protected static class GetTotalAmountStoredReply<T> implements SubtypedRRNetworkStorage.Request.GetTotalAmountStored.Reply<T> {
 
 		protected int amount;
 
@@ -299,7 +299,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 		}
 	}
 
-	protected class Store extends RequestWithConsumer<TypedNetworkStorage.Request.Store.Reply<ST>> implements TypedNetworkStorage.Request.Store<ST> {
+	protected class Store extends RequestWithConsumer<TypedRRNetworkStorage.Request.Store.Reply<ST>> implements TypedRRNetworkStorage.Request.Store<ST> {
 
 		protected ST query;
 		protected int min, max;
@@ -346,7 +346,7 @@ public class SubtypedNetworkStorageImpl<T, ST, NS extends SubtypedNetworkStorage
 
 	}
 
-	protected static class StoreReply<ST> implements TypedNetworkStorage.Request.Store.Reply<ST> {
+	protected static class StoreReply<ST> implements TypedRRNetworkStorage.Request.Store.Reply<ST> {
 
 		protected int amount;
 

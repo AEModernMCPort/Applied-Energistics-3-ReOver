@@ -1,6 +1,6 @@
-package appeng.core.me.api.network.storage;
+package appeng.core.me.api.network.storage.reqrep;
 
-public interface SubtypedNetworkStorage<T, ST, NS extends SubtypedNetworkStorage<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends SubtypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends SubtypedNetworkStorage.Request<WriteRep>, WriteRep> extends TypedNetworkStorage<ST, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
+public interface SubtypedRRNetworkStorage<T, ST, NS extends SubtypedRRNetworkStorage<T, ST, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends SubtypedRRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends SubtypedRRNetworkStorage.Request<WriteRep>, WriteRep> extends TypedRRNetworkStorage<ST, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
 	/**
 	 * Posts a {@linkplain Request.GetSubtypesCount get subtype count} request to get the count of distinct subtypes of an object
@@ -18,7 +18,7 @@ public interface SubtypedNetworkStorage<T, ST, NS extends SubtypedNetworkStorage
 	 */
 	int getTotalAmountStored(T t);
 
-	interface Request<Rep> extends TypedNetworkStorage.Request<Rep> {
+	interface Request<Rep> extends TypedRRNetworkStorage.Request<Rep> {
 
 		/**
 		 * Requests the count of distinct subtypes of an object
@@ -27,7 +27,7 @@ public interface SubtypedNetworkStorage<T, ST, NS extends SubtypedNetworkStorage
 		 *
 		 * @param <T> object type
 		 */
-		interface GetSubtypesCount<T> extends SubtypedNetworkStorage.Request<GetSubtypesCount.Reply<T>> {
+		interface GetSubtypesCount<T> extends SubtypedRRNetworkStorage.Request<GetSubtypesCount.Reply<T>> {
 
 			/**
 			 * Get the object to query
@@ -56,7 +56,7 @@ public interface SubtypedNetworkStorage<T, ST, NS extends SubtypedNetworkStorage
 		 *
 		 * @param <T> object type
 		 */
-		interface GetTotalAmountStored<T> extends SubtypedNetworkStorage.Request<GetTotalAmountStored.Reply<T>> {
+		interface GetTotalAmountStored<T> extends SubtypedRRNetworkStorage.Request<GetTotalAmountStored.Reply<T>> {
 
 			/**
 			 * Get the object to query

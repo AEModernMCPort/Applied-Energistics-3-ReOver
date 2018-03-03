@@ -1,6 +1,6 @@
-package appeng.core.me.network.storage;
+package appeng.core.me.network.storage.reqrep;
 
-import appeng.core.me.api.network.storage.TypedNetworkStorage;
+import appeng.core.me.api.network.storage.reqrep.TypedRRNetworkStorage;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedNetworkStorage.Request<WriteRep>, WriteRep> extends NetworkStorageImpl<NS, ReadReq, ReadRep, WriteReq, WriteRep> implements TypedNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
+public class TypedRRNetworkStorageImpl<T, NS extends TypedRRNetworkStorageImpl<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedRRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedRRNetworkStorage.Request<WriteRep>, WriteRep> extends RRNetworkStorageImpl<NS, ReadReq, ReadRep, WriteReq, WriteRep> implements TypedRRNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
-	public TypedNetworkStorageImpl(Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
+	public TypedRRNetworkStorageImpl(Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
 		this.serializer = serializer;
 		this.deserializer = deserializer;
 	}
@@ -59,8 +59,8 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	@Override
 	protected <Req extends ReadReq, Rep extends ReadRep> Rep processReadRequest(Req req){
-		if(req instanceof TypedNetworkStorage.Request.GetStoredAmount){
-			TypedNetworkStorage.Request.GetStoredAmount<T> request = (TypedNetworkStorage.Request.GetStoredAmount<T>) req;
+		if(req instanceof TypedRRNetworkStorage.Request.GetStoredAmount){
+			TypedRRNetworkStorage.Request.GetStoredAmount<T> request = (TypedRRNetworkStorage.Request.GetStoredAmount<T>) req;
 			return (Rep) new GetStoredAmountReply(get(request.query()).intValue());
 		}
 		return null;
@@ -68,8 +68,8 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	@Override
 	protected <Req extends WriteReq, Rep extends WriteRep> Rep processWriteRequest(Req req){
-		if(req instanceof TypedNetworkStorage.Request.Store){
-			TypedNetworkStorage.Request.Store<T> request = (TypedNetworkStorage.Request.Store<T>) req;
+		if(req instanceof TypedRRNetworkStorage.Request.Store){
+			TypedRRNetworkStorage.Request.Store<T> request = (TypedRRNetworkStorage.Request.Store<T>) req;
 
 			assert request.minAmount() != 0 && request.maxAmount() != 0 && Math.signum(request.minAmount()) == Math.signum(request.maxAmount());
 			boolean store = Math.signum(request.maxAmount()) == 1;
@@ -100,15 +100,15 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	@Override
 	public int getStoredAmount(T t){
-		return this.<TypedNetworkStorage.Request.GetStoredAmount<T>, TypedNetworkStorage.Request.GetStoredAmount.Reply<T>>read(new GetStoredAmount(t)).amountStored();
+		return this.<TypedRRNetworkStorage.Request.GetStoredAmount<T>, TypedRRNetworkStorage.Request.GetStoredAmount.Reply<T>>read(new GetStoredAmount(t)).amountStored();
 	}
 
 	@Override
-	public void store(T t, int minAmount, int maxAmount, Consumer<TypedNetworkStorage.Request.Store.Reply<T>> replyConsumer){
-		this.<TypedNetworkStorage.Request.Store<T>, TypedNetworkStorage.Request.Store.Reply<T>>write(new Store(t, minAmount, maxAmount, replyConsumer));
+	public void store(T t, int minAmount, int maxAmount, Consumer<TypedRRNetworkStorage.Request.Store.Reply<T>> replyConsumer){
+		this.<TypedRRNetworkStorage.Request.Store<T>, TypedRRNetworkStorage.Request.Store.Reply<T>>write(new Store(t, minAmount, maxAmount, replyConsumer));
 	}
 
-	protected class GetStoredAmount implements TypedNetworkStorage.Request.GetStoredAmount<T> {
+	protected class GetStoredAmount implements TypedRRNetworkStorage.Request.GetStoredAmount<T> {
 
 		protected T query;
 
@@ -135,7 +135,7 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	}
 
-	protected static class GetStoredAmountReply<T> implements TypedNetworkStorage.Request.GetStoredAmount.Reply<T> {
+	protected static class GetStoredAmountReply<T> implements TypedRRNetworkStorage.Request.GetStoredAmount.Reply<T> {
 
 		protected int amount;
 
@@ -149,7 +149,7 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 		}
 	}
 
-	protected class Store extends RequestWithConsumer<TypedNetworkStorage.Request.Store.Reply<T>> implements TypedNetworkStorage.Request.Store<T> {
+	protected class Store extends RequestWithConsumer<TypedRRNetworkStorage.Request.Store.Reply<T>> implements TypedRRNetworkStorage.Request.Store<T> {
 
 		protected T query;
 		protected int min, max;
@@ -196,7 +196,7 @@ public class TypedNetworkStorageImpl<T, NS extends TypedNetworkStorageImpl<T, NS
 
 	}
 
-	protected static class StoreReply<T> implements TypedNetworkStorage.Request.Store.Reply<T> {
+	protected static class StoreReply<T> implements TypedRRNetworkStorage.Request.Store.Reply<T> {
 
 		protected int amount;
 

@@ -1,7 +1,7 @@
-package appeng.core.me.network.storage;
+package appeng.core.me.network.storage.reqrep;
 
 import appeng.core.me.api.network.event.NCEventBus;
-import appeng.core.me.api.network.storage.NetworkStorage;
+import appeng.core.me.api.network.storage.reqrep.RRNetworkStorage;
 import code.elix_x.excomms.reflection.ReflectionHelper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -12,7 +12,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public abstract class NetworkStorageImpl<NS extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> implements NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep> {
+public abstract class RRNetworkStorageImpl<NS extends RRNetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends RRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends RRNetworkStorage.Request<WriteRep>, WriteRep> implements RRNetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
 	/*
 	 * Requests

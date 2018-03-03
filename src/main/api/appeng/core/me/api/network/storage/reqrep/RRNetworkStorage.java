@@ -1,4 +1,4 @@
-package appeng.core.me.api.network.storage;
+package appeng.core.me.api.network.storage.reqrep;
 
 import appeng.core.me.api.network.event.EventBusOwner;
 import appeng.core.me.api.network.event.NCEventBus;
@@ -7,7 +7,7 @@ import net.minecraftforge.common.util.INBTSerializable;
 
 import java.util.function.Consumer;
 
-public interface NetworkStorage<NS extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> extends EventBusOwner<NS, NetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>>, INBTSerializable<NBTTagCompound> {
+public interface RRNetworkStorage<NS extends RRNetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends RRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends RRNetworkStorage.Request<WriteRep>, WriteRep> extends EventBusOwner<NS, RRNetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>>, INBTSerializable<NBTTagCompound> {
 
 	/**
 	 * Posts read request to the storage, result returned immediately on the same thread. Asynchronous, thread-safe, does not guarantee accurate reply unless requested from same thread as storage's.
@@ -46,7 +46,7 @@ public interface NetworkStorage<NS extends NetworkStorage<NS, ReadReq, ReadRep, 
 
 	}
 
-	interface NetworkStorageEvent<NS extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends NetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends NetworkStorage.Request<WriteRep>, WriteRep> extends NCEventBus.Event<NS, NetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>> {
+	interface NetworkStorageEvent<NS extends RRNetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends RRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends RRNetworkStorage.Request<WriteRep>, WriteRep> extends NCEventBus.Event<NS, RRNetworkStorage.NetworkStorageEvent<NS, ReadReq, ReadRep, WriteReq, WriteRep>> {
 
 	}
 

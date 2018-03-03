@@ -1,8 +1,8 @@
-package appeng.core.me.api.network.storage;
+package appeng.core.me.api.network.storage.reqrep;
 
 import java.util.function.Consumer;
 
-public interface TypedNetworkStorage<T, NS extends TypedNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedNetworkStorage.Request<WriteRep>, WriteRep> extends NetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep> {
+public interface TypedRRNetworkStorage<T, NS extends TypedRRNetworkStorage<T, NS, ReadReq, ReadRep, WriteReq, WriteRep>, ReadReq extends TypedRRNetworkStorage.Request<ReadRep>, ReadRep, WriteReq extends TypedRRNetworkStorage.Request<WriteRep>, WriteRep> extends RRNetworkStorage<NS, ReadReq, ReadRep, WriteReq, WriteRep> {
 
 	/**
 	 * Posts a {@linkplain Request.GetStoredAmount get stored amount} request to get the amount stored of given object.
@@ -22,7 +22,7 @@ public interface TypedNetworkStorage<T, NS extends TypedNetworkStorage<T, NS, Re
 	 */
 	void store(T t, int minAmount, int maxAmount, Consumer<Request.Store.Reply<T>> replyConsumer);
 
-	interface Request<Rep> extends NetworkStorage.Request<Rep> {
+	interface Request<Rep> extends RRNetworkStorage.Request<Rep> {
 
 		/**
 		 * Requests the amount stored of an object.

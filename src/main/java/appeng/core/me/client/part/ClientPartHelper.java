@@ -130,8 +130,7 @@ public class ClientPartHelper {
 					if(event.getPlayer().isSneaking()){
 						Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections = partsHelper().getConnections(info.getPart(), info.getPositionRotation());
 						connections.forEach((vS, c) -> {
-							RGBA color = new RGBA(c.getId().hashCode());
-							color.setAF(0.5f);
+							RGBA color = RGBA.fromARGB(c.getId().hashCode()).setAF(0.5f);
 							VoxelPosition v = vS.getLeft();
 							drawFilledBox(v.getBB().intersect(v.offsetLocal(vS.getRight()).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);
 						});

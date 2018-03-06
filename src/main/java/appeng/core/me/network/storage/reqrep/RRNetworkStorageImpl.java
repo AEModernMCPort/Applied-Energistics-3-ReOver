@@ -63,11 +63,8 @@ public abstract class RRNetworkStorageImpl<NS extends RRNetworkStorage<NS, ReadR
 
 		@Override
 		public void deserializeNBT(NBTTagCompound nbt){
-			try {
-				replyConsumer = new ReflectionHelper.AClass<Consumer<Rep>>(nbt.getString("consumer")).getDeclaredConstructor().setAccessible(true).newInstance();
-			} catch(RuntimeException e){
-				throw new IllegalArgumentException("Reply consumer class does not have any no-args constructors", e);
-			}
+			String rcc = nbt.getString("consumer");
+			replyConsumer = ReflectionHelper.AClass.<Consumer<Rep>>find(rcc).orElseThrow(() -> new IllegalArgumentException(String.format("Reply consumer class (%s) no longer exists", rcc))).getDeclaredConstructor().orElseThrow(() -> new IllegalArgumentException(String.format("Reply consumer class (%s) does not have any no-args constructors", rcc))).setAccessible(true).newInstance().orElseThrow(() -> new IllegalArgumentException(String.format("Failed instantiating reply consumer (%s)", rcc)));
 		}
 	}
 
@@ -93,13 +90,10 @@ public abstract class RRNetworkStorageImpl<NS extends RRNetworkStorage<NS, ReadR
 	}
 
 	protected <Rep, Req extends Request<Rep>> Req deserializeRequest(NBTTagCompound nbt){
-		ReflectionHelper.AClass<Req> clas = new ReflectionHelper.AClass<>(nbt.getString("class"));
-		Req request;
-		try{
-			request = clas.getDeclaredConstructor().setAccessible(true).newInstance();
-		} catch(RuntimeException e){
-			request = clas.getDeclaredConstructors().filter(constructor -> constructor.get().getParameterCount() == 1 && constructor.get().getParameterTypes()[0].isAssignableFrom(this.getClass())).findAny().orElseThrow(() -> new IllegalArgumentException(String.format("Request class %s does not have any compatible constructors with network storage of class %s", clas.get().getName(), this.getClass().getName()), e)).newInstance(this);
-		}
+		ReflectionHelper.AClass<Req> clas = ReflectionHelper.AClass.<Req>find(nbt.getString("class")).orElseThrow(() -> new IllegalArgumentException("Request class no longer exists"));
+		Req request = clas.getDeclaredConstructor().flatMap(c -> c.setAccessible(true).newInstance()).orElse(null);
+		if(request == null) request = clas.findConstructorsForArgs(this.getClass()).findAny().flatMap(c -> c.newInstance(this)).orElse(null);
+		if(request == null) throw new IllegalArgumentException(String.format("Request class %s does not have any compatible constructors with network storage of class %s", clas.get().getName(), this.getClass().getName()));
 		request.deserializeNBT(nbt.getCompoundTag("request"));
 		return request;
 	}

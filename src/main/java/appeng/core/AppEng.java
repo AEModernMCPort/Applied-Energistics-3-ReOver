@@ -115,7 +115,7 @@ public final class AppEng {
 		else if(m instanceof Class) module = getModule((Class<M>) m);
 		else module = m;
 		if(module != null){
-			new AClass<M>((Class<M>) module.getClass()).getDeclaredMethods().forEach(method -> {
+			new AClass<>((Class<M>) module.getClass()).getDeclaredMethods().forEach(method -> {
 				if(method.get().getParameterTypes().length == 1 && method.get().getParameterTypes()[0].isAssignableFrom(event.getClass()) && method.get().getDeclaredAnnotation(Module.ModuleEventHandler.class) != null){
 					current = module;
 					method.invoke(module, event);
@@ -130,7 +130,7 @@ public final class AppEng {
 		Map<String, Pair<Class<?>, String>> foundModules = new HashMap<>();
 		ASMDataTable annotations = event.getAsmData();
 		for(ASMData data : annotations.getAll(Module.class.getCanonicalName())){
-			foundModules.put((String) data.getAnnotationInfo().get("value"), new ImmutablePair<Class<?>, String>(new AClass<>(data.getClassName()).get(), (String) data.getAnnotationInfo().get("dependencies")));
+			foundModules.put((String) data.getAnnotationInfo().get("value"), new ImmutablePair<>(AClass.find(data.getClassName()).get().get(), (String) data.getAnnotationInfo().get("dependencies")));
 		}
 
 		Map<String, Class<?>> modules = Maps.newHashMap();
@@ -342,7 +342,7 @@ public final class AppEng {
 		for(ASMData data : annotations.getAll(Module.Instance.class.getTypeName())){
 			try{
 				AClass<I> target = new AClass(Class.forName(data.getClassName(), true, mcl));
-				ReflectionHelper.AField<I, ?> field = target.getDeclaredField(data.getObjectName());
+				ReflectionHelper.AField<I, ?> field = target.getDeclaredField(data.getObjectName()).orElseThrow(() -> new ReflectiveOperationException("Annotated instance field did not exist... what?"));
 				modules.values().stream().filter(module -> field.get().getType().isInstance(module)).findFirst().ifPresent(instance -> field.setAccessible(true).setFinal(false).set((I) classModule.get(target.getClass()), instance));
 			} catch(ReflectiveOperationException e){
 				logger.error("Could not inject module's instance", e);

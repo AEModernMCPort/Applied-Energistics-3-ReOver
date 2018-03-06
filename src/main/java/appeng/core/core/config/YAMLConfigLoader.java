@@ -54,7 +54,7 @@ public class YAMLConfigLoader<C> extends ConfigLoader<C> {
 		YamlReader configReader = new YamlReader(new FileReader(configFile()), CONFIGCONFIG);
 		config = configReader.read(clas);
 		configReader.close();
-		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().orElseThrow(configInstantiationFailed(clas, "no-args constructor not found")).setAccessible(true).newInstance().orElseThrow(configInstantiationFailed(clas, "constructor invocation failed"));
 		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).compile();
 	}
 

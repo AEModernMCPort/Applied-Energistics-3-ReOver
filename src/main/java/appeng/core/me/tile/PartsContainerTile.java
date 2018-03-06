@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 public class PartsContainerTile extends TileEntity {
 
-	private PartsContainer container = new PartsContainer();
+	private PartsContainer container = new PartsContainer(this::markDirty);
 
 	public PartsContainerTile(){
 
@@ -61,6 +61,15 @@ public class PartsContainerTile extends TileEntity {
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing){
 		return capability == PartsHelper.partsContainerCapability ? (T) container : null;
+	}
+
+	/*
+	 * Dirty
+	 */
+
+	@Override
+	public void markDirty(){
+		super.markDirty();
 	}
 
 	/*

@@ -2,7 +2,6 @@ package appeng.core.me.api.parts;
 
 import code.elix_x.excomms.color.RGBA;
 import code.elix_x.excomms.reflection.ReflectionHelper;
-import net.minecraftforge.common.util.EnumHelper;
 
 import java.util.function.Predicate;
 
@@ -32,7 +31,7 @@ public enum PartColor {
 	 * Public mutability access
 	 */
 
-	private static final ReflectionHelper.AClass.AEnum<PartColor> ENUM = new ReflectionHelper.AClass<>(PartColor.class).asEnum();
+	private static final ReflectionHelper.AClass.AEnum<PartColor>.EnumCreator ENUM = new ReflectionHelper.AClass<>(PartColor.class).<PartColor>asEnum().findEnumCreatorForArgs(RGBA.class, Predicate.class).orElseThrow(() -> new IllegalArgumentException("Could not reflect part color creator"));
 
 	/**
 	 * Creates a new part color.
@@ -43,9 +42,7 @@ public enum PartColor {
 	 * @return created color
 	 */
 	public static PartColor createNewColor(String name, RGBA refColor, Predicate<PartColor> compatibility){
-		//TODO Migrate back to EXComms once #advanced-reflective-operations is merged
-//		return ENUM.addEnum(name, refColor, compatibility);
-		return EnumHelper.addEnum(PartColor.class, name, new Class[]{RGBA.class, Predicate.class}, refColor, compatibility);
+		return ENUM.add(name, refColor, compatibility).orElseThrow(() -> new IllegalArgumentException("Failed at creating a new part color"));
 	}
 
 	/**

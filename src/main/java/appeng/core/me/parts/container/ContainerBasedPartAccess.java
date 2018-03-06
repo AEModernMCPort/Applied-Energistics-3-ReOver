@@ -48,7 +48,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part){
-
+		getContainer(part.getAssignedPosRot().getPosition().getGlobalPosition()).ifPresent(IPartsContainer::markDirty);
 	}
 
 	// Impl
@@ -106,6 +106,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setOwnedPart(partUUID, new PartInfoImpl(part.getPart(), positionRotation, part));
 				part.assignPosRot(positionRotation);
 				event.setCreated(partUUID);
+				partsAccess.<Part, Part.State>markDirty(part);
 			}
 		}
 
@@ -117,14 +118,14 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 
 				Optional<Pair<BlockPos, PartUUID>> removedUUID = partsAccess.getContainer(position.getGlobalPosition()).map(container -> container.get(position.getLocalPosition()));
 				Optional<PartInfo<P, S>> removedPart = removedUUID.flatMap(relUUID -> partsAccess.getContainer(relUUID.getLeft()).flatMap(container -> container.removeOwnedPart(relUUID.getRight())));
-				removedPart.ifPresent(part -> partsAccess.getAffectedContainers(part.getPart(), part.getPositionRotation()).forEach(pos -> {
-					IPartsContainer container = partsAccess.getContainer(pos).get();
+				removedPart.ifPresent(part -> partsAccess.getAffectedContainers(part.getPart(), part.getPositionRotation()).forEach(pos -> partsAccess.getContainer(pos).ifPresent(container -> {
 					container.remove(removedUUID.get().getLeft(), removedUUID.get().getRight(), partsAccess.partsHelper().getVoxels(pos, part.getPart(), part.getPositionRotation()));
 					if(container.isEmpty()) partsAccess.removeContainer(pos);
 					//TODO Remove once BlockBreakEvent is fired on client
 					partsAccess.markBlockRangeForUpdate(pos, pos);
-				}));
+				})));
 				removedUUID.ifPresent(uuid -> event.setRemoved(new ImmutablePair<>(uuid.getRight(), removedPart.get())));
+				removedPart.flatMap(PartInfo::getState).ifPresent(partsAccess::markDirty);
 			}
 		}
 

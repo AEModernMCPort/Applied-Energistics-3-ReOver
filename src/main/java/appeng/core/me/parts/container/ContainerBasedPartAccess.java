@@ -48,7 +48,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part){
-
+		getContainer(part.getAssignedPosRot().getPosition().getGlobalPosition()).ifPresent(IPartsContainer::markDirty);
 	}
 
 	// Impl
@@ -106,6 +106,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setOwnedPart(partUUID, new PartInfoImpl(part.getPart(), positionRotation, part));
 				part.assignPosRot(positionRotation);
 				event.setCreated(partUUID);
+				partsAccess.<Part, Part.State>markDirty(part);
 			}
 		}
 
@@ -125,6 +126,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 					partsAccess.markBlockRangeForUpdate(pos, pos);
 				}));
 				removedUUID.ifPresent(uuid -> event.setRemoved(new ImmutablePair<>(uuid.getRight(), removedPart.get())));
+				removedPart.flatMap(PartInfo::getState).ifPresent(partsAccess::markDirty);
 			}
 		}
 

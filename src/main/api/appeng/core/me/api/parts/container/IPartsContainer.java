@@ -48,6 +48,8 @@ public interface IPartsContainer extends PartsAccess.Mutable, INBTSerializable<N
 		return new VoxelPosition(getGlobalPosition(), new BlockPos(VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2, VOXELSPERBLOCKAXISI / 2));
 	}
 
+	default void markDirty(){}
+
 	/*
 	 * Load-unload (server only)
 	 */

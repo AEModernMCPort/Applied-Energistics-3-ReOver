@@ -97,6 +97,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part){
+		super.markDirty(part);
 		if(!world.isRemote) sendPart(part, false);
 	}
 

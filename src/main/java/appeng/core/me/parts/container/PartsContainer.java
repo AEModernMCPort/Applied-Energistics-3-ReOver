@@ -34,6 +34,13 @@ public class PartsContainer implements IPartsContainer {
 	protected World world;
 	protected BlockPos globalPosition;
 
+	public PartsContainer(@Nullable Runnable onMarkDirty){
+		this.onMarkDirty = onMarkDirty;
+	}
+
+	public PartsContainer(){
+	}
+
 	@Override
 	public PartsAccess.Mutable getGlobalAccess(){
 		return globalAccess;
@@ -58,6 +65,13 @@ public class PartsContainer implements IPartsContainer {
 	@Override
 	public void setGlobalPosition(BlockPos globalPosition){
 		this.globalPosition = globalPosition;
+	}
+
+	protected Runnable onMarkDirty;
+
+	@Override
+	public void markDirty(){
+		if(onMarkDirty != null) onMarkDirty.run();
 	}
 
 	/*

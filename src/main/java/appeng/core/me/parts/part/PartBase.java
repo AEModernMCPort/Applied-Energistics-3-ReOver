@@ -14,7 +14,7 @@ import java.util.List;
 
 public abstract class PartBase<P extends PartBase<P, S>, S extends PartBase.StateBase<P, S>> extends IForgeRegistryEntry.Impl<P> implements Part<P, S> {
 
-	private static final ReflectionHelper.AField<Impl, TypeToken> token = new ReflectionHelper.AClass<>(IForgeRegistryEntry.Impl.class).<TypeToken>getDeclaredField("token").setAccessible(true);
+	private static final ReflectionHelper.AField<Impl, TypeToken> token = new ReflectionHelper.AClass<>(IForgeRegistryEntry.Impl.class).<TypeToken>getDeclaredField("token").orElseThrow(() -> new IllegalArgumentException("Could not reflect fields necessary for parts registration")).setAccessible(true);
 	private static final TypeToken<Part> partToken = TypeToken.of(Part.class);
 
 	protected String unlocalizedName;

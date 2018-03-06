@@ -27,10 +27,10 @@ public class StateMapperHelper {
 		return getBlockStateMap().get(block);
 	}*/
 
-	private static final ReflectionHelper.AField<ModelLoader, Map<IRegistryDelegate<Block>, IStateMapper>> customStateMappers = new ReflectionHelper.AClass<>(ModelLoader.class).<Map<IRegistryDelegate<Block>, IStateMapper>>getDeclaredField("customStateMappers").setAccessible(true);
+	private static final ReflectionHelper.AField<ModelLoader, Map<IRegistryDelegate<Block>, IStateMapper>> customStateMappers = new ReflectionHelper.AClass<>(ModelLoader.class).<Map<IRegistryDelegate<Block>, IStateMapper>>getDeclaredField("customStateMappers").orElseThrow(() -> new IllegalArgumentException("Could not reflect necessary fields for state mapper")).setAccessible(true);
 
 	public static Optional<IStateMapper> getCustomStateMapper(Block block){
-		return Optional.ofNullable(customStateMappers.get(null).get(block.delegate));
+		return customStateMappers.get(null).getOpt().map(sm -> sm.get(block.delegate));
 	}
 
 }

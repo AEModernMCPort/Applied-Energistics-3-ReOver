@@ -143,6 +143,21 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 			connections.clear();
 			for(int i : nbt.getIntArray("connections")) connections.add(EnumFacing.values()[i]);
 		}
+
+		@Override
+		public NBTTagCompound serializeSyncNBT(){
+			NBTTagCompound nbt = super.serializeSyncNBT();
+			nbt.setIntArray("connections", connections.stream().mapToInt(EnumFacing::ordinal).toArray());
+			return nbt;
+		}
+
+		@Override
+		public void deserializeSyncNBT(NBTTagCompound nbt){
+			super.deserializeSyncNBT(nbt);
+			connections.clear();
+			for(int i : nbt.getIntArray("connections")) connections.add(EnumFacing.values()[i]);
+		}
+
 	}
 
 	public static class Normal extends PartFiber<Normal, NormalState> implements PartGroup<PartFiber.Normal, NormalState> {

@@ -143,15 +143,15 @@ public class PartsHelper implements InitializationComponent {
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
 	}
 
-	static Mesh loadMesh(Part part, String suffix){
+	static Optional<Mesh> loadMesh(Part part, String suffix){
 		//TODO 1.12-MIPA We only need geometry
 		Mesh mesh = new Mesh();
 		try{
 			new OObjMeshLoader<>(mesh, AppEngME.proxy.getResourceHelper(), getFullRootMeshLocation(part, suffix));
 		} catch(IOException e){
-			if(suffix == null) logger.error("Failed to load mesh for " + part.getRegistryName(), e);
+			logger.error("Failed to load mesh for " + part.getRegistryName(), e);
 		}
-		return mesh;
+		return mesh.verticesG.isEmpty() ? Optional.empty() : Optional.of(mesh);
 	}
 
 	protected PartData getData(Part part){
@@ -215,7 +215,7 @@ public class PartsHelper implements InitializationComponent {
 		public PartData(Part part, Voxelizer voxelizer){
 			logger.info("Reloading " + part.getRegistryName());
 			long time = System.currentTimeMillis();
-			mesh = loadMesh(part, null);
+			mesh = loadMesh(part, null).orElseGet(Mesh::new);
 			if(!mesh.verticesG.isEmpty()){
 				VertexGeometric first = mesh.verticesG.get(0);
 				MutableObject<AxisAlignedBB> bbox = new MutableObject<>(toBox(first));

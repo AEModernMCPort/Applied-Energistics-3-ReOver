@@ -2,6 +2,7 @@ package appeng.core.me.network;
 
 import appeng.api.bootstrap.InitializationComponent;
 import appeng.core.AppEng;
+import appeng.core.lib.capability.SSCapabilityProviderDelegate;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
@@ -229,15 +230,15 @@ public class DevicesHelper implements InitializationComponent {
 	 */
 
 	public Stream<ICapabilityProvider> getAllWITargetCPs(Part.State part, World world){
-		return Stream.concat(getAllWITargetParts(part, world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).map(s -> s instanceof ICapabilityProvider ? (ICapabilityProvider) s : null), getAllWITargetBlocks(part).map(world::getTileEntity)).filter(Objects::nonNull);
+		return Stream.concat(getAllWITargetParts(part, world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).map(s -> s instanceof ICapabilityProvider ? (ICapabilityProvider) s : null), getAllWITargetBlocks(part).map(gpFrom -> Optional.ofNullable(world.getTileEntity(gpFrom.getLeft())).map(tile -> new SSCapabilityProviderDelegate(tile, gpFrom.getRight())).orElse(null))).filter(Objects::nonNull);
 	}
 
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Stream<S> getAllWITargetParts(Part.State part, PartsAccess.Mutable partsAccess){
 		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> p.getLeft().offsetLocal(p.getRight())).map(tp -> partsAccess.<P, S>getPart(tp).flatMap(PartInfo::getState).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
 	}
 
-	public Stream<BlockPos> getAllWITargetBlocks(Part.State part){
-		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> Optional.of(p.getLeft().offsetLocal(p.getRight())).map(VoxelPosition::getGlobalPosition).filter(gp -> !gp.equals(p.getLeft().getGlobalPosition())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+	public Stream<? extends Pair<BlockPos, EnumFacing>> getAllWITargetBlocks(Part.State part){
+		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> Optional.of(p.getLeft().offsetLocal(p.getRight())).map(VoxelPosition::getGlobalPosition).filter(gp -> !gp.equals(p.getLeft().getGlobalPosition())).map(gp -> new ImmutablePair<>(gp, p.getRight().getOpposite())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
 	}
 
 	public void forEachWI(Part.State part, BiConsumer<VoxelPosition, EnumFacing> vsc){

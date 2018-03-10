@@ -10,6 +10,7 @@ import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.PartInfo;
+import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.network.connect.DataConnection;
@@ -19,7 +20,9 @@ import appeng.core.me.parts.part.device.Controller;
 import com.google.common.collect.*;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
@@ -32,6 +35,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DevicesHelper implements InitializationComponent {
 
@@ -64,6 +68,12 @@ public class DevicesHelper implements InitializationComponent {
 				connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
 			})));
 			return Optional.of(new PartConnectivity(connectionsBuilder.build(), connectivityBuilder.build()));
+		});
+		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(WORLDINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
+			ImmutableMultimap.Builder<VoxelPosition, EnumFacing> interfaces = new ImmutableMultimap.Builder<>();
+			meshLoader.apply("wi").ifPresent(mesh -> forEachInterface(voxelizer.apply(mesh), rootMeshVoxels, interfaces::put));
+			Multimap<VoxelPosition, EnumFacing> ifm = interfaces.build();
+			return ifm.isEmpty() ? Optional.empty() : Optional.of(new WorldInterface(ifm));
 		});
 
 		AppEngME.INSTANCE.registerConnection(ENERGY);
@@ -169,6 +179,10 @@ public class DevicesHelper implements InitializationComponent {
 		return rotated;
 	}
 
+	protected Stream<Pair<VoxelPosition, EnumFacing>> transformAll(Multimap<VoxelPosition, EnumFacing> vf, PartPositionRotation positionRotation){
+		return vf.entries().stream().map(e -> applyTransforms(e.getKey(), e.getValue(), positionRotation));
+	}
+
 	protected Pair<VoxelPosition, EnumFacing> applyTransforms(VoxelPosition voxel, EnumFacing sideFrom, PartPositionRotation positionRotation){
 		return new ImmutablePair<>(positionRotation.getRotation().rotate(voxel).add(positionRotation.getRotationCenterPosition()), positionRotation.getRotation().rotate(sideFrom));
 	}
@@ -208,6 +222,38 @@ public class DevicesHelper implements InitializationComponent {
 			if(device.getConnectionRequirement(c) != null) params.put(c, device.getConnectionRequirement(c));
 		});
 		return new ConnectionsParams(params);
+	}
+
+	/*
+	 * World interface
+	 */
+
+	public Stream<ICapabilityProvider> getAllWITargetCPs(Part.State part, World world){
+		return Stream.concat(getAllWITargetParts(part, world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).map(s -> s instanceof ICapabilityProvider ? (ICapabilityProvider) s : null), getAllWITargetBlocks(part).map(world::getTileEntity)).filter(Objects::nonNull);
+	}
+
+	public <P extends Part<P, S>, S extends Part.State<P, S>> Stream<S> getAllWITargetParts(Part.State part, PartsAccess.Mutable partsAccess){
+		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> p.getLeft().offsetLocal(p.getRight())).map(tp -> partsAccess.<P, S>getPart(tp).flatMap(PartInfo::getState).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+	}
+
+	public Stream<BlockPos> getAllWITargetBlocks(Part.State part){
+		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> Optional.of(p.getLeft().offsetLocal(p.getRight())).map(VoxelPosition::getGlobalPosition).filter(gp -> !gp.equals(p.getLeft().getGlobalPosition())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+	}
+
+	protected static final ResourceLocation WORLDINTERFACELOADER = new ResourceLocation(AppEng.MODID, "wi");
+
+	protected Optional<WorldInterface> getWorldInterfaces(Part part){
+		return AppEngME.INSTANCE.getPartsHelper().getCustomPartData(part, WORLDINTERFACELOADER);
+	}
+
+	protected class WorldInterface {
+
+		final Multimap<VoxelPosition, EnumFacing> interfaces;
+
+		public WorldInterface(Multimap<VoxelPosition, EnumFacing> interfaces){
+			this.interfaces = interfaces;
+		}
+
 	}
 
 }

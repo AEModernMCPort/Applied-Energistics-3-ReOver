@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,25 +59,24 @@ public class DevicesHelper implements InitializationComponent {
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(CONNECTIVITYLOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
 			ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
 			ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
-			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-				meshLoader.apply(connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> {
-					Set<VoxelPosition> cVoxels = voxelizer.apply(cmesh);
-					cVoxels.stream().filter(rootMeshVoxels::contains).forEach(voxel -> {
-						for(EnumFacing side : EnumFacing.values()){
-							VoxelPosition vO = voxel.offsetLocal(side);
-							if(cVoxels.contains(vO) && !rootMeshVoxels.contains(vO)){
-								connectionsBuilder.add(connection.getId());
-								connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
-							}
-						}
-					});
-				});
-			});
+			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> meshLoader.apply(connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh), rootMeshVoxels, (voxel, side) -> {
+				connectionsBuilder.add(connection.getId());
+				connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
+			})));
 			return Optional.of(new PartConnectivity(connectionsBuilder.build(), connectivityBuilder.build()));
 		});
 
 		AppEngME.INSTANCE.registerConnection(ENERGY);
 		AppEngME.INSTANCE.registerConnection(DATA);
+	}
+
+	protected void forEachInterface(Set<VoxelPosition> inter2faces, Set<VoxelPosition> in, BiConsumer<VoxelPosition, EnumFacing> interfaceConsumer){
+		inter2faces.stream().filter(in::contains).forEach(inVoxel -> {
+			for(EnumFacing side : EnumFacing.values()){
+				VoxelPosition outVoxel = inVoxel.offsetLocal(side);
+				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel))interfaceConsumer.accept(inVoxel, side);
+			}
+		});
 	}
 
 	/*

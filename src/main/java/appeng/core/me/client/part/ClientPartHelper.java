@@ -11,7 +11,7 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.item.PartPlacerItem;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import code.elix_x.excomms.color.RGBA;
 import com.google.common.collect.Multimap;
 import net.minecraft.client.renderer.GlStateManager;
@@ -78,7 +78,7 @@ public class ClientPartHelper {
 		renderingHandlers.put(part, (Optional) renderingHandler);
 	}
 
-	protected PartsHelper partsHelper(){
+	protected PartsHelperImpl partsHelper(){
 		return AppEngME.INSTANCE.getPartsHelper();
 	}
 
@@ -87,9 +87,9 @@ public class ClientPartHelper {
 		if(event.getGenericType() == Part.class){
 			logger.info("Registering client part models");
 			((RegistryEvent.Register<P>) event).getRegistry().forEach(part -> {
-				part.getMeshes().forEach(mesh -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(mesh, null), PartsHelper.getFullStateMeshLocation(mesh)));
+				part.getMeshes().forEach(mesh -> ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(mesh, null), PartsHelperImpl.getFullStateMeshLocation(mesh)));
 				//TODO FIXME Make this perspective aware
-				ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(part.getRootMesh(), "inventory"), PartsHelper.getFullStateMeshLocation(part.getRootMesh()), optional -> !optional.isPresent() ? Optional.of(new TRSRTransformation(TRSRTransformation.toVecmath(toLWJGL(computeItemMatrix(part))))) : Optional.empty(), DefaultVertexFormats.ITEM);
+				ModelRegManagerHelper.loadAndRegisterModel(new ModelResourceLocation(part.getRootMesh(), "inventory"), PartsHelperImpl.getFullStateMeshLocation(part.getRootMesh()), optional -> !optional.isPresent() ? Optional.of(new TRSRTransformation(TRSRTransformation.toVecmath(toLWJGL(computeItemMatrix(part))))) : Optional.empty(), DefaultVertexFormats.ITEM);
 			});
 		}
 	}
@@ -121,7 +121,7 @@ public class ClientPartHelper {
 			VoxelPosition targetVoxel = null;
 			if(event.getTarget().hitInfo instanceof VoxelPosition){
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
-				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 				worldPartsAccess.getPart(targetVoxel).map(info -> partsHelper().getGlobalBBox(info.getPart(), info.getPositionRotation())).ifPresent(box -> drawSelectionBox(box, event.getPlayer(), event.getPartialTicks()));
 				worldPartsAccess.getPart(targetVoxel).ifPresent(info -> {
 					PartPositionRotation positionRotation = info.getPositionRotation();
@@ -139,7 +139,7 @@ public class ClientPartHelper {
 
 				//TODO Remove this debug stuff???
 				if(event.getPlayer().isSneaking()){
-					IPartsContainer container = event.getPlayer().world.getTileEntity(event.getTarget().getBlockPos()).getCapability(PartsHelper.partsContainerCapability, null);
+					IPartsContainer container = event.getPlayer().world.getTileEntity(event.getTarget().getBlockPos()).getCapability(PartsHelperImpl.partsContainerCapability, null);
 					allVoxelsInABlockStream().filter(container::hasPart).forEach(voxel -> drawSelectionBox(new VoxelPosition(event.getTarget().getBlockPos(), voxel).getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(0, 0, 0, 0.3f), Mode.OUTLINE));
 				}
 				event.setCanceled(true);
@@ -148,7 +148,7 @@ public class ClientPartHelper {
 				PartPlacerItem partPlacerItem = (PartPlacerItem) (event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof PartPlacerItem ? event.getPlayer().getHeldItem(EnumHand.MAIN_HAND).getItem() : event.getPlayer().getHeldItem(EnumHand.OFF_HAND).getItem());
 				targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(event.getTarget());
 
-				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 				PartPositionRotation positionRotation = partPlacerItem.getPartPlacementLogic().getPlacementPosition(event.getPlayer(), event.getTarget());
 				AxisAlignedBB selectionBBox = partsHelper().getGlobalBBox(partPlacerItem.getPPart(), positionRotation);
 				if(worldPartsAccess.canPlace(positionRotation, partPlacerItem.getPPart()))

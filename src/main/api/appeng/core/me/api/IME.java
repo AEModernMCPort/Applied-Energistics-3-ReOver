@@ -4,9 +4,7 @@ import appeng.api.definitions.IDefinitionsProvider;
 import appeng.core.me.api.network.GlobalNBDManager;
 import appeng.core.me.api.network.NBDIO;
 import appeng.core.me.api.network.block.Connection;
-import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.api.parts.placement.PartPlacementLogic;
-import net.minecraft.util.ResourceLocation;
+import appeng.core.me.api.parts.part.PartsHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +13,7 @@ public interface IME extends IDefinitionsProvider {
 
 	String NAME = "me";
 
-	PartPlacementLogic createDefaultPlacementLogic(Part part);
+	PartsHelper getPartsHelper();
 
 	void registerConnection(Connection connection);
 

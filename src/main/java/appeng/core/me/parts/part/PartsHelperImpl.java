@@ -15,6 +15,12 @@ import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import com.google.common.collect.*;
+import appeng.core.me.api.parts.part.PartsHelper;
+import appeng.core.me.api.parts.placement.PartPlacementLogic;
+import appeng.core.me.parts.container.WorldPartsAccess;
+import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
 import com.owens.oobjloader.parser.OObjMeshLoader;
@@ -53,11 +59,15 @@ import java.util.stream.Stream;
 
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
 
-public class PartsHelper implements InitializationComponent {
+public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 
 	public static final Logger logger = LogManager.getLogger("Parts Helper");
 
 	private PartGroupsHelper groupsHelper = new PartGroupsHelper(this);
+
+	/*
+	 * Init
+	 */
 
 	@Override
 	public void preInit(){
@@ -71,6 +81,27 @@ public class PartsHelper implements InitializationComponent {
 	public void postInit(){
 		loadMeshes();
 		groupsHelper.loadGroups();
+	}
+
+	/*
+	 * Impl
+	 */
+
+	protected List<Pair<ResourceLocation, CustomPartDataLoader<?>>> cpdl = new ArrayList<>();
+
+	@Override
+	public <T> void registerCustomPartDataLoader(ResourceLocation id, CustomPartDataLoader<T> loader){
+		cpdl.add(new ImmutablePair<>(id, loader));
+	}
+
+	@Override
+	public <T> Optional<T> getCustomPartData(Part part, ResourceLocation id){
+		return Optional.ofNullable((T) getData(part).cpd.get(id));
+	}
+
+	@Override
+	public PartPlacementLogic createDefaultPlacementLogic(Part part){
+		return new DefaultPartPlacementLogic(part);
 	}
 
 	/*
@@ -111,7 +142,7 @@ public class PartsHelper implements InitializationComponent {
 	public void tryBreakBlock(BlockEvent.BreakEvent event){
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
-			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 			if(!event.getWorld().isRemote && rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
 				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo).ifPresent(uuidPart -> uuidPart.getRight().getPart().onBroken(uuidPart.getRight().getState().orElse(null), worldPartsAccess, event.getWorld(), event.getPlayer()));
 			event.setCanceled(true);
@@ -145,7 +176,7 @@ public class PartsHelper implements InitializationComponent {
 		logger.info("Reloaded meshes in " + (System.currentTimeMillis() - time));
 	}
 
-	static Mesh loadMesh(Part part, String suffix){
+	static Optional<Mesh> loadMesh(Part part, String suffix){
 		//TODO 1.12-MIPA We only need geometry
 		Mesh mesh = new Mesh();
 		try{
@@ -153,7 +184,7 @@ public class PartsHelper implements InitializationComponent {
 		} catch(IOException e){
 			if(suffix == null) logger.error("Failed to load mesh for " + part.getRegistryName(), e);
 		}
-		return mesh;
+		return mesh.verticesG.isEmpty() ? Optional.empty() : Optional.of(mesh);
 	}
 
 	protected PartData getData(Part part){
@@ -243,6 +274,7 @@ public class PartsHelper implements InitializationComponent {
 		final AxisAlignedBB gbbox;
 		final boolean supportsRotation;
 		final ImmutableSet<VoxelPosition> voxels;
+		final ImmutableMap<ResourceLocation, Object> cpd;
 
 		final Set<ResourceLocation> connections;
 		final Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivity;
@@ -250,7 +282,7 @@ public class PartsHelper implements InitializationComponent {
 		public PartData(Part part, Voxelizer voxelizer){
 			logger.info("Reloading " + part.getRegistryName());
 			long time = System.currentTimeMillis();
-			mesh = loadMesh(part, null);
+			mesh = loadMesh(part, null).orElseGet(Mesh::new);
 			if(!mesh.verticesG.isEmpty()){
 				VertexGeometric first = mesh.verticesG.get(0);
 				MutableObject<AxisAlignedBB> bbox = new MutableObject<>(toBox(first));
@@ -260,15 +292,17 @@ public class PartsHelper implements InitializationComponent {
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
 			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
 			voxels = voxelizer.voxelize(mesh);
+			ImmutableMap.Builder<ResourceLocation, Object> cpdb = new ImmutableMap.Builder<>();
+			cpdl.forEach(idLoader -> idLoader.getRight().load(part, suffix -> loadMesh(part, suffix), voxelizer::voxelize, voxels).ifPresent(cd -> cpdb.put(idLoader.getLeft(), cd)));
+			cpd = cpdb.build();
 
 			// Connectivity
 			{
 				ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
 				ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
 				if(!voxels.isEmpty()) AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-					Mesh mesh = loadMesh(part, connection.getId().toString().replace(":", "-_-"));
-					if(!mesh.verticesG.isEmpty()){
-						ImmutableSet<VoxelPosition> cVoxels = voxelizer.voxelize(mesh);
+					loadMesh(part, connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> {
+						ImmutableSet<VoxelPosition> cVoxels = voxelizer.voxelize(cmesh);
 						cVoxels.stream().filter(voxels::contains).forEach(voxel -> {
 							for(EnumFacing side : EnumFacing.values()){
 								VoxelPosition vO = voxel.offsetLocal(side);
@@ -278,7 +312,7 @@ public class PartsHelper implements InitializationComponent {
 								}
 							}
 						});
-					}
+					});
 				});
 				this.connections = connectionsBuilder.build();
 				this.connectivity = connectivityBuilder.build();

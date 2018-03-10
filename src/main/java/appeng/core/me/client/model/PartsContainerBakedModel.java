@@ -2,7 +2,7 @@ package appeng.core.me.client.model;
 
 import appeng.core.lib.block.property.UnlistedPropertyGeneric;
 import appeng.core.me.AppEngME;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -25,6 +25,6 @@ public class PartsContainerBakedModel extends SimpleBakedModel {
 
 	@Override
 	public List<BakedQuad> getQuads(@Nullable IBlockState sstate, @Nullable EnumFacing side, long rand){
-		return side == null ? Optional.of(sstate).map(state -> (IExtendedBlockState) state).map(state -> state.getValue(UnlistedPropertyGeneric.BLOCKACESS).getTileEntity(state.getValue(UnlistedPropertyGeneric.POS))).map(tile -> tile.getCapability(PartsHelper.partsContainerCapability, null)).map(AppEngME.proxy.clientPartHelper().get()::bakeQuads).orElse(Collections.EMPTY_LIST) : Collections.EMPTY_LIST;
+		return side == null ? Optional.of(sstate).map(state -> (IExtendedBlockState) state).map(state -> state.getValue(UnlistedPropertyGeneric.BLOCKACESS).getTileEntity(state.getValue(UnlistedPropertyGeneric.POS))).map(tile -> tile.getCapability(PartsHelperImpl.partsContainerCapability, null)).map(AppEngME.proxy.clientPartHelper().get()::bakeQuads).orElse(Collections.EMPTY_LIST) : Collections.EMPTY_LIST;
 	}
 }

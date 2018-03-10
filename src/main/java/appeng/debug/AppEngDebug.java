@@ -17,7 +17,7 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
 import appeng.core.me.network.block.NetBlockDevicesManager;
 import appeng.core.me.network.block.NetBlockImpl;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import appeng.debug.config.DebugConfig;
 import appeng.debug.definitions.DebugBlockDefinitions;
 import appeng.debug.definitions.DebugItemDefinitions;
@@ -127,7 +127,7 @@ public class AppEngDebug {
 			RayTraceResult trace = RayTraceHelper.rayTrace(event.getEntityPlayer());
 			if(trace.hitInfo instanceof VoxelPosition){
 				VoxelPosition targetVoxel = VoxelRayTraceHelper.getOrApproximateHitVoxel(trace);
-				PartsAccess.Mutable worldPartsAccess = event.getEntityPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.getEntityPlayer().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 				worldPartsAccess.getPart(targetVoxel).flatMap(PartInfo::getState).ifPresent(s -> {
 					if(s instanceof ConnectionPassthrough){
 						ConnectionPassthrough cp = (ConnectionPassthrough) s;

@@ -6,7 +6,7 @@ import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -41,7 +41,7 @@ public class PartPlacerItem<P extends Part<P, S>, S extends Part.State<P, S>> ex
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
 		if(world.isRemote) return EnumActionResult.FAIL;
 		//FIXME Client-server desync. Possibly due to partial ticks between frames on client
-		PartsAccess.Mutable partsAccess = world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+		PartsAccess.Mutable partsAccess = world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 		PartPositionRotation positionRotation = partPlacementLogic.getPlacementPosition(player, RayTraceHelper.rayTrace(player));
 		if(partsAccess.canPlace(positionRotation, getPPart())){
 			S state = getSPart();

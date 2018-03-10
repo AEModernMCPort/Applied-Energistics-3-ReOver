@@ -21,19 +21,17 @@ import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.bootstrap.DeviceDefinitionBuilder;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
+import appeng.core.me.netio.PartMessage;
 import appeng.core.me.network.DevicesHelper;
 import appeng.core.me.network.GlobalNBDManagerImpl;
 import appeng.core.me.network.NBDIOImpl;
-import appeng.core.me.netio.PartMessage;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
-import appeng.core.me.parts.part.PartsHelper;
-import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import appeng.core.me.proxy.MEProxy;
 import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
 import net.minecraft.block.Block;
@@ -83,7 +81,7 @@ public class AppEngME implements IME {
 	private MEPartDefinitions partDefinitions;
 	private MEDeviceDefinitions deviceDefinitions;
 
-	private PartsHelper partsHelper;
+	private PartsHelperImpl partsHelper;
 	private DevicesHelper devicesHelper;
 	private NBDIOImpl nbdio;
 
@@ -118,17 +116,12 @@ public class AppEngME implements IME {
 		return deviceRegistry;
 	}
 
-	public PartsHelper getPartsHelper(){
+	public PartsHelperImpl getPartsHelper(){
 		return partsHelper;
 	}
 
 	public DevicesHelper getDevicesHelper(){
 		return devicesHelper;
-	}
-
-	@Override
-	public PartPlacementLogic createDefaultPlacementLogic(Part part){
-		return new DefaultPartPlacementLogic(part);
 	}
 
 	@Override
@@ -183,14 +176,14 @@ public class AppEngME implements IME {
 		this.partDefinitions.init(registry);
 		this.deviceDefinitions.init(registry);
 
-		initHandler.accept(partsHelper = new PartsHelper());
+		initHandler.accept(partsHelper = new PartsHelperImpl());
 		initHandler.accept(devicesHelper);
 		initHandler.accept(nbdio = new NBDIOImpl());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
 		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
-		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelper.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
+		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
 
 		MinecraftForge.EVENT_BUS.register(this);
 

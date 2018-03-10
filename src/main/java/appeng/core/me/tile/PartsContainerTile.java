@@ -1,7 +1,7 @@
 package appeng.core.me.tile;
 
 import appeng.core.me.parts.container.PartsContainer;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -24,7 +24,7 @@ public class PartsContainerTile extends TileEntity {
 	@Override
 	public void setWorld(World worldIn){
 		super.setWorld(worldIn);
-		container.setGlobalAccess(world.getCapability(PartsHelper.worldPartsAccessCapability, null), world);
+		container.setGlobalAccess(world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null), world);
 	}
 
 	@Override
@@ -54,13 +54,13 @@ public class PartsContainerTile extends TileEntity {
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing){
-		return capability == PartsHelper.partsContainerCapability;
+		return capability == PartsHelperImpl.partsContainerCapability;
 	}
 
 	@Nullable
 	@Override
 	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing){
-		return capability == PartsHelper.partsContainerCapability ? (T) container : null;
+		return capability == PartsHelperImpl.partsContainerCapability ? (T) container : null;
 	}
 
 	/*

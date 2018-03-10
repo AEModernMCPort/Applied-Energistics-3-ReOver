@@ -49,7 +49,7 @@ public class PartDefinitionBuilder<P extends Part<P, S>, S extends Part.State<P,
 
 	@Override
 	public PartDefinitionBuilder<P, S> createDefaultPlacerItem(){
-		return createDefaultPlacerItem(def -> AppEngME.INSTANCE.createDefaultPlacementLogic(def.maybe().get()));
+		return createDefaultPlacerItem(def -> AppEngME.INSTANCE.getPartsHelper().createDefaultPlacementLogic(def.maybe().get()));
 	}
 
 	@Override

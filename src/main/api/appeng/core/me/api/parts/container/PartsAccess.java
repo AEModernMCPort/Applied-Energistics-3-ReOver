@@ -61,11 +61,30 @@ public interface PartsAccess {
 
 		/**
 		 * Marks the part as dirty
+		 *
 		 * @param part part
 		 * @param <P>
 		 * @param <S>
 		 */
 		<P extends Part<P, S>, S extends Part.State<P, S>> void markDirty(@Nonnull S part);
+
+		/**
+		 * Called whenever the part is loaded
+		 *
+		 * @param part the part that was just loaded
+		 * @param <P>
+		 * @param <S>
+		 */
+		default <P extends Part<P, S>, S extends Part.State<P, S>> void onPartLoad(@Nonnull S part){}
+
+		/**
+		 * Called whenever the part is unloaded
+		 *
+		 * @param part the part that is unloaded
+		 * @param <P>
+		 * @param <S>
+		 */
+		default <P extends Part<P, S>, S extends Part.State<P, S>> void onPartUnload(@Nonnull S part){}
 
 		interface Syncable extends Mutable {
 

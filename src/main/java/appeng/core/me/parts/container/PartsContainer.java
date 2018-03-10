@@ -80,13 +80,19 @@ public class PartsContainer implements IPartsContainer {
 
 	@Override
 	public void onLoad(){
-		ownedParts.values().forEach(info -> info.getPart().onLoad((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation()));
+		ownedParts.values().forEach(info -> {
+			info.getPart().onLoad((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation());
+			info.getState().ifPresent(s -> globalAccess.<Part, Part.State>onPartLoad((Part.State) s));
+		});
 	}
 
 	//FIXME Not yet called when the world unloads
 	@Override
 	public void onUnload(){
-		ownedParts.values().forEach(info -> info.getPart().onUnload((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation()));
+		ownedParts.values().forEach(info -> {
+			info.getPart().onUnload((Part.State) info.getState().orElse(null), globalAccess, world, info.getPositionRotation());
+			info.getState().ifPresent(s -> globalAccess.<Part, Part.State>onPartUnload((Part.State) s));
+		});
 	}
 
 	/*

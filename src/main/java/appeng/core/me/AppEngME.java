@@ -15,7 +15,6 @@ import appeng.core.me.api.IME;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.bootstrap.PartDefinitionBuilder;
 import appeng.core.me.config.MEConfig;
 import appeng.core.me.definitions.*;
@@ -23,7 +22,6 @@ import appeng.core.me.netio.PartMessage;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.part.PartsHelperImpl;
-import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import appeng.core.me.proxy.MEProxy;
 import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
 import net.minecraft.block.Block;
@@ -96,13 +94,9 @@ public class AppEngME implements IME {
 		return partRegistry;
 	}
 
+	@Override
 	public PartsHelperImpl getPartsHelper(){
 		return partsHelper;
-	}
-
-	@Override
-	public PartPlacementLogic createDefaultPlacementLogic(Part part){
-		return new DefaultPartPlacementLogic(part);
 	}
 
 	@ModuleEventHandler

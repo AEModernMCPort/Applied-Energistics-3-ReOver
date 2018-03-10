@@ -12,7 +12,9 @@ import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.part.PartsHelper;
+import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.parts.container.WorldPartsAccess;
+import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import com.google.common.collect.ImmutableSet;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
@@ -58,6 +60,10 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 
 	private PartGroupsHelper groupsHelper = new PartGroupsHelper(this);
 
+	/*
+	 * Init
+	 */
+
 	@Override
 	public void preInit(){
 		MinecraftForge.EVENT_BUS.register(this);
@@ -70,6 +76,15 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 	public void postInit(){
 		loadMeshes();
 		groupsHelper.loadGroups();
+	}
+
+	/*
+	 * Impl
+	 */
+
+	@Override
+	public PartPlacementLogic createDefaultPlacementLogic(Part part){
+		return new DefaultPartPlacementLogic(part);
 	}
 
 	/*

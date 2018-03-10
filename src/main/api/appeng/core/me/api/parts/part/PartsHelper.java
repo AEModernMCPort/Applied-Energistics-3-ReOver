@@ -1,3 +1,9 @@
 package appeng.core.me.api.parts.part;
 
-public interface PartsHelper {}
+import appeng.core.me.api.parts.placement.PartPlacementLogic;
+
+public interface PartsHelper {
+
+	PartPlacementLogic createDefaultPlacementLogic(Part part);
+
+}

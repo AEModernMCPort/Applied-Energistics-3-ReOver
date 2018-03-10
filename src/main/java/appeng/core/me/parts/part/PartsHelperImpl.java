@@ -15,6 +15,7 @@ import appeng.core.me.api.parts.part.PartsHelper;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.owens.oobjloader.builder.Mesh;
 import com.owens.oobjloader.builder.VertexGeometric;
@@ -35,6 +36,8 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.logging.log4j.LogManager;
@@ -45,10 +48,7 @@ import org.joml.Vector3dc;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -81,6 +81,18 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 	/*
 	 * Impl
 	 */
+
+	protected List<Pair<ResourceLocation, CustomPartDataLoader<?>>> cpdl = new ArrayList<>();
+
+	@Override
+	public <T> void registerCustomPartDataLoader(ResourceLocation id, CustomPartDataLoader<T> loader){
+		cpdl.add(new ImmutablePair<>(id, loader));
+	}
+
+	@Override
+	public <T> Optional<T> getCustomPartData(Part part, ResourceLocation id){
+		return Optional.ofNullable((T) getData(part).cpd.get(id));
+	}
 
 	@Override
 	public PartPlacementLogic createDefaultPlacementLogic(Part part){
@@ -216,9 +228,9 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		return applyTransforms(getData(part).vbbox, positionRotation);
 	}
 
-	static class PartData {
+	class PartData {
 
-		private static AxisAlignedBB toBox(VertexGeometric vertex){
+		private AxisAlignedBB toBox(VertexGeometric vertex){
 			return new AxisAlignedBB(vertex.x, vertex.y, vertex.z, vertex.x, vertex.y, vertex.z);
 		}
 
@@ -227,6 +239,7 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		final AxisAlignedBB gbbox;
 		final boolean supportsRotation;
 		final ImmutableSet<VoxelPosition> voxels;
+		final ImmutableMap<ResourceLocation, Object> cpd;
 
 		public PartData(Part part, Voxelizer voxelizer){
 			logger.info("Reloading " + part.getRegistryName());
@@ -241,6 +254,9 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
 			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
 			voxels = voxelizer.voxelize(mesh);
+			ImmutableMap.Builder<ResourceLocation, Object> cpdb = new ImmutableMap.Builder<>();
+			cpdl.forEach(idLoader -> idLoader.getRight().load(part, suffix -> loadMesh(part, suffix), voxelizer::voxelize, voxels).ifPresent(cd -> cpdb.put(idLoader.getLeft(), cd)));
+			cpd = cpdb.build();
 			logger.info("Reloaded " + part.getRegistryName() + " in " + (System.currentTimeMillis() - time));
 		}
 

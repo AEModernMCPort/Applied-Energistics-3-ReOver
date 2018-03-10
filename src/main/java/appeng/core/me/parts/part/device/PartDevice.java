@@ -31,11 +31,13 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 	@Override
 	public void onLoad(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nonnull PartPositionRotation positionRotation){
 		part.networkCounterpart.assignPhysicalCounterpart(part);
+		part.world = theWorld;
 	}
 
 	@Override
 	public void onPlaced(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nullable World theWorld, @Nullable EntityPlayer placer, @Nullable EnumHand hand){
 		part.init();
+		part.world = theWorld;
 		if(theWorld != null) AppEngME.INSTANCE.getGlobalNBDManager().onDeviceCreatedTryToFindAdjacentNetBlock(theWorld, part);
 	}
 
@@ -55,6 +57,7 @@ public abstract class PartDevice<P extends PartDevice<P, S, N>, S extends PartDe
 		 */
 
 		protected N networkCounterpart;
+		protected World world;
 
 		@Override
 		public N getNetworkCounterpart(){

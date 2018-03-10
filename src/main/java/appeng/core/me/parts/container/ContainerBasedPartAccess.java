@@ -10,7 +10,7 @@ import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -26,7 +26,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 
 	// Util
 
-	protected PartsHelper partsHelper(){
+	protected PartsHelperImpl partsHelper(){
 		return AppEngME.INSTANCE.getPartsHelper();
 	}
 

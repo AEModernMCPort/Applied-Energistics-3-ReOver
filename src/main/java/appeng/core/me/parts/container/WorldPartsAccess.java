@@ -5,14 +5,12 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.definitions.IMEBlockDefinitions;
 import appeng.core.me.api.parts.PartEvent;
 import appeng.core.me.api.parts.PartPositionRotation;
-import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartInfo;
-import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.netio.PartMessage;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
@@ -28,7 +26,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Vector3d;
 
 import javax.annotation.Nonnull;
@@ -61,7 +58,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	@Override
 	protected Optional<IPartsContainer> getContainer(BlockPos pos){
-		return Optional.ofNullable(world.getTileEntity(pos)).map(tileEntity -> tileEntity.getCapability(PartsHelper.partsContainerCapability, null));
+		return Optional.ofNullable(world.getTileEntity(pos)).map(tileEntity -> tileEntity.getCapability(PartsHelperImpl.partsContainerCapability, null));
 	}
 
 	@Override
@@ -134,7 +131,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 		@SubscribeEvent
 		public static void worldTick(TickEvent.WorldTickEvent event){
 			if(event.phase == TickEvent.Phase.END){
-				PartsAccess.Mutable worldPartsAccess = event.world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+				PartsAccess.Mutable worldPartsAccess = event.world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 				if(worldPartsAccess instanceof WorldPartsAccess) ((WorldPartsAccess) worldPartsAccess).tickableParts.forEach(ITickable::update);
 			}
 		}

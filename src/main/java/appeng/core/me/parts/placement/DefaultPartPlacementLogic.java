@@ -7,7 +7,7 @@ import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.api.parts.placement.VoxelRayTraceHelper;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.*;
@@ -22,7 +22,7 @@ public class DefaultPartPlacementLogic<P extends Part<P, S>, S extends Part.Stat
 		this.part = part;
 	}
 
-	protected PartsHelper partsHelper(){
+	protected PartsHelperImpl partsHelper(){
 		return AppEngME.INSTANCE.getPartsHelper();
 	}
 

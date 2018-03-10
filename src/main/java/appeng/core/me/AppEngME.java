@@ -22,7 +22,7 @@ import appeng.core.me.definitions.*;
 import appeng.core.me.netio.PartMessage;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import appeng.core.me.proxy.MEProxy;
 import code.elix_x.excore.utils.net.packets.SmartNetworkWrapper;
@@ -70,7 +70,7 @@ public class AppEngME implements IME {
 	private MEEntityDefinitions entityDefinitions;
 	private MEPartDefinitions partDefinitions;
 
-	private PartsHelper partsHelper;
+	private PartsHelperImpl partsHelper;
 
 	@Override
 	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
@@ -96,7 +96,7 @@ public class AppEngME implements IME {
 		return partRegistry;
 	}
 
-	public PartsHelper getPartsHelper(){
+	public PartsHelperImpl getPartsHelper(){
 		return partsHelper;
 	}
 
@@ -136,12 +136,12 @@ public class AppEngME implements IME {
 		this.entityDefinitions.init(registry);
 		this.partDefinitions.init(registry);
 
-		initHandler.accept(partsHelper = new PartsHelper());
+		initHandler.accept(partsHelper = new PartsHelperImpl());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
 		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
-		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelper.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
+		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
 
 		MinecraftForge.EVENT_BUS.register(this);
 

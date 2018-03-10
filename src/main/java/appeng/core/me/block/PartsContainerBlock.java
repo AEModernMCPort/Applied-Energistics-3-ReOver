@@ -7,7 +7,7 @@ import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
-import appeng.core.me.parts.part.PartsHelper;
+import appeng.core.me.parts.part.PartsHelperImpl;
 import appeng.core.me.tile.PartsContainerTile;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -42,7 +42,7 @@ public class PartsContainerBlock extends TileBlockBase<PartsContainerTile> {
 	}
 
 	public Optional<IPartsContainer> getContainer(IBlockAccess world, BlockPos pos){
-		return Optional.ofNullable(world).map(w -> this.getTileEntity(w, pos)).map(tile -> tile.getCapability(PartsHelper.partsContainerCapability, null));
+		return Optional.ofNullable(world).map(w -> this.getTileEntity(w, pos)).map(tile -> tile.getCapability(PartsHelperImpl.partsContainerCapability, null));
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class PartsContainerBlock extends TileBlockBase<PartsContainerTile> {
 	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ){
 		RayTraceResult trace = RayTraceHelper.rayTrace(player);
 		if(trace.hitInfo instanceof VoxelPosition){
-			PartsAccess.Mutable partsAccess = world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+			PartsAccess.Mutable partsAccess = world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 			MutableObject<EnumActionResult> result = new MutableObject<>(EnumActionResult.PASS);
 			partsAccess.getPart((VoxelPosition) trace.hitInfo).ifPresent(part -> result.setValue(part.getPart().onRightClick(part.getState().orElse(null), partsAccess, world, player, hand)));
 			return result.getValue() == EnumActionResult.SUCCESS;

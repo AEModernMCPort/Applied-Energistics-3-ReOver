@@ -24,18 +24,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static appeng.core.me.parts.part.PartsHelper.logger;
+import static appeng.core.me.parts.part.PartsHelperImpl.logger;
 
 public class PartGroupsHelper<IntP extends Part<IntP, IntPS>, IntPS extends Part.State<IntP, IntPS>, IntPG extends PartGroup<IntPG, IntPGS>, IntPGS extends Part.State<IntPG, IntPGS>> implements InitializationComponent {
 
-	PartsHelper partsHelper;
+	PartsHelperImpl partsHelper;
 
 	Map<IntPG, Group<IntPG, IntPGS>> compiledGroups = new HashMap<>();
 	Multimap<Pair<IntP, PartRotation>, InGroup<IntP, IntPS>> inGroups = ArrayListMultimap.create();
 
 	private boolean compiled = false;
 
-	public PartGroupsHelper(PartsHelper partsHelper){
+	public PartGroupsHelper(PartsHelperImpl partsHelper){
 		this.partsHelper = partsHelper;
 	}
 

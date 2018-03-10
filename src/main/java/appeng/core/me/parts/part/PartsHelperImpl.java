@@ -11,6 +11,7 @@ import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
+import appeng.core.me.api.parts.part.PartsHelper;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import com.google.common.collect.ImmutableSet;
 import com.owens.oobjloader.builder.Mesh;
@@ -51,7 +52,7 @@ import java.util.stream.Stream;
 
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
 
-public class PartsHelper implements InitializationComponent {
+public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 
 	public static final Logger logger = LogManager.getLogger("Parts Helper");
 
@@ -109,7 +110,7 @@ public class PartsHelper implements InitializationComponent {
 	public void tryBreakBlock(BlockEvent.BreakEvent event){
 		Optional.ofNullable(event.getWorld().getTileEntity(event.getPos())).map(tile -> tile.getCapability(partsContainerCapability, null)).ifPresent(container -> {
 			RayTraceResult rayTrace = RayTraceHelper.rayTrace(event.getPlayer());
-			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelper.worldPartsAccessCapability, null);
+			PartsAccess.Mutable worldPartsAccess = event.getPlayer().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 			if(!event.getWorld().isRemote && rayTrace.hitInfo instanceof VoxelPosition && ((VoxelPosition) rayTrace.hitInfo).getGlobalPosition().equals(container.getGlobalPosition()))
 				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo).ifPresent(uuidPart -> uuidPart.getRight().getPart().onBroken(uuidPart.getRight().getState().orElse(null), worldPartsAccess, event.getWorld(), event.getPlayer()));
 			event.setCanceled(true);

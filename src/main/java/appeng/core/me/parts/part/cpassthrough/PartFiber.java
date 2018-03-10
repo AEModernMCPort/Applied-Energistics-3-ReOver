@@ -117,7 +117,7 @@ public abstract class PartFiber<P extends PartFiber<P, S>, S extends PartFiber.F
 		}
 
 		protected boolean canConnect(MicroState other){
-			return getPart().color.canConnect(other.getPart().color) && AppEngME.INSTANCE.getPartsHelper().haveConnectionsInCommon(getPart(), other.getPart());
+			return getPart().color.canConnect(other.getPart().color) && AppEngME.INSTANCE.getDevicesHelper().haveConnectionsInCommon(getPart(), other.getPart());
 		}
 
 		@Nullable

@@ -6,15 +6,11 @@ import appeng.core.lib.client.resource.ClientResourceHelper;
 import appeng.core.lib.raytrace.RayTraceHelper;
 import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
-import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
-import appeng.core.me.network.connect.ConnectionsParams;
-import appeng.core.me.parts.container.WorldPartsAccess;
-import com.google.common.collect.*;
 import appeng.core.me.api.parts.part.PartsHelper;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import appeng.core.me.parts.container.WorldPartsAccess;
@@ -53,7 +49,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -207,36 +202,6 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		return getVoxels(part, positionRotation).filter(voxel -> gHandlerPos.equals(voxel.getGlobalPosition())).map(VoxelPosition::getLocalPosition);
 	}
 
-	public boolean haveConnectionsInCommon(Part p1, Part p2){
-		PartData d2 = getData(p2);
-		for(ResourceLocation c1 : getData(p1).connections) if(d2.connections.contains(c1)) return true;
-		return false;
-	}
-
-	public ConnectionsParams getConnectionParams(Part.State part, Function<Connection, Comparable<?>> c2p){
-		Map<Connection, Comparable<?>> params = new HashMap<>();
-		getData(part.getPart()).connections.forEach(cId -> {
-			Connection c = AppEngME.INSTANCE.getDevicesHelper().getConnection(cId);
-			params.put(c, c2p.apply(c));
-		});
-		return new ConnectionsParams(params);
-	}
-
-	public boolean canConnect(Part part, PartPositionRotation positionRotation, Connection connection, VoxelPosition voxel, EnumFacing sideFrom){
-		return getData(part).connectivity.containsEntry(new ImmutablePair<>(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom)), connection.getId());
-	}
-
-	public Multimap<Pair<VoxelPosition, EnumFacing>, Connection> getConnections(Part part, PartPositionRotation positionRotation){
-		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections = getData(part).connectivity;
-		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rotated = HashMultimap.create();
-		connections.keySet().forEach(voxelSide -> rotated.putAll(applyTransforms(voxelSide.getLeft(), voxelSide.getRight(), positionRotation), Iterables.transform(connections.get(voxelSide), AppEngME.INSTANCE.getDevicesHelper()::getConnection)));
-		return rotated;
-	}
-
-	protected Pair<VoxelPosition, EnumFacing> applyTransforms(VoxelPosition voxel, EnumFacing sideFrom, PartPositionRotation positionRotation){
-		return new ImmutablePair<>(positionRotation.getRotation().rotate(voxel).add(positionRotation.getRotationCenterPosition()), positionRotation.getRotation().rotate(sideFrom));
-	}
-
 	public NBTTagCompound serialize(Part.State part){
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setTag("id", ResourceLocationHelper.serialize(part.getPart().getRegistryName()));
@@ -276,9 +241,6 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		final ImmutableSet<VoxelPosition> voxels;
 		final ImmutableMap<ResourceLocation, Object> cpd;
 
-		final Set<ResourceLocation> connections;
-		final Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivity;
-
 		public PartData(Part part, Voxelizer voxelizer){
 			logger.info("Reloading " + part.getRegistryName());
 			long time = System.currentTimeMillis();
@@ -295,29 +257,6 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 			ImmutableMap.Builder<ResourceLocation, Object> cpdb = new ImmutableMap.Builder<>();
 			cpdl.forEach(idLoader -> idLoader.getRight().load(part, suffix -> loadMesh(part, suffix), voxelizer::voxelize, voxels).ifPresent(cd -> cpdb.put(idLoader.getLeft(), cd)));
 			cpd = cpdb.build();
-
-			// Connectivity
-			{
-				ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
-				ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
-				if(!voxels.isEmpty()) AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-					loadMesh(part, connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> {
-						ImmutableSet<VoxelPosition> cVoxels = voxelizer.voxelize(cmesh);
-						cVoxels.stream().filter(voxels::contains).forEach(voxel -> {
-							for(EnumFacing side : EnumFacing.values()){
-								VoxelPosition vO = voxel.offsetLocal(side);
-								if(cVoxels.contains(vO) && !voxels.contains(vO)){
-									connectionsBuilder.add(connection.getId());
-									connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
-								}
-							}
-						});
-					});
-				});
-				this.connections = connectionsBuilder.build();
-				this.connectivity = connectivityBuilder.build();
-			}
-
 			logger.info("Reloaded " + part.getRegistryName() + " in " + (System.currentTimeMillis() - time));
 		}
 

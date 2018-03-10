@@ -71,7 +71,7 @@ public class DevicesHelper implements InitializationComponent {
 		});
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(WORLDINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
 			ImmutableMultimap.Builder<VoxelPosition, EnumFacing> interfaces = new ImmutableMultimap.Builder<>();
-			meshLoader.apply("wi").ifPresent(mesh -> forEachInterface(voxelizer.apply(mesh), rootMeshVoxels, interfaces::put));
+			meshLoader.apply("wi").ifPresent(wimesh -> forEachInterface(voxelizer.apply(wimesh), rootMeshVoxels, interfaces::put));
 			Multimap<VoxelPosition, EnumFacing> ifm = interfaces.build();
 			return ifm.isEmpty() ? Optional.empty() : Optional.of(new WorldInterface(ifm));
 		});
@@ -84,7 +84,7 @@ public class DevicesHelper implements InitializationComponent {
 		inter2faces.stream().filter(in::contains).forEach(inVoxel -> {
 			for(EnumFacing side : EnumFacing.values()){
 				VoxelPosition outVoxel = inVoxel.offsetLocal(side);
-				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel))interfaceConsumer.accept(inVoxel, side);
+				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel)) interfaceConsumer.accept(inVoxel, side);
 			}
 		});
 	}
@@ -238,6 +238,10 @@ public class DevicesHelper implements InitializationComponent {
 
 	public Stream<BlockPos> getAllWITargetBlocks(Part.State part){
 		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> Optional.of(p.getLeft().offsetLocal(p.getRight())).map(VoxelPosition::getGlobalPosition).filter(gp -> !gp.equals(p.getLeft().getGlobalPosition())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+	}
+
+	public void forEachWI(Part.State part, BiConsumer<VoxelPosition, EnumFacing> vsc){
+		getWorldInterfaces(part.getPart()).ifPresent(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).forEach(vs -> vsc.accept(vs.getLeft(), vs.getRight())));
 	}
 
 	protected static final ResourceLocation WORLDINTERFACELOADER = new ResourceLocation(AppEng.MODID, "wi");

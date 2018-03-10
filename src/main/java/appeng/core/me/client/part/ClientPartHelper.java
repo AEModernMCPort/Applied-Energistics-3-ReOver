@@ -134,6 +134,7 @@ public class ClientPartHelper {
 							VoxelPosition v = vS.getLeft();
 							drawFilledBox(v.getBB().intersect(v.offsetLocal(vS.getRight()).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);
 						});
+						info.getState().ifPresent(st -> AppEngME.INSTANCE.getDevicesHelper().forEachWI(st, (v, s) -> drawFilledBox(v.getBB().intersect(v.offsetLocal(s).getBB()), event.getPlayer(), event.getPartialTicks(), new RGBA(0, 255, 255, 187), Mode.OUTLINE)));
 					}
 				});
 

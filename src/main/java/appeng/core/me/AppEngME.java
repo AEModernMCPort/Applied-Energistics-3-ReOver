@@ -159,6 +159,7 @@ public class AppEngME implements IME {
 		config = configLoader.configuration();
 		config.registerColors();
 
+		partsHelper = new PartsHelperImpl();
 		devicesHelper = new DevicesHelper();
 
 		registry = event.factory(initHandler, proxy);
@@ -176,7 +177,7 @@ public class AppEngME implements IME {
 		this.partDefinitions.init(registry);
 		this.deviceDefinitions.init(registry);
 
-		initHandler.accept(partsHelper = new PartsHelperImpl());
+		initHandler.accept(partsHelper);
 		initHandler.accept(devicesHelper);
 		initHandler.accept(nbdio = new NBDIOImpl());
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);

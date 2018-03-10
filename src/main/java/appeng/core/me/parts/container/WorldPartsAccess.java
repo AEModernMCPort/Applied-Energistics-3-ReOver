@@ -84,6 +84,20 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 	}
 
 	/*
+	 * On load - unload
+	 */
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void onPartLoad(@Nonnull S part){
+		if(part instanceof ITickable) tickableParts.add((ITickable) part);
+	}
+
+	@Override
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void onPartUnload(@Nonnull S part){
+		if(part instanceof ITickable) tickableParts.remove(part);
+	}
+
+	/*
 	 * Sync
 	 */
 

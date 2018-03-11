@@ -39,13 +39,13 @@ public class PartsContainerTile extends TileEntity {
 
 	@Override
 	public void onLoad(){
-		if(!world.isRemote) container.onLoad();
+		container.onLoad();
 	}
 
 	//FIXME Not called when the world unloads (like exit world) - but container.onUnload must still be called.
 	@Override
 	public void onChunkUnload(){
-		if(!world.isRemote) container.onUnload();
+		container.onUnload();
 	}
 
 	/*

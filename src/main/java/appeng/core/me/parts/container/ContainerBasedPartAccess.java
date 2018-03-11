@@ -104,7 +104,7 @@ public abstract class ContainerBasedPartAccess implements PartsAccess.Mutable {
 					container.get().set(positionRotation.getPosition().getGlobalPosition(), partUUID, partsAccess.partsHelper().getVoxels(pos, part.getPart(), positionRotation));
 				});
 				partsAccess.getContainer(positionRotation.getPosition().getGlobalPosition()).get().setOwnedPart(partUUID, new PartInfoImpl(part.getPart(), positionRotation, part));
-				part.assignPosRot(positionRotation);
+				part.assignInfo(partUUID, positionRotation);
 				event.setCreated(partUUID);
 				partsAccess.<Part, Part.State>markDirty(part);
 			}

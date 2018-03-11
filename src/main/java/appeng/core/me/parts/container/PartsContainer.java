@@ -340,7 +340,8 @@ public class PartsContainer implements IPartsContainer {
 		ownedParts.clear();
 		nbt.getTagList("owned", 10).forEach(bnext -> {
 			NBTTagCompound next = (NBTTagCompound) bnext;
-			ownedParts.put(PartUUID.createPartUUID(next.getCompoundTag("uuid")), PartInfoImpl.deserializeNBT(next.getCompoundTag("info")));
+			PartUUID puuid = PartUUID.createPartUUID(next.getCompoundTag("uuid"));
+			ownedParts.put(puuid, PartInfoImpl.deserializeNBT(next.getCompoundTag("info"), puuid));
 		});
 	}
 

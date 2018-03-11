@@ -1,6 +1,7 @@
 package appeng.core.me.api.parts.part;
 
 import appeng.core.me.api.parts.PartPositionRotation;
+import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.container.PartsAccess;
 import com.google.common.collect.Lists;
 import net.minecraft.entity.player.EntityPlayer;
@@ -88,7 +89,10 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 		@Nonnull
 		PartPositionRotation getAssignedPosRot();
 
-		void assignPosRot(@Nonnull PartPositionRotation positionRotation);
+		@Nonnull
+		PartUUID getAssignedUUID();
+
+		void assignInfo(@Nonnull PartUUID uuid, @Nonnull PartPositionRotation positionRotation);
 
 		/**
 		 * Get the mesh to render for this state

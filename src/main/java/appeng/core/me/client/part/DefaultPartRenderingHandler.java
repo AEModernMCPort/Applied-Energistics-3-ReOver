@@ -11,6 +11,8 @@ import code.elix_x.excomms.pipeline.Pipeline;
 import code.elix_x.excomms.pipeline.PipelineElement;
 import code.elix_x.excomms.pipeline.list.ListPipelineElement;
 import code.elix_x.excore.utils.client.render.model.UnpackedBakedQuad;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -18,8 +20,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import org.joml.Matrix4f;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSPERBLOCKAXISF;
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.VOXELSPERBLOCKAXISI;
@@ -41,6 +45,15 @@ public class DefaultPartRenderingHandler<P extends Part<P, S>, S extends Part.St
 	@Override
 	public Collection<BakedQuad> getQuads(S state, PartPositionRotation partPositionRotation){
 		return new Pipeline<List<BakedQuad>, List<BakedQuad>>(ListPipelineElement.wrapperE(new Pipeline<>((PipelineElement<BakedQuad, UnpackedBakedQuad>) UnpackedBakedQuad::unpack, new QuadMatrixTransformer(getTransforms(state, partPositionRotation)), (PipelineElement<UnpackedBakedQuad, BakedQuad>) quad -> quad.pack(DefaultVertexFormats.BLOCK)))).pipe(getQuadsRaw(state, partPositionRotation));
+	}
+
+	@Override
+	public Optional<Dynamic<P, S>> createDynamicRH(@Nonnull S part){
+		return Optional.of(partialTicks -> {
+			GlStateManager.disableTexture2D();
+			RenderGlobal.drawBoundingBox(0, 0, 0, 1, 1, 1, 0.5f, 0.5f, 0.5f, 0.83f);
+			GlStateManager.enableTexture2D();
+		});
 	}
 
 }

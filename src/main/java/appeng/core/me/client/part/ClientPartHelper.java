@@ -65,7 +65,7 @@ public class ClientPartHelper {
 
 	protected Map<Part, Optional<PartRenderingHandler>> renderingHandlers = new HashMap<>();
 
-	public PartRenderingHandler getRenderingHandler(Part part){
+	public <P extends Part<P, S>, S extends Part.State<P, S>> PartRenderingHandler<P, S> getRenderingHandler(Part part){
 		return renderingHandlers.get(part).orElse(DEFAULTPARTRENDERINGHANDLER);
 	}
 
@@ -106,7 +106,7 @@ public class ClientPartHelper {
 
 	public List<BakedQuad> bakeQuads(IPartsContainer container){
 		List<BakedQuad> quads = new ArrayList<>();
-		container.getOwnedParts().forEach((uuid, info) -> quads.addAll(getRenderingHandler(info.getPart()).getQuads((Part.State) info.getState().orElse(null), info.getPositionRotation())));
+		container.getOwnedParts().forEach((uuid, info) -> quads.addAll(this.<Part, Part.State>getRenderingHandler(info.getPart()).getQuads((Part.State) info.getState().orElse(null), info.getPositionRotation())));
 		return quads;
 	}
 

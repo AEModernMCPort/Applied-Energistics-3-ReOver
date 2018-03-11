@@ -84,17 +84,42 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 	}
 
 	/*
-	 * On load - unload
+	 * Create, remove, load, unload...
 	 */
+
+	protected <P extends Part<P, S>, S extends Part.State<P, S>> void onPartAppeared(@Nonnull S part){
+		if(!world.isRemote) if(part instanceof ITickable) tickableParts.add((ITickable) part);
+	}
+
+	protected <P extends Part<P, S>, S extends Part.State<P, S>> void onPartDisappeared(@Nonnull S part){
+		if(!world.isRemote) if(part instanceof ITickable) tickableParts.remove(part);
+	}
+
+	protected <P extends Part<P, S>, S extends Part.State<P, S>> void onPartCreated(@Nonnull S part, @Nonnull PartPositionRotation positionRotation){
+		if(!world.isRemote) markDirty(part);
+		else world.markBlockRangeForRenderUpdate(positionRotation.getPosition().getGlobalPosition(), positionRotation.getPosition().getGlobalPosition());
+
+		onPartAppeared(part);
+	}
+
+	protected <P extends Part<P, S>, S extends Part.State<P, S>> void onPartRemoved(@Nonnull S part){
+		if(!world.isRemote) sendPart(part, true);
+		//TODO Add once BlockBreakEvent is fired on client
+		/*else {
+			event.getRemoved().map(pair -> pair.getRight().getPositionRotation().getPosition().getGlobalPosition()).ifPresent(pos -> partsAccess.world.markBlockRangeForRenderUpdate(pos, pos));
+		}*/
+
+		onPartDisappeared(part);
+	}
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void onPartLoad(@Nonnull S part){
-		if(!world.isRemote) if(part instanceof ITickable) tickableParts.add((ITickable) part);
+		onPartAppeared(part);
 	}
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void onPartUnload(@Nonnull S part){
-		if(!world.isRemote) if(part instanceof ITickable) tickableParts.remove(part);
+		onPartDisappeared(part);
 	}
 
 	/*
@@ -153,33 +178,13 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 		@SubscribeEvent(priority = EventPriority.LOWEST)
 		public static <P extends Part<P, S>, S extends Part.State<P, S>> void onPartSet(PartEvent.Set e){
 			PartEvent.Set<P, S> event = e;
-			if(event.getPartsAccess() instanceof WorldPartsAccess && event.getCreated().isPresent()){
-				WorldPartsAccess partsAccess = (WorldPartsAccess) event.getPartsAccess();
-				if(!partsAccess.world.isRemote){
-					if(event.getState() != null) partsAccess.markDirty(event.getState());
-					if(event.getState() instanceof ITickable) partsAccess.tickableParts.add((ITickable) event.getState());
-				} else {
-					partsAccess.world.markBlockRangeForRenderUpdate(event.getPositionRotation().getPosition().getGlobalPosition(), event.getPositionRotation().getPosition().getGlobalPosition());
-				}
-			}
+			if(event.getPartsAccess() instanceof WorldPartsAccess && event.getCreated().isPresent()) ((WorldPartsAccess) event.getPartsAccess()).onPartCreated(event.getState(), event.getPositionRotation());
 		}
 
 		@SubscribeEvent(priority = EventPriority.LOWEST)
 		public static <P extends Part<P, S>, S extends Part.State<P, S>> void onPartRemove(PartEvent.Remove e){
 			PartEvent.Remove<P, S> event = e;
-			if(event.getPartsAccess() instanceof WorldPartsAccess){
-				WorldPartsAccess partsAccess = (WorldPartsAccess) event.getPartsAccess();
-				if(!partsAccess.world.isRemote){
-					event.getRemoved().flatMap(pair -> pair.getRight().getState()).ifPresent(part -> {
-						partsAccess.sendPart(part, true);
-						if(part instanceof ITickable) partsAccess.tickableParts.remove(part);
-					});
-				}
-				//TODO Add once BlockBreakEvent is fired on client
-				/*else {
-					event.getRemoved().map(pair -> pair.getRight().getPositionRotation().getPosition().getGlobalPosition()).ifPresent(pos -> partsAccess.world.markBlockRangeForRenderUpdate(pos, pos));
-				}*/
-			}
+			if(event.getPartsAccess() instanceof WorldPartsAccess) event.getRemoved().flatMap(ui -> ui.getRight().getState()).ifPresent(((WorldPartsAccess) event.getPartsAccess())::onPartRemoved);
 		}
 
 	}

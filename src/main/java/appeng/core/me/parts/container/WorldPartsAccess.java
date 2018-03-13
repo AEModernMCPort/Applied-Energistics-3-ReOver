@@ -11,16 +11,19 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.netio.PartMessage;
 import appeng.core.me.parts.part.PartsHelperImpl;
+import appeng.core.me.tile.PartsContainerTile;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -176,6 +179,11 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 		public static <P extends Part<P, S>, S extends Part.State<P, S>> void onPartRemove(PartEvent.Remove e){
 			PartEvent.Remove<P, S> event = e;
 			if(event.getPartsAccess() instanceof WorldPartsAccess) event.getRemoved().flatMap(ui -> ui.getRight().getState()).ifPresent(((WorldPartsAccess) event.getPartsAccess())::onPartRemoved);
+		}
+
+		@SubscribeEvent
+		public static void onWorldUnload(WorldEvent.Unload event){
+			event.getWorld().loadedTileEntityList.stream().filter(t -> t instanceof PartsContainerTile).forEach(TileEntity::onChunkUnload);
 		}
 
 	}

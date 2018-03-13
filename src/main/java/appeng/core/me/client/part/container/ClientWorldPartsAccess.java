@@ -9,12 +9,16 @@ import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.client.part.ClientPartHelper;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.part.PartsHelperImpl;
+import appeng.core.me.tile.PartsContainerTile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -77,6 +81,15 @@ public class ClientWorldPartsAccess extends WorldPartsAccess {
 					GlStateManager.popMatrix();
 				});
 				GlStateManager.popMatrix();
+			}
+		}
+
+		@SubscribeEvent(priority = EventPriority.LOW)
+		public static void onWorldUnload(WorldEvent.Unload event){
+			if(event.getWorld().isRemote){
+				ClientWorldPartsAccess partsAccess = (ClientWorldPartsAccess) event.getWorld().getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
+				partsAccess.created.removeIf(partsAccess.removed::contains);
+				partsAccess.removed.stream().map(partsAccess.dynamicRHs::remove).filter(Objects::nonNull).forEach(PartRenderingHandler.Dynamic::cleanup);
 			}
 		}
 

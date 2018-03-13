@@ -26,7 +26,7 @@ import java.util.*;
 
 public class ClientWorldPartsAccess extends WorldPartsAccess {
 
-	protected Map<PartUUID, Pair<Part.State, PartRenderingHandler.Dynamic>> dynamicRHs = new HashMap<>();
+	protected Map<Part.State, PartRenderingHandler.Dynamic> dynamicRHs = new HashMap<>();
 	protected List<Part.State> created = new ArrayList<>();
 	protected List<Part.State> removed = new ArrayList<>();
 
@@ -55,9 +55,9 @@ public class ClientWorldPartsAccess extends WorldPartsAccess {
 			ClientWorldPartsAccess partsAccess = (ClientWorldPartsAccess) Minecraft.getMinecraft().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 			partsAccess.created.stream().filter(p -> !partsAccess.removed.contains(p)).forEach(p -> cph.<P, S>getRenderingHandler(p.getPart()).createDynamicRH((S) p).ifPresent(drh -> {
 				drh.init();
-				partsAccess.dynamicRHs.put(p.getAssignedUUID(), new ImmutablePair<>(p, drh));
+				partsAccess.dynamicRHs.put(p, drh);
 			}));
-			partsAccess.removed.stream().map(Part.State::getAssignedUUID).map(partsAccess.dynamicRHs::remove).filter(Objects::nonNull).map(Pair::getRight).forEach(PartRenderingHandler.Dynamic::cleanup);
+			partsAccess.removed.stream().map(partsAccess.dynamicRHs::remove).filter(Objects::nonNull).forEach(PartRenderingHandler.Dynamic::cleanup);
 			partsAccess.created.clear();
 			partsAccess.removed.clear();
 
@@ -65,14 +65,14 @@ public class ClientWorldPartsAccess extends WorldPartsAccess {
 				GlStateManager.pushMatrix();
 				EntityPlayer player = Minecraft.getMinecraft().player;
 				GlStateManager.translate(-(player.prevPosX + (player.posX - player.prevPosX) * event.getPartialTicks()), -(player.prevPosY + (player.posY - player.prevPosY) * event.getPartialTicks()), -(player.prevPosZ + (player.posZ - player.prevPosZ) * event.getPartialTicks()));
-				partsAccess.dynamicRHs.forEach((puuid, partDrh) -> {
+				partsAccess.dynamicRHs.forEach((part, drh) -> {
 					GlStateManager.pushMatrix();
-					PartPositionRotation positionRotation = partDrh.getLeft().getAssignedPosRot();
+					PartPositionRotation positionRotation = part.getAssignedPosRot();
 					Vector3d trans = positionRotation.getPosition().asVector3d();
 					GlStateManager.translate(trans.x, trans.y, trans.z);
 					GlStateManager.pushMatrix();
 					GlStateManager.multMatrix(positionRotation.getRotation().getRotationF().get(BufferUtils.createFloatBuffer(16)));
-					partDrh.getRight().render(event.getPartialTicks());
+					drh.render(event.getPartialTicks());
 					GlStateManager.popMatrix();
 					GlStateManager.popMatrix();
 				});

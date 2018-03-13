@@ -3,8 +3,6 @@ package appeng.core.me.tile;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -95,18 +93,4 @@ public class PartsContainerTile extends TileEntity {
 		return serializeNBT();
 	}
 
-	//TODO Remove once BlockBreakEvent is fired on client
-
-	@Nullable
-	@Override
-	@Deprecated
-	public SPacketUpdateTileEntity getUpdatePacket(){
-		return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
-	}
-
-	@Override
-	@Deprecated
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
-		deserializeNBT(pkt.getNbtCompound());
-	}
 }

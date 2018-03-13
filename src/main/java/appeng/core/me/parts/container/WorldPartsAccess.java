@@ -77,12 +77,6 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 		world.setBlockState(pos, Blocks.AIR.getDefaultState());
 	}
 
-	//TODO Remove once BlockBreakEvent is fired on client
-	@Override
-	protected void markBlockRangeForUpdate(BlockPos pos1, BlockPos pos2){
-		world.markBlockRangeForRenderUpdate(pos1, pos2);
-	}
-
 	/*
 	 * Create, remove, load, unload...
 	 */

@@ -3,7 +3,6 @@ package appeng.core.me.parts.container;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.container.PartInfo;
-import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.part.Part;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -46,13 +45,13 @@ public final class PartInfoImpl<P extends Part<P, S>, S extends Part.State<P, S>
 	}
 
 	@Nonnull
-	public static <P extends Part<P, S>, S extends Part.State<P, S>> PartInfo<P, S> deserializeNBT(NBTTagCompound nbt, PartUUID uuid){
+	public static <P extends Part<P, S>, S extends Part.State<P, S>> PartInfo<P, S> deserializeNBT(NBTTagCompound nbt){
 		PartPositionRotation positionRotation = PartPositionRotation.fromNBT(nbt.getCompoundTag("posRot"));
 		P part = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(new ResourceLocation(nbt.getString("part")));
 		S state = null;
 		if(nbt.hasKey("state")){
 			(state = part.createNewState()).deserializeNBT(nbt.getCompoundTag("state"));
-			state.assignInfo(uuid, positionRotation);
+			state.assignPosRot(positionRotation);
 		}
 		return new PartInfoImpl<>(part, positionRotation, state);
 	}

@@ -7,7 +7,6 @@ import appeng.core.me.api.parts.PartEvent;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartInfo;
-import appeng.core.me.api.parts.container.PartUUID;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.netio.PartMessage;
@@ -129,7 +128,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	protected <P extends Part<P, S>, S extends Part.State<P, S>> void sendPart(@Nonnull S part, boolean remove){
 		Vector3d gp = part.getAssignedPosRot().getPosition().asVector3d();
-		AppEngME.INSTANCE.net.sendToAllAround(new PartMessage(part.getAssignedUUID(), part.getAssignedPosRot(), remove ? null : part.getPart().getRegistryName(), remove ? null : part.serializeSyncNBT()), new NetworkRegistry.TargetPoint(world.provider.getDimension(), gp.x, gp.y, gp.z, 128 /*TODO Find correct range*/));
+		AppEngME.INSTANCE.net.sendToAllAround(new PartMessage(part.getAssignedPosRot(), remove ? null : part.getPart().getRegistryName(), remove ? null : part.serializeSyncNBT()), new NetworkRegistry.TargetPoint(world.provider.getDimension(), gp.x, gp.y, gp.z, 128 /*TODO Find correct range*/));
 	}
 
 	@Override
@@ -139,14 +138,11 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 	}
 
 	@Override
-	public <P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartUUID uuid, @Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData){
+	public <P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData){
 		if(partId == null || newData == null) removePart(positionRotation.getRotationCenterPosition());
 		else {
 			S state = this.<P, S>getPart(positionRotation.getRotationCenterPosition()).flatMap(PartInfo::getState).orElse(null);
-			if(state == null){
-				this.setPart(positionRotation, state = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(partId).createNewState());
-				state.assignInfo(uuid, positionRotation);
-			}
+			if(state == null) this.setPart(positionRotation, state = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(partId).createNewState());
 			state.deserializeSyncNBT(newData);
 			world.markBlockRangeForRenderUpdate(state.getAssignedPosRot().getPosition().getGlobalPosition(), state.getAssignedPosRot().getPosition().getGlobalPosition());
 		}

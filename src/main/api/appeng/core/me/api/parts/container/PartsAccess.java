@@ -93,15 +93,13 @@ public interface PartsAccess {
 			 * - If the part does not exist, create from <tt>partId</tt> and {@linkplain Part.State#deserializeNBT(NBTBase) deserialize nbt}<br>
 			 * - If the part exists, simply {@linkplain Part.State#deserializeNBT(NBTBase) deserialize nbt}<br>
 			 * - If <tt>newData</tt> is null, remove the part
-			 *
-			 * @param uuid             uuid assigned to the part
 			 * @param positionRotation position & rotation of the part
-			 * @param partId           id of the part, or <tt>null</tt> if the part should be removed
-			 * @param newData          new part data, or <tt>null</tt> if the part should be removed
+			 * @param partId id of the part, or <tt>null</tt> if the part should be removed
+			 * @param newData new part data, or <tt>null</tt> if the part should be removed
 			 * @param <P>
 			 * @param <S>
 			 */
-			<P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartUUID uuid, @Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData);
+			<P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData);
 
 		}
 

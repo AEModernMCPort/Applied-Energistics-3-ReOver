@@ -137,7 +137,7 @@ public class AppEngME implements IME {
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
 		net = new SmartNetworkWrapper("AE3" + "|"+ NAME);
-		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.uuid, m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
+		net.registerMessage3(m -> () -> Optional.ofNullable(Minecraft.getMinecraft().world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null)).ifPresent(access -> access.receiveUpdate(m.posRot, m.id, m.data)), PartMessage.class, Side.CLIENT);
 
 		MinecraftForge.EVENT_BUS.register(this);
 

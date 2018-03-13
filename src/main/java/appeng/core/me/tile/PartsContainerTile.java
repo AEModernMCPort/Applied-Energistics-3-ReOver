@@ -93,4 +93,13 @@ public class PartsContainerTile extends TileEntity {
 		return serializeNBT();
 	}
 
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag){
+		//This can be called when many blocks change, so might as well unload the container (to cleanup dynamic renderers) just in case
+		container.onUnload();
+		super.handleUpdateTag(tag);
+		//this.onLoad, on client, is called before the update tag is handled :(
+		container.onLoad();
+	}
+
 }

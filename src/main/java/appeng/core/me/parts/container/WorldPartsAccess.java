@@ -98,10 +98,7 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	protected <P extends Part<P, S>, S extends Part.State<P, S>> void onPartRemoved(@Nonnull S part){
 		if(!world.isRemote) sendPart(part, true);
-		//TODO Add once BlockBreakEvent is fired on client
-		/*else {
-			event.getRemoved().map(pair -> pair.getRight().getPositionRotation().getPosition().getGlobalPosition()).ifPresent(pos -> partsAccess.world.markBlockRangeForRenderUpdate(pos, pos));
-		}*/
+		else world.markBlockRangeForRenderUpdate(part.getAssignedPosRot().getPosition().getGlobalPosition(), part.getAssignedPosRot().getPosition().getGlobalPosition());
 
 		onPartDisappeared(part);
 	}
@@ -133,9 +130,9 @@ public class WorldPartsAccess extends ContainerBasedPartAccess implements PartsA
 
 	@Override
 	public <P extends Part<P, S>, S extends Part.State<P, S>> void receiveUpdate(@Nonnull PartPositionRotation positionRotation, @Nullable ResourceLocation partId, @Nullable NBTTagCompound newData){
-		if(partId == null || newData == null) removePart(positionRotation.getRotationCenterPosition());
+		if(partId == null || newData == null) removePart(positionRotation.getPosition());
 		else {
-			S state = this.<P, S>getPart(positionRotation.getRotationCenterPosition()).flatMap(PartInfo::getState).orElse(null);
+			S state = this.<P, S>getPart(positionRotation.getPosition()).flatMap(PartInfo::getState).orElse(null);
 			if(state == null) this.setPart(positionRotation, state = AppEngME.INSTANCE.<P, S>getPartRegistry().getValue(partId).createNewState());
 			state.deserializeSyncNBT(newData);
 			world.markBlockRangeForRenderUpdate(state.getAssignedPosRot().getPosition().getGlobalPosition(), state.getAssignedPosRot().getPosition().getGlobalPosition());

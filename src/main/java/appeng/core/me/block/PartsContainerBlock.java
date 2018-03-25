@@ -101,4 +101,15 @@ public class PartsContainerBlock extends TileBlockBase<PartsContainerTile> {
 		}
 		return false;
 	}
+
+	/*
+	 * NO!
+	 * NEVER!
+	 */
+
+	@Override
+	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest){
+		return false;
+	}
+
 }

@@ -13,6 +13,7 @@ import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
 import appeng.core.me.api.parts.part.PartsHelper;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
+import appeng.core.me.client.part.container.ClientWorldPartsAccess;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.placement.DefaultPartPlacementLogic;
 import com.google.common.collect.ImmutableMap;
@@ -113,7 +114,7 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 	public void attachWorldCaps(AttachCapabilitiesEvent<World> event){
 		event.addCapability(new ResourceLocation(AppEng.MODID, "global_parts_pool"), new ICapabilityProvider() {
 
-			WorldPartsAccess pool = new WorldPartsAccess(event.getObject());
+			WorldPartsAccess pool = !event.getObject().isRemote ? new WorldPartsAccess(event.getObject()) : new ClientWorldPartsAccess(event.getObject());
 
 			@Override
 			public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing){

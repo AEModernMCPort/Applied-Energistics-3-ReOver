@@ -3,8 +3,6 @@ package appeng.core.me.tile;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.part.PartsHelperImpl;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -39,13 +37,13 @@ public class PartsContainerTile extends TileEntity {
 
 	@Override
 	public void onLoad(){
-		if(!world.isRemote) container.onLoad();
+		container.onLoad();
 	}
 
 	//FIXME Not called when the world unloads (like exit world) - but container.onUnload must still be called.
 	@Override
 	public void onChunkUnload(){
-		if(!world.isRemote) container.onUnload();
+		container.onUnload();
 	}
 
 	/*
@@ -95,18 +93,13 @@ public class PartsContainerTile extends TileEntity {
 		return serializeNBT();
 	}
 
-	//TODO Remove once BlockBreakEvent is fired on client
-
-	@Nullable
 	@Override
-	@Deprecated
-	public SPacketUpdateTileEntity getUpdatePacket(){
-		return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
+	public void handleUpdateTag(NBTTagCompound tag){
+		//This can be called when many blocks change, so might as well unload the container (to cleanup dynamic renderers) just in case
+		container.onUnload();
+		super.handleUpdateTag(tag);
+		//this.onLoad, on client, is called before the update tag is handled :(
+		container.onLoad();
 	}
 
-	@Override
-	@Deprecated
-	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt){
-		deserializeNBT(pkt.getNbtCompound());
-	}
 }

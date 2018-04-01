@@ -28,6 +28,8 @@ public interface TasksManager extends INBTSerializable<NBTTagCompound> {
 		 */
 		Runnable suspend();
 
+		void shutdown();
+
 	}
 
 }

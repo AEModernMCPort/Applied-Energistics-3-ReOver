@@ -87,14 +87,14 @@ public class GlobalTasksManager {
 				scheduled.remove(exeSet);
 				ScheduledTasksExecutor executor = scheduledTasksExecutors.stream().filter(exe -> exe.tasks == exeSet).findAny().get();
 				scheduledTasksExecutors.remove(executor);
-				executor.stop();
+				executor.shutdown();
 				if(no1exe == executor) no1exe = null;
 			}
 			if(totalScheduled.getAndDecrement() == OFFLOADLOW){
 				Set<ITickable> allTasks = scheduled.stream().flatMap(Set::stream).collect(Collectors.toSet());
 
 				scheduled.clear();
-				scheduledTasksExecutors.forEach(ScheduledTasksExecutor::stop);
+				scheduledTasksExecutors.forEach(ScheduledTasksExecutor::shutdown);
 				scheduledTasksExecutors.clear();
 
 				Set<ITickable> tasks = ConcurrentHashMap.newKeySet();
@@ -139,6 +139,13 @@ public class GlobalTasksManager {
 		};
 	}
 
+	protected void shutdown(){
+		if(suspendedTasksResume == null) suspend();
+		if(no1exe != null) no1exe.shutdown();
+		allBoundTasks().forEach(TasksManager.OTBTask::shutdown);
+		scheduledTasksExecutors.clear();
+	}
+
 	/*
 	 * Unbound
 	 */
@@ -181,7 +188,8 @@ public class GlobalTasksManager {
 			return () -> suspend.set(false);
 		}
 
-		protected void stop(){
+		@Override
+		public void shutdown(){
 			stop.set(true);
 		}
 

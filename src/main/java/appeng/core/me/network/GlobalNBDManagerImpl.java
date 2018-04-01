@@ -214,6 +214,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	NBTTagCompound shutdown(){
 		suspendNetworks();
+		globalTasksManager.shutdown();
 		return serializeNBT();
 	}
 

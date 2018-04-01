@@ -142,7 +142,9 @@ public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNe
 			NBTTagList subtypes = (NBTTagList) nbt.getTag("subtypes");
 			subtypes.forEach(nbtBase -> {
 				NBTTagCompound next = (NBTTagCompound) nbtBase;
-				this.subtypes.put(deserializeST(next.getCompoundTag("subtype")), new AtomicInteger(next.getInteger("amount")));
+				int amount = next.getInteger("amount");
+				this.subtypes.put(deserializeST(next.getCompoundTag("subtype")), new AtomicInteger(amount));
+				totalStored.addAndGet(amount);
 			});
 		}
 	}

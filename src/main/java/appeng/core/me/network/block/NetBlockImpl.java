@@ -142,6 +142,18 @@ public class NetBlockImpl implements NetBlock {
 	}
 
 	/*
+	 * Callbacks
+	 */
+
+	void deviceJoinedNetBlock(NetDevice device){
+
+	}
+
+	void deviceLeftNetBlock(NetDevice device){
+
+	}
+
+	/*
 	 * Events
 	 */
 

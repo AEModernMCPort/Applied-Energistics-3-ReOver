@@ -866,7 +866,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 */
 
 	protected void recomputePathways(Multimap<NetDevice, Node> dtr2n){
-		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> info.device.switchNetBlock(null));
+		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> {
+			info.device.switchNetBlock(null);
+			netBlock.deviceLeftNetBlock(info.device);
+		});
 		devices.clear();
 		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
 		compute(netBlock.root, rootAdjacent.stream());
@@ -925,6 +928,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		}
 		device.switchNetBlock(netBlock);
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
+		netBlock.deviceJoinedNetBlock(device);
 	}
 
 	protected void recompute(Set<DeviceInformation> devices){
@@ -1143,7 +1147,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		});
 		remove.removeAll(keep);
 		recalcQ.removeIf(d -> remove.contains(d.device.getUUID()));
-		remove.forEach(d -> this.devices.remove(d).device.switchNetBlock(null));
+		remove.forEach(d -> {
+			NetDevice device = this.devices.remove(d).device;
+			device.switchNetBlock(null);
+			netBlock.deviceLeftNetBlock(device);
+		});
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

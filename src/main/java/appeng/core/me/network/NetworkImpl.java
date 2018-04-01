@@ -11,6 +11,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -131,6 +132,7 @@ public class NetworkImpl implements Network {
 
 	protected void initCapabilities(){
 		AttachCapabilitiesEvent<Network> event = new AttachCapabilitiesEvent<>(Network.class, this);
+		MinecraftForge.EVENT_BUS.post(event);
 		if(event.getCapabilities().size() > 0) capabilities = new CapabilityDispatcher(event.getCapabilities(), null);
 	}
 

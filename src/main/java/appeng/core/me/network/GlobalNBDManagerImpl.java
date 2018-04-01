@@ -202,6 +202,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	void load(NBTTagCompound nbt){
 		if(nbt != null) deserializeNBT(nbt);
+		networksAwaitingStartup = null;
 		startNetworks();
 	}
 

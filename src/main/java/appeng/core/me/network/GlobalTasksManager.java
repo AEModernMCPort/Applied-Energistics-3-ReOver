@@ -6,6 +6,7 @@ import appeng.core.me.api.network.TasksManager;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +33,7 @@ public class GlobalTasksManager {
 	public static final int OFFLOADLOW = 128, OFFLOADHIGH = 160;
 	public static final int THREADLIM = 512;
 
-	protected static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
+	protected static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("AE3 GTM Thread %s").build()));
 
 	@SubscribeEvent
 	public static void worldTick(TickEvent.ServerTickEvent event){

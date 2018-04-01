@@ -80,9 +80,13 @@ public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNe
 		boolean store = Math.signum(maxAmount) == 1;
 		int min = Math.min(Math.abs(minAmount), Math.abs(maxAmount));
 		int max = Math.max(Math.abs(minAmount), Math.abs(maxAmount));
-		int res = (store ? storage.putIfAbsent(t, new Subtypes()) : storage.getOrDefault(t, new Subtypes())).store(st, store, min, max);
+		int res = (store ? storage.putIfAbsent(t, newSubtypes()) : storage.getOrDefault(t, newSubtypes())).store(st, store, min, max);
 		totalStored.addAndGet(res);
 		return res;
+	}
+
+	protected Subtypes newSubtypes(){
+		return new Subtypes();
 	}
 
 	protected class Subtypes implements INBTSerializable<NBTTagCompound> {
@@ -190,7 +194,7 @@ public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNe
 		NBTTagList storage = (NBTTagList) nbt.getTag("storage");
 		storage.forEach(nbtBase -> {
 			NBTTagCompound next = (NBTTagCompound) nbtBase;
-			Subtypes subtypes = new Subtypes();
+			Subtypes subtypes = newSubtypes();
 			subtypes.deserializeNBT(next.getCompoundTag("subtypes"));
 			this.storage.put(deserializeT(next.getCompoundTag("object")), subtypes);
 		});

@@ -80,7 +80,8 @@ public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNe
 		boolean store = Math.signum(maxAmount) == 1;
 		int min = Math.min(Math.abs(minAmount), Math.abs(maxAmount));
 		int max = Math.max(Math.abs(minAmount), Math.abs(maxAmount));
-		int res = (store ? storage.putIfAbsent(t, newSubtypes()) : storage.getOrDefault(t, newSubtypes())).store(st, store, min, max);
+		Subtypes subtypes = storage.getOrDefault(t, newSubtypes());
+		int res = (store ? storage.computeIfAbsent(t, kt -> newSubtypes()) : storage.getOrDefault(t, newSubtypes())).store(st, store, min, max);
 		totalStored.addAndGet(res);
 		return res;
 	}
@@ -100,7 +101,7 @@ public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNe
 
 		protected int store(ST st, boolean store, int min, int max){
 			MutableInt sres = new MutableInt(); //Same invocation, same thread
-			(store ? subtypes.putIfAbsent(st, new AtomicInteger()) : subtypes.getOrDefault(st, new AtomicInteger())).updateAndGet(amount -> {
+			(store ? subtypes.computeIfAbsent(st, kt -> new AtomicInteger()) : subtypes.getOrDefault(st, new AtomicInteger())).updateAndGet(amount -> {
 				int stored;
 				int can = getMaxStore(st, amount, store);
 				if(can < min){

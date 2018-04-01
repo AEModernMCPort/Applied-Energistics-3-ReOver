@@ -90,7 +90,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	@Override
 	public <N extends Network> N networkCreated(N network){
 		networks.put(network.getUUID(), network);
-		if(startNetworksImmediately) network.startThreads();
+		if(startNetworksImmediately) network.start();
 		return network;
 	}
 
@@ -177,8 +177,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	 */
 
 	void startNetworks(){
-		startNetworksImmediately = true;
-		networks.values().forEach(Network::startThreads);
+		networks.values().forEach(Network::start);
 	}
 
 	Runnable suspendNetworks(){

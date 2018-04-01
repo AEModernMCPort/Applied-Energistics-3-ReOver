@@ -24,7 +24,6 @@ public class NetworkImpl implements Network {
 
 	public NetworkImpl(NetworkUUID uuid){
 		this.uuid = uuid;
-		this.threadsManager = new NetworkThreadsManager(this);
 		this.blocksManager = new NetworkBlocksManager(this);
 		this.eventBus = new EventBusImpl<>(this);
 		initCapabilities();
@@ -61,22 +60,9 @@ public class NetworkImpl implements Network {
 	 * Threads
 	 */
 
-	protected NetworkThreadsManager threadsManager;
-
-	@Nonnull
 	@Override
-	public void requestThread(NetworkThreadInfo operation){
-		threadsManager.requestThread(operation);
-	}
+	public void start(){
 
-	@Override
-	public void startThreads(){
-		threadsManager.startThreads();
-	}
-
-	@Override
-	public Runnable suspendThreads(){
-		return threadsManager.suspendThreads();
 	}
 
 	/*

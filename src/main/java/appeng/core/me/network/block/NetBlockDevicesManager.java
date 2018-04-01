@@ -86,6 +86,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			devices.remove(device.getUUID()).removeEntirely();
 			Set<DeviceInformation> recomp = regenGraphSectionDeviceDestroyed(device);
 			recompute(recomp);
+			netBlock.deviceLeftNetBlock(device);
 		}
 		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");

@@ -146,11 +146,11 @@ public class NetBlockImpl implements NetBlock {
 	 */
 
 	void deviceJoinedNetBlock(NetDevice device){
-
+		if(network != null) network.deviceJoinedNetwork(device);
 	}
 
 	void deviceLeftNetBlock(NetDevice device){
-
+		if(network != null) network.deviceLeftNetwork(device);
 	}
 
 	/*

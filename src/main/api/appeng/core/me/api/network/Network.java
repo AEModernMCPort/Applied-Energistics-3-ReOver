@@ -39,6 +39,15 @@ public interface Network extends ICapabilityProvider, EventBusOwner<Network, Net
 	void removeDestroyedBlock(NetBlock netBlock);
 
 	/*
+	 * Callbacks
+	 */
+
+	default void deviceJoinedNetwork(NetDevice device){}
+	default void deviceLeftNetwork(NetDevice device){}
+
+	default void netBlockLeftNetwork(NetBlock netBlock){}
+
+	/*
 	 * Destruction
 	 */
 

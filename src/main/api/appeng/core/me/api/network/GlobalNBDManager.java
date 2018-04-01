@@ -30,6 +30,10 @@ public interface GlobalNBDManager {
 
 	void networkDestroyed(NetworkUUID uuid);
 
+	//Threads
+
+	TasksManager requestTasksManager(Network network);
+
 	/*
 	 * Network-Free blocks
 	 */

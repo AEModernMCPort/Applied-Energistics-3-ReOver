@@ -79,7 +79,7 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	 */
 
 	protected Map<NetworkUUID, Network> networks = new HashMap<>();
-	protected boolean startNetworksImmediately = false;
+	protected Collection<Network> networksAwaitingStartup = new ArrayList<>();
 
 	@Nonnull
 	@Override
@@ -90,7 +90,8 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	@Override
 	public <N extends Network> N networkCreated(N network){
 		networks.put(network.getUUID(), network);
-		if(startNetworksImmediately) network.start();
+		if(networksAwaitingStartup != null) networksAwaitingStartup.add(network);
+		else network.start();
 		return network;
 	}
 
@@ -102,6 +103,15 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	@Override
 	public void networkDestroyed(NetworkUUID uuid){
 		networks.remove(uuid);
+	}
+
+	//Threads
+
+	protected GlobalTasksManager globalTasksManager = new GlobalTasksManager();
+
+	@Override
+	public TasksManager requestTasksManager(Network network){
+		return globalTasksManager.requestTasksManager(network);
 	}
 
 	/*
@@ -181,11 +191,12 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 	}
 
 	Runnable suspendNetworks(){
-		startNetworksImmediately = false;
-		List<Runnable> resume = networks.values().stream().map(Network::suspendThreads).collect(Collectors.toList());
+		networksAwaitingStartup = new ArrayList<>();
+		Runnable resumeTasks = globalTasksManager.suspend();
 		return () -> {
-			startNetworksImmediately = true;
-			resume.forEach(Runnable::run);
+			resumeTasks.run();
+			networksAwaitingStartup.forEach(Network::start);
+			networksAwaitingStartup = null;
 		};
 	}
 

@@ -30,8 +30,8 @@ import java.util.stream.Stream;
 @Mod.EventBusSubscriber(modid = AppEng.MODID)
 public class GlobalTasksManager {
 
-	public static final int OFFLOADLOW = 3, OFFLOADHIGH = 5;
-	public static final int THREADLIM = 8;
+	public static final int OFFLOADLOW = 128, OFFLOADHIGH = 160;
+	public static final int THREADLIM = 512;
 
 	protected static final ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setNameFormat("AE3 GTM Thread %s").build()));
 

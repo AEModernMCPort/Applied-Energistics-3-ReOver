@@ -47,8 +47,8 @@ public class NetworkImpl implements Network {
 	 */
 
 	public void initialize(Controller.Network controller, World world, Controller.Physical pcontroller){
-		AppEngME.INSTANCE.getGlobalNBDManager().networkCreated(this);
 		blocksManager.initialize(controller, world, pcontroller);
+		AppEngME.INSTANCE.getGlobalNBDManager().networkCreated(this);
 	}
 
 	@Override

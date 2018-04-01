@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,6 +28,11 @@ public class GlobalNBDManagerImpl implements GlobalNBDManager {
 
 	public static GlobalNBDManagerImpl getInstance(){
 		return INSTANCE;
+	}
+
+	@Override
+	public long currentServerTick(){
+		return FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter();
 	}
 
 	/*

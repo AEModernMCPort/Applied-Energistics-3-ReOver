@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 
 public interface GlobalNBDManager {
 
+	long currentServerTick();
+
 	/*
 	 * Networks
 	 */

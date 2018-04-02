@@ -22,4 +22,9 @@ public class EntityNetworkStorageImpl extends SubtypedAtomicNetworkStorageImpl<E
 		this(null);
 	}
 
+	@Override
+	public ResourceLocation getNSSID(){
+		return NetworkStorageCaps.ENTITYRL;
+	}
+
 }

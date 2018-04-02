@@ -21,4 +21,9 @@ public class ItemNetworkStorageImpl extends SubtypedAtomicNetworkStorageImpl<Ite
 		this(null);
 	}
 
+	@Override
+	public ResourceLocation getNSSID(){
+		return NetworkStorageCaps.ITEMRL;
+	}
+
 }

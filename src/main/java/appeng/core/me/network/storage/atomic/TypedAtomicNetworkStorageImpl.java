@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImpl implements TypedAtomicNetworkStorage<T> {
+public abstract class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImpl implements TypedAtomicNetworkStorage<T> {
 
 	public TypedAtomicNetworkStorageImpl(Network network, Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
 		super(network);

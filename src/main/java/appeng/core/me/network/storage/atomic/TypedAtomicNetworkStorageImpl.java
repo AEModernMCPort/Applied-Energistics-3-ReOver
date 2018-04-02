@@ -42,6 +42,8 @@ public abstract class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImp
 		return storage.getOrDefault(t, new AtomicInteger()).get();
 	}
 
+	protected int suPt = 4;
+
 	/**
 	 * The maximum amount of object that can be stored/extracted.<br>
 	 * <b>Must be atomic and side effect free.</b>
@@ -51,8 +53,12 @@ public abstract class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImp
 	 * @param store         true if store, false if extract
 	 * @return maximum amount that can be stored/extracted, unsigned (positive) in both cases
 	 */
-	protected int getMaxStore(T t, int currentAmount, boolean store){
-		return store ? Integer.MAX_VALUE : currentAmount;
+	protected int getMaxStoreAndOccupy(T t, int currentAmount, int min, int max, boolean store){
+		return store ? getNSS().occupy(getNSSID(), min, max, suPt) : currentAmount;
+	}
+
+	protected void free(T t, int free){
+		getNSS().free(getNSSID(), free * suPt);
 	}
 
 	@Override
@@ -64,16 +70,19 @@ public abstract class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImp
 		MutableInt sres = new MutableInt(); //Same invocation, same thread
 		(store ? storage.putIfAbsent(t, new AtomicInteger()) : storage.getOrDefault(t, new AtomicInteger())).updateAndGet(amount -> {
 			int stored;
-			int can = getMaxStore(t, amount, store);
-			if(can < min){
+			int alloc = getMaxStoreAndOccupy(t, amount, min, max, store);
+			if(alloc < min){
 				stored = 0;
-			} else if(can > max){
+				//Because we either allocate 0 or more than min, on extraction alloc=0
+			} else if(alloc > max){
+				//Because we cannot allocate more than max, this is only called on extraction
 				stored = max;
 				amount += store ? max : -max;
 			} else {
-				amount += store ? can : -can;
-				stored = can;
+				amount += store ? alloc : -alloc;
+				stored = alloc;
 			}
+			if(!store && stored > 0) free(t, stored);
 			sres.setValue(stored);
 			return amount;
 		});

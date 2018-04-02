@@ -63,6 +63,17 @@ public abstract class SubtypedAtomicNetworkStorageImpl<ST, T> extends NetworkSto
 		return Optional.ofNullable(storage.get(getType(st))).map(sts -> sts.getStoredAmount(st)).orElse(0);
 	}
 
+	protected int suPt = 8;
+	protected int suPst = 4;
+
+	protected boolean occupy(T t){
+		return getNSS().occupy(getNSSID(), 1, 1, suPt) == 1;
+	}
+
+	protected void free(T t){
+		getNSS().free(getNSSID(), suPt);
+	}
+
 	/**
 	 * The maximum amount of object that can be stored/extracted.<br>
 	 * <b>Must be atomic and side effect free.</b>
@@ -72,8 +83,12 @@ public abstract class SubtypedAtomicNetworkStorageImpl<ST, T> extends NetworkSto
 	 * @param store         true if store, false if extract
 	 * @return maximum amount that can be stored/extracted, unsigned (positive) in both cases
 	 */
-	protected int getMaxStore(ST t, int currentAmount, boolean store){
-		return store ? Integer.MAX_VALUE : currentAmount;
+	protected int getMaxStoreAndOccupy(ST t, int currentAmount, int min, int max, boolean store){
+		return store ? getNSS().occupy(getNSSID(), min, max, suPst) : currentAmount;
+	}
+
+	protected void free(ST t, int free){
+		getNSS().free(getNSSID(), free * suPst);
 	}
 
 	@Override
@@ -83,8 +98,20 @@ public abstract class SubtypedAtomicNetworkStorageImpl<ST, T> extends NetworkSto
 		boolean store = Math.signum(maxAmount) == 1;
 		int min = Math.min(Math.abs(minAmount), Math.abs(maxAmount));
 		int max = Math.max(Math.abs(minAmount), Math.abs(maxAmount));
-		Subtypes subtypes = storage.getOrDefault(t, newSubtypes());
-		int res = (store ? storage.computeIfAbsent(t, kt -> newSubtypes()) : storage.getOrDefault(t, newSubtypes())).store(st, store, min, max);
+
+		boolean prevEmpty = false;
+		Subtypes subtypes;
+		if(store){
+			if(prevEmpty = (subtypes = storage.computeIfAbsent(t, kt -> newSubtypes())).totalStored.get() == 0) if(!occupy(t)) return 0;
+		} else {
+			if((subtypes = storage.getOrDefault(t, newSubtypes())).totalStored.get() == 0) return 0;
+		}
+		int res = subtypes.store(st, store, min, max);
+		if(store){
+			if(prevEmpty && res == 0) free(t);
+		} else {
+			if(res != 0 && subtypes.totalStored.get() == 0) free(t);
+		}
 		totalStored.addAndGet(res);
 		return res;
 	}
@@ -106,16 +133,19 @@ public abstract class SubtypedAtomicNetworkStorageImpl<ST, T> extends NetworkSto
 			MutableInt sres = new MutableInt(); //Same invocation, same thread
 			(store ? subtypes.computeIfAbsent(st, kt -> new AtomicInteger()) : subtypes.getOrDefault(st, new AtomicInteger())).updateAndGet(amount -> {
 				int stored;
-				int can = getMaxStore(st, amount, store);
-				if(can < min){
+				int alloc = getMaxStoreAndOccupy(st, amount, min, max, store);
+				if(alloc < min){
 					stored = 0;
-				} else if(can > max){
+					//Because we either allocate 0 or more than min, on extraction alloc=0
+				} else if(alloc > max){
+					//Because we cannot allocate more than max, this is only called on extraction
 					stored = max;
 					amount += store ? max : -max;
 				} else {
-					amount += store ? can : -can;
-					stored = can;
+					amount += store ? alloc : -alloc;
+					stored = alloc;
 				}
+				if(!store && stored > 0) free(st, stored);
 				sres.setValue(stored);
 				return amount;
 			});

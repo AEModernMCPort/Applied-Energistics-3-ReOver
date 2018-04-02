@@ -2,6 +2,7 @@ package appeng.core.me.parts.part.device;
 
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.network.storage.caps.ItemNetworkStorage;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -16,6 +17,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public interface SimplyPanel {
 
@@ -23,6 +25,13 @@ public interface SimplyPanel {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 			super(registryEntry, uuid, netBlock);
+		}
+
+		boolean fulfilled = false;
+
+		@Override
+		public boolean fulfill(Collection<Connection> connectionsFulfilled){
+			return fulfilled = super.fulfill(connectionsFulfilled);
 		}
 
 		ItemNetworkStorage.Entry selected;
@@ -38,6 +47,7 @@ public interface SimplyPanel {
 		@Override
 		public NBTTagCompound serializeNBT(){
 			NBTTagCompound nbt = super.serializeNBT();
+			nbt.setBoolean("fulfilled", fulfilled);
 			if(selected != null) nbt.setTag("selected", selected.serializeNBT());
 			return nbt;
 		}
@@ -45,6 +55,7 @@ public interface SimplyPanel {
 		@Override
 		protected void deserializeNBT(NBTTagCompound nbt){
 			super.deserializeNBT(nbt);
+			fulfilled = nbt.getBoolean("fulfilled");
 			if(nbt.hasKey("selected")) selected = ItemNetworkStorage.Entry.deserializeNBT(nbt.getCompoundTag("selected"));
 		}
 
@@ -66,7 +77,9 @@ public interface SimplyPanel {
 			if(!theWorld.isRemote){
 				Network net = part.networkCounterpart;
 				ItemNetworkStorage.Entry held = ItemNetworkStorage.Entry.ofItemStack(player.getHeldItem(hand));
-				if(held == null && net.selected != null){
+				if(!net.hasNetwork());
+				else if(!net.fulfilled) player.sendMessage(new TextComponentString(";("));
+				else if(held == null && net.selected != null){
 					ItemStack res = net.selected.asStack(net.extractSelected());
 					if(!player.addItemStackToInventory(res)) player.dropItem(res, false);
 				} else {

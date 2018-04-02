@@ -86,7 +86,7 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 
 	@Override
 	public boolean fulfill(Collection<Connection> connectionsFulfilled){
-		return params.getAllConnections().containsAll(connectionsFulfilled);
+		return connectionsFulfilled.containsAll(params.getAllConnections());
 	}
 
 	/*

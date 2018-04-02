@@ -903,14 +903,17 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			List<Pathway> pathways = new ArrayList<>();
 			adj.filter(Objects::nonNull)/*FIXME Implement direct links root-device*/.forEach(node -> nextStep(pathways, node, new ArrayList<>()));
 			Multimap<Connection, Pathway> c2ps = HashMultimap.create();
-			pathways.forEach(pathway -> AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-				Comparable req = device.getConnectionRequirement(connection);
-				Comparable provided = pathway.computeParams(remainingRootParams).getParam(connection);
-				if(req != null && provided != null){
-					Comparable decayed = connection.mul(provided, AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
-					if(decayed.compareTo(req) >= 0) c2ps.put(connection, pathway);
-				}
-			}));
+			pathways.forEach(pathway -> {
+				pathway.computeParams(remainingRootParams);
+				AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+					Comparable req = device.getConnectionRequirement(connection);
+					Comparable provided = pathway.params.getParam(connection);
+					if(req != null && provided != null){
+						Comparable decayed = connection.mul(provided, AppEngME.INSTANCE.config.lossFactor(connection, pathway.length));
+						if(decayed.compareTo(req) >= 0) c2ps.put(connection, pathway);
+					}
+				});
+			});
 			active = new HashMap<>();
 			dormant = new HashSet<>();
 			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> c2ps.get(connection).stream().sorted(Comparator.comparingDouble(Pathway::getLength)).forEachOrdered(pathway -> {

@@ -896,7 +896,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return recalc;
 	}
 
-	protected void compute(NetDevice device, Stream<Node> adj){
+	protected boolean compute(NetDevice device, Stream<Node> adj){
 		Map<Connection, Pathway> active;
 		Set<Pathway> dormant;
 		if(device != netBlock.root){
@@ -920,6 +920,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				if(!active.containsKey(connection)) active.put(connection, pathway);
 				else dormant.add(pathway);
 			}));
+			if(active.isEmpty() && dormant.isEmpty()) return false;
 			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.markActive(true).consume(c, device.getConnectionRequirement(c)));
 			else {
 				active.values().forEach(dormant::add);
@@ -933,12 +934,19 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		device.switchNetBlock(netBlock);
 		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
 		netBlock.deviceJoinedNetBlock(device);
+		return true;
 	}
 
 	protected void recompute(Set<DeviceInformation> devices){
 		long t = System.currentTimeMillis();
 		//TODO Use dormant paths. I mean, we don't keep them for nothing...
-		devices.forEach(info -> compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID()))));
+		devices.forEach(info -> {
+			if(!compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID())))){
+				info.device.switchNetBlock(null);
+				this.devices.remove(info.device.getUUID());
+				netBlock.deviceLeftNetBlock(info.device);
+			}
+		});
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

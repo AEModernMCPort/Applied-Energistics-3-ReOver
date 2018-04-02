@@ -19,7 +19,19 @@ public class NetworkStorageSpaceImpl implements NetworkStorageSpace, INBTSeriali
 
 	protected ConcurrentHashMap<ResourceLocation, AtomicInteger> occupied = new ConcurrentHashMap<>();
 
-	public NetworkStorageSpaceImpl(){}
+	public NetworkStorageSpaceImpl(){
+		//TODO Eh...
+		totalSpace = new AtomicInteger(1024);
+		partitions.put(NetworkStorageCaps.ITEMRL, new AtomicInteger(256));
+		partitions.put(NetworkStorageCaps.BLOCKRL, new AtomicInteger(256));
+		partitions.put(NetworkStorageCaps.FLUIDRL, new AtomicInteger(256));
+		partitions.put(NetworkStorageCaps.ENTITYRL, new AtomicInteger(256));
+
+		occupied.put(NetworkStorageCaps.ITEMRL, new AtomicInteger(0));
+		occupied.put(NetworkStorageCaps.BLOCKRL, new AtomicInteger(0));
+		occupied.put(NetworkStorageCaps.FLUIDRL, new AtomicInteger(0));
+		occupied.put(NetworkStorageCaps.ENTITYRL, new AtomicInteger(0));
+	}
 
 	@Override
 	public int getAllocated(ResourceLocation storage){

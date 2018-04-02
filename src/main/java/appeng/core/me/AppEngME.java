@@ -22,6 +22,7 @@ import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.network.storage.caps.EntityNetworkStorage;
 import appeng.core.me.api.network.storage.caps.FluidNetworkStorage;
 import appeng.core.me.api.network.storage.caps.ItemNetworkStorage;
+import appeng.core.me.api.network.storage.caps.NetworkStorageSpace;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
@@ -36,6 +37,7 @@ import appeng.core.me.network.NBDIOImpl;
 import appeng.core.me.network.storage.caps.EntityNetworkStorageImpl;
 import appeng.core.me.network.storage.caps.FluidNetworkStorageImpl;
 import appeng.core.me.network.storage.caps.ItemNetworkStorageImpl;
+import appeng.core.me.network.storage.caps.NetworkStorageSpaceImpl;
 import appeng.core.me.parts.container.PartsContainer;
 import appeng.core.me.parts.container.WorldPartsAccess;
 import appeng.core.me.parts.part.PartsHelperImpl;
@@ -190,6 +192,7 @@ public class AppEngME implements IME {
 		CapabilityManager.INSTANCE.register(IPartsContainer.class, PartsContainer.Storage.INSTANCE, PartsContainer::new);
 		CapabilityManager.INSTANCE.register(PartsAccess.Mutable.class, WorldPartsAccess.Storage.INSTANCE, WorldPartsAccess::new);
 
+		CapabilityManager.INSTANCE.register(NetworkStorageSpace.class, new DelegateCapabilityStorage<>(), NetworkStorageSpaceImpl::new);
 		CapabilityManager.INSTANCE.register(ItemNetworkStorage.class, new DelegateCapabilityStorage<>(), ItemNetworkStorageImpl::new);
 //		CapabilityManager.INSTANCE.register(BlockNetworkStorage.class, new DelegateCapabilityStorage<>(), BlockNetworkStorageImpl::new); TODO 1.13 Implement
 		CapabilityManager.INSTANCE.register(FluidNetworkStorage.class, new DelegateCapabilityStorage<>(), FluidNetworkStorageImpl::new);

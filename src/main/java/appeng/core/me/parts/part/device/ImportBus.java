@@ -45,7 +45,7 @@ public interface ImportBus {
 				for(double i = 0; i < 1/updateInterval; i++){
 					ItemStack next = importBuffer.peek();
 					if(next != null) getNetBlock().flatMap(NetBlock::getNetwork).ifPresent(network -> {
-						if(network.getCapability(NetworkStorageCaps.item, null).store(new ItemNetworkStorage.Entry(next), next.getCount(), next.getCount()) > 0) importBuffer.poll();
+						if(network.getCapability(NetworkStorageCaps.item, null).store(ItemNetworkStorage.Entry.ofItemStack(next), next.getCount(), next.getCount()) > 0) importBuffer.poll();
 					});
 				}
 			}

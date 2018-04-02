@@ -28,10 +28,6 @@ public interface ItemNetworkStorage extends SubtypedAtomicNetworkStorage<ItemNet
 			this.caps = caps;
 		}
 
-		public Entry(ItemStack itemStack){
-			this(itemStack.getItem(), itemStack.getTagCompound(), capabilities.get(itemStack).orElseThrow(() -> new IllegalArgumentException("Something went wrong when reflecting item stack capabilities!")));
-		}
-
 		public Item getItem(){
 			return item;
 		}
@@ -42,6 +38,23 @@ public interface ItemNetworkStorage extends SubtypedAtomicNetworkStorage<ItemNet
 
 		public CapabilityDispatcher getCaps(){
 			return caps;
+		}
+
+		@Nullable
+		public static Entry ofItemStack(@Nonnull ItemStack stack){
+			return stack.isEmpty() ? null : new Entry(stack.getItem(), stack.getTagCompound(), capabilities.get(stack).orElseThrow(() -> new IllegalArgumentException("Something went wrong when reflecting item stack capabilities!")));
+		}
+
+		@Nonnull
+		public static ItemStack asStack(@Nullable Entry entry, int amount){
+			return entry != null ? entry.asStack(amount) : ItemStack.EMPTY;
+		}
+
+		@Nonnull
+		public ItemStack asStack(int amount){
+			ItemStack stack = new ItemStack(item, amount, 0, caps != null ? caps.serializeNBT() : null);
+			if(tag != null) stack.setTagCompound(tag.copy());
+			return stack;
 		}
 
 		public NBTTagCompound serializeNBT(){

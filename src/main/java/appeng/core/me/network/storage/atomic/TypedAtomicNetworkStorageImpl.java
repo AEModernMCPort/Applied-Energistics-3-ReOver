@@ -1,6 +1,8 @@
 package appeng.core.me.network.storage.atomic;
 
+import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.storage.atomic.TypedAtomicNetworkStorage;
+import appeng.core.me.network.storage.NetworkStorageImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -10,9 +12,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class TypedAtomicNetworkStorageImpl<T> implements TypedAtomicNetworkStorage<T> {
+public class TypedAtomicNetworkStorageImpl<T> extends NetworkStorageImpl implements TypedAtomicNetworkStorage<T> {
 
-	public TypedAtomicNetworkStorageImpl(Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
+	public TypedAtomicNetworkStorageImpl(Network network, Function<T, NBTTagCompound> serializer, Function<NBTTagCompound, T> deserializer){
+		super(network);
 		this.serializer = serializer;
 		this.deserializer = deserializer;
 	}

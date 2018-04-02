@@ -1,6 +1,8 @@
 package appeng.core.me.network.storage.atomic;
 
+import appeng.core.me.api.network.Network;
 import appeng.core.me.api.network.storage.atomic.SubtypedAtomicNetworkStorage;
+import appeng.core.me.network.storage.NetworkStorageImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -12,9 +14,10 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-public class SubtypedAtomicNetworkStorageImpl<ST, T> implements SubtypedAtomicNetworkStorage<ST, T> {
+public class SubtypedAtomicNetworkStorageImpl<ST, T> extends NetworkStorageImpl implements SubtypedAtomicNetworkStorage<ST, T> {
 
-	public SubtypedAtomicNetworkStorageImpl(Function<ST, T> getType, Function<T, NBTTagCompound> serializerT, Function<NBTTagCompound, T> deserializerT, Function<ST, NBTTagCompound> serializerST, Function<NBTTagCompound, ST> deserializerST){
+	public SubtypedAtomicNetworkStorageImpl(Network network, Function<ST, T> getType, Function<T, NBTTagCompound> serializerT, Function<NBTTagCompound, T> deserializerT, Function<ST, NBTTagCompound> serializerST, Function<NBTTagCompound, ST> deserializerST){
+		super(network);
 		this.getType = getType;
 		this.serializerT = serializerT;
 		this.deserializerT = deserializerT;

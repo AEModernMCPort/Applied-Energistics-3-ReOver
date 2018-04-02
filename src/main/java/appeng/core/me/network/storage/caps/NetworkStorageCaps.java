@@ -43,12 +43,13 @@ public class NetworkStorageCaps {
 
 	@SubscribeEvent
 	public static void attachStorageCaps(AttachCapabilitiesEvent<Network> event){
+		Network network = event.getObject();
 		event.addCapability(NSSRL, new SingleCapabilityProvider.Serializeable<>(nss, new NetworkStorageSpaceImpl()));
 
-		event.addCapability(ITEMRL, new SingleCapabilityProvider.Serializeable<>(item, new ItemNetworkStorageImpl()));
-//		event.addCapability(BLOCKRL, new SingleCapabilityProvider.Serializeable<>(block, new BlockNetworkStorageImpl())); TODO 1.13 Implement
-		event.addCapability(FLUIDRL, new SingleCapabilityProvider.Serializeable<>(fluid, new FluidNetworkStorageImpl()));
-		event.addCapability(ENTITYRL, new SingleCapabilityProvider.Serializeable<>(entity, new EntityNetworkStorageImpl()));
+		event.addCapability(ITEMRL, new SingleCapabilityProvider.Serializeable<>(item, new ItemNetworkStorageImpl(network)));
+//		event.addCapability(BLOCKRL, new SingleCapabilityProvider.Serializeable<>(block, new BlockNetworkStorageImpl(network))); TODO 1.13 Implement
+		event.addCapability(FLUIDRL, new SingleCapabilityProvider.Serializeable<>(fluid, new FluidNetworkStorageImpl(network)));
+		event.addCapability(ENTITYRL, new SingleCapabilityProvider.Serializeable<>(entity, new EntityNetworkStorageImpl(network)));
 	}
 
 }

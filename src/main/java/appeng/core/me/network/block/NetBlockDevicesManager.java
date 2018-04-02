@@ -691,7 +691,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 		@Override
 		public String toString(){
-			return "Node{" + "uuid=" + uuid + ", " + links.size() + " links, " + devices.size() + " devices, params=" + params + '}';
+			return "Node{" + "uuid=" + uuid + ", " + links.size() + " links, " + devices.keySet().size() + " devices, params=" + params + '}';
 		}
 	}
 

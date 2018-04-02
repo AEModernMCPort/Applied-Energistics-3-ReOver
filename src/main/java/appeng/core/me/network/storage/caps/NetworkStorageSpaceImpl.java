@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.INBTSerializable;
-import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,20 +34,29 @@ public class NetworkStorageSpaceImpl implements NetworkStorageSpace, INBTSeriali
 	}
 
 	@Override
-	public boolean occupy(ResourceLocation storage, int su){
+	public int occupy(ResourceLocation storage, int min, int max, int unit){
+		if(unit <= 0) return 0;
+		int minsu = min * unit;
+		int maxsu = max * unit;
+
 		AtomicInteger total = this.partitions.get(storage);
 		int safeTotal = total.get() - (int) (SAFETYFREEMARGIN * total.get());
 
-		MutableBoolean res = new MutableBoolean();
+		MutableInt ores = new MutableInt();
 		occupied.get(storage).updateAndGet(current -> {
-			res.setFalse();
-			int n = current + su;
-			if(n <= safeTotal){
-				res.setTrue();
-				return n;
-			} else return current;
+			ores.setValue(0);
+			int mo = safeTotal - current;
+			if(mo < minsu) return current;
+			else if(mo > maxsu){
+				ores.setValue(max);
+				return current + maxsu;
+			} else {
+				int o = Math.floorDiv(mo, unit);
+				ores.setValue(o);
+				return current + o * unit;
+			}
 		});
-		return res.booleanValue();
+		return ores.intValue();
 	}
 
 	@Override

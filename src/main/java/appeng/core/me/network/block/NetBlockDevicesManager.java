@@ -1226,6 +1226,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setTag("rrp", AppEngME.INSTANCE.getNBDIO().serializeConnectionsParams(remainingRootParams));
 		Map<Link, Integer> l2i = new HashMap<>();
 		{
 			NBTTagList links = new NBTTagList();
@@ -1269,6 +1270,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
+		remainingRootParams = AppEngME.INSTANCE.getNBDIO().deserializeConnectionsParams(nbt.getCompoundTag("rrp"));
 		this.links.clear();
 		Map<Integer, Link> i2l = new HashMap<>();
 		Queue<Pair<Link, NBTTagCompound>> ldq = new LinkedList<>();

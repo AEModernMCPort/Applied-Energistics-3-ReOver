@@ -24,4 +24,9 @@ public abstract class AConnection<P extends Comparable<P>, N extends NBTBase> im
 		return maxDistance;
 	}
 
+	@Override
+	public String toString(){
+		return "connect[" + id + "]";
+	}
+
 }

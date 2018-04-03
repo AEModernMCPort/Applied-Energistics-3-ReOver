@@ -84,6 +84,10 @@ public class DataConnection extends AConnection<DataConnection.Params, NBTTagCom
 			return dc < 0 || ddpc < 0 ? -1 : dc == 0 || ddpc == 0 ? 0 : 1;
 		}
 
+		@Override
+		public String toString(){
+			return "dcp{" + channels + "channels @ " + dpc + " dpc}";
+		}
 	}
 
 }

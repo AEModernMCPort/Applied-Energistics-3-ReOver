@@ -128,6 +128,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		recompNewDSects(recompRedsect.getMiddle());
 		recompute(recompRedsect.getLeft().stream());
 		computePathways(recompRedsect.getRight());
+		getElement(passthrough.getUUIDForConnectionPassthrough()).map(this::getDSect).ifPresent(this::satisfyUnhappy);
 		AppEngME.logger.info("TPC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
 		AppEngME.logger.info(dsects + " -> " + this.dsects.size() + " disjoint sections");
@@ -977,6 +978,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return list;
 	}
 
+	protected void satisfyUnhappy(DSect dSect){
+		recompute(dSect.devices().map(this.devices::get).filter(info -> info != null && info.device != netBlock.root && !info.device.satisfied()).collect(Collectors.toSet()).stream());
+	}
+
 	class DeviceInformation {
 
 		final NetDevice device;
@@ -1214,6 +1219,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		public DSect(List<Node> nodes, List<Link> links){
 			this.nodes = nodes;
 			this.links = links;
+		}
+
+		protected Stream<DeviceUUID> devices(){
+			return nodes.stream().flatMap(node -> node.devices.keySet().stream());
 		}
 
 		protected NBTTagCompound serializeNBT(Map<Link, Integer> l2i){

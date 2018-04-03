@@ -4,6 +4,7 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.NetworkUUID;
+import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
 import appeng.core.me.api.parts.PartColor;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -15,6 +16,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public interface Controller {
 
@@ -22,6 +24,16 @@ public interface Controller {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 			super(registryEntry, uuid, netBlock);
+		}
+
+		@Override
+		public boolean fulfill(Collection<Connection> connectionsFulfilled){
+			return false;
+		}
+
+		@Override
+		public boolean satisfied(){
+			return true;
 		}
 
 		@Override

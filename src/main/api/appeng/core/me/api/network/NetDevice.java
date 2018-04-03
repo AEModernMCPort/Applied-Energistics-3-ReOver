@@ -65,6 +65,17 @@ public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N
 	 */
 	boolean fulfill(Collection<Connection> connectionsFulfilled);
 
+	/**
+	 * Checks whether the device is satisfied with connections it has gotten on previous {@linkplain #fulfill(Collection) contract agreement}.
+	 * <br>
+	 * Called whenever there's a possibility to fulfill all of devices connected dreams. Return false to ditch current contract and get more satisfaction than before*.
+	 * <br><br>
+	 * <i><sub>*may not actually result in more satisfaction - terms and conditions apply</sub></i>.
+	 *
+	 * @return false if you want MORE
+	 */
+	boolean satisfied();
+
 	/*
 	 * IO
 	 */

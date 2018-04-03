@@ -84,9 +84,16 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 		return params.getParam(connection);
 	}
 
+	protected boolean satisfied = false;
+
 	@Override
 	public boolean fulfill(Collection<Connection> connectionsFulfilled){
-		return connectionsFulfilled.containsAll(params.getAllConnections());
+		return satisfied = connectionsFulfilled.containsAll(params.getAllConnections());
+	}
+
+	@Override
+	public boolean satisfied(){
+		return satisfied;
 	}
 
 	/*
@@ -156,11 +163,13 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setBoolean("satisfied", satisfied);
 		if(capabilities != null) nbt.setTag("capabilities", capabilities.serializeNBT());
 		return nbt;
 	}
 
 	protected void deserializeNBT(NBTTagCompound nbt){
+		satisfied = nbt.getBoolean("satisfied");
 		if(capabilities != null && nbt.hasKey("capabilities")) capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
 	}
 

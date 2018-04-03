@@ -72,8 +72,8 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int d = this.devices.size();
 
 		Pair<Set<Node>, Set<DeviceInformation>> adj = regenGraphSectionDeviceCreated(world, device);
-		recompute(adj.getRight());
-		compute(device.getNetworkCounterpart(), adj.getLeft().stream());
+		recompute(adj.getRight().stream());
+		compute(device.getNetworkCounterpart(), adj.getLeft().stream()).ifPresent(this::deviceJoined);
 
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(d + " -> " + this.devices.size() + " devices");
@@ -85,7 +85,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		if(device != netBlock.root){
 			devices.remove(device.getUUID()).removeEntirely();
 			Set<DeviceInformation> recomp = regenGraphSectionDeviceDestroyed(device);
-			recompute(recomp);
+			recompute(recomp.stream());
 			netBlock.deviceLeftNetBlock(device);
 		}
 		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
@@ -126,7 +126,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> recompRedsect = regenGraphSectionPTCreated(world, passthrough);
 		reduceCreatedNodes(recompRedsect.getMiddle());
 		recompNewDSects(recompRedsect.getMiddle());
-		recompute(recompRedsect.getLeft());
+		recompute(recompRedsect.getLeft().stream());
 		computePathways(recompRedsect.getRight());
 		AppEngME.logger.info("TPC took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
@@ -147,7 +147,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			Set<DeviceInformation> recomp = destroyPathways(Stream.concat(e.pathways.stream(), reduced.stream().flatMap(node -> node.pathways.stream())).collect(Collectors.toList()));
 			recompElemDSectAndDisconnect(eDSect, recomp);
 			this.passthroughs.remove(passthrough.getUUIDForConnectionPassthrough());
-			this.recompute(recomp);
+			this.recompute(recomp.stream());
 		});
 		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
@@ -866,6 +866,18 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 	 * Devices
 	 */
 
+	protected void deviceJoined(DeviceInformation device){
+		device.device.switchNetBlock(netBlock);
+		netBlock.deviceJoinedNetBlock(device.device);
+		this.devices.put(device.device.getUUID(), device);
+	}
+
+	protected void deviceLeft(DeviceInformation device){
+		device.device.switchNetBlock(null);
+		netBlock.deviceLeftNetBlock(device.device);
+		this.devices.remove(device.device.getUUID());
+	}
+
 	protected void recomputePathways(Multimap<NetDevice, Node> dtr2n){
 		devices.values().stream().filter(d -> d.device != netBlock.root).forEach(info -> {
 			info.device.switchNetBlock(null);
@@ -873,13 +885,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		});
 		devices.clear();
 		remainingRootParams = AppEngME.INSTANCE.getDevicesHelper().getConnectionParams(netBlock.root);
-		compute(netBlock.root, rootAdjacent.stream());
+		deviceJoined(new DeviceInformation(netBlock.root, null, null));
 		computePathways(dtr2n);
 	}
 
 	protected void computePathways(Multimap<NetDevice, Node> dtr2n){
 		long t = System.currentTimeMillis();
-		dtr2n.keySet().forEach(device -> compute(device, dtr2n.get(device).stream()));
+		dtr2n.keySet().forEach(device -> compute(device, dtr2n.get(device).stream()).ifPresent(this::deviceJoined));
 		Optional.ofNullable(dtr2n.get(netBlock.root)).ifPresent(newRootAdj -> rootAdjacent.addAll(newRootAdj));
 		AppEngME.logger.info("CP took " + (System.currentTimeMillis() - t) + "ms");
 	}
@@ -896,7 +908,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return recalc;
 	}
 
-	protected boolean compute(NetDevice device, Stream<Node> adj){
+	protected Optional<DeviceInformation> compute(NetDevice device, Stream<Node> adj){
 		Map<Connection, Pathway> active;
 		Set<Pathway> dormant;
 		if(device != netBlock.root){
@@ -920,7 +932,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 				if(!active.containsKey(connection)) active.put(connection, pathway);
 				else dormant.add(pathway);
 			}));
-			if(active.isEmpty() && dormant.isEmpty()) return false;
+			if(active.isEmpty() && dormant.isEmpty()) return Optional.empty();
 			if(device.fulfill(active.keySet())) active.forEach((c, p) -> p.markActive(true).consume(c, device.getConnectionRequirement(c)));
 			else {
 				active.values().forEach(dormant::add);
@@ -931,21 +943,15 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			active = null;
 			dormant = null;
 		}
-		device.switchNetBlock(netBlock);
-		devices.put(device.getUUID(), new DeviceInformation(device, active, dormant));
-		netBlock.deviceJoinedNetBlock(device);
-		return true;
+		return Optional.of(new DeviceInformation(device, active, dormant));
 	}
 
-	protected void recompute(Set<DeviceInformation> devices){
+	protected void recompute(Stream<DeviceInformation> devices){
 		long t = System.currentTimeMillis();
 		//TODO Use dormant paths. I mean, we don't keep them for nothing...
 		devices.forEach(info -> {
-			if(!compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID())))){
-				info.device.switchNetBlock(null);
-				this.devices.remove(info.device.getUUID());
-				netBlock.deviceLeftNetBlock(info.device);
-			}
+			info.removeEntirely();
+			if(!compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID()))).isPresent()) deviceLeft(info);
 		});
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}
@@ -1159,11 +1165,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		});
 		remove.removeAll(keep);
 		recalcQ.removeIf(d -> remove.contains(d.device.getUUID()));
-		remove.forEach(d -> {
-			NetDevice device = this.devices.remove(d).device;
-			device.switchNetBlock(null);
-			netBlock.deviceLeftNetBlock(device);
-		});
+		remove.stream().map(devices::get).forEach(this::deviceLeft);
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 

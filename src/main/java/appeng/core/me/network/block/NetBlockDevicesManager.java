@@ -951,7 +951,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		//TODO Use dormant paths. I mean, we don't keep them for nothing...
 		devices.forEach(info -> {
 			info.removeEntirely();
-			if(!compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID()))).isPresent()) deviceLeft(info);
+			Optional<DeviceInformation> newInfo = compute(info.device, nodes.values().stream().filter(node -> node.devices.containsKey(info.device.getUUID())));
+			if(newInfo.isPresent()) this.devices.put(info.device.getUUID(), newInfo.get());
+			else deviceLeft(info);
 		});
 		AppEngME.logger.info("DC took " + (System.currentTimeMillis() - t) + "ms");
 	}

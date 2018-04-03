@@ -27,13 +27,6 @@ public interface SimplyPanel {
 			super(registryEntry, uuid, netBlock);
 		}
 
-		boolean fulfilled = false;
-
-		@Override
-		public boolean fulfill(Collection<Connection> connectionsFulfilled){
-			return fulfilled = super.fulfill(connectionsFulfilled);
-		}
-
 		ItemNetworkStorage.Entry selected;
 
 		int getStored(){
@@ -47,7 +40,6 @@ public interface SimplyPanel {
 		@Override
 		public NBTTagCompound serializeNBT(){
 			NBTTagCompound nbt = super.serializeNBT();
-			nbt.setBoolean("fulfilled", fulfilled);
 			if(selected != null) nbt.setTag("selected", selected.serializeNBT());
 			return nbt;
 		}
@@ -55,7 +47,6 @@ public interface SimplyPanel {
 		@Override
 		protected void deserializeNBT(NBTTagCompound nbt){
 			super.deserializeNBT(nbt);
-			fulfilled = nbt.getBoolean("fulfilled");
 			if(nbt.hasKey("selected")) selected = ItemNetworkStorage.Entry.deserializeNBT(nbt.getCompoundTag("selected"));
 		}
 
@@ -78,7 +69,7 @@ public interface SimplyPanel {
 				Network net = part.networkCounterpart;
 				ItemNetworkStorage.Entry held = ItemNetworkStorage.Entry.ofItemStack(player.getHeldItem(hand));
 				if(!net.hasNetwork());
-				else if(!net.fulfilled) player.sendMessage(new TextComponentString(";("));
+				else if(!net.satisfied()) player.sendMessage(new TextComponentString(";("));
 				else if(held == null && net.selected != null){
 					ItemStack res = net.selected.asStack(net.extractSelected());
 					if(!player.addItemStackToInventory(res)) player.dropItem(res, false);

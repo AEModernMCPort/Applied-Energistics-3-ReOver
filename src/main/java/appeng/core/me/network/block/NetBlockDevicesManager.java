@@ -84,8 +84,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		int d = this.devices.size();
 		if(device != netBlock.root){
 			devices.remove(device.getUUID()).removeEntirely();
-			Set<DeviceInformation> recomp = regenGraphSectionDeviceDestroyed(device);
-			recompute(recomp.stream());
+			Pair<Set<DeviceInformation>, Set<DSect>> recomp = regenGraphSectionDeviceDestroyed(device);
+			recompute(recomp.getLeft().stream());
+			recomp.getRight().forEach(this::satisfyUnhappy);
 			netBlock.deviceLeftNetBlock(device);
 		}
 		AppEngME.logger.info("DD took " + (System.currentTimeMillis() - t) + "ms");
@@ -146,9 +147,10 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			Pair<Set<Node>, Set<Node>> affectedCreated = regenGraphSectionPTDestroyed(passthrough, e);
 			Set<Node> reduced = reduceDestroyedNodes(affectedCreated);
 			Set<DeviceInformation> recomp = destroyPathways(Stream.concat(e.pathways.stream(), reduced.stream().flatMap(node -> node.pathways.stream())).collect(Collectors.toList()));
-			recompElemDSectAndDisconnect(eDSect, recomp);
+			Set<DSect> dSects2Satisfy = recompElemDSectAndDisconnect(eDSect, recomp);
 			this.passthroughs.remove(passthrough.getUUIDForConnectionPassthrough());
 			this.recompute(recomp.stream());
+			dSects2Satisfy.forEach(this::satisfyUnhappy);
 		});
 		AppEngME.logger.info("TPD took " + (System.currentTimeMillis() - t) + "ms");
 		AppEngME.logger.info(pts + " -> " + this.passthroughs.size() + " PTs");
@@ -257,7 +259,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		return new ImmutablePair<>(adj, recomp);
 	}
 
-	protected Set<DeviceInformation> regenGraphSectionDeviceDestroyed(NetDevice device){
+	protected Pair<Set<DeviceInformation>, Set<DSect>> regenGraphSectionDeviceDestroyed(NetDevice device){
 		Set<Node> adj = nodes.values().stream().filter(node -> node.devices.containsKey(device.getUUID())).collect(Collectors.toSet());
 		adj.forEach(an -> an.devices.removeAll(device.getUUID()));
 		Set<Pathway> pathwaysToDestroy = new HashSet<>();
@@ -275,7 +277,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		reducedAffectedDestroyedCreated.getRight().getRight().forEach(cre -> {
 			getDSect(cre.from).links.add(cre);
 		});
-		return destroyPathways(pathwaysToDestroy);
+		return new ImmutablePair<>(destroyPathways(pathwaysToDestroy), adj.stream().map(this::getDSect).collect(Collectors.toSet()));
 	}
 
 	protected Triple<Set<DeviceInformation>, Pair<Set<Node>, Set<Node>>, Multimap<NetDevice, Node>> regenGraphSectionPTCreated(World world, ConnectionPassthrough passthrough){
@@ -1156,12 +1158,13 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
 	}
 
-	protected void recompElemDSectAndDisconnect(DSect eDSect, Set<DeviceInformation> recalcQ){
+	protected Set<DSect> recompElemDSectAndDisconnect(DSect eDSect, Set<DeviceInformation> recalcQ){
 		long t = System.currentTimeMillis();
 		this.dsects.remove(eDSect);
 		Set<DeviceUUID> remove = new HashSet<>();
 		Set<DeviceUUID> keep = new HashSet<>();
-		computeDSects(eDSect.nodes).forEach(nndSect -> {
+		Set<DSect> newDSects = computeDSects(eDSect.nodes);
+		newDSects.forEach(nndSect -> {
 			if(Collections.disjoint(rootAdjacent, nndSect.nodes)){
 				nndSect.nodes.forEach(node -> remove.addAll(node.devices.keySet()));
 				notifyPTsUnassign(nndSect.nodes, nndSect.links);
@@ -1174,6 +1177,7 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		recalcQ.removeIf(d -> remove.contains(d.device.getUUID()));
 		remove.stream().map(devices::get).forEach(this::deviceLeft);
 		AppEngME.logger.info("CD took " + (System.currentTimeMillis() - t) + "ms");
+		return newDSects;
 	}
 
 	protected Set<DSect> computeDSects(Collection<Node> nodesToDSect){

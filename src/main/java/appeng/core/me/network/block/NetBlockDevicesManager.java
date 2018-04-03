@@ -977,9 +977,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 
 	class DeviceInformation {
 
-		NetDevice device;
-		Map<Connection, Pathway> active;
-		Set<Pathway> dormant;
+		final NetDevice device;
+		final Map<Connection, Pathway> active;
+		final Set<Pathway> dormant;
 
 		public DeviceInformation(@Nonnull NetDevice device, @Nullable Map<Connection, Pathway> active, @Nullable Set<Pathway> dormant){
 			this.device = device;

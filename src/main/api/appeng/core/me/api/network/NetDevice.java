@@ -35,6 +35,9 @@ public interface NetDevice<N extends NetDevice<N, P>, P extends PhysicalDevice<N
 
 	@Nonnull
 	Optional<NetBlock> getNetBlock();
+	default Optional<Network> getNetwork(){
+		return getNetBlock().flatMap(NetBlock::getNetwork);
+	}
 
 	void switchNetBlock(@Nullable NetBlock block);
 	default boolean hasNetwork(){

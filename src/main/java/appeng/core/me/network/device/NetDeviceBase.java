@@ -11,18 +11,26 @@ import appeng.core.me.api.network.event.EventBusInitializeEvent;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.network.connect.ConnectionsParams;
 import appeng.core.me.network.event.EventBusImpl;
+import code.elix_x.excomms.optional.NullableOptional;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevice<N, P>> implements NetDevice<N, P> {
 
@@ -180,6 +188,35 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	protected void deserializeNBT(NBTTagCompound nbt){
 		satisfied = nbt.getBoolean("satisfied");
 		if(capabilities != null && nbt.hasKey("capabilities")) capabilities.deserializeNBT(nbt.getCompoundTag("capabilities"));
+	}
+
+	public static abstract class BehaviorDriven<N extends BehaviorDriven<N, P, B>, P extends PhysicalDevice<N, P>, B> extends NetDeviceBase<N, P> implements appeng.core.me.api.network.device.behavior.BehaviorDriven<B> {
+
+		public BehaviorDriven(@Nonnull DeviceRegistryEntry<N, P> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
+			super(registryEntry, uuid, netBlock);
+			initBehaviors();
+		}
+
+		protected ImmutableList<B> behaviors;
+
+		protected void initBehaviors(){
+			AttachDeviceBehaviorEvent<N> event = new AttachDeviceBehaviorEvent<>((N) this);
+			MinecraftForge.EVENT_BUS.post(event);
+			behaviors = ImmutableList.copyOf(Stream.concat(defaultBehavior().map(b -> Stream.of(new ImmutablePair<>(b, 0d))).orElse(Stream.empty()), event.<B>getBehaviors().stream()).sorted(Comparator.<Pair<B, Double>>comparingDouble(Pair::getRight).reversed()).map(Pair::getLeft).collect(Collectors.toList()));
+		}
+
+		protected Optional<B> defaultBehavior(){
+			return Optional.empty();
+		}
+
+		public Optional<BehaviorOperationResult> behaviorDrivenAction(Function<B, BehaviorOperationResult> action){
+			return behaviors.stream().map(action).filter(BehaviorOperationResult::stopIt).findFirst();
+		}
+
+		public <R> NullableOptional<R> behaviorDrivenGetAction(Function<B, NullableOptional<R>> action){
+			return behaviors.stream().map(action).filter(NullableOptional::isPresent).findFirst().orElse(NullableOptional.empty());
+		}
+
 	}
 
 }

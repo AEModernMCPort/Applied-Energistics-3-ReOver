@@ -39,4 +39,35 @@ public interface PartDeviceD2N {
 
 	}
 
+	interface BehaviorDriven {
+
+		class Network<P extends PartDevice<P, S, N>, S extends PartDeviceD2N.BehaviorDriven.Physical<P, S, N, B>, N extends PartDeviceD2N.BehaviorDriven.Network<P, S, N, B>, B> extends NetDeviceBase.BehaviorDriven<N, S, B>{
+
+			public Network(@Nonnull DeviceRegistryEntry<N, S> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
+				super(registryEntry, uuid, netBlock);
+			}
+
+		}
+
+		abstract class Physical<P extends PartDevice<P, S, N>, S extends PartDeviceD2N.BehaviorDriven.Physical<P, S, N, B>, N extends PartDeviceD2N.BehaviorDriven.Network<P, S, N, B>, B> extends PartDevice.PartDeviceState<P, S, N> {
+
+			public Physical(P part){
+				super(part);
+			}
+
+			private DeviceRegistryEntry<N, S> reg;
+
+			protected DeviceRegistryEntry<N, S> getReg(){
+				return reg != null ? reg : (reg = AppEngME.INSTANCE.<N, S>getDeviceRegistry().getValue(getPart().getRegistryName()));
+			}
+
+			@Override
+			public PartColor getColor(){
+				return PartColor.NOCOLOR;
+			}
+
+		}
+
+	}
+
 }

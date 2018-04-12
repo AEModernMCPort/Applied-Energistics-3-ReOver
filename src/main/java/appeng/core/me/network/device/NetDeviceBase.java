@@ -7,8 +7,10 @@ import appeng.core.me.api.network.NetDevice;
 import appeng.core.me.api.network.PhysicalDevice;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
+import appeng.core.me.api.network.event.EventBusInitializeEvent;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.network.connect.ConnectionsParams;
+import appeng.core.me.network.event.EventBusImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,8 +31,8 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 		this.uuid = uuid;
 		this.netBlock = netBlock;
 		this.params = AppEngME.INSTANCE.getDevicesHelper().gatherConnectionsParams(this);
-
 		initCapabilities();
+		initEvents();
 	}
 	/*
 	 * UUID
@@ -116,17 +118,6 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	}
 
 	/*
-	 * Events
-	 */
-
-	@Nonnull
-	@Override
-	public NCEventBus<N, NetDeviceEvent<N, P>> getEventBus(){
-		//TODO Events
-		return null;
-	}
-
-	/*
 	 * Capabilities
 	 */
 
@@ -147,6 +138,24 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing){
 		return capabilities == null ? null : capabilities.getCapability(capability, facing);
+	}
+
+	/*
+	 * Events
+	 */
+
+	protected NCEventBus<N, NetDeviceEvent<N, P>> eventBus;
+
+	protected void initEvents(){
+		EventBusInitializeEvent<N, NetDeviceEvent<N, P>> event = new EventBusInitializeEvent<>((N) this);
+		MinecraftForge.EVENT_BUS.post(event);
+		this.eventBus = new EventBusImpl<>(event);
+	}
+
+	@Nonnull
+	@Override
+	public NCEventBus<N, NetDeviceEvent<N, P>> getEventBus(){
+		return eventBus;
 	}
 
 	/*

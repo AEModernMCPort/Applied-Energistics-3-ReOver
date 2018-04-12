@@ -5,10 +5,13 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.network.device.BRINMDevice;
+import appeng.core.me.api.network.event.EventBusInitializeEvent;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.api.parts.GlobalWorldVoxelPosition;
+import appeng.core.me.network.event.EventBusImpl;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +23,7 @@ public class NetBlockImpl implements NetBlock {
 	public NetBlockImpl(NetBlockUUID uuid, Network network){
 		this.uuid = uuid;
 		this.network = network;
+		initEvents();
 	}
 
 	/*
@@ -157,11 +161,18 @@ public class NetBlockImpl implements NetBlock {
 	 * Events
 	 */
 
+	protected NCEventBus<NetBlock, NetBlockEvent> eventBus;
+
+	protected void initEvents(){
+		EventBusInitializeEvent<NetBlock, NetBlockEvent> event = new EventBusInitializeEvent<>(this);
+		MinecraftForge.EVENT_BUS.post(event);
+		this.eventBus = new EventBusImpl<>(event);
+	}
+
 	@Nonnull
 	@Override
 	public NCEventBus<NetBlock, NetBlockEvent> getEventBus(){
-		//TODO Events
-		return null;
+		return eventBus;
 	}
 
 	/*

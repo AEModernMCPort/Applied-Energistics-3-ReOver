@@ -2,6 +2,7 @@ package appeng.core.me.network;
 
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.*;
+import appeng.core.me.api.network.event.EventBusInitializeEvent;
 import appeng.core.me.api.network.event.NCEventBus;
 import appeng.core.me.network.block.NetBlockImpl;
 import appeng.core.me.network.event.EventBusImpl;
@@ -27,8 +28,8 @@ public class NetworkImpl implements Network {
 		this.uuid = uuid;
 		this.blocksManager = new NetworkBlocksManager(this);
 		this.tasksManager = AppEngME.INSTANCE.getGlobalNBDManager().requestTasksManager(this);
-		this.eventBus = new EventBusImpl<>(this);
 		initCapabilities();
+		initEvents();
 	}
 
 	/*
@@ -113,18 +114,6 @@ public class NetworkImpl implements Network {
 	}
 
 	/*
-	 * Events
-	 */
-
-	protected NCEventBus<Network, NetworkEvent> eventBus;
-
-	@Nonnull
-	@Override
-	public NCEventBus<Network, NetworkEvent> getEventBus(){
-		return eventBus;
-	}
-
-	/*
 	 * Caps
 	 */
 
@@ -145,6 +134,24 @@ public class NetworkImpl implements Network {
 	@Override
 	public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing){
 		return capabilities == null ? null : capabilities.getCapability(capability, facing);
+	}
+
+	/*
+	 * Events
+	 */
+
+	protected NCEventBus<Network, NetworkEvent> eventBus;
+
+	protected void initEvents(){
+		EventBusInitializeEvent<Network, NetworkEvent> event = new EventBusInitializeEvent<>(this);
+		MinecraftForge.EVENT_BUS.post(event);
+		this.eventBus = new EventBusImpl<>(event);
+	}
+
+	@Nonnull
+	@Override
+	public NCEventBus<Network, NetworkEvent> getEventBus(){
+		return eventBus;
 	}
 
 	/*

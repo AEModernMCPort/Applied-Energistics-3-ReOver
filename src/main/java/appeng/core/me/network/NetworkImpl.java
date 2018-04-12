@@ -143,7 +143,7 @@ public class NetworkImpl implements Network {
 	protected NCEventBus<Network, NetworkEvent> eventBus;
 
 	protected void initEvents(){
-		EventBusInitializeEvent<Network, NetworkEvent> event = new EventBusInitializeEvent<>(this);
+		EventBusInitializeEvent<Network, NetworkEvent> event = new EventBusInitializeEvent<>(this, Network.class);
 		MinecraftForge.EVENT_BUS.post(event);
 		this.eventBus = new EventBusImpl<>(event);
 	}

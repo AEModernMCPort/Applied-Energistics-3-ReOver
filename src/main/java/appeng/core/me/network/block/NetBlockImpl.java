@@ -164,7 +164,7 @@ public class NetBlockImpl implements NetBlock {
 	protected NCEventBus<NetBlock, NetBlockEvent> eventBus;
 
 	protected void initEvents(){
-		EventBusInitializeEvent<NetBlock, NetBlockEvent> event = new EventBusInitializeEvent<>(this);
+		EventBusInitializeEvent<NetBlock, NetBlockEvent> event = new EventBusInitializeEvent<>(this, NetBlock.class);
 		MinecraftForge.EVENT_BUS.post(event);
 		this.eventBus = new EventBusImpl<>(event);
 	}

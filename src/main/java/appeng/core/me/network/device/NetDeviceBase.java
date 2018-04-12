@@ -147,7 +147,7 @@ public class NetDeviceBase<N extends NetDeviceBase<N, P>, P extends PhysicalDevi
 	protected NCEventBus<N, NetDeviceEvent<N, P>> eventBus;
 
 	protected void initEvents(){
-		EventBusInitializeEvent<N, NetDeviceEvent<N, P>> event = new EventBusInitializeEvent<>((N) this);
+		EventBusInitializeEvent<N, NetDeviceEvent<N, P>> event = new EventBusInitializeEvent<>((N) this, NetDevice.class);
 		MinecraftForge.EVENT_BUS.post(event);
 		this.eventBus = new EventBusImpl<>(event);
 	}

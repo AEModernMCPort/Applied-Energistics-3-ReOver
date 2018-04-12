@@ -1,7 +1,7 @@
 package appeng.core.me.api.network.event;
 
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.GenericEvent;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -17,12 +17,13 @@ import java.util.function.Consumer;
  * @param <E> event type
  * @author Elix_x
  */
-public class EventBusInitializeEvent<O extends EventBusOwner<O, E>, E extends NCEventBus.Event<O, E>> extends Event {
+public class EventBusInitializeEvent<O extends EventBusOwner<O, E>, E extends NCEventBus.Event<O, E>> extends GenericEvent {
 
 	private final O owner;
 	private final List<Consumer<E>> listeners = new ArrayList<>();
 
-	public EventBusInitializeEvent(O owner){
+	public EventBusInitializeEvent(O owner, Class<? super O> type){
+		super(type);
 		this.owner = owner;
 	}
 

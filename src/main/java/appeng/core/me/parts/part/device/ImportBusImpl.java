@@ -4,6 +4,7 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
+import appeng.core.me.api.network.device.ImportBus;
 import appeng.core.me.api.network.storage.caps.ItemNetworkStorage;
 import appeng.core.me.network.GlobalNBDManagerImpl;
 import appeng.core.me.network.storage.caps.NetworkStorageCaps;
@@ -22,9 +23,9 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface ImportBus {
+public interface ImportBusImpl extends ImportBus {
 
-	class Network extends PartDeviceD2N.Network<Part, Physical, Network> implements ITickable {
+	class Network extends PartDeviceD2N.Network<Part, Physical, Network> implements ImportBus.Network<Part, Physical, Network>, ITickable {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 			super(registryEntry, uuid, netBlock);
@@ -68,7 +69,7 @@ public interface ImportBus {
 		}
 	}
 
-	class Part extends PartDevice<Part, Physical, Network> {
+	class Part extends PartDevice<Part, Physical, Network> implements ImportBus.Part<Part, Physical, Network> {
 
 		public Part(){
 			super(true);
@@ -81,7 +82,7 @@ public interface ImportBus {
 
 	}
 
-	class Physical extends PartDeviceD2N.Physical<Part, Physical, Network> implements ITickable {
+	class Physical extends PartDeviceD2N.Physical<Part, Physical, Network> implements ImportBus.Physical<Part, Physical, Network>, ITickable {
 
 		public Physical(Part part){
 			super(part);

@@ -4,6 +4,7 @@ import appeng.core.me.AppEngME;
 import appeng.core.me.api.network.DeviceUUID;
 import appeng.core.me.api.network.NetBlock;
 import appeng.core.me.api.network.device.DeviceRegistryEntry;
+import appeng.core.me.api.network.device.ExportBus;
 import appeng.core.me.api.network.storage.caps.ItemNetworkStorage;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.network.GlobalNBDManagerImpl;
@@ -28,9 +29,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface ExportBus {
+public interface ExportBusImpl extends ExportBus {
 
-	class Network extends PartDeviceD2N.Network<Part, Physical, Network> implements ITickable {
+	class Network extends PartDeviceD2N.Network<Part, Physical, Network> implements ExportBus.Network<Part, Physical, Network>, ITickable {
 
 		public Network(@Nonnull DeviceRegistryEntry<Network, Physical> registryEntry, @Nonnull DeviceUUID uuid, @Nullable NetBlock netBlock){
 			super(registryEntry, uuid, netBlock);
@@ -78,7 +79,7 @@ public interface ExportBus {
 
 	}
 
-	class Part extends PartDevice<Part, Physical, Network> {
+	class Part extends PartDevice<Part, Physical, Network> implements ExportBus.Part<Part, Physical, Network> {
 
 		public Part(){
 			super(true);
@@ -97,7 +98,7 @@ public interface ExportBus {
 
 	}
 
-	class Physical extends PartDeviceD2N.Physical<Part, Physical, Network> implements ITickable {
+	class Physical extends PartDeviceD2N.Physical<Part, Physical, Network> implements ExportBus.Physical<Part, Physical, Network>, ITickable {
 
 		public Physical(Part part){
 			super(part);

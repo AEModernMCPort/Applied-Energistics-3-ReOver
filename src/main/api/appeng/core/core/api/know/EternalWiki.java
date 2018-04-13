@@ -1,5 +1,7 @@
 package appeng.core.core.api.know;
 
+import net.minecraft.nbt.NBTTagCompound;
+
 import java.util.stream.Stream;
 
 public interface EternalWiki extends IKnow {
@@ -48,6 +50,17 @@ public interface EternalWiki extends IKnow {
 	@Override
 	default void forget(String know){
 		//You can't make the All-Knowing forget something
+	}
+
+	@Override
+	default NBTTagCompound serializeNBT(){
+		//NOPE
+		return new NBTTagCompound();
+	}
+
+	@Override
+	default void deserializeNBT(NBTTagCompound nbt){
+		//Nope
 	}
 
 }

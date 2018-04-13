@@ -61,9 +61,6 @@ public class AppEngCore implements ICore {
 	@CapabilityInject(Tickables.class)
 	public static Capability<Tickables> tickablesCapability;
 
-	@CapabilityInject(IKnow.class)
-	public static Capability<IKnow> knowCapability;
-
 	private ConfigurationLoader<CoreConfig> configLoader;
 	public CoreConfig config;
 

@@ -1,9 +1,20 @@
 package appeng.core.core.know;
 
+import appeng.core.AppEng;
 import appeng.core.core.api.know.EternalWiki;
+import appeng.core.core.api.know.IKnow;
+import appeng.core.lib.capability.SingleCapabilityProvider;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -18,6 +29,9 @@ public class EternalWikiImpl implements EternalWiki {
 	public static void freeze(){
 		((EternalWikiImpl) ETERNALWIKI).freezeI();
 	}
+
+	@CapabilityInject(IKnow.class)
+	public static Capability<IKnow> knowCapability;
 
 	private EternalWikiImpl(){}
 
@@ -64,6 +78,16 @@ public class EternalWikiImpl implements EternalWiki {
 	@Override
 	public boolean doesKnow(String know){
 		return knowComplexity.containsEntry("", know);
+	}
+
+	@Mod.EventBusSubscriber(modid = AppEng.MODID)
+	public static class IMakeYouKnow {
+
+		@SubscribeEvent
+		public static void makeNow(AttachCapabilitiesEvent<Entity> event){
+			if(event.getObject() instanceof EntityPlayer) event.addCapability(new ResourceLocation(AppEng.MODID, "know"), new SingleCapabilityProvider.Serializeable<>(knowCapability, new KnowImpl()));
+		}
+
 	}
 
 }

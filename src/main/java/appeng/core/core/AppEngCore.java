@@ -12,15 +12,20 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
+import appeng.core.core.api.know.EternalWiki;
+import appeng.core.core.api.know.IKnow;
 import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
 import appeng.core.core.config.YAMLConfigLoader;
 import appeng.core.core.definitions.*;
+import appeng.core.core.know.EternalWikiImpl;
+import appeng.core.core.know.KnowImpl;
 import appeng.core.core.net.gui.CoreGuiHandler;
 import appeng.core.core.proxy.CoreProxy;
 import appeng.core.core.tick.TickablesImpl;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
+import appeng.core.lib.capability.DelegateCapabilityStorage;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTBase;
@@ -55,6 +60,9 @@ public class AppEngCore implements ICore {
 
 	@CapabilityInject(Tickables.class)
 	public static Capability<Tickables> tickablesCapability;
+
+	@CapabilityInject(IKnow.class)
+	public static Capability<IKnow> knowCapability;
 
 	private ConfigurationLoader<CoreConfig> configLoader;
 	public CoreConfig config;
@@ -100,6 +108,11 @@ public class AppEngCore implements ICore {
 	@Override
 	public CoreGuiHandler guiHandler(){
 		return guiHandler;
+	}
+
+	@Override
+	public EternalWiki getEternalWiki(){
+		return EternalWikiImpl.ETERNALWIKI;
 	}
 
 	@ModuleEventHandler
@@ -155,9 +168,11 @@ public class AppEngCore implements ICore {
 			}
 
 		}, TickablesImpl::new);
+		CapabilityManager.INSTANCE.register(IKnow.class, new DelegateCapabilityStorage<>(), KnowImpl::new);
 
 
 		guiHandler = new CoreGuiHandler();
+		initHandler.acceptPostInit(EternalWikiImpl::freeze);
 
 		initHandler.preInit();
 		proxy.preInit(event);

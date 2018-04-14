@@ -8,7 +8,9 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface PartsHelper {
 
@@ -25,7 +27,7 @@ public interface PartsHelper {
 		Function<ResourceLocation, String> DEFID2SUFFIX = id -> id.toString().replace(":", "-_-").replace("/", "_-");
 
 		@Nonnull
-		Optional<T> load(@Nonnull Part part, @Nonnull Function<String, Optional<Mesh>> meshLoader, @Nonnull Function<Mesh, Set<VoxelPosition>> voxelizer, @Nonnull Set<VoxelPosition> rootMeshVoxels);
+		Optional<T> load(@Nonnull Part part, @Nonnull Function<String, Optional<Mesh>> meshLoader, @Nonnull BiFunction<Mesh, Predicate<String>, Set<VoxelPosition>> voxelizer, @Nonnull Set<VoxelPosition> rootMeshVoxels);
 
 	}
 

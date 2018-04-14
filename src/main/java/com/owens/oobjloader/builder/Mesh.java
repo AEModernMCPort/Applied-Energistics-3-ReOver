@@ -54,6 +54,8 @@ public class Mesh implements IMesh {
 	public int facePolyCount = 0;
 	public int faceErrorCount = 0;
 
+	public boolean voxPreProcessed = false;
+
 	public Mesh(){
 		((org.apache.logging.log4j.core.Logger) log).setLevel(OFF);
 	}

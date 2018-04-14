@@ -64,7 +64,7 @@ public class DevicesHelper implements InitializationComponent {
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(CONNECTIVITYLOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
 			ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
 			ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
-			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> meshLoader.apply(connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh), rootMeshVoxels, (voxel, side) -> {
+			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> meshLoader.apply("connections").ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, g -> g.equals(connection.getId().toString()) || g.equals(AppEng.MODID + ":all")), rootMeshVoxels, (voxel, side) -> {
 				connectionsBuilder.add(connection.getId());
 				connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
 			})));
@@ -72,7 +72,7 @@ public class DevicesHelper implements InitializationComponent {
 		});
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(WORLDINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
 			ImmutableMultimap.Builder<VoxelPosition, EnumFacing> interfaces = new ImmutableMultimap.Builder<>();
-			meshLoader.apply("wi").ifPresent(wimesh -> forEachInterface(voxelizer.apply(wimesh), rootMeshVoxels, interfaces::put));
+			meshLoader.apply("wi").ifPresent(wimesh -> forEachInterface(voxelizer.apply(wimesh, null), rootMeshVoxels, interfaces::put));
 			Multimap<VoxelPosition, EnumFacing> ifm = interfaces.build();
 			return ifm.isEmpty() ? Optional.empty() : Optional.of(new WorldInterface(ifm));
 		});

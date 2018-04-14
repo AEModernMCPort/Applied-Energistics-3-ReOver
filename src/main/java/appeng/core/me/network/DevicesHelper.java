@@ -19,6 +19,7 @@ import appeng.core.me.network.connect.SPIntConnection;
 import appeng.core.me.parts.part.PartsHelperImpl;
 import appeng.core.me.parts.part.device.Controller;
 import com.google.common.collect.*;
+import com.owens.oobjloader.builder.Mesh;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -62,12 +63,17 @@ public class DevicesHelper implements InitializationComponent {
 	@Override
 	public void init(){
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(CONNECTIVITYLOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
+			Optional<Mesh> allConnectionsMesh = meshLoader.apply("connections");
 			ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
 			ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
-			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> meshLoader.apply("connections").ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, g -> g.equals(connection.getId().toString()) || g.equals(AppEng.MODID + ":all")), rootMeshVoxels, (voxel, side) -> {
-				connectionsBuilder.add(connection.getId());
-				connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
-			})));
+			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
+				BiConsumer<VoxelPosition, EnumFacing> addConnectivity = (voxel, side) -> {
+					connectionsBuilder.add(connection.getId());
+					connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
+				};
+				allConnectionsMesh.ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, g -> g.equals(connection.getId().toString()) || g.equals(AppEng.MODID + ":all")), rootMeshVoxels, addConnectivity));
+				meshLoader.apply(connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, null), rootMeshVoxels, addConnectivity));
+			});
 			return Optional.of(new PartConnectivity(connectionsBuilder.build(), connectivityBuilder.build()));
 		});
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(WORLDINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {

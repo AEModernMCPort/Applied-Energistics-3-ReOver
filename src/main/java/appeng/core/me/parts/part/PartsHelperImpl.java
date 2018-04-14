@@ -51,6 +51,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static appeng.core.me.api.parts.container.GlobalVoxelsInfo.*;
@@ -254,7 +256,7 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 			} else this.vbbox = new AxisAlignedBB(BlockPos.ORIGIN);
 			this.gbbox = new AxisAlignedBB(vbbox.minX * VOXELSIZED, vbbox.minY * VOXELSIZED, vbbox.minZ * VOXELSIZED, vbbox.maxX * VOXELSIZED, vbbox.maxY * VOXELSIZED, vbbox.maxZ * VOXELSIZED);
 			supportsRotation = (vbbox.minX <= -1 && vbbox.maxX >= 1) || (vbbox.minY <= 1 && vbbox.maxY >= 1) || (vbbox.minZ <= 1 && vbbox.maxZ >= 1);
-			voxels = voxelizer.voxelize(mesh);
+			voxels = voxelizer.voxelize(mesh, null);
 			ImmutableMap.Builder<ResourceLocation, Object> cpdb = new ImmutableMap.Builder<>();
 			cpdl.forEach(idLoader -> idLoader.getRight().load(part, suffix -> loadMesh(part, suffix), voxelizer::voxelize, voxels).ifPresent(cd -> cpdb.put(idLoader.getLeft(), cd)));
 			cpd = cpdb.build();
@@ -268,9 +270,9 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		static final double L = VOXELSIZED;
 		static final double K = L * 0.86602540378;
 
-		static Stream<Edge> edges(Mesh mesh){
+		static Stream<Edge> edges(Mesh mesh, Stream<com.owens.oobjloader.builder.Face> facesStream){
 			MutableObject<Stream<Edge>> stream = new MutableObject<>(Stream.empty());
-			mesh.faces.forEach(face -> {
+			facesStream.forEach(face -> {
 				ArrayList<Edge> edges = new ArrayList<>();
 				for(int i = 0; i < face.vertices.size(); i++){
 					VertexGeometric v1 = face.vertices.get(i).v;
@@ -288,25 +290,28 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 			this.mode = mode;
 		}
 
-		ImmutableSet<VoxelPosition> voxelize(Mesh mesh){
-			mesh.faceVerticeList.forEach(faceVertex -> {
+		ImmutableSet<VoxelPosition> voxelize(Mesh mesh, @Nullable Predicate<String> groupFilter){
+			if(!mesh.voxPreProcessed) mesh.faceVerticeList.forEach(faceVertex -> {
 				faceVertex.v.x -= faceVertex.n.x * VOXELSIZEF4;
 				faceVertex.v.y -= faceVertex.n.y * VOXELSIZEF4;
 				faceVertex.v.z -= faceVertex.n.z * VOXELSIZEF4;
 			});
+			mesh.voxPreProcessed = true;
+			Set<com.owens.oobjloader.builder.Face> groupFaces = groupFilter == null ? null : mesh.groups.entrySet().stream().filter(e -> groupFilter.test(e.getKey())).flatMap(e -> e.getValue().stream()).collect(Collectors.toSet());
+			Supplier<Stream<com.owens.oobjloader.builder.Face>> facesStream = () -> mesh.faces.stream().filter(groupFilter == null ? f -> true : groupFaces::contains);
 
 			ImmutableSet.Builder<VoxelPosition> builder = ImmutableSet.builder();
 
 			long time = System.currentTimeMillis();
-			mesh.verticesG.stream().forEach(vertexGeometric -> VoxelPosition.allVoxelsIn(new AxisAlignedBB(vertexGeometric.x - mode.Rc, vertexGeometric.y - mode.Rc, vertexGeometric.z - mode.Rc, vertexGeometric.x + mode.Rc, vertexGeometric.y + mode.Rc, vertexGeometric.z + mode.Rc)).filter(voxel -> /*bbox.contains(voxel.globalCenterVec()) &&*/ voxel.globalCenterVec().squareDistanceTo(vertexGeometric.x, vertexGeometric.y, vertexGeometric.z) <= mode.Rc * mode.Rc).forEach(builder::add));
+			facesStream.get().flatMap(face -> face.vertices.stream().map(fv -> fv.v)).forEach(vertexGeometric -> VoxelPosition.allVoxelsIn(new AxisAlignedBB(vertexGeometric.x - mode.Rc, vertexGeometric.y - mode.Rc, vertexGeometric.z - mode.Rc, vertexGeometric.x + mode.Rc, vertexGeometric.y + mode.Rc, vertexGeometric.z + mode.Rc)).filter(voxel -> /*bbox.contains(voxel.globalCenterVec()) &&*/ voxel.globalCenterVec().squareDistanceTo(vertexGeometric.x, vertexGeometric.y, vertexGeometric.z) <= mode.Rc * mode.Rc).forEach(builder::add));
 			logger.info("Voxelized vertices in " + (System.currentTimeMillis() - time));
 
 			time = System.currentTimeMillis();
-			edges(mesh).forEach(edge -> VoxelPosition.allVoxelsIn(edge.getBBox(mode)).filter(voxel -> /*bbox.contains(voxel.globalCenterVec()) &&*/ edge.distanceTo(voxel.globalCenterVector()) <= mode.Rc).forEach(builder::add));
+			edges(mesh, facesStream.get()).forEach(edge -> VoxelPosition.allVoxelsIn(edge.getBBox(mode)).filter(voxel -> /*bbox.contains(voxel.globalCenterVec()) &&*/ edge.distanceTo(voxel.globalCenterVector()) <= mode.Rc).forEach(builder::add));
 			logger.info("Voxelized edges in " + (System.currentTimeMillis() - time));
 
 			time = System.currentTimeMillis();
-			mesh.faces.forEach(face -> {
+			facesStream.get().forEach(face -> {
 				if(face.vertices.size() == 3){
 					VertexGeometric v1 = face.vertices.get(0).v;
 					VertexGeometric v2 = face.vertices.get(1).v;

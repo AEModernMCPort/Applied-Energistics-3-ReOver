@@ -1,13 +1,10 @@
 {
     "variants": {
-        "variant=stone": [
+        "normal": [
             { "model": "appliedenergistics3:core/skystone" },
             { "model": "appliedenergistics3:core/skystone_mirrored" },
             { "model": "appliedenergistics3:core/skystone", "y": 180 },
             { "model": "appliedenergistics3:core/skystone_mirrored", "y": 180 }
-        ],
-        "variant=block": { "model": "appliedenergistics3:core/skystone_block" },
-        "variant=brick": { "model": "appliedenergistics3:core/skystone_brick" },
-        "variant=brick_small": { "model": "appliedenergistics3:core/skystone_brick_small" }
+        ]
     }
 }

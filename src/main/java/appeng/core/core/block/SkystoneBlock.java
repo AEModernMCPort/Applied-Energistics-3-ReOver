@@ -2,50 +2,20 @@ package appeng.core.core.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
 
 /**
  * @author dpeter99
  */
 public class SkystoneBlock extends Block {
 
-	public static final IProperty<Variant> VARIANT = PropertyEnum.create("variant", Variant.class);
+	protected final Variant variant;
 
-	public SkystoneBlock(){
+	public SkystoneBlock(Variant variant){
 		super(Material.ROCK);
+		this.variant = variant;
 		setCreativeTab(CreativeTabs.DECORATIONS);
-	}
-
-	@Override
-	protected BlockStateContainer createBlockState(){
-		return new BlockStateContainer(this, VARIANT);
-	}
-
-	@Override
-	public IBlockState getStateFromMeta(int meta){
-		return super.getStateFromMeta(meta).withProperty(VARIANT, Variant.values()[meta]);
-	}
-
-	@Override
-	public int getMetaFromState(IBlockState state){
-		return state.getValue(VARIANT).ordinal();
-	}
-
-	@Override
-	public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items){
-		for(Variant variants : Variant.values()) items.add(new ItemStack(this, 1, variants.ordinal()));
-	}
-
-	@Override
-	public int damageDropped(IBlockState state){
-		return getMetaFromState(state);
 	}
 
 	public enum Variant implements IStringSerializable {

@@ -41,7 +41,7 @@ public class AppEngTools implements ITools {
 	private ToolsItemDefinitions itemDefinitions;
 
 	@Override
-	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
 		if(clas == Item.class){
 			return (D) itemDefinitions;
 		}

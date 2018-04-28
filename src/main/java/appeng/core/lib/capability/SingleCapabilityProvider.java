@@ -30,7 +30,8 @@ public class SingleCapabilityProvider<T> implements ICapabilityProvider {
 		return capability == this.capability ? (T) value : null;
 	}
 
-	public static class Serializeable<T extends INBTSerializable> extends SingleCapabilityProvider<T> implements INBTSerializable {
+
+	public static class Serializeable<T> extends SingleCapabilityProvider<T> implements INBTSerializable<NBTBase> {
 
 		public Serializeable(Capability<T> capability, T value){
 			super(capability, value);
@@ -38,12 +39,12 @@ public class SingleCapabilityProvider<T> implements ICapabilityProvider {
 
 		@Override
 		public NBTBase serializeNBT(){
-			return value.serializeNBT();
+			return capability.writeNBT(value, null);
 		}
 
 		@Override
 		public void deserializeNBT(NBTBase nbt){
-			value.deserializeNBT(nbt);
+			capability.readNBT(value, null, nbt);
 		}
 
 	}

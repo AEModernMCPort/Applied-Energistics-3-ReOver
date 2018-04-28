@@ -1,7 +1,9 @@
 package appeng.core.core.api.know;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.INBTSerializable;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface EternalWiki extends IKnow {
@@ -50,6 +52,12 @@ public interface EternalWiki extends IKnow {
 	@Override
 	default void forget(String know){
 		//You can't make the All-Knowing forget something
+	}
+
+	@Override
+	default <K extends INBTSerializable<NBTTagCompound>> Optional<K> getSpecialKnow(String specialKnow){
+		//Nothing special for the All-Knowing
+		return Optional.empty();
 	}
 
 	@Override

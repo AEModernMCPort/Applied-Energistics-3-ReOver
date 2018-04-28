@@ -3,6 +3,7 @@ package appeng.core.core.know;
 import appeng.core.AppEng;
 import appeng.core.core.api.know.EternalWiki;
 import appeng.core.core.api.know.IKnow;
+import appeng.core.core.api.know.SpecialKnowsCollectEvent;
 import appeng.core.lib.capability.SingleCapabilityProvider;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
@@ -10,6 +11,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -85,7 +87,11 @@ public class EternalWikiImpl implements EternalWiki {
 
 		@SubscribeEvent
 		public static void makeNow(AttachCapabilitiesEvent<Entity> event){
-			if(event.getObject() instanceof EntityPlayer) event.addCapability(new ResourceLocation(AppEng.MODID, "know"), new SingleCapabilityProvider.Serializeable<>(knowCapability, new KnowImpl()));
+			if(event.getObject() instanceof EntityPlayer){
+				SpecialKnowsCollectEvent<Entity> skevent = new SpecialKnowsCollectEvent<>(event.getObject());
+				MinecraftForge.EVENT_BUS.post(skevent);
+				event.addCapability(new ResourceLocation(AppEng.MODID, "know"), new SingleCapabilityProvider.Serializeable<>(knowCapability, new KnowImpl(skevent.getSKResult())));
+			}
 		}
 
 	}

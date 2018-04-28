@@ -259,7 +259,7 @@ public interface ExportBusImpl extends ExportBus {
 		protected BehaviorDriven.BehaviorOperationResult exportStuff(ItemStack exp, Stream<IItemHandler> itemHandlers){
 			ItemStack next = exp.copy();
 			List<Pair<IItemHandler, Integer>> dests = new ArrayList<>();
-			oeh: for(IItemHandler itemHandler : itemHandlers.collect(Collectors.toSet())) for(int i = 0; i < itemHandler.getSlots(); i++){
+			oeh: for(IItemHandler itemHandler : randomize(itemHandlers)) for(int i = 0; i < itemHandler.getSlots(); i++){
 				ItemStack rem = itemHandler.insertItem(i, next, true);
 				if(rem.getCount() < next.getCount()){
 					next = rem;
@@ -273,6 +273,12 @@ public interface ExportBusImpl extends ExportBus {
 				return BehaviorDriven.BehaviorOperationResult.SUCCESS;
 			}
 			return BehaviorDriven.BehaviorOperationResult.FAIL;
+		}
+
+		protected List<IItemHandler> randomize(Stream<IItemHandler> itemHandlers){
+			ArrayList<IItemHandler> res = itemHandlers.distinct().collect(Collectors.toCollection(ArrayList::new));
+			Collections.shuffle(res);
+			return res;
 		}
 
 	}

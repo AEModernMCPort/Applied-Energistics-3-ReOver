@@ -31,10 +31,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -189,7 +186,7 @@ public interface ImportBusImpl extends ImportBus {
 		protected BehaviorDriven.BehaviorOperationResult importStuff(Stream<IItemHandler> itemHandlers){
 			int timp = (int) Math.ceil(1/data.oneItemPerTicks);
 			int remaining = timp;
-			if(importBus.canAcceptForImport()) oih: for(IItemHandler itemHandler : itemHandlers.collect(Collectors.toSet())) for(int i = 0; i < itemHandler.getSlots(); i++){
+			if(importBus.canAcceptForImport()) oih: for(IItemHandler itemHandler : randomize(itemHandlers)) for(int i = 0; i < itemHandler.getSlots(); i++){
 				ItemStack stack = itemHandler.getStackInSlot(i);
 				if(!stack.isEmpty()){
 					int imp = Math.min(stack.getCount(), remaining);
@@ -202,6 +199,12 @@ public interface ImportBusImpl extends ImportBus {
 				}
 			}
 			return remaining < timp ? BehaviorDriven.BehaviorOperationResult.SUCCESS : BehaviorDriven.BehaviorOperationResult.FAIL;
+		}
+
+		protected List<IItemHandler> randomize(Stream<IItemHandler> itemHandlers){
+			ArrayList<IItemHandler> res = itemHandlers.distinct().collect(Collectors.toCollection(ArrayList::new));
+			Collections.shuffle(res);
+			return res;
 		}
 
 		@Nonnull

@@ -17,6 +17,16 @@ public interface IDefinitionBuilder<T, D extends IDefinition<T>, B extends IDefi
 
 	<I extends DefinitionInitializationComponent<T, D>> B initializationComponent(@Nullable Side side, I init);
 
+	default <I extends DefinitionInitializationComponent.PreInit<T, D>> B preinitComponent(@Nullable Side side, I init){
+		return initializationComponent(side, init);
+	}
+	default <I extends DefinitionInitializationComponent.Init<T, D>> B initComponent(@Nullable Side side, I init){
+		return initializationComponent(side, init);
+	}
+	default <I extends DefinitionInitializationComponent.PostInit<T, D>> B postinitComponent(@Nullable Side side, I init){
+		return initializationComponent(side, init);
+	}
+
 	D build();
 
 	interface DefinitionInitializationComponent<T, D extends IDefinition<T>> {

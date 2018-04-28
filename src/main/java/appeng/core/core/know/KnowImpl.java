@@ -17,22 +17,24 @@ public class KnowImpl implements IKnow {
 
 	@Override
 	public boolean isAware(String know){
-		return doesKnow(know) || AppEngCore.INSTANCE.getEternalWiki().getAllPieces(know).anyMatch(this::doesKnow);
+		return AppEngCore.INSTANCE.getEternalWiki().isTerminal(know) ? this.know.contains(know) : AppEngCore.INSTANCE.getEternalWiki().getPieces(know).anyMatch(this::isAware);
 	}
 
 	@Override
 	public boolean doesKnow(String know){
-		return this.know.contains(know);
+		return AppEngCore.INSTANCE.getEternalWiki().isTerminal(know) ? this.know.contains(know) : AppEngCore.INSTANCE.getEternalWiki().getPieces(know).allMatch(this::doesKnow);
 	}
 
 	@Override
 	public void learn(String know){
-		this.know.add(know);
+		if(AppEngCore.INSTANCE.getEternalWiki().isTerminal(know)) this.know.add(know);
+		else AppEngCore.INSTANCE.getEternalWiki().getPieces(know).forEach(this::learn);
 	}
 
 	@Override
 	public void forget(String know){
-		this.know.remove(know);
+		if(AppEngCore.INSTANCE.getEternalWiki().isTerminal(know)) this.know.remove(know);
+		else  AppEngCore.INSTANCE.getEternalWiki().getPieces(know).forEach(this::forget);
 	}
 
 	@Override

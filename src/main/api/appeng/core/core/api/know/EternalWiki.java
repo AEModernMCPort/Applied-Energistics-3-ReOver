@@ -27,7 +27,7 @@ public interface EternalWiki extends IKnow {
 	Stream<String> getPieces(String know);
 
 	default Stream<String> getAllPieces(String know){
-		return Stream.concat(getParents(know), getParents(know).flatMap(this::getAllPieces));
+		return Stream.concat(getPieces(know), getPieces(know).flatMap(this::getAllPieces));
 	}
 
 	//Impl

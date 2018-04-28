@@ -73,7 +73,7 @@ public class AppEngSkyfall implements ISkyfall {
 	private ConfigurationLoader<SkyfallConfig> configLoader;
 
 	@Override
-	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
 		if(clas == Item.class) return (D) itemDefinitions;
 		if(clas == Block.class) return (D) blockDefinitions;
 		if(clas == SkyobjectProvider.class) return (D) skyobjectProviderDefinitions;

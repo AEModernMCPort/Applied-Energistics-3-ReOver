@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public abstract class SkyobjectProviderImpl<S extends SkyobjectImpl<S, P>, P extends SkyobjectProviderImpl<S, P>> extends IForgeRegistryEntry.Impl<P> implements SkyobjectProvider<S, P> {
 
-	private static final ReflectionHelper.AField<Impl, TypeToken> TOKEN = new ReflectionHelper.AClass<>(IForgeRegistryEntry.Impl.class).<TypeToken>getDeclaredField("token").setAccessible(true);
+	private static final ReflectionHelper.AField<Impl, TypeToken> TOKEN = new ReflectionHelper.AClass<>(IForgeRegistryEntry.Impl.class).<TypeToken>getDeclaredField("token").orElseThrow(() -> new IllegalArgumentException("Caught exception reflecting tokens")).setAccessible(true);
 	private static final TypeToken<SkyobjectProvider> SKYOBJECTPROVIDERTOKEN = TypeToken.of(SkyobjectProvider.class);
 
 	protected Function<P, S> skyobjectSupplier;

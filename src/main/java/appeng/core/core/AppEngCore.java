@@ -44,6 +44,7 @@ import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
@@ -107,6 +108,7 @@ public class AppEngCore implements ICore {
 		return guiHandler;
 	}
 
+	@Nonnull
 	@Override
 	public EternalWiki getEternalWiki(){
 		return EternalWikiImpl.ETERNALWIKI;

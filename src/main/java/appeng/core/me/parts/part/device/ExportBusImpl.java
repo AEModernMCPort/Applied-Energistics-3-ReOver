@@ -106,7 +106,7 @@ public interface ExportBusImpl extends ExportBus {
 		}
 
 		@Override
-		public EnumActionResult onRightClick(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer player, @Nonnull EnumHand hand){
+		public EnumActionResult onRightClick(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nullable String pi){
 			if(!theWorld.isRemote) part.networkCounterpart.behaviorDrivenAction(behavior -> behavior.onRightClick(world, theWorld, player, hand));
 			return EnumActionResult.SUCCESS;
 		}

@@ -9,6 +9,7 @@ import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.network.connect.ConnectionsParams;
 import com.google.common.collect.*;
 import net.minecraft.nbt.NBTTagCompound;
@@ -190,11 +191,11 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		nodes.clear();
 		links.clear();
 		Multimap<NetDevice, Node> dtr2n = HashMultimap.create();
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(proot);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(proot);
 		if(!oPrCsVs.isPresent()) throw new IllegalArgumentException("Something is very very wrong");
 		Set<DeviceUUID> directLinks = new HashSet<>();
 		//Graph generation
-		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rootVoxels = oPrCsVs.get().getRight();
+		Multimap<VoxelPositionSide, Connection> rootVoxels = oPrCsVs.get().getRight();
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, rootVoxels).keySet().forEach(passthrough -> exploreAdjacent(world, passthrough, null, passthroughs, nodes, links, dtr2n));
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentDevices(world, rootVoxels).keySet().forEach(device -> {
 			dtr2n.put(device.getNetworkCounterpart(), null);
@@ -234,9 +235,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 			pathwaysToDestroy.addAll(link.pathways);
 		};
 
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(device);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(device);
 		if(!oPrCsVs.isPresent()) throw new IllegalArgumentException("Something is very very wrong");
-		Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>> prCsVs = oPrCsVs.get();
+		Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>> prCsVs = oPrCsVs.get();
 
 		AppEngME.INSTANCE.getDevicesHelper().getAdjacentPTs(world, prCsVs.getRight()).keySet().forEach(adjacentPT ->
 				getElement(adjacentPT.getUUIDForConnectionPassthrough()).ifPresent(pte -> {
@@ -315,9 +316,9 @@ public class NetBlockDevicesManager implements INBTSerializable<NBTTagCompound> 
 		};
 		long t = System.currentTimeMillis();
 
-		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough);
+		Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>>> oPrCsVs = AppEngME.INSTANCE.getDevicesHelper().voxels(passthrough);
 		if(!oPrCsVs.isPresent()) throw new IllegalArgumentException("Something is very very wrong");
-		Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>> prCsVs = oPrCsVs.get();
+		Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>> prCsVs = oPrCsVs.get();
 
 		Node nnode = createNode.apply(passthrough);
 		passthroughs.put(passthrough.getUUIDForConnectionPassthrough(), new WeakReference<>(passthrough));

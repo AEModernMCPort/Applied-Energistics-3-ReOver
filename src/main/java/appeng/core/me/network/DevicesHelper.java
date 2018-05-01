@@ -10,6 +10,7 @@ import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.network.block.ConnectionPassthrough;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.api.parts.container.PartInfo;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
@@ -65,11 +66,11 @@ public class DevicesHelper implements InitializationComponent {
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(CONNECTIVITYLOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
 			Optional<Mesh> allConnectionsMesh = meshLoader.apply("connections");
 			ImmutableSet.Builder<ResourceLocation> connectionsBuilder = new ImmutableSet.Builder<>();
-			ImmutableMultimap.Builder<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
+			ImmutableMultimap.Builder<VoxelPositionSide, ResourceLocation> connectivityBuilder = new ImmutableMultimap.Builder<>();
 			AppEngME.INSTANCE.getDevicesHelper().forEachConnection(connection -> {
-				BiConsumer<VoxelPosition, EnumFacing> addConnectivity = (voxel, side) -> {
+				Consumer<VoxelPositionSide> addConnectivity = voxelSide -> {
 					connectionsBuilder.add(connection.getId());
-					connectivityBuilder.put(new ImmutablePair<>(voxel, side), connection.getId());
+					connectivityBuilder.put(voxelSide, connection.getId());
 				};
 				allConnectionsMesh.ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, g -> g.equals(connection.getId().toString()) || g.equals(AppEng.MODID + ":all")), rootMeshVoxels, addConnectivity));
 				meshLoader.apply(connection.getId().toString().replace(":", "-_-")).ifPresent(cmesh -> forEachInterface(voxelizer.apply(cmesh, null), rootMeshVoxels, addConnectivity));
@@ -77,9 +78,9 @@ public class DevicesHelper implements InitializationComponent {
 			return Optional.of(new PartConnectivity(connectionsBuilder.build(), connectivityBuilder.build()));
 		});
 		AppEngME.INSTANCE.getPartsHelper().registerCustomPartDataLoader(WORLDINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> {
-			ImmutableMultimap.Builder<VoxelPosition, EnumFacing> interfaces = new ImmutableMultimap.Builder<>();
-			meshLoader.apply("wi").ifPresent(wimesh -> forEachInterface(voxelizer.apply(wimesh, null), rootMeshVoxels, interfaces::put));
-			Multimap<VoxelPosition, EnumFacing> ifm = interfaces.build();
+			ImmutableSet.Builder<VoxelPositionSide> interfaces = new ImmutableSet.Builder<>();
+			meshLoader.apply("wi").ifPresent(wimesh -> forEachInterface(voxelizer.apply(wimesh, null), rootMeshVoxels, interfaces::add));
+			Set<VoxelPositionSide> ifm = interfaces.build();
 			return ifm.isEmpty() ? Optional.empty() : Optional.of(new WorldInterface(ifm));
 		});
 
@@ -87,11 +88,11 @@ public class DevicesHelper implements InitializationComponent {
 		AppEngME.INSTANCE.registerConnection(DATA);
 	}
 
-	protected void forEachInterface(Set<VoxelPosition> inter2faces, Set<VoxelPosition> in, BiConsumer<VoxelPosition, EnumFacing> interfaceConsumer){
+	protected void forEachInterface(Set<VoxelPosition> inter2faces, Set<VoxelPosition> in, Consumer<VoxelPositionSide> interfaceConsumer){
 		inter2faces.stream().filter(in::contains).forEach(inVoxel -> {
 			for(EnumFacing side : EnumFacing.values()){
 				VoxelPosition outVoxel = inVoxel.offsetLocal(side);
-				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel)) interfaceConsumer.accept(inVoxel, side);
+				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel)) interfaceConsumer.accept(new VoxelPositionSide(inVoxel, side));
 			}
 		});
 	}
@@ -100,15 +101,15 @@ public class DevicesHelper implements InitializationComponent {
 	 * Adjacent
 	 */
 
-	public Multimap<ConnectionPassthrough, Connection> getAdjacentPTs(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
+	public Multimap<ConnectionPassthrough, Connection> getAdjacentPTs(World world, Multimap<VoxelPositionSide, Connection> voxels){
 		Multimap<ConnectionPassthrough, Connection> adjacentPTs = HashMultimap.create();
-		forEachTargetVoxel(voxels, (v, dir, cs) -> getConnectionPassthrough(world, v, dir, cs).ifPresent(cptCs -> adjacentPTs.putAll(cptCs.getLeft(), cptCs.getRight())));
+		forEachTargetVoxel(voxels, (vDir, cs) -> getConnectionPassthrough(world, vDir, cs).ifPresent(cptCs -> adjacentPTs.putAll(cptCs.getLeft(), cptCs.getRight())));
 		return adjacentPTs;
 	}
 
-	public Multimap<PhysicalDevice, Connection> getAdjacentDevices(World world, Multimap<Pair<VoxelPosition, EnumFacing>, Connection> voxels){
+	public Multimap<PhysicalDevice, Connection> getAdjacentDevices(World world, Multimap<VoxelPositionSide, Connection> voxels){
 		Multimap<PhysicalDevice, Connection> adjacentDevices = HashMultimap.create();
-		forEachTargetVoxel(voxels, (v, dir, cs) -> getDevice(world, v, dir, cs).ifPresent(phdCs -> adjacentDevices.putAll(phdCs.getLeft(), phdCs.getRight())));
+		forEachTargetVoxel(voxels, (vDir, cs) -> getDevice(world, vDir, cs).ifPresent(phdCs -> adjacentDevices.putAll(phdCs.getLeft(), phdCs.getRight())));
 		return adjacentDevices;
 	}
 
@@ -116,22 +117,22 @@ public class DevicesHelper implements InitializationComponent {
 	 * Get at
 	 */
 
-	public Optional<Pair<ConnectionPassthrough, Collection<Connection>>> getConnectionPassthrough(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
+	public Optional<Pair<ConnectionPassthrough, Collection<Connection>>> getConnectionPassthrough(World world, VoxelPositionSide posFrom, Collection<Connection> connections){
 		MutableObject<Pair<ConnectionPassthrough, Collection<Connection>>> passthrough = new MutableObject<>();
-		world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
+		world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null).getPart(posFrom.getVoxel()).flatMap(PartInfo::getState).ifPresent(s -> {
 			if(s instanceof ConnectionPassthrough){
-				List<Connection> cs = connections.stream().filter(c -> canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
+				List<Connection> cs = connections.stream().filter(c -> canConnect(s.getPart(), s.getAssignedPosRot(), c, posFrom)).collect(Collectors.toList());
 				if(!cs.isEmpty()) passthrough.setValue(new ImmutablePair<>((ConnectionPassthrough) s, cs));
 			}
 		});
 		return Optional.ofNullable(passthrough.getValue());
 	}
 
-	public Optional<Pair<PhysicalDevice, Collection<Connection>>> getDevice(World world, VoxelPosition position, EnumFacing from, Collection<Connection> connections){
+	public Optional<Pair<PhysicalDevice, Collection<Connection>>> getDevice(World world, VoxelPositionSide posFrom, Collection<Connection> connections){
 		MutableObject<Pair<PhysicalDevice, Collection<Connection>>> device = new MutableObject<>();
-		world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null).getPart(position).flatMap(PartInfo::getState).ifPresent(s -> {
+		world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null).getPart(posFrom.getVoxel()).flatMap(PartInfo::getState).ifPresent(s -> {
 			if(s instanceof PhysicalDevice){
-				List<Connection> cs = connections.stream().filter(c -> canConnect(s.getPart(), s.getAssignedPosRot(), c, position, from)).collect(Collectors.toList());
+				List<Connection> cs = connections.stream().filter(c -> canConnect(s.getPart(), s.getAssignedPosRot(), c, posFrom)).collect(Collectors.toList());
 				if(!cs.isEmpty()) device.setValue(new ImmutablePair<>((PhysicalDevice) s, cs));
 			}
 		});
@@ -142,11 +143,11 @@ public class DevicesHelper implements InitializationComponent {
 	 * C->V
 	 */
 
-	public void forEachTargetVoxel(Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections, TriConsumer<VoxelPosition, EnumFacing, Collection<Connection>> targetVoxelConsumer){
-		connections.keySet().forEach(vS -> targetVoxelConsumer.accept(vS.getLeft().offsetLocal(vS.getRight()), vS.getRight().getOpposite(), connections.get(vS)));
+	public void forEachTargetVoxel(Multimap<VoxelPositionSide, Connection> connections, BiConsumer<VoxelPositionSide, Collection<Connection>> targetVoxelConsumer){
+		connections.keySet().forEach(vS -> targetVoxelConsumer.accept(vS.flipFromTo(), connections.get(vS)));
 	}
 
-	public <T> Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<Pair<VoxelPosition, EnumFacing>, Connection>>> voxels(T t){
+	public <T> Optional<Triple<PartPositionRotation, ConnectionsParams, Multimap<VoxelPositionSide, Connection>>> voxels(T t){
 		if(t instanceof Part.State) return Optional.of(new ImmutableTriple<>(((Part.State) t).getAssignedPosRot(), getConnectionParams((Part.State) t, t instanceof ConnectionPassthrough ? c -> ((ConnectionPassthrough) t).getPassthroughConnectionParameter(c) : c -> 0), getConnections(((Part.State) t).getPart(), ((Part.State) t).getAssignedPosRot())));
 		return Optional.empty();
 	}
@@ -175,23 +176,15 @@ public class DevicesHelper implements InitializationComponent {
 		return new ConnectionsParams(params);
 	}
 
-	public boolean canConnect(Part part, PartPositionRotation positionRotation, Connection connection, VoxelPosition voxel, EnumFacing sideFrom){
-		return getConnectivity(part).connectivity.containsEntry(new ImmutablePair<>(positionRotation.getRotation().inverse().rotate(voxel.substract(positionRotation.getRotationCenterPosition())), positionRotation.getRotation().inverse().rotate(sideFrom)), connection.getId());
+	public boolean canConnect(Part part, PartPositionRotation positionRotation, Connection connection, VoxelPositionSide voxelSide){
+		return getConnectivity(part).connectivity.containsEntry(positionRotation.untransform(voxelSide), connection.getId());
 	}
 
-	public Multimap<Pair<VoxelPosition, EnumFacing>, Connection> getConnections(Part part, PartPositionRotation positionRotation){
-		Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connections = getConnectivity(part).connectivity;
-		Multimap<Pair<VoxelPosition, EnumFacing>, Connection> rotated = HashMultimap.create();
-		connections.keySet().forEach(voxelSide -> rotated.putAll(applyTransforms(voxelSide.getLeft(), voxelSide.getRight(), positionRotation), Iterables.transform(connections.get(voxelSide), AppEngME.INSTANCE.getDevicesHelper()::getConnection)));
+	public Multimap<VoxelPositionSide, Connection> getConnections(Part part, PartPositionRotation positionRotation){
+		Multimap<VoxelPositionSide, ResourceLocation> connections = getConnectivity(part).connectivity;
+		Multimap<VoxelPositionSide, Connection> rotated = HashMultimap.create();
+		connections.keySet().forEach(voxelSide -> rotated.putAll(positionRotation.transform(voxelSide), Iterables.transform(connections.get(voxelSide), AppEngME.INSTANCE.getDevicesHelper()::getConnection)));
 		return rotated;
-	}
-
-	protected Stream<Pair<VoxelPosition, EnumFacing>> transformAll(Multimap<VoxelPosition, EnumFacing> vf, PartPositionRotation positionRotation){
-		return vf.entries().stream().map(e -> applyTransforms(e.getKey(), e.getValue(), positionRotation));
-	}
-
-	protected Pair<VoxelPosition, EnumFacing> applyTransforms(VoxelPosition voxel, EnumFacing sideFrom, PartPositionRotation positionRotation){
-		return new ImmutablePair<>(positionRotation.getRotation().rotate(voxel).add(positionRotation.getRotationCenterPosition()), positionRotation.getRotation().rotate(sideFrom));
 	}
 
 	protected static final ResourceLocation CONNECTIVITYLOADER = new ResourceLocation(AppEng.MODID, "connectivity");
@@ -205,9 +198,9 @@ public class DevicesHelper implements InitializationComponent {
 	protected class PartConnectivity {
 
 		final Set<ResourceLocation> connections;
-		final Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivity;
+		final Multimap<VoxelPositionSide, ResourceLocation> connectivity;
 
-		public PartConnectivity(Set<ResourceLocation> connections, Multimap<Pair<VoxelPosition, EnumFacing>, ResourceLocation> connectivity){
+		public PartConnectivity(Set<ResourceLocation> connections, Multimap<VoxelPositionSide, ResourceLocation> connectivity){
 			this.connections = connections;
 			this.connectivity = connectivity;
 		}
@@ -240,15 +233,15 @@ public class DevicesHelper implements InitializationComponent {
 	}
 
 	public <P extends Part<P, S>, S extends Part.State<P, S>> Stream<S> getAllWITargetParts(Part.State part, PartsAccess.Mutable partsAccess){
-		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> p.getLeft().offsetLocal(p.getRight())).map(tp -> partsAccess.<P, S>getPart(tp).flatMap(PartInfo::getState).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+		return getWorldInterfaces(part.getPart()).map(wi -> wi.interfaces.stream().map(part.getAssignedPosRot()::transform).map(vs -> vs.flipFromTo().getVoxel()).map(tp -> partsAccess.<P, S>getPart(tp).flatMap(PartInfo::getState).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
 	}
 
 	public Stream<? extends Pair<BlockPos, EnumFacing>> getAllWITargetBlocks(Part.State part){
-		return getWorldInterfaces(part.getPart()).map(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).map(p -> Optional.of(p.getLeft().offsetLocal(p.getRight())).map(VoxelPosition::getGlobalPosition).filter(gp -> !gp.equals(p.getLeft().getGlobalPosition())).map(gp -> new ImmutablePair<>(gp, p.getRight().getOpposite())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
+		return getWorldInterfaces(part.getPart()).map(wi -> wi.interfaces.stream().map(part.getAssignedPosRot()::transform).map(p -> Optional.of(p.flipFromTo().getVoxel().getGlobalPosition()).filter(gp -> !gp.equals(p.getVoxel().getGlobalPosition())).map(gp -> new ImmutablePair<>(gp, p.getSide().getOpposite())).orElse(null)).filter(Objects::nonNull).distinct()).orElse(Stream.empty());
 	}
 
-	public void forEachWI(Part.State part, BiConsumer<VoxelPosition, EnumFacing> vsc){
-		getWorldInterfaces(part.getPart()).ifPresent(wi -> transformAll(wi.interfaces, part.getAssignedPosRot()).forEach(vs -> vsc.accept(vs.getLeft(), vs.getRight())));
+	public void forEachWI(Part.State part, Consumer<VoxelPositionSide> vsc){
+		getWorldInterfaces(part.getPart()).ifPresent(wi -> wi.interfaces.stream().map(part.getAssignedPosRot()::transform).forEach(vsc));
 	}
 
 	protected static final ResourceLocation WORLDINTERFACELOADER = new ResourceLocation(AppEng.MODID, "wi");
@@ -259,9 +252,9 @@ public class DevicesHelper implements InitializationComponent {
 
 	protected class WorldInterface {
 
-		final Multimap<VoxelPosition, EnumFacing> interfaces;
+		final Set<VoxelPositionSide> interfaces;
 
-		public WorldInterface(Multimap<VoxelPosition, EnumFacing> interfaces){
+		public WorldInterface(Set<VoxelPositionSide> interfaces){
 			this.interfaces = interfaces;
 		}
 

@@ -6,6 +6,7 @@ import appeng.core.me.api.client.part.PartRenderingHandler;
 import appeng.core.me.api.network.block.Connection;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
@@ -128,13 +129,12 @@ public class ClientPartHelper {
 					drawSelectionBox(positionRotation.getPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 1f, 0f), Mode.OUTLINE);
 					drawSelectionBox(positionRotation.getRotationCenterPosition().getBB(), event.getPlayer(), event.getPartialTicks(), new RGBA(1f, 0f, 1f), Mode.OUTLINE);
 					if(event.getPlayer().isSneaking()){
-						Multimap<Pair<VoxelPosition, EnumFacing>, Connection> connections = AppEngME.INSTANCE.getDevicesHelper().getConnections(info.getPart(), info.getPositionRotation());
+						Multimap<VoxelPositionSide, Connection> connections = AppEngME.INSTANCE.getDevicesHelper().getConnections(info.getPart(), info.getPositionRotation());
 						connections.forEach((vS, c) -> {
 							RGBA color = RGBA.fromARGB(c.getId().hashCode()).setAF(0.5f);
-							VoxelPosition v = vS.getLeft();
-							drawFilledBox(v.getBB().intersect(v.offsetLocal(vS.getRight()).getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);
+							drawFilledBox(vS.getVoxel().getBB().intersect(vS.flipFromTo().getVoxel().getBB()), event.getPlayer(), event.getPartialTicks(), color, Mode.OUTLINE);
 						});
-						info.getState().ifPresent(st -> AppEngME.INSTANCE.getDevicesHelper().forEachWI(st, (v, s) -> drawFilledBox(v.getBB().intersect(v.offsetLocal(s).getBB()), event.getPlayer(), event.getPartialTicks(), new RGBA(0, 255, 255, 187), Mode.OUTLINE)));
+						info.getState().ifPresent(st -> AppEngME.INSTANCE.getDevicesHelper().forEachWI(st, vS -> drawFilledBox(vS.getVoxel().getBB().intersect(vS.flipFromTo().getVoxel().getBB()), event.getPlayer(), event.getPartialTicks(), new RGBA(0, 255, 255, 187), Mode.OUTLINE)));
 					}
 				});
 

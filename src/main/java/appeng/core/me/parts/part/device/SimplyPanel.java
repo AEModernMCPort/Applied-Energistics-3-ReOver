@@ -64,7 +64,7 @@ public interface SimplyPanel {
 		}
 
 		@Override
-		public EnumActionResult onRightClick(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer player, @Nonnull EnumHand hand){
+		public EnumActionResult onRightClick(@Nullable Physical part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer player, @Nonnull EnumHand hand, @Nullable String pi){
 			if(!theWorld.isRemote){
 				Network net = part.networkCounterpart;
 				ItemNetworkStorage.Entry held = ItemNetworkStorage.Entry.ofItemStack(player.getHeldItem(hand));

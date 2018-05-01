@@ -122,6 +122,10 @@ public final class PartRotation implements INBTSerializable<NBTTagCompound> {
 		return new VoxelPosition(rotate(voxel.getBB()).getCenter());
 	}
 
+	public VoxelPositionSide rotate(VoxelPositionSide voxelPositionSide){
+		return new VoxelPositionSide(rotate(voxelPositionSide.getVoxel()), rotate(voxelPositionSide.getSide()));
+	}
+
 	//IO
 
 	@Override

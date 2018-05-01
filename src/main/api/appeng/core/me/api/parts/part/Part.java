@@ -77,7 +77,7 @@ public interface Part<P extends Part<P, S>, S extends Part.State<P, S>> extends 
 
 	}
 
-	default EnumActionResult onRightClick(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer placer, @Nonnull EnumHand hand){
+	default EnumActionResult onRightClick(@Nullable S part, @Nonnull PartsAccess.Mutable world, @Nonnull World theWorld, @Nonnull EntityPlayer placer, @Nonnull EnumHand hand, @Nullable String pi){
 		return EnumActionResult.PASS;
 	}
 

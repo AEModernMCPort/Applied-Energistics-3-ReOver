@@ -1,6 +1,7 @@
 package appeng.core.me.api.parts.placement;
 
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -24,6 +25,10 @@ public class VoxelRayTraceHelper {
 
 	public static VoxelPosition getOrApproximateHitVoxel(RayTraceResult rayTraceResult){
 		return hitsVoxel(rayTraceResult) ? getTargetVoxel(rayTraceResult) : new VoxelPosition(rayTraceResult.hitVec.add(new Vec3d(rayTraceResult.sideHit.getDirectionVec()).scale(-VOXELSIZED2/2)));
+	}
+
+	public static VoxelPositionSide getOrApproximateHitVoxelSide(RayTraceResult rayTraceResult){
+		return new VoxelPositionSide(getOrApproximateHitVoxel(rayTraceResult), rayTraceResult.sideHit);
 	}
 
 }

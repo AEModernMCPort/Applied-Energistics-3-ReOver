@@ -49,6 +49,24 @@ public final class PartPositionRotation implements INBTSerializable<NBTTagCompou
 		return posAsRelativeTo(positionRotation.position);
 	}
 
+	//Transform
+
+	public VoxelPosition transform(VoxelPosition voxel){
+		return rotation.rotate(voxel).add(getRotationCenterPosition());
+	}
+
+	public VoxelPositionSide transform(VoxelPositionSide voxelPositionSide){
+		return rotation.rotate(voxelPositionSide).transformVoxel(v -> v.add(getRotationCenterPosition()));
+	}
+
+	public VoxelPosition untransform(VoxelPosition rvoxel){
+		return rotation.inverse().rotate(rvoxel.substract(getRotationCenterPosition()));
+	}
+
+	public VoxelPositionSide untransform(VoxelPositionSide voxelPositionSide){
+		return rotation.inverse().rotate(voxelPositionSide.transformVoxel(v -> v.substract(getRotationCenterPosition())));
+	}
+
 	@Override
 	public NBTTagCompound serializeNBT(){
 		NBTTagCompound nbt = new NBTTagCompound();

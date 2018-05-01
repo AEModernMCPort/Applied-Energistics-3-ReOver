@@ -3,7 +3,9 @@ package appeng.core.me.block;
 import appeng.core.core.block.TileBlockBase;
 import appeng.core.lib.block.property.UnlistedPropertyGeneric;
 import appeng.core.lib.raytrace.RayTraceHelper;
+import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.api.parts.container.GlobalVoxelsInfo;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
@@ -96,7 +98,7 @@ public class PartsContainerBlock extends TileBlockBase<PartsContainerTile> {
 		if(trace.hitInfo instanceof VoxelPosition){
 			PartsAccess.Mutable partsAccess = world.getCapability(PartsHelperImpl.worldPartsAccessCapability, null);
 			MutableObject<EnumActionResult> result = new MutableObject<>(EnumActionResult.PASS);
-			partsAccess.getPart((VoxelPosition) trace.hitInfo).ifPresent(part -> result.setValue(part.getPart().onRightClick(part.getState().orElse(null), partsAccess, world, player, hand)));
+			partsAccess.getPart((VoxelPosition) trace.hitInfo).ifPresent(part -> result.setValue(part.getPart().onRightClick(part.getState().orElse(null), partsAccess, world, player, hand, part.getState().flatMap(s -> AppEngME.INSTANCE.getPartsHelper().getPlayerInterface(s, new VoxelPositionSide((VoxelPosition) trace.hitInfo, trace.sideHit))).orElse(null))));
 			return result.getValue() == EnumActionResult.SUCCESS;
 		}
 		return false;

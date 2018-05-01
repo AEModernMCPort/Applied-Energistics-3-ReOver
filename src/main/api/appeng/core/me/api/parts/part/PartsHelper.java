@@ -1,6 +1,7 @@
 package appeng.core.me.api.parts.part;
 
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.api.parts.placement.PartPlacementLogic;
 import com.owens.oobjloader.builder.Mesh;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +22,9 @@ public interface PartsHelper {
 
 	@Nonnull
 	<T> Optional<T> getCustomPartData(@Nonnull Part part, @Nonnull ResourceLocation id);
+
+	@Nonnull
+	Optional<String> getPlayerInterface(@Nonnull Part.State part, @Nonnull VoxelPositionSide voxelPositionSide);
 
 	interface CustomPartDataLoader<T> {
 

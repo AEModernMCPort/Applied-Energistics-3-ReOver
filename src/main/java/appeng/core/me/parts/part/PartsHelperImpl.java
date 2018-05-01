@@ -8,6 +8,7 @@ import appeng.core.lib.resource.ResourceLocationHelper;
 import appeng.core.me.AppEngME;
 import appeng.core.me.api.parts.PartPositionRotation;
 import appeng.core.me.api.parts.VoxelPosition;
+import appeng.core.me.api.parts.VoxelPositionSide;
 import appeng.core.me.api.parts.container.IPartsContainer;
 import appeng.core.me.api.parts.container.PartsAccess;
 import appeng.core.me.api.parts.part.Part;
@@ -50,6 +51,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -73,6 +75,24 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 		AppEngME.proxy.client().acceptPreInit(() -> ClientResourceHelper.registerReloadListener(resourceManager -> loadMeshes()));
 
 		groupsHelper.preInit();
+	}
+
+	@Override
+	public void init(){
+		registerCustomPartDataLoader(PLAYERINTERFACELOADER, (part, meshLoader, voxelizer, rootMeshVoxels) -> meshLoader.apply("pi").map(mesh -> {
+			Map<VoxelPositionSide, String> pis = new HashMap<>();
+			mesh.groups.keySet().forEach(g -> forEachInterface(voxelizer.apply(mesh, Predicate.isEqual(g)), rootMeshVoxels, vps -> pis.put(vps, g)));
+			return new PlayerInterfaces(pis);
+		}));
+	}
+
+	protected void forEachInterface(Set<VoxelPosition> inter2faces, Set<VoxelPosition> in, Consumer<VoxelPositionSide> interfaceConsumer){
+		inter2faces.stream().filter(in::contains).forEach(inVoxel -> {
+			for(EnumFacing side : EnumFacing.values()){
+				VoxelPosition outVoxel = inVoxel.offsetLocal(side);
+				if(inter2faces.contains(outVoxel) && !in.contains(outVoxel)) interfaceConsumer.accept(new VoxelPositionSide(inVoxel, side));
+			}
+		});
 	}
 
 	@Override
@@ -145,6 +165,32 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 				worldPartsAccess.removePart((VoxelPosition) rayTrace.hitInfo).ifPresent(uuidPart -> uuidPart.getRight().getPart().onBroken(uuidPart.getRight().getState().orElse(null), worldPartsAccess, event.getWorld(), event.getPlayer()));
 			event.setCanceled(true);
 		});
+	}
+
+	/*
+	 * Player Interface
+	 */
+
+	@Nonnull
+	@Override
+	public Optional<String> getPlayerInterface(@Nonnull Part.State part, @Nonnull VoxelPositionSide voxelPositionSide){
+		return getPlayerInterfaces(part.getPart()).map(pi -> pi.pis.get(part.getAssignedPosRot().untransform(voxelPositionSide)));
+	}
+
+	protected static final ResourceLocation PLAYERINTERFACELOADER = new ResourceLocation(AppEng.MODID, "pi");
+
+	protected Optional<PlayerInterfaces> getPlayerInterfaces(Part part){
+		return getCustomPartData(part, PLAYERINTERFACELOADER);
+	}
+
+	protected static class PlayerInterfaces {
+
+		protected final Map<VoxelPositionSide, String> pis;
+
+		public PlayerInterfaces(Map<VoxelPositionSide, String> pis){
+			this.pis = pis;
+		}
+
 	}
 
 	/*

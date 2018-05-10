@@ -12,9 +12,6 @@ import appeng.api.module.Module.ModuleEventHandler;
 import appeng.api.recipe.IGRecipeRegistry;
 import appeng.core.AppEng;
 import appeng.core.core.api.ICore;
-import appeng.core.core.api.crafting.ion.Ion;
-import appeng.core.core.api.crafting.ion.NativeEnvironmentChange;
-import appeng.core.core.api.material.Material;
 import appeng.core.core.api.tick.Tickables;
 import appeng.core.core.bootstrap.*;
 import appeng.core.core.config.JSONConfigLoader;
@@ -41,7 +38,6 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -70,8 +66,6 @@ public class AppEngCore implements ICore {
 	private InitializationComponentsHandler initHandler = new InitializationComponentsHandlerImpl();
 
 	private IForgeRegistry recipeRegistryRegistry;
-	private ForgeRegistry<Material> materialRegistry;
-	private IForgeRegistry<Ion> ionRegistry;
 
 	private DefinitionFactory registry;
 
@@ -79,8 +73,6 @@ public class AppEngCore implements ICore {
 	private CoreBlockDefinitions blockDefinitions;
 	private CoreTileDefinitions tileDefinitions;
 	private CoreFluidDefinitions fluidDefinitions;
-	private CoreMaterialDefinitions materialDefinitions;
-	private CoreIonDefinitions ionDefinitions;
 	private CoreEntityDefinitions entityDefinitions;
 
 	private CraftingIonRegistry craftingIonRegistry;
@@ -92,7 +84,7 @@ public class AppEngCore implements ICore {
 	}
 
 	@Override
-	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
 		if(clas == Item.class){
 			return (D) itemDefinitions;
 		}
@@ -105,12 +97,6 @@ public class AppEngCore implements ICore {
 		if(clas == Fluid.class){
 			return (D) fluidDefinitions;
 		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
-		}
-		if(clas == Ion.class){
-			return (D) ionDefinitions;
-		}
 		if(clas == EntityEntry.class){
 			return (D) entityDefinitions;
 		}
@@ -120,18 +106,6 @@ public class AppEngCore implements ICore {
 	@Override
 	public CoreGuiHandler guiHandler(){
 		return guiHandler;
-	}
-
-	public ForgeRegistry<Material> getMaterialRegistry(){
-		return materialRegistry;
-	}
-
-	public IForgeRegistry<Ion> getIonRegistry(){
-		return ionRegistry;
-	}
-
-	public CraftingIonRegistry getCraftingIonRegistry(){
-		return craftingIonRegistry;
 	}
 
 	@ModuleEventHandler
@@ -146,16 +120,11 @@ public class AppEngCore implements ICore {
 		event.registerDefinitionBuilderSupplier(Fluid.class, Fluid.class, FluidDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(Biome.class, Biome.class, BiomeDefinitionBuilder::new);
 		event.registerDefinitionBuilderSupplier(DimensionType.class, Integer.class, DimensionTypeDefinitionBuilder::new);
-
-		event.registerDefinitionBuilderSupplier(Material.class, Material.class, MaterialDefinitionBuilder::new);
-		event.registerDefinitionBuilderSupplier(Ion.class, Ion.class, IonDefinitionBuilder::new);
 	}
 
 	@ModuleEventHandler
 	public void preInit(AEStateEvent.AEPreInitializationEvent event){
 		recipeRegistryRegistry = new RegistryBuilder().setName(new ResourceLocation(AppEng.MODID, "recipe_registry")).setType(IGRecipeRegistry.class).disableSaving().setMaxID(Integer.MAX_VALUE - 1).create();
-		materialRegistry = (ForgeRegistry<Material>) new RegistryBuilder<Material>().setName(new ResourceLocation(AppEng.MODID, "material")).setType(Material.class).setIDRange(0, Short.MAX_VALUE).disableSaving().create();
-		ionRegistry = new RegistryBuilder<Ion>().setName(new ResourceLocation(AppEng.MODID, "ion")).setType(Ion.class).setMaxID(Integer.MAX_VALUE - 1).create();
 
 		configLoader = event.configurationLoader();
 		try{
@@ -175,16 +144,12 @@ public class AppEngCore implements ICore {
 		this.tileDefinitions = new CoreTileDefinitions(registry);
 		this.fluidDefinitions = new CoreFluidDefinitions(registry);
 		this.entityDefinitions = new CoreEntityDefinitions(registry);
-		this.materialDefinitions = new CoreMaterialDefinitions(registry);
-		this.ionDefinitions = new CoreIonDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
 		this.blockDefinitions.init(registry);
 		this.fluidDefinitions.init(registry);
 		this.tileDefinitions.init(registry);
 		this.entityDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
-		this.ionDefinitions.init(registry);
 
 		CapabilityManager.INSTANCE.register(Tickables.class, new Capability.IStorage<Tickables>() {
 

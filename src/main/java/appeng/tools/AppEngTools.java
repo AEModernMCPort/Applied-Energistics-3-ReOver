@@ -9,12 +9,10 @@ import appeng.api.module.AEStateEvent;
 import appeng.api.module.Module;
 import appeng.api.module.Module.ModuleEventHandler;
 import appeng.core.AppEng;
-import appeng.core.core.api.material.Material;
 import appeng.core.lib.bootstrap.InitializationComponentsHandlerImpl;
 import appeng.tools.api.ITools;
 import appeng.tools.config.ToolsConfig;
 import appeng.tools.definitions.ToolsItemDefinitions;
-import appeng.tools.definitions.ToolsMaterialDefinitions;
 import appeng.tools.proxy.ToolsProxy;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -41,15 +39,11 @@ public class AppEngTools implements ITools {
 	private DefinitionFactory registry;
 
 	private ToolsItemDefinitions itemDefinitions;
-	private ToolsMaterialDefinitions materialDefinitions;
 
 	@Override
-	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<T> clas){
+	public <T, D extends IDefinitions<T, ? extends IDefinition<T>>> D definitions(Class<? super T> clas){
 		if(clas == Item.class){
 			return (D) itemDefinitions;
-		}
-		if(clas == Material.class){
-			return (D) materialDefinitions;
 		}
 		return null;
 	}
@@ -66,10 +60,8 @@ public class AppEngTools implements ITools {
 
 		registry = event.factory(initHandler, proxy);
 		this.itemDefinitions = new ToolsItemDefinitions(registry);
-		this.materialDefinitions = new ToolsMaterialDefinitions(registry);
 
 		this.itemDefinitions.init(registry);
-		this.materialDefinitions.init(registry);
 
 		initHandler.preInit();
 		proxy.preInit(event);

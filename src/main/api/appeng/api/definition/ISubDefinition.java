@@ -14,6 +14,8 @@ import javax.annotation.Nullable;
  * @param <S> Type of this
  * @author Elix_x
  */
+//ALL SUB-DEFINITIONS DEPRECATED UNTIL DEFINITIVE DECISION (3rd party usefulness) IS TAKEN IN MC 1.13
+@Deprecated
 public interface ISubDefinition<T, P, S extends ISubDefinition<T, P, S>> extends IDefinition<T> {
 
 	@Nullable
@@ -74,6 +76,8 @@ public interface ISubDefinition<T, P, S extends ISubDefinition<T, P, S>> extends
 	 * @param <V> Value type
 	 * @author Elix_x
 	 */
+	//ALL SUB-DEFINITIONS DEPRECATED UNTIL DEFINITIVE DECISION (3rd party usefulness) IS TAKEN IN MC 1.13
+	@Deprecated
 	public interface ISubDefinitionProperty<V> {
 
 		/**

@@ -9,8 +9,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
+
+	public static Supplier<IllegalArgumentException> configInstantiationFailed(Class<?> config, String cause){
+		return () -> new IllegalArgumentException(String.format("Could not instantiate config (%s) - %s", config, cause));
+	}
 
 	protected final String module;
 	protected final String extension;

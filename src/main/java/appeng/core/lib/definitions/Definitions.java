@@ -18,7 +18,7 @@ public abstract class Definitions<T, D extends IDefinition<T>> implements IDefin
 	public final void init(DefinitionFactory factory){
 		assert map == null;
 		ImmutableMap.Builder<ResourceLocation, D> builder = ImmutableMap.builder();
-		new ReflectionHelper.AClass<>((Class<Definitions>) this.getClass()).getDeclaredFields().filter(field -> IDefinition.class.isAssignableFrom(field.get().getType())).map(aField -> (D) aField.setAccessible(true).get(Definitions.this)).forEach(d -> builder.put(d.identifier(), d));
+		new ReflectionHelper.AClass<>((Class<Definitions>) this.getClass()).<D>getDeclaredFields().filter(field -> IDefinition.class.isAssignableFrom(field.get().getType())).map(aField -> aField.setAccessible(true).get(Definitions.this).get()).forEach(d -> builder.put(d.identifier(), d));
 		dynamicallyCompiled.forEach(def -> builder.put(def.identifier(), def));
 		dynamicallyCompiled = null;
 		factory.getDefaults(definitionType()).forEach(d -> builder.put(d.identifier(), d));

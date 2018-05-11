@@ -41,7 +41,7 @@ public class JSONConfigLoader<C> extends ConfigLoader<C> {
 		super.load(clas);
 		hierarchicalToManager(GSON.fromJson(new FileReader(featuresFile()), HierarchicalFeatures.class));
 		config = GSON.fromJson(new FileReader(configFile()), clas);
-		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().setAccessible(true).newInstance();
+		if(config == null) config = new ReflectionHelper.AClass<>(clas).getDeclaredConstructor().orElseThrow(configInstantiationFailed(clas, "no-args constructor not found")).setAccessible(true).newInstance().orElseThrow(configInstantiationFailed(clas, "constructor invocation failed"));
 		if(config instanceof ConfigCompilable) ((ConfigCompilable) config).compile();
 	}
 

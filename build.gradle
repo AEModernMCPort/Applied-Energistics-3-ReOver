@@ -27,18 +27,24 @@ sourceCompatibility = java_version
 targetCompatibility = java_version
 
 dependencies {
-	testCompile "junit:junit:4.12"
 	compile("code.elix_x.excore:EXCore:$excore_version-$minecraft_version"){
 		exclude group: "com.google.guava"
 	}
 	compile "com.esotericsoftware.yamlbeans:yamlbeans:$yamlbeans_version"
 	deobfCompile "MCMultiPart2:MCMultiPart:$mcmp_version"
-	// deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
-	// deobfCompile "li.cil.oc:OpenComputers:MC$minecraft_version-$opencomputers_version"
-	// deobfCompile "embers:embers:$embers_version"
-	// deobfCompile "refinedstorage:refinedstorage:$rs_version"
+	deobfCompile "chisels-bits:chiselsandbits:$chiselsandbits_version"
 	compile "mezz.jei:jei_$minecraft_version:$jei_version"
-	// deobfCompile "hwyla:Hwyla:${hwyla_version}_$minecraft_version"
+	
+	//JUnit
+	// JUnit Jupiter API and TestEngine implementation
+	testCompile("org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}")
+	testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}")
+
+	// To avoid compiler warnings about @API annotations in JUnit code
+	testCompileOnly('org.apiguardian:apiguardian-api:1.0.0')
+
+	// Only needed to run tests in an (IntelliJ) IDE(A) that bundles an older version
+	testRuntime("org.junit.platform:junit-platform-launcher:${junitPlatformVersion}")
 }
 
 def theName = name

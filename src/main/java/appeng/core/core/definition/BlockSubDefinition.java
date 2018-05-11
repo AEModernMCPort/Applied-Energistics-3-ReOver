@@ -8,6 +8,8 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 
+//FOR DEFINITIVE* REMOVAL IN MC 1.13
+@Deprecated
 public class BlockSubDefinition<S extends IBlockState, B extends Block> extends Definition<S> implements IBlockSubDefinition<S, B> {
 
 	private final BlockDefinition<B> parent;

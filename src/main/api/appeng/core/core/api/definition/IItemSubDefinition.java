@@ -12,6 +12,8 @@ import net.minecraft.item.Item;
  * @param <I> Item
  * @author Elix_x
  */
+//FOR DEFINITIVE* REMOVAL IN MC 1.13
+@Deprecated
 public interface IItemSubDefinition<S extends IStateItemState<I>, I extends Item & IStateItem<I>> extends ISubDefinition<S, I, IItemSubDefinition<S, I>> {
 
 }

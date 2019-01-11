@@ -19,7 +19,7 @@ public class GRecipeRegistry<R extends IGRecipe<R>> extends IForgeRegistryEntry.
 	private final IForgeRegistry<R> registryDelegate;
 
 	public GRecipeRegistry(ResourceLocation id, Class<R> type){
-		registryDelegate = new RegistryBuilder<R>().setName(new ResourceLocation(id.getResourceDomain(), "recipe/" + id.getResourcePath())).setType(type).disableSaving().create();
+		registryDelegate = new RegistryBuilder<R>().setName(new ResourceLocation(id.getNamespace(), "recipe/" + id.getPath())).setType(type).disableSaving().create();
 		setRegistryName(id);
 	}
 

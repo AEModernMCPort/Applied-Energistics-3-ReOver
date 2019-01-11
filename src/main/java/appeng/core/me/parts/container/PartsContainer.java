@@ -335,7 +335,7 @@ public class PartsContainer implements IPartsContainer {
 	@Override
 	public void deserializeNBT(NBTTagCompound nbt){
 		parts.clear();
-		nbt.getTagList("parts", 10).forEach(tag -> parts.add(tag.hasNoTags() ? null : fromNBT((NBTTagCompound) tag)));
+		nbt.getTagList("parts", 10).forEach(tag -> parts.add(tag.isEmpty() ? null : fromNBT((NBTTagCompound) tag)));
 		inflate(nbt.getIntArray("voxels"));
 		ownedParts.clear();
 		nbt.getTagList("owned", 10).forEach(bnext -> {

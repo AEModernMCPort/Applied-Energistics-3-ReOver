@@ -6,13 +6,13 @@ import net.minecraft.util.ResourceLocation;
 public class ResourceLocationHelper {
 
 	public static ResourceLocation parent(ResourceLocation resourceLocation){
-		return new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath().substring(0, resourceLocation.getResourcePath().lastIndexOf('/')));
+		return new ResourceLocation(resourceLocation.getNamespace(), resourceLocation.getPath().substring(0, resourceLocation.getPath().lastIndexOf('/')));
 	}
 
 	public static ResourceLocation relative(ResourceLocation origin, String location){
 		if(location.contains("/")){
-			return new ResourceLocation(origin.getResourceDomain(), origin.getResourcePath() + (origin.getResourcePath().endsWith("/") || location.startsWith("/") ? "" : "/") + location);
-		} else if(origin.getResourcePath().contains(".")){
+			return new ResourceLocation(origin.getNamespace(), origin.getPath() + (origin.getPath().endsWith("/") || location.startsWith("/") ? "" : "/") + location);
+		} else if(origin.getPath().contains(".")){
 			return relative(parent(origin), location);
 		} else {
 			return relative(origin, "/" + location);
@@ -21,8 +21,8 @@ public class ResourceLocationHelper {
 
 	public static NBTTagCompound serialize(ResourceLocation resourceLocation){
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setString("domain", resourceLocation.getResourceDomain());
-		nbt.setString("path", resourceLocation.getResourcePath());
+		nbt.setString("domain", resourceLocation.getNamespace());
+		nbt.setString("path", resourceLocation.getPath());
 		return nbt;
 	}
 

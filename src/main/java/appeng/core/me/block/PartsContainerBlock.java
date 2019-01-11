@@ -73,7 +73,7 @@ public class PartsContainerBlock extends TileBlockBase<PartsContainerTile> {
 	}
 
 	@Override
-	public BlockRenderLayer getBlockLayer(){
+	public BlockRenderLayer getRenderLayer(){
 		return BlockRenderLayer.CUTOUT_MIPPED;
 	}
 

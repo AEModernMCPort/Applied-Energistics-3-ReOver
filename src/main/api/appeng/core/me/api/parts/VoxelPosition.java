@@ -115,7 +115,7 @@ public final class VoxelPosition implements INBTSerializable<NBTTagCompound> {
 	 * @return global position of center of this voxel
 	 */
 	public Vec3d globalCenterVec(){
-		return asVec3d().addVector(VOXELSIZED2, VOXELSIZED2, VOXELSIZED2);
+		return asVec3d().add(VOXELSIZED2, VOXELSIZED2, VOXELSIZED2);
 	}
 
 	/**

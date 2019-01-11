@@ -198,13 +198,13 @@ public class PartsHelperImpl implements PartsHelper, InitializationComponent {
 	 */
 
 	public static ResourceLocation getFullRootMeshLocation(Part part, String suffix){
-		String path = part.getRootMesh().getResourcePath();
+		String path = part.getRootMesh().getPath();
 		if(suffix != null) path = path.substring(0, path.length() - 3) + suffix + ".obj";
-		return new ResourceLocation(part.getRootMesh().getResourceDomain(), "models/part/" + path);
+		return new ResourceLocation(part.getRootMesh().getNamespace(), "models/part/" + path);
 	}
 
 	public static ResourceLocation getFullStateMeshLocation(ResourceLocation mesh){
-		return new ResourceLocation(mesh.getResourceDomain(), "part/" + mesh.getResourcePath());
+		return new ResourceLocation(mesh.getNamespace(), "part/" + mesh.getPath());
 	}
 
 	private Map<ResourceLocation, PartData> partDataMap = new HashMap<>();

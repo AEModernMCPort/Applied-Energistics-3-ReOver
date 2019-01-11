@@ -17,7 +17,7 @@ public class MEServerProxy extends MEProxy {
 	@Override
 	public ResourceHelper getResourceHelper(){
 		//TODO 1.13 Data packs?
-		return location -> MEServerProxy.class.getResourceAsStream("/assets/" + location.getResourceDomain() + "/" + location.getResourcePath());
+		return location -> MEServerProxy.class.getResourceAsStream("/assets/" + location.getNamespace() + "/" + location.getPath());
 	}
 
 	@Override

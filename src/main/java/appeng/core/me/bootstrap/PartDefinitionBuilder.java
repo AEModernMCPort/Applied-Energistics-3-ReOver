@@ -62,8 +62,8 @@ public class PartDefinitionBuilder<P extends Part<P, S>, S extends Part.State<P,
 	protected IPartDefinition<P, S> def(@Nullable P part){
 		if(part == null) return new PartDefinition<>(registryName, null);
 
-		if(part.getUnlocalizedName() == null) part.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
-		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)) mesh = new ResourceLocation(mesh != null ? mesh.getResourceDomain() : registryName.getResourceDomain(), AppEng.instance().getCurrentName() + "/" + (mesh != null ? mesh.getResourcePath() : (registryName.getResourcePath() + ".obj")));
+		if(part.getUnlocalizedName() == null) part.setUnlocalizedName(registryName.getNamespace() + "." + registryName.getPath());
+		if(Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)) mesh = new ResourceLocation(mesh != null ? mesh.getNamespace() : registryName.getNamespace(), AppEng.instance().getCurrentName() + "/" + (mesh != null ? mesh.getPath() : (registryName.getPath() + ".obj")));
 		if(mesh != null) part.setRootMesh(mesh);
 
 		PartDefinition<P, S> definition = new PartDefinition<>(registryName, part);

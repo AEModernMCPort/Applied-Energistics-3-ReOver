@@ -20,7 +20,7 @@ public class DroppingItemHandler implements IItemHandler {
 	}
 
 	public DroppingItemHandler(World world, BlockPos pos){
-		this(world, new Vec3d(pos).addVector(0.5, 0.5, 0.5));
+		this(world, new Vec3d(pos).add(0.5, 0.5, 0.5));
 	}
 
 	@Override

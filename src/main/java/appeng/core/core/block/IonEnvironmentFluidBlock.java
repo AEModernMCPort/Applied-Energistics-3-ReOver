@@ -39,7 +39,7 @@ public class IonEnvironmentFluidBlock extends BlockFluidFinite {
 	}
 
 	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity){
+	public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity){
 		if(entity instanceof EntityItem && ((EntityItem) entity).getItem().hasCapability(CraftingIonRegistry.ionProviderCapability, null)) AppEngCore.INSTANCE.getCraftingIonRegistry().onIonEntityItemEnterEnvironment(world, pos, (EntityItem) entity, ((EntityItem) entity).getItem().getCapability(CraftingIonRegistry.ionProviderCapability, null));
 	}
 

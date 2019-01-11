@@ -39,7 +39,7 @@ public abstract class DefinitionBuilder<I, T, D extends IDefinition<T>, B extend
 	}
 
 	public DefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, I instance, String featurePrefix){
-		this(factory, registryName, instance, new ResourceLocation(AppEng.instance().getCurrentName(), featurePrefix + "/" + registryName.getResourcePath()));
+		this(factory, registryName, instance, new ResourceLocation(AppEng.instance().getCurrentName(), featurePrefix + "/" + registryName.getPath()));
 	}
 
 	@Override

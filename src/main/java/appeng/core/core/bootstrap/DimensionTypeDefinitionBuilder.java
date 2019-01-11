@@ -19,7 +19,7 @@ public class DimensionTypeDefinitionBuilder<D extends DimensionType> extends Def
 	public DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id){
 		super(factory, registryName, id, "dimension");
 		this.name = registryName.toString();
-		this.suffix = registryName.getResourcePath();
+		this.suffix = registryName.getPath();
 	}
 
 	public DimensionTypeDefinitionBuilder(DefinitionFactory factory, ResourceLocation registryName, int id, String name, String suffix, Class<? extends WorldProvider> clazz, boolean shouldLoadSpawn){

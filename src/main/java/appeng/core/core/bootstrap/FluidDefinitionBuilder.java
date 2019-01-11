@@ -39,7 +39,7 @@ public class FluidDefinitionBuilder<F extends Fluid> extends DefinitionBuilder<F
 
 	@Override
 	public <B extends Block & IFluidBlock> FluidDefinitionBuilder<F> createBlock(FluidBlockCustomizer<F, B> customizer){
-		return setBlock(def -> customizer.customize(factory.<B, IBlockDefinition<B>, IBlockBuilder<B, ?>, Block>definitionBuilder(registryName, fluidBlockIh(customizer.createBlock(def))).initializationComponent(Side.CLIENT, new StateMapperComponent<>(old -> Optional.of(new StaticStateMapper(new ModelResourceLocation(new ResourceLocation(ForgeVersion.MOD_ID, "fluid"), def.identifier().getResourcePath())))))).setFeature(feature).build());
+		return setBlock(def -> customizer.customize(factory.<B, IBlockDefinition<B>, IBlockBuilder<B, ?>, Block>definitionBuilder(registryName, fluidBlockIh(customizer.createBlock(def))).initializationComponent(Side.CLIENT, new StateMapperComponent<>(old -> Optional.of(new StaticStateMapper(new ModelResourceLocation(new ResourceLocation(ForgeVersion.MOD_ID, "fluid"), def.identifier().getPath())))))).setFeature(feature).build());
 	}
 
 	@Override

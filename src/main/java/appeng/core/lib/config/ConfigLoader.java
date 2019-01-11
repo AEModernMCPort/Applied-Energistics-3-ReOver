@@ -58,7 +58,7 @@ public abstract class ConfigLoader<C> implements ConfigurationLoader<C> {
 	protected HierarchicalFeatures managerToHierarchical(){
 		HierarchicalFeatures features = new HierarchicalFeatures();
 		features.enabled = true;
-		featuresManager.getAllFeatures().forEach((location, enabled) -> features.getOrCreateLocate(location.getResourcePath()).enabled = enabled);
+		featuresManager.getAllFeatures().forEach((location, enabled) -> features.getOrCreateLocate(location.getPath()).enabled = enabled);
 		return features;
 	}
 

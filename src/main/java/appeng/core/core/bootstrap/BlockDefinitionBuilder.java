@@ -77,7 +77,7 @@ public class BlockDefinitionBuilder<B extends Block> extends DefinitionBuilder<B
 	public IBlockDefinition<B> def(B block){
 		if(block == null) return new BlockDefinition<>(registryName, null);
 
-		if(block.getUnlocalizedName().equals("tile.null")) block.setUnlocalizedName(registryName.getResourceDomain() + "." + registryName.getResourcePath());
+		if(block.getTranslationKey().equals("tile.null")) block.setTranslationKey(registryName.getNamespace() + "." + registryName.getPath());
 
 		if(remapSubmodule && Loader.instance().activeModContainer().getModId().equals(AppEng.MODID)){
 			String module = AppEng.instance().getCurrentName();

@@ -24,17 +24,17 @@ public enum GlobalFeaturesManager implements FeaturesManager {
 
 	@Override
 	public FeaturesManager addFeature(ResourceLocation feature, boolean def, ResourceLocation... deps){
-		return managers.get(feature.getResourceDomain()).addFeature(feature, def, deps);
+		return managers.get(feature.getNamespace()).addFeature(feature, def, deps);
 	}
 
 	@Override
 	public boolean isEnabled(ResourceLocation feature, boolean def){
-		return feature == null || managers.get(feature.getResourceDomain()).isEnabled(feature, def);
+		return feature == null || managers.get(feature.getNamespace()).isEnabled(feature, def);
 	}
 
 	@Override
 	public FeaturesManager addDependencies(ResourceLocation feature, ResourceLocation... deps) throws IllegalStateException{
-		return managers.get(feature.getResourceDomain()).addDependencies(feature, deps);
+		return managers.get(feature.getNamespace()).addDependencies(feature, deps);
 	}
 
 	@Override

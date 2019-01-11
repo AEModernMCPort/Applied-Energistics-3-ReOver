@@ -26,7 +26,7 @@ public class CertusInfusedBlockModelComponent<B extends CertusInfusedBlock> impl
 	@Override
 	public void preInit(IBlockDefinition<B> def){
 		def.maybe().ifPresent(block -> {
-			ResourceLocation infusedRL = new ResourceLocation(def.identifier().getResourceDomain(), AppEngSkyfall.NAME + "/certus_infused");
+			ResourceLocation infusedRL = new ResourceLocation(def.identifier().getNamespace(), AppEngSkyfall.NAME + "/certus_infused");
 			ModelResourceLocation infusedOverlay = new ModelResourceLocation(infusedRL, "normal");
 			if(first){
 				ModelRegManagerHelper.loadAndRegisterModel(infusedOverlay, infusedOverlay);
@@ -35,7 +35,7 @@ public class CertusInfusedBlockModelComponent<B extends CertusInfusedBlock> impl
 			ModelRegManagerHelper.acceptBakeEventListener(event -> {
 				IBakedModel overlay = event.getModelRegistry().getObject(infusedOverlay);
 				IBlockState varState = block.getOriginal();
-				event.getModelRegistry().putObject(new ModelResourceLocation(new ResourceLocation(def.identifier().getResourceDomain(), AppEngSkyfall.NAME + "/" + def.identifier().getResourcePath()), "normal"), new SimpleBakedModel(null, null, overlay.isAmbientOcclusion(), overlay.isGui3d(), overlay.getParticleTexture(), overlay.getItemCameraTransforms(), overlay.getOverrides()) {
+				event.getModelRegistry().putObject(new ModelResourceLocation(new ResourceLocation(def.identifier().getNamespace(), AppEngSkyfall.NAME + "/" + def.identifier().getPath()), "normal"), new SimpleBakedModel(null, null, overlay.isAmbientOcclusion(), overlay.isGui3d(), overlay.getParticleTexture(), overlay.getItemCameraTransforms(), overlay.getOverrides()) {
 
 					IBakedModel infused;
 

@@ -26,7 +26,7 @@ import java.util.Optional;
 public class CertusInfusedBlock extends Block implements BlockStackDisplayNameProvider {
 
 	public static ResourceLocation formatToInfused(ResourceLocation original){
-		return new ResourceLocation(AppEng.MODID, String.format("certus_infused_%s_%s", original.getResourceDomain(), original.getResourcePath()));
+		return new ResourceLocation(AppEng.MODID, String.format("certus_infused_%s_%s", original.getNamespace(), original.getPath()));
 	}
 
 	//WE DO NOT SUPPORT STATES NOR META C:P
@@ -40,7 +40,7 @@ public class CertusInfusedBlock extends Block implements BlockStackDisplayNamePr
 		super(Material.ROCK);
 		setCreativeTab(CreativeTabs.DECORATIONS);
 		this.original = original;
-		setUnlocalizedName(AppEng.MODID + ".certus_infused");
+		setTranslationKey(AppEng.MODID + ".certus_infused");
 	}
 
 	public IBlockState getOriginal(){
@@ -64,7 +64,7 @@ public class CertusInfusedBlock extends Block implements BlockStackDisplayNamePr
 
 	@SideOnly(Side.CLIENT)
 	public BlockRenderLayer getBlockLayer(){
-		BlockRenderLayer original = getOriginal().getBlock().getBlockLayer();
+		BlockRenderLayer original = getOriginal().getBlock().getRenderLayer();
 		return original == BlockRenderLayer.SOLID || original == BlockRenderLayer.CUTOUT ? BlockRenderLayer.CUTOUT_MIPPED : original;
 	}
 

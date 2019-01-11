@@ -228,7 +228,7 @@ public class SkyobjectFallingPhysics implements SkyobjectPhysics {
 				Vector3d maxForce = new Vector3d(momentum.x, momentum.y, momentum.z).div(t);
 				double mFPL = Math.abs(maxForce.length() * totalReaction.angleCos(maxForce));
 				totalReaction.mul(Math.min(mFPL, totalReaction.length()) / totalReaction.length());
-				double prevM = momentum.lengthVector();
+				double prevM = momentum.length();
 				double prevMY = momentum.y;
 				if(prevMY > 0) prevMY = -prevMY;
 				momentum = momentum.add(new Vec3d(totalReaction.x, totalReaction.y, totalReaction.z).scale(t));

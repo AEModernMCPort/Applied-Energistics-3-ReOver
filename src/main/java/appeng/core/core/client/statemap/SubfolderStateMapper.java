@@ -27,6 +27,6 @@ public class SubfolderStateMapper implements IStateMapper {
 
 	@Override
 	public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn){
-		return Maps.transformValues(delegate.putStateModelLocations(blockIn), model -> new ModelResourceLocation(new ResourceLocation(model.getResourceDomain(), String.join("/", subfolder, model.getResourcePath())), model.getVariant()));
+		return Maps.transformValues(delegate.putStateModelLocations(blockIn), model -> new ModelResourceLocation(new ResourceLocation(model.getNamespace(), String.join("/", subfolder, model.getPath())), model.getVariant()));
 	}
 }

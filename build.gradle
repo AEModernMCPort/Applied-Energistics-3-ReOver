@@ -27,7 +27,7 @@ sourceCompatibility = java_version
 targetCompatibility = java_version
 
 dependencies {
-	compile("code.elix_x.excore:EXCore:$excore_version-$minecraft_version"){
+	compile("code.elix_x.excomms:EXComms:$excomms_version"){
 		exclude group: "com.google.guava"
 	}
 	compile "com.esotericsoftware.yamlbeans:yamlbeans:$yamlbeans_version"
@@ -58,11 +58,6 @@ group = group
 jar {
 	classifier = "obf"
 	from {
-		zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXCore")})
-    } {
-		include "code/elix_x/excore/utils/**"
-    }
-	from {
         zipTree((configurations.runtime - configurations.provided).find{ it.getName().startsWith("EXComms")})
     } {
         exclude "META-INF/**"
@@ -76,6 +71,7 @@ jar {
 
 sourceSets {
 	main.java.srcDir("${project.projectDir}/src/main/api")
+	main.java.srcDir("${project.projectDir}/src/main/excore")
 }
 
 /*
